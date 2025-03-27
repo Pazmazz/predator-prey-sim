@@ -10,4 +10,9 @@ public class Ant extends Bug {
     public void onEaten(){
 
     }
+
+    @Override
+    public String toString(){
+        return "Ant";
+    }
 }
