@@ -1,6 +1,6 @@
 package classes;
 
-public class doodlebug extends bug{
+public class Doodlebug extends Bug{
     
 
     public void movementChecks(){
