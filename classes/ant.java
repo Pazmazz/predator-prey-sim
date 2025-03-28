@@ -8,7 +8,7 @@ public class Ant extends Bug {
     }
 
     public void onEaten(){
-
+        //TODO: Clear out instance of ant that gets eaten
     }
 
     @Override

@@ -15,12 +15,16 @@ public class main{
 
     static void bugSpawn(Object[][] playField, Bug bug){
         Random random = new Random();
+        boolean bugSpawned = false;
 
-        int spawnPosX = random.nextInt(2);
-        int spawnPosY = random.nextInt(2);
+        while (!bugSpawned){
+            int spawnPosX = random.nextInt(2);
+            int spawnPosY = random.nextInt(2);
 
-        if (playField[spawnPosX][spawnPosY] == null){
-            playField[spawnPosX][spawnPosY] = bug;
+            if (playField[spawnPosX][spawnPosY] == null){
+                playField[spawnPosX][spawnPosY] = bug;
+                bugSpawned = true;
+            }
         }
     }
 }
