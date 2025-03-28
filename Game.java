@@ -52,6 +52,9 @@ public class Game implements Runnable {
 	 * This method serves as the main game loop, which is responsible
 	 * for updating game steps, rendering frames, and handling all other
 	 * incremental game logic.
+	 * 
+	 * TODO: Create separate deltaTimes and time steps for frames operating
+	 * on different Hz
 	 */
 	@Override
 	public void run() {
