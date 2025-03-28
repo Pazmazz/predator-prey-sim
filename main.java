@@ -1,6 +1,8 @@
 /*
- * @Author(s): Alexander Lance, Grier, Jaylen, Will
+ * @Author(s): Alex, Grier, Jaylen, Will
  * @Written: 3/28/2025
+ * 
+ * Game entry point file
  */
 import classes.GameSettings;
 import classes.GameScreen;
