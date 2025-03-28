@@ -48,7 +48,10 @@ public class Main implements Runnable {
 	 */
 	@Override
 	public void run() {
+		double deltaTime = 0;
+
 		while (gameThread != null) {
+			double gameStepStartTime = tick();
 			/*
 			 * ORDER OF GAME STEPS:
 			 * 
@@ -56,27 +59,42 @@ public class Main implements Runnable {
 			 * 2) Movement: Calculating the new updated position of all entities on the map.
 			 * 3) Render: render all buffered graphics to the screen.
 			 */
-			physicsStep();
-			movementStep();
-			renderStep();
+			physicsStep(deltaTime);
+			movementStep(deltaTime);
+			renderStep(deltaTime);
 
-			try {
-				Thread.sleep((long) GameSettings.FRAME_INTERVAL_MILLISECONDS);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
+			double gameStepEndTime = tick();
+			double gameStepTime = gameStepEndTime - gameStepStartTime;
+			double threadYieldTime = GameSettings.FRAME_INTERVAL_MILLISECONDS - gameStepTime;
+
+			if (threadYieldTime > 0) {
+				try {
+					Thread.sleep((long) threadYieldTime);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+
+				// Update the delta time between game step intervals
+				deltaTime = tick() - gameStepEndTime;
+			} else {
+				deltaTime = 0;
 			}
 		}
 	}
 
-	public void physicsStep() {
-		System.out.println("Computed physics frame");
+	public void physicsStep(double deltaTime) {
+		System.out.println("Computed next physics frame in: " + deltaTime);
 	}
 
-	public void movementStep() {
-		System.out.println("Computed movement frame");
+	public void movementStep(double deltaTime) {
+		System.out.println("Computed next movement frame in: " + deltaTime);
 	}
 
-	public void renderStep() {
-		System.out.println("Computed render frame");
+	public void renderStep(double deltaTime) {
+		System.out.println("Computed next render frame: " + deltaTime);
+	}
+
+	public double tick() {
+		return System.currentTimeMillis();
 	}
 }
