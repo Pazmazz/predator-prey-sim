@@ -13,28 +13,29 @@ package classes;
 import javax.swing.JFrame;
 
 public class GameScreen extends JFrame {
-	public GameScreen(String title) {
-		super();
+	private MasterFrame masterFrame;
 
+	public GameScreen(String title) {
 		// Default game screen settings
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.setResizable(false);
 		this.setTitle(title);
+
+		// Build UI components
+		masterFrame = new MasterFrame();
+		this.add(masterFrame);
+
+		// Finalize game screen
+		this.pack();
 		this.setLocationRelativeTo(null);
 		this.setVisible(true);
 	}
 
-	/*
-	 * buildUI():
-	 * 
-	 * A no-arg method that assembles all sub-components of the game
-	 * screen.
-	 */
-	public void buildUI() {
-		MasterFrame masterFrame = new MasterFrame();
-		this.add(masterFrame);
+	public MasterFrame getMasterFrame() {
+		return masterFrame;
+	}
 
-		// Final UI step: Auto-resize screen to fit contents
-		this.pack();
+	private void drawGameBoard() {
+
 	}
 }

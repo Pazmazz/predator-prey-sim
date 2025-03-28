@@ -7,8 +7,9 @@
 import classes.GameSettings;
 import classes.GameScreen;
 
-public class Main implements Runnable {
+public class Game implements Runnable {
 	private Thread gameThread;
+	private GameScreen gameScreen;
 
 	/*
 	 * main()
@@ -17,22 +18,28 @@ public class Main implements Runnable {
 	 * game UI, game loop, initial logic, and initial game conditions.
 	 */
 	public static void main(String[] args) {
-		Main game = new Main();
-		GameScreen screen = new GameScreen("Hanson's Hunting Simulator");
-		
-		screen.buildUI();
-		game.initGameLoop();
+		Game game = new Game();
+		game.start();
 	}
 
 	/*
-	 * initGameLoop():
+	 * Game():
 	 * 
-	 * A no-arg method for initializing the main game loop thread. This
-	 * method creates and runs the main game loop thread at the same
-	 * time.
+	 * A constructor method for the main Game class to initialize 
+	 * prerequisite conditions for the game such as UI components
+	 * and the game loop thread.
 	 */
-	public void initGameLoop() {
+	public Game() {
+		gameScreen = new GameScreen("Hanson's Hunting Simulator");
 		gameThread = new Thread(this);
+	}
+
+	/*
+	 * start():
+	 * 
+	 * A no-arg method for running the main game loop thread.
+	 */
+	public void start() {
 		gameThread.start();
 	}
 
@@ -55,11 +62,9 @@ public class Main implements Runnable {
 			/*
 			 * ORDER OF GAME STEPS:
 			 * 
-			 * 1) Physics: All physics computations such as collision detection are handled.
-			 * 2) Movement: Calculating the new updated position of all entities on the map.
-			 * 3) Render: render all buffered graphics to the screen.
+			 * 1) Movement: Calculating the new updated position of all entities on the map.
+			 * 2) Render: render all buffered graphics to the screen.
 			 */
-			physicsStep(deltaTime);
 			movementStep(deltaTime);
 			renderStep(deltaTime);
 
@@ -82,19 +87,21 @@ public class Main implements Runnable {
 		}
 	}
 
-	public void physicsStep(double deltaTime) {
-		System.out.println("Computed next physics frame in: " + deltaTime);
-	}
-
 	public void movementStep(double deltaTime) {
 		System.out.println("Computed next movement frame in: " + deltaTime);
 	}
 
 	public void renderStep(double deltaTime) {
 		System.out.println("Computed next render frame: " + deltaTime);
+		// gameScreen.getMasterFrame().repaint();
 	}
 
 	public double tick() {
 		return System.currentTimeMillis();
+	}
+
+	// Getters
+	public GameScreen getGameScreen() {
+		return gameScreen;
 	}
 }

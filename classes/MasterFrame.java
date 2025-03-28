@@ -16,7 +16,6 @@ import java.awt.Dimension;
 
 public class MasterFrame extends JPanel {
 	public MasterFrame() {
-		super();
 		this.setDoubleBuffered(true);
 		this.setPreferredSize(
 			new Dimension(
