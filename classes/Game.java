@@ -4,16 +4,23 @@
  */
 package classes;
 
-public class Game implements Runnable {
-	private Thread gameThread;
-	private GameScreen gameScreen;
+import java.util.UUID;
+import java.util.HashMap;
+
+public class Game extends Console implements Runnable {
+	private Thread mainThread;
+	private GameScreen screen;
+	private String sessionId;
+	private HashMap<DebugPriority, Boolean> listeningDebugPriorities;
+
+	private boolean debugModeEnabled = false;
+	private GameState state = GameState.INITIAL;
 	
 	// Update frames
 	public MovementFrame movementFrame;
 
 	// All game settings
 	public GameSettings settings;
-	public double id = Math.random();
 
 	// Internal states
 	public static enum GameState {
@@ -24,7 +31,11 @@ public class Game implements Runnable {
 		TERMINATED,
 	}
 
-	private GameState state = GameState.INITIAL;
+	public static enum DebugPriority {
+		LOW,
+		MEDIUM,
+		HIGH
+	}
 
 	/*
 	 * Game():
@@ -36,10 +47,17 @@ public class Game implements Runnable {
 	public Game() {
 		// IMPORTANT: `settings` must be defined first, since other classes reference it
 		settings = new GameSettings();
+		sessionId = UUID.randomUUID().toString();
 
-		gameScreen = new GameScreen(this);
-		gameThread = new Thread(this);
+		screen = new GameScreen(this);
+		mainThread = new Thread(this);
 		movementFrame = new MovementFrame();
+
+		// Default listening debug priorities
+		listeningDebugPriorities = new HashMap<>();
+		listeningDebugPriorities.put(DebugPriority.LOW, Boolean.TRUE);
+		listeningDebugPriorities.put(DebugPriority.MEDIUM, Boolean.TRUE);
+		listeningDebugPriorities.put(DebugPriority.HIGH, Boolean.TRUE);
 
 		this.setState(GameState.LOADED);
 	}
@@ -52,9 +70,9 @@ public class Game implements Runnable {
 	public void start() {
 		if (isLoaded()) {
 			this.setState(GameState.RUNNING);
-			gameThread.start();
+			mainThread.start();
 		} else {
-			throw new Error("start() can only be called once per game instance");
+			error("start() can only be called once per game instance");
 		}
 	}
 
@@ -67,7 +85,7 @@ public class Game implements Runnable {
 		if (isRunning() || isPaused()) {
 			setState(GameState.TERMINATED);
 		} else {
-			throw new Error("terminate() can only be called if the game is running or paused");
+			error("terminate() can only be called if the game is running or paused");
 		}
 	}
 
@@ -87,24 +105,37 @@ public class Game implements Runnable {
 	@Override
 	public void run() {
 		while (isThreadRunning()) {
-			// movementFrame.pulse();
-			try {
-				Thread.sleep(1000);
-				System.out.println("Running: " + id);
-			} catch (InterruptedException e) {}
+			double preSimulationTick = System.currentTimeMillis();
+			movementFrame.pulse();
+			double postSimulationTick = System.currentTimeMillis();
+
+			double threadYieldTime = settings.SIMULATION_INTERVAL_MILLISECONDS - (postSimulationTick - preSimulationTick);
+
+			if (threadYieldTime > 0) {
+				try {
+					Thread.sleep((long) threadYieldTime);
+					debugPrint("Heartbeat for game instance", sessionId, threadYieldTime);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
 		}
 	}
 
-	// Getters
-	public GameScreen getGameScreen() {
-		return gameScreen;
+	/* -------------- */
+	/* Getter methods */
+	/* -------------- */
+	public GameScreen getScreen() {
+		return screen;
 	}
 
 	public GameState getState() {
 		return state;
 	}
 
-	// Boolean checks
+	/* ------------------------- */
+	/* Boolean condition methods */
+	/* ------------------------- */
 	public boolean isRunning() {
 		return state == GameState.RUNNING;
 	}
@@ -129,8 +160,58 @@ public class Game implements Runnable {
 		return state == GameState.TERMINATED;
 	}
 
-	// Setters
+	public boolean isDebugMode() {
+		return debugModeEnabled;
+	}
+
+	/* -------------- */
+	/* Setter methods */
+	/* -------------- */
 	public void setState(GameState newState) {
 		state = newState;
+	}
+
+	public void setDebugModeEnabled(boolean enabled) {
+		debugModeEnabled = enabled;
+	}
+
+	/* --------------- */
+	/* Utility methods */
+	/* --------------- */
+	public void hideDebugPriority(DebugPriority priority) {
+		listeningDebugPriorities.put(priority, Boolean.FALSE);
+	}
+
+	public void showDebugPriority(DebugPriority priority) {
+		listeningDebugPriorities.put(priority, Boolean.TRUE);
+	}
+
+	public boolean isShowingDebugPriority(DebugPriority priority) {
+		return listeningDebugPriorities.get(priority);
+	}
+
+	public void setDebugPriority(DebugPriority priority) {
+		for (DebugPriority key : listeningDebugPriorities.keySet()) {
+			if (priority == key) {
+				listeningDebugPriorities.put(key, Boolean.TRUE);
+			} else {
+				listeningDebugPriorities.put(key, Boolean.FALSE);
+			}
+		}
+	}
+
+	public void debugPrint(DebugPriority priority, Object ...messages) {
+		if (isDebugMode() && isShowingDebugPriority(priority)) {
+			println(
+				"%s: %s".formatted(
+					settings.debugPrefixes.get(priority), 
+					Formatter.concatArray(messages, " | ")
+				)
+			);
+		}
+	}
+
+	public void debugPrint(Object ...messages) {
+		debugPrint(DebugPriority.LOW, messages);
 	}
 }

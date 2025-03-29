@@ -5,6 +5,10 @@ public class MovementFrame {
 
 	}
 
+	public void pulse() {
+
+	}
+
 	public void step() {
 
 	}

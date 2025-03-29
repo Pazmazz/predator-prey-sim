@@ -4,9 +4,13 @@
  * 
  * Game entry point file
  */
+import classes.AsyncCallback;
+import classes.AsyncTask;
+import classes.Console;
 import classes.Game;
+import classes.Game.DebugPriority;
 
-public class Main {
+public class Main extends Console {
 	/*
 	 * main()
 	 * 
@@ -15,6 +19,7 @@ public class Main {
 	 */
 	public static void main(String[] args) {
 		Game game = new Game();
+		game.setDebugModeEnabled(true);
 		game.start();
 	}
 }
