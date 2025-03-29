@@ -1,3 +1,12 @@
+/*
+ * @Written: 3/29/2025
+ * 
+ * class AsyncTask:
+ * 
+ * Responsible for creating new executable threads on the
+ * spot. Mostly used for testing.
+ */
+
 package classes;
 
 public class AsyncTask implements Runnable {

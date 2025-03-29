@@ -18,6 +18,7 @@ import java.awt.event.WindowEvent;
 public class GameScreen extends JFrame {
 	private JPanel masterFrame;
 
+	@SuppressWarnings("static-access")
 	public GameScreen(Game game) {
 		// Default game screen settings
 		this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);

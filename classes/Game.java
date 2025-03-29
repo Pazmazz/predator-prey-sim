@@ -5,15 +5,12 @@
 package classes;
 
 import java.util.UUID;
-import java.util.HashMap;
 
-public class Game extends Console implements Runnable {
+public class Game extends Application implements Runnable {
 	private Thread mainThread;
 	private GameScreen screen;
 	private String sessionId;
-	private HashMap<DebugPriority, Boolean> listeningDebugPriorities;
 
-	private boolean debugModeEnabled = false;
 	private GameState state = GameState.INITIAL;
 	
 	// Update frames
@@ -29,12 +26,6 @@ public class Game extends Console implements Runnable {
 		RUNNING,
 		PAUSED,
 		TERMINATED,
-	}
-
-	public static enum DebugPriority {
-		LOW,
-		MEDIUM,
-		HIGH
 	}
 
 	/*
@@ -53,12 +44,6 @@ public class Game extends Console implements Runnable {
 		mainThread = new Thread(this);
 		movementFrame = new MovementFrame();
 
-		// Default listening debug priorities
-		listeningDebugPriorities = new HashMap<>();
-		listeningDebugPriorities.put(DebugPriority.LOW, Boolean.TRUE);
-		listeningDebugPriorities.put(DebugPriority.MEDIUM, Boolean.TRUE);
-		listeningDebugPriorities.put(DebugPriority.HIGH, Boolean.TRUE);
-
 		this.setState(GameState.LOADED);
 	}
 
@@ -72,7 +57,7 @@ public class Game extends Console implements Runnable {
 			this.setState(GameState.RUNNING);
 			mainThread.start();
 		} else {
-			error("start() can only be called once per game instance");
+			Console.error("start() can only be called once per game instance");
 		}
 	}
 
@@ -82,10 +67,10 @@ public class Game extends Console implements Runnable {
 	 * A no-arg method for terminating the game loop in the current game thread.
 	 */
 	public void terminate() {
-		if (isRunning() || isPaused()) {
+		if (isThreadRunning()) {
 			setState(GameState.TERMINATED);
 		} else {
-			error("terminate() can only be called if the game is running or paused");
+			Console.error("terminate() can only be called if the game is running or paused");
 		}
 	}
 
@@ -98,26 +83,19 @@ public class Game extends Console implements Runnable {
 	 * This method serves as the main game loop, which is responsible
 	 * for updating game steps, rendering frames, and handling all other
 	 * incremental game logic.
-	 * 
-	 * TODO: Create separate deltaTimes and time steps for frames operating
-	 * on different Hz
 	 */
 	@Override
 	public void run() {
 		while (isThreadRunning()) {
-			double preSimulationTick = System.currentTimeMillis();
+			double preSimulationTick = tick();
 			movementFrame.pulse();
-			double postSimulationTick = System.currentTimeMillis();
+			double postSimulationTick = tick();
 
 			double threadYieldTime = settings.SIMULATION_INTERVAL_MILLISECONDS - (postSimulationTick - preSimulationTick);
 
 			if (threadYieldTime > 0) {
-				try {
-					Thread.sleep((long) threadYieldTime);
-					debugPrint("Heartbeat for game instance", sessionId, threadYieldTime);
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
+				wait(threadYieldTime);
+				Console.debugPrint("Heartbeat for game instance", sessionId, threadYieldTime);
 			}
 		}
 	}
@@ -160,58 +138,10 @@ public class Game extends Console implements Runnable {
 		return state == GameState.TERMINATED;
 	}
 
-	public boolean isDebugMode() {
-		return debugModeEnabled;
-	}
-
 	/* -------------- */
 	/* Setter methods */
 	/* -------------- */
 	public void setState(GameState newState) {
 		state = newState;
-	}
-
-	public void setDebugModeEnabled(boolean enabled) {
-		debugModeEnabled = enabled;
-	}
-
-	/* --------------- */
-	/* Utility methods */
-	/* --------------- */
-	public void hideDebugPriority(DebugPriority priority) {
-		listeningDebugPriorities.put(priority, Boolean.FALSE);
-	}
-
-	public void showDebugPriority(DebugPriority priority) {
-		listeningDebugPriorities.put(priority, Boolean.TRUE);
-	}
-
-	public boolean isShowingDebugPriority(DebugPriority priority) {
-		return listeningDebugPriorities.get(priority);
-	}
-
-	public void setDebugPriority(DebugPriority priority) {
-		for (DebugPriority key : listeningDebugPriorities.keySet()) {
-			if (priority == key) {
-				listeningDebugPriorities.put(key, Boolean.TRUE);
-			} else {
-				listeningDebugPriorities.put(key, Boolean.FALSE);
-			}
-		}
-	}
-
-	public void debugPrint(DebugPriority priority, Object ...messages) {
-		if (isDebugMode() && isShowingDebugPriority(priority)) {
-			println(
-				"%s: %s".formatted(
-					settings.debugPrefixes.get(priority), 
-					Formatter.concatArray(messages, " | ")
-				)
-			);
-		}
-	}
-
-	public void debugPrint(Object ...messages) {
-		debugPrint(DebugPriority.LOW, messages);
 	}
 }

@@ -4,13 +4,15 @@
  * 
  * Game entry point file
  */
+import classes.Application;
 import classes.AsyncCallback;
 import classes.AsyncTask;
 import classes.Console;
 import classes.Game;
-import classes.Game.DebugPriority;
+import classes.GameSettings;
+import classes.Console.DebugPriority;
 
-public class Main extends Console {
+public class Main extends Application {
 	/*
 	 * main()
 	 * 
@@ -18,8 +20,9 @@ public class Main extends Console {
 	 * game UI, game loop, initial logic, and initial game conditions.
 	 */
 	public static void main(String[] args) {
+		Console.setDebugModeEnabled(true);
+		
 		Game game = new Game();
-		game.setDebugModeEnabled(true);
 		game.start();
 	}
 }

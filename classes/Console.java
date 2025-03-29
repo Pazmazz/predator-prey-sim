@@ -9,21 +9,35 @@
 
 package classes;
 
+import java.util.HashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.Map;
 
-public abstract class Console {
-	// String patterns
-	final static String COLOR_TAG_PATTERN = "\\$([a-zA-Z]+)\\-?([a-zA-Z_]*)";
+public abstract class Console extends Application {
+	private static Map<DebugPriority, Boolean> listeningDebugPriorities = new HashMap<>() {{
+		put(DebugPriority.LOW, Boolean.TRUE);
+		put(DebugPriority.MEDIUM, Boolean.TRUE);
+		put(DebugPriority.HIGH, Boolean.TRUE);
+	}};
 
-  // Themes
-  final static String[][] DEFAULT_THEME = 
+	private static boolean debugModeEnabled = false;
+	private static boolean consoleColorsEnabled = false;
+
+	public static enum DebugPriority {
+		LOW,
+		MEDIUM,
+		HIGH
+	}
+	
+	final private static String COLOR_TAG_PATTERN = "\\$([a-zA-Z]+)\\-?([a-zA-Z_]*)";
+  final private static String[][] DEFAULT_THEME = 
   {
     {"error", "$bg-black", "$text-white"},
     {"warn", "$bg-blue", "$text-black"}
   };
 
-  final static String[][] TEXT_COLORS = 
+  final private static String[][] TEXT_COLORS = 
   {
     {"reset", "\u001B[0m"},
 
@@ -46,7 +60,7 @@ public abstract class Console {
     {"bright_white", "\u001B[97m"},
   };
 
-  final static String[][] BG_COLORS = 
+  final private static String[][] BG_COLORS = 
   {
     {"black", "\u001B[40m"},
     {"red", "\u001B[41m"},
@@ -68,28 +82,79 @@ public abstract class Console {
   };
 
 	public static void println(Object ...contents) {
-		System.out.println(Formatter.concatArray(contents));
+		if (consoleColorsEnabled)
+			System.out.println(substituteColors(Formatter.concatArray(contents)));
+		else
+			System.out.println(replaceColorTags(Formatter.concatArray(contents)));
 	}
 
 	public static void print(String message) {
-		System.out.print(message);
+		if (consoleColorsEnabled)
+			System.out.print(substituteColors(message));
+		else
+			System.out.print(replaceColorTags(message));
 	}
 
 	public static void error(Object ...contents) {
 		throw new Error(Formatter.concatArray(contents));
 	}
 
+	public static boolean isDebugMode() {
+		return debugModeEnabled;
+	}
+
+	public static void setDebugModeEnabled(boolean enabled) {
+		debugModeEnabled = enabled;
+	}
+
+	public static void hideDebugPriority(DebugPriority priority) {
+		listeningDebugPriorities.put(priority, Boolean.FALSE);
+	}
+
+	public static void showDebugPriority(DebugPriority priority) {
+		listeningDebugPriorities.put(priority, Boolean.TRUE);
+	}
+
+	public static boolean isShowingDebugPriority(DebugPriority priority) {
+		return listeningDebugPriorities.get(priority);
+	}
+
+	public static void setDebugPriority(DebugPriority priority) {
+		for (DebugPriority key : listeningDebugPriorities.keySet()) {
+			if (priority == key) {
+				listeningDebugPriorities.put(key, Boolean.TRUE);
+			} else {
+				listeningDebugPriorities.put(key, Boolean.FALSE);
+			}
+		}
+	}
+
+	public static void debugPrint(DebugPriority priority, Object ...messages) {
+		if (isDebugMode() && isShowingDebugPriority(priority)) {
+			Console.println(
+				"%s: %s".formatted(
+					GameSettings.debugPrefixes.get(priority), 
+					Formatter.concatArray(messages, " | ")
+				)
+			);
+		}
+	}
+
+	public static void debugPrint(Object ...messages) {
+		debugPrint(DebugPriority.LOW, messages);
+	}
+
   /*
    * substituteColors() with default: <String[][]> theme, <boolean> reset
    */
-  static String substituteColors(String source) {
+  private static String substituteColors(String source) {
     return substituteColors(DEFAULT_THEME, source);
   }
 
   /*
    * substituteColors() with default: <boolean> reset
    */
-  static String substituteColors(String[][] theme, String source) {
+  private static String substituteColors(String[][] theme, String source) {
     return substituteColors(theme, source, true);
   }
 
@@ -102,7 +167,7 @@ public abstract class Console {
    * string.
    * 
    */
-  static String substituteColors(String[][] theme, String source, boolean reset) 
+  private static String substituteColors(String[][] theme, String source, boolean reset) 
   {
     if (source == null) return "";
 
@@ -120,78 +185,45 @@ public abstract class Console {
     
     if (initialMatch) {
       do {
-        // find the match start/end index
         int start = matcher.start();
         int end = matcher.end() + 1;
 
-        /*
-         * get the different captures
-         * 
-         * ex: $bg-black
-         *    capture 1: "bg"
-         *    capture 2: "black"
-         */
         String colorType = matcher.group(1);
         String colorValue = matcher.group(2);
 
-        /*
-         * if no capture 2 (ex: $something):
-         *    - capture 1 is treated as a lookup key in `theme`
-         * 
-         *    - if found, then return the data associated with the key
-         *        * data in form: { "key", "bg-color", "text-color" }
-         * 
-         *    - recursively call method for "bg-color" and "text-color" to retrieve
-         *      their values.
-         */
         if (colorValue.equals("")) 
         {
-          // get theme data in form: { "key", "bg-color", "text-color" }
           String[] themeTokenData = getThemeToken(theme, colorType);
-
           colorType = "theme";
 
-          // replace "bg-color" and "text-color" with their literal console colors, and combine them
           String bgColor = substituteColors(theme, themeTokenData[1], false);
           String textColor = substituteColors(theme, themeTokenData[2], false);
 
-          // check if either of them is missing in the theme declaration
           boolean bgExists = !bgColor.equals("");
           boolean textExists = !textColor.equals("");
-
-          // bg-color by default
           colorValue = bgColor;
 
-          // if both exist, combine them
           if (bgExists && textExists) {
             colorValue += textColor;
-
-          // if only text-color exists, then re-assign to text-color
           } else if (textExists) {
             colorValue = textColor;
           }
         }
 
-        // switch color list based on color type
         switch (colorType) {
           case "bg": { colorValue = getColor(BG_COLORS, colorValue); break; }
           case "text": { colorValue = getColor(TEXT_COLORS, colorValue); break; }
         }
 
-        // append the string leading up to the match, plus the replaced match value
         build += source.substring(lastStart, start) + colorValue;
-
-        // update the next starting index
         lastStart = end;
 
       } while (matcher.find());
     }
 
-    // final case, if there is any remaining part of the string after the last match
     if (lastStart < sourceLen)
       build += source.substring(lastStart, sourceLen);
 
-    // return final build and append reset, so colors don't carry over to the next print
     return unescapeColorTag(build) 
       + (reset ? getColor(TEXT_COLORS, "reset") : "");
   }
@@ -205,7 +237,7 @@ public abstract class Console {
    * Ex:
    *    escapeColorTag("/$text-green hello world") -> "\0esc hello world"
    */
-  static String escapeColorTag(String str) {
+  private static String escapeColorTag(String str) {
     return str.replaceAll("/\\$", "\0esc");
   }
 
@@ -218,7 +250,7 @@ public abstract class Console {
    * Ex:
    *    unescapeColorTag(escapeColorTag("/$text-green hello world")) -> "$text-green hello world"
    */
-  static String unescapeColorTag(String str) {
+  private static String unescapeColorTag(String str) {
     return str.replaceAll("\0esc", "\\$");
   }
 
@@ -229,7 +261,7 @@ public abstract class Console {
    * empty string - used when the system does not support
    * console colors
    */
-  static String replaceColorTags(Object message) {
+  private static String replaceColorTags(Object message) {
     String text = "" + message;
     return text.replaceAll(COLOR_TAG_PATTERN + " ", "");
   }
@@ -240,7 +272,7 @@ public abstract class Console {
    * Returns an ASCII console color from a given
    * color list
    */
-  static String getColor(String[][] colorList, String name) 
+  private static String getColor(String[][] colorList, String name) 
   {
     for (String[] colorData : colorList)
       if (name.equals(colorData[0])) return colorData[1];
@@ -254,7 +286,7 @@ public abstract class Console {
    * Returns a given theme token from a selected
    * theme array
    */
-  static String[] getThemeToken(String[][] theme, String token) 
+  private static String[] getThemeToken(String[][] theme, String token) 
   {
     for (String[] themeData : theme)
       if (token.equals(themeData[0])) return themeData;
