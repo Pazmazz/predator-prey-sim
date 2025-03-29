@@ -1,6 +1,6 @@
 package classes;
 
-public class ant extends bug {
+public class Ant extends Bug {
     
 
     public void movementChecks(){

@@ -1,3 +1,3 @@
-public interface prey {
+public interface Prey {
     public void onEaten();
 }

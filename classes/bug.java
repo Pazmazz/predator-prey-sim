@@ -1,6 +1,6 @@
 package classes;
 
-public abstract class bug {
+public abstract class Bug {
     int movementTurns;
 
     public abstract void movementChecks();

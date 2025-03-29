@@ -1,5 +1,4 @@
 /*
- * @Author(s): 
  * @Written: 3/28/2025
  * 
  * class GameScreen:
@@ -11,31 +10,46 @@
 package classes;
 
 import javax.swing.JFrame;
+import javax.swing.JPanel;
+import java.awt.Dimension;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 public class GameScreen extends JFrame {
-	private MasterFrame masterFrame;
+	private JPanel masterFrame;
 
-	public GameScreen(String title) {
+	public GameScreen(Game game) {
 		// Default game screen settings
-		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		this.setResizable(false);
-		this.setTitle(title);
+		this.setTitle(game.settings.GAME_TITLE);
 
 		// Build UI components
-		masterFrame = new MasterFrame();
+		masterFrame = new JPanel();
+		masterFrame.setDoubleBuffered(true);
+		masterFrame.setPreferredSize(
+			new Dimension(
+				game.settings.SCREEN_WIDTH, 
+				game.settings.SCREEN_HEIGHT
+			)
+		);
 		this.add(masterFrame);
 
 		// Finalize game screen
 		this.pack();
 		this.setLocationRelativeTo(null);
 		this.setVisible(true);
+
+		// Handle game window closing event
+		this.addWindowListener(new WindowAdapter() {
+			@Override
+			public void windowClosed(WindowEvent e) {
+				game.terminate();
+			}
+		});
 	}
 
-	public MasterFrame getMasterFrame() {
+	public JPanel getMasterFrame() {
 		return masterFrame;
-	}
-
-	private void drawGameBoard() {
-
 	}
 }
