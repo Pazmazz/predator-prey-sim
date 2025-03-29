@@ -10,7 +10,9 @@
 
 package classes;
 
-public abstract class Formatter extends Application {
+public class Formatter extends Application {
+	private Formatter() {}
+	
 	/*
 	 * concatArray(Object[] array, String separator):
 	 * 

@@ -1,6 +1,14 @@
+/*
+ * @Written: 3/29/2025
+ * 
+ * The root application API from which all subclasses
+ * inherit. Responsible for providing universal utility
+ * methods and/or cumulative runtime data.
+ */
+
 package classes;
 
-public class Application {
+public abstract class Application {
 	public double tick() {
 		return System.currentTimeMillis();
 	}

@@ -14,22 +14,23 @@ public class GameSettings {
 	/* Editable */
 	/* -------- */
 
-	// Text (immutable)
+	// Text (immutable at runtime)
 	final public static String GAME_HEADER_TITLE = "Bug sim";
 	final public static String GAME_TITLE = "To be determined";
 
+	// Debug info (immutable at runtime)
 	final public static Map<DebugPriority, String> debugPrefixes = new HashMap<>() {{
 		put(DebugPriority.LOW, "[Debug Low]");
 		put(DebugPriority.MEDIUM, "[Debug Medium]");
 		put(DebugPriority.HIGH, "[Debug High]");
 	}};
 
-	// Render settings (mutable)
+	// Render settings (mutable at runtime)
 	public double simulationFPS = 1.0 / 2; // Game simulations per second
 	public double renderFPS = 1.0 / 60; // Render frames per second
 	public int movementFPS = 1; // Movements per second
 
-	// Render settings (immutable)
+	// Render settings (immutable at runtime)
 	final public static int CELL_SIZE = 48; // Pixels
 
 	final public static int GRID_SIZE_X = 10;	// Cell multiplier

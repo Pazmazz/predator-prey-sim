@@ -14,7 +14,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.Map;
 
-public abstract class Console extends Application {
+public class Console extends Application {
+	private Console() {}
+	
 	private static Map<DebugPriority, Boolean> listeningDebugPriorities = new HashMap<>() {{
 		put(DebugPriority.LOW, Boolean.TRUE);
 		put(DebugPriority.MEDIUM, Boolean.TRUE);
