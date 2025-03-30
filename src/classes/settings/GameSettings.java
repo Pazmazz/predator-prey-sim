@@ -3,45 +3,70 @@
  */
 
 package classes.settings;
-import classes.abstracts.FrameProcessor.SimulationType;
+
 import java.util.HashMap;
 
 public class GameSettings {
-	// Text (immutable at runtime)
+	/* ============ */
+	/* CLASS FIELDS */
+	/* ============ */
 	final private String gameHeaderText;
 	final private String gameTitle;
 	
-	// Render settings (immutable at runtime)
-	final private int cellSize; // Pixels
+	final private int cellSize;
 	final private int gridSizeX;
 	final private int gridSizeY;
 
-	final private int screenWidth; 	// Pixels
-	final private int screenHeight; // Pixels
+	final private int screenWidth;
+	final private int screenHeight;
 
+	final private SimulationInfo simulationInfo;
+
+	/* =========== */
+	/* CONSTRUCTOR */
+	/* =========== */
 	public GameSettings() {
-		gameHeaderText = "one";
-		gameTitle = "two";
+		/* Editable */
+		gameHeaderText = "one"; // Text of the main header within the window
+		gameTitle = "two"; // Title of game window
 
-		cellSize = 48;
+		cellSize = 48; // Pixels
 
-		gridSizeX = 10;
-		gridSizeY = 10;
+		gridSizeX = 10; // Cell units displayed horizontally
+		gridSizeY = 10; // Cell units displayed vertically
 
+		/* Non-Editable */
 		screenWidth = gridSizeX * cellSize;
 		screenHeight = gridSizeY * cellSize;
 
 		simulationInfo = new SimulationInfo();
 	}
 
-	// Render settings (mutable at runtime)
-	final private SimulationInfo simulationInfo;
+	/* ===== */
+	/* ENUMS */
+	/* ===== */
+	public enum SimulationType {
+		MOVEMENT,
+		RENDER,
+		SIMULATED_LAG,
+	}
 
+	/* ==================== */
+	/* SETTINGS API CLASSES */
+	/* ==================== */
+	/*
+	 * class DebugInfo:
+	 * 
+	 * A simple API for getting and setting debug info
+	 * variables. For now, the sole purpose of this class
+	 * is to get and set debug message colors
+	 */
 	public class DebugInfo {
 		private String primaryColor;
 		private String secondaryColor;
 
 		public DebugInfo() {
+			/* Editable */
 			primaryColor = "green";
 			secondaryColor = "cyan";
 		}
@@ -65,31 +90,51 @@ public class GameSettings {
 		}
 	}
 
+	/*
+	 * class SimulationInfo:
+	 * 
+	 * This class is the main API for accessing simulation
+	 * settings such as FPS. It holds all information about
+	 * each simulation frame and can be accessed with chained
+	 * getter methods, for example:
+	 * 
+	 * ```
+	 * SimulationInfo info = new SimulationInfo();
+	 * 
+	 * info.getFPS();
+	 * info.getSettings(simulationType).getDebugInfo();
+	 * ```
+	 * 
+	 * This class aggregates instances of `SimulationSettings`
+	 */
 	public class SimulationInfo {
-		final private double FPS = 1.0 / 60;
+		final private double FPS;
 		final private HashMap<SimulationType, SimulationSettings> settings;
 
 		public SimulationInfo() {
+			/* Editable */
+			FPS = 1.0 / 60;
 			settings = new HashMap<>();
 
 			SimulationSettings render = new SimulationSettings()
-				.setFPS(1.0 / 60)
-				.setProcessName("Render");
-				
+					.setFPS(1.0 / 60)
+					.setProcessName("Render");
+
 			render.getDebugInfo().setPrimaryColor("red");
 
 			SimulationSettings movement = new SimulationSettings()
-				.setFPS(1.0)
-				.setProcessName("Movement");
+					.setFPS(1.0)
+					.setProcessName("Movement");
 
 			movement.getDebugInfo().setPrimaryColor("yellow");
 
 			SimulationSettings simulatedLag = new SimulationSettings()
-				.setFPS(1.0 / 60)
-				.setProcessName("SimulatedLag");
+					.setFPS(1.0 / 60)
+					.setProcessName("SimulatedLag");
 
 			simulatedLag.getDebugInfo().setPrimaryColor("purple");
-			
+
+			/* Non-Editable */
 			settings.put(SimulationType.RENDER, render);
 			settings.put(SimulationType.MOVEMENT, movement);
 			settings.put(SimulationType.SIMULATED_LAG, simulatedLag);
@@ -104,6 +149,13 @@ public class GameSettings {
 		}
 	}
 
+	/*
+	 * class SimulationSettings:
+	 * 
+	 * A settings class that holds all relevant information
+	 * about a given simulation process. These instances are
+	 * aggregated in the Simulation class for central organization.
+	 */
 	public class SimulationSettings {
 		private double FPS;
 		private String processName;
@@ -136,6 +188,9 @@ public class GameSettings {
 		}
 	}
 
+	/* ================= */
+	/* GAME SETTINGS API */
+	/* ================= */
 	public SimulationInfo getSimulation() {
 		return simulationInfo;
 	}

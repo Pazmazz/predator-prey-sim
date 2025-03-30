@@ -11,8 +11,8 @@
 package classes.simulation;
 
 import classes.abstracts.FrameProcessor;
-import classes.abstracts.FrameProcessor.SimulationType;
 import classes.entity.Game;
+import classes.settings.GameSettings.SimulationType;
 
 public class MovementFrame extends FrameProcessor {
 	public MovementFrame(Game game, SimulationType simulationFrame) {

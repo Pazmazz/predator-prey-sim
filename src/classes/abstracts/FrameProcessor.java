@@ -13,6 +13,7 @@ package classes.abstracts;
 
 import classes.entity.Game;
 import classes.settings.GameSettings.SimulationSettings;
+import classes.settings.GameSettings.SimulationType;
 import classes.util.Console;
 import classes.util.Time;
 
@@ -21,12 +22,6 @@ public abstract class FrameProcessor extends Application {
 	public long lastPulseTick;
 	public long lastDeltaTime = 0;
 	public SimulationSettings settings;
-
-	public enum SimulationType {
-		MOVEMENT,
-		RENDER,
-		SIMULATED_LAG,
-	}
 
 	protected FrameProcessor(Game game, SimulationType simulationType) {
 		settings = game.getSettings()

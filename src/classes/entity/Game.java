@@ -8,8 +8,8 @@ import java.util.UUID;
 
 import classes.abstracts.Application;
 import classes.abstracts.FrameProcessor;
-import classes.abstracts.FrameProcessor.SimulationType;
 import classes.settings.GameSettings;
+import classes.settings.GameSettings.SimulationType;
 import classes.simulation.MovementFrame;
 import classes.simulation.RenderFrame;
 import classes.simulation.SimulatedLagFrame;
