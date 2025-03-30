@@ -6,7 +6,9 @@
  */
 
 import classes.abstracts.Application;
+import classes.entity.Cell;
 import classes.entity.Game;
+import classes.entity.Vector2;
 import classes.util.Console;
 
 public class App extends Application {
@@ -17,10 +19,16 @@ public class App extends Application {
 	 * game UI, game loop, initial logic, and initial game conditions.
 	 */
 	public static void main(String[] args) {
-		Console.setDebugModeEnabled(true);
+		Console.setDebugModeEnabled(false);
 		Console.setConsoleColorsEnabled(true);
 
 		Game game = new Game();
 		game.start();
+
+		game.getGameGrid().setCell(new Vector2(0, 0));
+		Cell cell = game.getGameGrid().getCell(new Vector2(0, 0));
+		
+		Console.println(game.getGameGrid().isInBounds(new Vector2(0, 10)));
+		Console.println(cell);
 	}
 }

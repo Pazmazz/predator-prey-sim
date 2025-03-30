@@ -4,6 +4,7 @@
 
 package classes.settings;
 
+import classes.entity.Vector2;
 import java.util.HashMap;
 
 public class GameSettings {
@@ -14,8 +15,7 @@ public class GameSettings {
 	final private String gameTitle;
 	
 	final private int cellSize;
-	final private int gridSizeX;
-	final private int gridSizeY;
+	final private Vector2 gridSize;
 
 	final private int screenWidth;
 	final private int screenHeight;
@@ -31,13 +31,11 @@ public class GameSettings {
 		gameTitle = "two"; // Title of game window
 
 		cellSize = 48; // Pixels
-
-		gridSizeX = 10; // Cell units displayed horizontally
-		gridSizeY = 10; // Cell units displayed vertically
+		gridSize = new Vector2(10, 10); // Cell units 
 
 		/* Non-Editable */
-		screenWidth = gridSizeX * cellSize;
-		screenHeight = gridSizeY * cellSize;
+		screenWidth = gridSize.X * cellSize;
+		screenHeight = gridSize.Y * cellSize;
 
 		simulationInfo = new SimulationInfo();
 	}
@@ -213,5 +211,9 @@ public class GameSettings {
 
 	public int getScreenHeight() {
 		return screenHeight;
+	}
+
+	public Vector2 getGridSize() {
+		return gridSize;
 	}
 }

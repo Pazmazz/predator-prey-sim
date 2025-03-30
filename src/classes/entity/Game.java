@@ -4,8 +4,6 @@
  */
 package classes.entity;
 
-import java.util.UUID;
-
 import classes.abstracts.Application;
 import classes.abstracts.FrameProcessor;
 import classes.settings.GameSettings;
@@ -15,12 +13,14 @@ import classes.simulation.RenderFrame;
 import classes.simulation.SimulatedLagFrame;
 import classes.util.Console;
 import classes.util.Time;
+import java.util.UUID;
 
 public class Game extends Application implements Runnable {
 	final private Thread mainThread;
 	final private GameScreen screen;
 	final private String sessionId;
 	final private GameSettings settings;
+	final private CellGrid gameGrid;
 
 	private GameState state = GameState.INITIAL;
 	
@@ -52,6 +52,8 @@ public class Game extends Application implements Runnable {
 		sessionId = UUID.randomUUID().toString();
 		screen = new GameScreen(this);
 		mainThread = new Thread(this);
+
+		gameGrid = new CellGrid(settings.getGridSize());
 
 		movementFrame = new MovementFrame(this, SimulationType.MOVEMENT);
 		renderFrame = new RenderFrame(this, SimulationType.RENDER);
@@ -138,6 +140,10 @@ public class Game extends Application implements Runnable {
 
 	public GameSettings getSettings() {
 		return settings;
+	}
+
+	public CellGrid getGameGrid() {
+		return gameGrid;
 	}
 
 	/* ------------------------- */
