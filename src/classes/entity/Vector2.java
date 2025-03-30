@@ -8,4 +8,9 @@ public class Vector2 {
 		this.X = x;
 		this.Y = y;
 	}
+
+	@Override
+	public String toString() {
+		return "<%s, %s>".formatted(X, Y);
+	}
 }

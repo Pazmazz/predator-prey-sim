@@ -7,6 +7,7 @@
 
 import classes.abstracts.Application;
 import classes.entity.Cell;
+import classes.entity.CellGrid;
 import classes.entity.Game;
 import classes.entity.Vector2;
 import classes.util.Console;
@@ -25,10 +26,21 @@ public class App extends Application {
 		Game game = new Game();
 		game.start();
 
-		game.getGameGrid().setCell(new Vector2(0, 0));
-		Cell cell = game.getGameGrid().getCell(new Vector2(0, 0));
-		
-		Console.println(game.getGameGrid().isInBounds(new Vector2(0, 10)));
-		Console.println(cell);
+		CellGrid grid = game.getGameGrid();
+
+		Cell cell1 = grid.getCell(new Vector2(-1, 0));
+		Cell cell2 = grid.getCell(new Vector2(-1, 0));
+		Cell cell3 = grid.setCell(new Vector2(5, 5));
+		Cell cell4 = grid.setCell(new Vector2(-1, -1));
+
+		Console.println(cell1);
+		Console.println(cell1 == cell2);
+
+		Console.println(cell3);
+		Console.println(cell3.getCellType());
+
+		Console.println(cell4.destroy());
+
+		Console.println(grid.getCell(new Vector2(-1, -1)) == cell4);
 	}
 }
