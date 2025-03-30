@@ -20,6 +20,8 @@ public class App extends Application {
 		Console.setDebugModeEnabled(true);
 		Console.setConsoleColorsEnabled(true);
 
+		Console.println("$text-blue Hello, $text-red world");
+
 		Game game = new Game();
 		game.start();
 	}
