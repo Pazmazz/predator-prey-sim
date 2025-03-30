@@ -4,7 +4,7 @@ This application simulates a simple world of bugs which inhabit the roles of _pr
 
 ## Libraries used
 
-_This application does not use any third-party libraries, or any library/API that is not built directly into Java_
+_This application does not use any external third-party libraries, or any library/API that is not built directly into Java_
 
 - `java.util`
 
