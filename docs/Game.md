@@ -45,28 +45,29 @@ After the constructor has finished executing, the internal game state will then 
 
 You can access the current state of the game with the following methods:
 
-- **`game.isInitial()`**
+### `game.isInitial()`
 
-  - Returns **true** if the game state is `GameState.INITIAL`
+Returns **true** if the game state is `GameState.INITIAL`
 
-- **`game.isLoaded()`**
+### `game.isLoaded()`
 
-  - Returns **true** is the game state is `GameState.LOADED`
+Returns **true** is the game state is `GameState.LOADED`
 
-- **`gameState.isRunning()`**
+### `gameState.isRunning()`
 
-  - Returns **true** if the game state is `GameState.RUNNING`
+Returns **true** if the game state is `GameState.RUNNING`
 
-- **`gameState.isPaused()`**
+### `gameState.isPaused()`
 
-  - Returns **true** if the game state is `GameState.PAUSED`
+Returns **true** if the game state is `GameState.PAUSED`
 
-- **`gameState.isThreadRunning()`**
+### `gameState.isThreadRunning()`
 
-  - Returns **true** if the game loop is still alive (if the game is in `GameState.RUNNING` **or** `GameState.PAUSED` state)
+Returns **true** if the game loop is still alive (if the game is in `GameState.RUNNING` **or** `GameState.PAUSED` state)
 
-- **`gameState.isTerminated()`**
-  - Returns **true** if the game state is `GameStart.TERMINATED` (happens when game is closing)
+### `gameState.isTerminated()`
+
+Returns **true** if the game state is `GameStart.TERMINATED` (happens when game is closing)
 
 <br/>
 
