@@ -57,7 +57,7 @@ To apply console colors, prefix your text with `$text-COLOR` and `$bg-COLOR` fol
 
 <br/>
 
-### Example:
+#### Example:
 
 ```java
 Console.println("$text-blue Hello, world");
@@ -68,6 +68,8 @@ Console.println("$text-blue Hello, world");
 <br/>
 
 Colors can also be overrided by inserting another `$` directive anywhere after a previous directive:
+
+<br/>
 
 ```java
 Console.println("$text-blue Hello, $text-red world");
@@ -103,8 +105,6 @@ Debug print behaves like `Console.println()`, except it is influenced by the deb
 <br/>
 
 #### Example:
-
-<br/>
 
 ```java
 Console.debugPrint("Some warning message");
@@ -172,8 +172,6 @@ Console.debugPrint(DebugPriority.HIGH, "High priority, will show");
 <br/>
 
 ### `Console.showDebugPriority()`
-
-<br/>
 
 **args:**
 
