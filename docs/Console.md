@@ -1,4 +1,4 @@
-_@Author: William J. Horn_
+_**@Author:** [William J. Horn](https://github.com/william-horn)_
 
 # _class_ `Console`
 
@@ -152,8 +152,6 @@ This will assign the debug message to a `HIGH` priority. Individual priority lev
 
 ### `Console.hideDebugPriority()`
 
-<br/>
-
 **args:**
 
 - **DebugPriority** debugPriority
@@ -168,8 +166,10 @@ A parameter must be specified to choose a specific debug priority to hide in the
 Console.hideDebugPriority(DebugPriority.LOW);
 
 Console.debugPrint("Low priority, won't show");
-Console.debugPrint("High priority, will show");
+Console.debugPrint(DebugPriority.HIGH, "High priority, will show");
 ```
+
+<br/>
 
 ### `Console.showDebugPriority()`
 
@@ -192,7 +192,7 @@ Console.hideDebugPriority(DebugPriority.HIGH);
 Console.showDebugPriority(DebugPriority.LOW);
 
 Console.debugPrint("Low priority will show");
-Console.debugPrint("High priority will not show");
+Console.debugPrint(DebugPriority.HIGH, "High priority will not show");
 ```
 
 <br/>
@@ -202,3 +202,17 @@ Console.debugPrint("High priority will not show");
 <br/>
 
 You can also show debug priority levels exclusively, using `Console.setDebugPriority()`
+
+<br/>
+
+```java
+Console.setDebugPriority(DebugPriority.MEDIUM);
+
+Console.debugPrint("Low priority will not show");
+Console.debugPrint(DebugPriority.HIGH, "High priority will not show");
+Console.debugPrint(DebugPriority.MEDIUM, "Medium priority, will show");
+```
+
+> \> Medium priority, will show
+
+<br/>
