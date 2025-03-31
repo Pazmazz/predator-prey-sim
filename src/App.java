@@ -6,10 +6,8 @@
  */
 
 import classes.abstracts.Application;
-import classes.entity.Ant;
 import classes.entity.Cell;
 import classes.entity.CellGrid;
-import classes.entity.Game;
 import classes.entity.IntVector2;
 import classes.util.Console;
 import classes.util.Console.DebugPriority;
@@ -26,20 +24,21 @@ public class App extends Application {
 		Console.hideDebugPriority(DebugPriority.LOW);
 		Console.setConsoleColorsEnabled(true);
 
-		Game game = new Game();
-		game.start();
+		// Game game = new Game();
+		// game.start();
 
-		CellGrid grid = game.getGameGrid();
-		Cell[] cells = grid.getCellsAdjacentTo(new IntVector2(0, 0));
+		CellGrid grid = new CellGrid(new IntVector2(10, 10));
 
-		for (Cell cell : cells) {
-			Console.println(cell);
-			Console.println(cell.getType());
-			Console.println(cell.getVacancy());
-			Console.println(cell.getDirectionRelativeTo(new IntVector2(0, 0)));
+		Cell cell0 = grid.getCell(new IntVector2(0, 0));
+		
+		Cell[] adjCells = grid.getCellsAdjacentTo(cell0);
+
+		for (Cell adjCell : adjCells) {
+			Console.println(adjCell);
+			Console.println(adjCell.getType());
+			Console.println(adjCell.getVacancy());
+			Console.println(adjCell.getDirectionRelativeTo(cell0));
 			Console.br();
 		}
-
-		grid.getCell(new IntVector2(-1, 0)).setOccupant(new Ant());
 	}
 }
