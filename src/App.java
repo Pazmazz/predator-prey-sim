@@ -6,7 +6,6 @@
  */
 
 import classes.abstracts.Application;
-import classes.entity.Ant;
 import classes.entity.Cell;
 import classes.entity.CellGrid;
 import classes.entity.Game;
@@ -32,11 +31,11 @@ public class App extends Application {
 		Cell cell1 = grid.getCell(new IntVector2(-1, 0));
 		Cell cell2 = grid.getCell(new IntVector2(-1, 0));
 		Cell cell3 = grid.setCell(new IntVector2(5, 5));
-		Cell cell4 = grid.setCell(new IntVector2(4, 5));
+		Cell cell4 = grid.setCell(new IntVector2(6, 5));
+		Cell cell6 = grid.setCell(new IntVector2(5, 6));
 
-		grid.setCell(new IntVector2(6, 6));
-		grid.getCell(new IntVector2(6, 6)).setOccupant(new Ant());
-		Console.println(grid.getCell(new IntVector2(6, 6)).getVacancy());
-		
+
+
+		Console.println(cell3.getDirectionRelativeTo(cell4));
 	}
 }

@@ -29,6 +29,10 @@ public class Vector2 {
 		return new Vector2(X / mag, Y / mag);
 	}
 
+	public Vector2 invert() {
+		return new Vector2(Y, X);
+	}
+
 	@Override
 	public String toString() {
 		return "<%s, %s>".formatted(X, Y);

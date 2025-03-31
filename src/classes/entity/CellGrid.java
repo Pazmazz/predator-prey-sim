@@ -33,7 +33,7 @@ public class CellGrid {
 			}
 		}
 
-		Cell cell = grid[position.X][position.Y];
+		Cell cell = grid[position.Y][position.X];
 		if (cell == null) cell = new Cell(position);
 		return cell;
 	}
@@ -48,7 +48,7 @@ public class CellGrid {
 			cell.setCellType(CellType.OUT_OF_BOUNDS);
 			metaGrid.put(position.toString(), cell);
 		} else {
-			grid[position.X][position.Y] = cell;
+			grid[position.Y][position.X] = cell;
 			cell.setCellVacancy(CellVacancy.EMPTY);
 		}
 
@@ -62,7 +62,7 @@ public class CellGrid {
 		if (!isInBounds(position)) {
 			metaGrid.remove(position.toString());
 		} else {
-			grid[position.X][position.Y] = null;
+			grid[position.Y][position.X] = null;
 			cell.setCellVacancy(CellVacancy.NULL);
 		}
 
