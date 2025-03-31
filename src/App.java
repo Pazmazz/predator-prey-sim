@@ -6,11 +6,13 @@
  */
 
 import classes.abstracts.Application;
+import classes.entity.Ant;
 import classes.entity.Cell;
 import classes.entity.CellGrid;
 import classes.entity.Game;
 import classes.entity.IntVector2;
 import classes.util.Console;
+import classes.util.Console.DebugPriority;
 
 public class App extends Application {
 	/*
@@ -20,22 +22,24 @@ public class App extends Application {
 	 * game UI, game loop, initial logic, and initial game conditions.
 	 */
 	public static void main(String[] args) {
-		Console.setDebugModeEnabled(false);
+		Console.setDebugModeEnabled(true);
+		Console.hideDebugPriority(DebugPriority.LOW);
 		Console.setConsoleColorsEnabled(true);
 
 		Game game = new Game();
 		game.start();
 
 		CellGrid grid = game.getGameGrid();
+		Cell[] cells = grid.getCellsAdjacentTo(new IntVector2(0, 0));
 
-		Cell cell1 = grid.getCell(new IntVector2(-1, 0));
-		Cell cell2 = grid.getCell(new IntVector2(-1, 0));
-		Cell cell3 = grid.setCell(new IntVector2(5, 5));
-		Cell cell4 = grid.setCell(new IntVector2(6, 5));
-		Cell cell6 = grid.setCell(new IntVector2(5, 6));
+		for (Cell cell : cells) {
+			Console.println(cell);
+			Console.println(cell.getType());
+			Console.println(cell.getVacancy());
+			Console.println(cell.getDirectionRelativeTo(new IntVector2(0, 0)));
+			Console.br();
+		}
 
-
-
-		Console.println(cell3.getDirectionRelativeTo(cell4));
+		grid.getCell(new IntVector2(-1, 0)).setOccupant(new Ant());
 	}
 }

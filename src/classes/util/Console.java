@@ -104,8 +104,16 @@ public class Console extends Application {
 			System.out.print(replaceColorTags(message));
 	}
 
-	public static void error(Object ...contents) {
+	public static void error(Object... contents) {
 		throw new Error(Formatter.concatArray(contents));
+	}
+	
+	public static void br(int repeat) {
+		println("-".repeat(repeat));
+	}
+
+	public static void br() {
+		br(50);
 	}
 
 	public static boolean isDebugMode() {

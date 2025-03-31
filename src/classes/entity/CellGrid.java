@@ -1,17 +1,18 @@
 package classes.entity;
 
 import classes.entity.Cell.CellType;
-import classes.entity.Cell.CellVacancy;
+import classes.util.Console;
+import classes.util.Console.DebugPriority;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 public class CellGrid {
 	final private IntVector2 size;
-	final private Cell[][] grid;
-	final private HashMap<String, Cell> metaGrid = new HashMap<>();
+	final private HashMap<String, Cell> virtualGrid = new HashMap<>();
 
 	public CellGrid(IntVector2 size) {
 		this.size = size;
-		this.grid = new Cell[size.X][size.Y];
 	}
 
 	public boolean isInBounds(IntVector2 position) {
@@ -23,54 +24,55 @@ public class CellGrid {
 	}
 
 	public Cell getCell(IntVector2 position) {
+		Cell cell = virtualGrid.get(position.toString());
+
+		if (cell != null) return cell;
+		
+		cell = new Cell(position);
+		virtualGrid.put(position.toString(), cell);
+
 		if (!isInBounds(position)) {
-			if (metaGrid.get(position.toString()) != null) {
-				return metaGrid.get(position.toString());
-			} else {
-				Cell cell = new Cell(CellType.OUT_OF_BOUNDS, position);
-				metaGrid.put(position.toString(), cell);
-				return cell;
+			cell.setType(CellType.OUT_OF_BOUNDS);
+		}
+
+		return cell;
+	}
+	
+	public Cell collectCell(IntVector2 position) {
+		Cell cell = virtualGrid.get(position.toString());
+
+		if (cell == null) return null;
+
+		if (cell.isCollectable()) {
+			virtualGrid.remove(position.toString());
+			cell.setType(CellType.GARBAGE_COLLECTED);
+		}
+
+		return cell;
+	}
+
+	public Cell collectCell(Cell cell) {
+		return collectCell(cell.getPosition());
+	}
+
+	public void collectCells() {
+		Iterator<Map.Entry<String, Cell>> gridIterator = virtualGrid.entrySet().iterator();
+		int count = 0;
+
+		while (gridIterator.hasNext()) {
+			Map.Entry<String, Cell> cellEntry = gridIterator.next();
+			Cell cell = cellEntry.getValue();
+
+			if (cell.isCollectable()) {
+				gridIterator.remove();
+				count++;
 			}
 		}
 
-		Cell cell = grid[position.Y][position.X];
-		if (cell == null) cell = new Cell(position);
-		return cell;
-	}
-
-	public Cell setCell(IntVector2 position) {
-		Cell cell = new Cell(position);
-		return setCell(position, cell);
-	}
-
-	public Cell setCell(IntVector2 position, Cell cell) {
-		if (!isInBounds(position)) {
-			cell.setCellType(CellType.OUT_OF_BOUNDS);
-			metaGrid.put(position.toString(), cell);
-		} else {
-			grid[position.Y][position.X] = cell;
-			cell.setCellVacancy(CellVacancy.EMPTY);
-		}
-
-		cell.setGrid(this);
-		return cell;
-	}
-
-	public Cell destroyCell(IntVector2 position) {
-		Cell cell = getCell(position);
-
-		if (!isInBounds(position)) {
-			metaGrid.remove(position.toString());
-		} else {
-			grid[position.Y][position.X] = null;
-			cell.setCellVacancy(CellVacancy.NULL);
-		}
-
-		return cell;
-	}
-
-	public Cell destroyCell(Cell cell) {
-		return destroyCell(cell.getPosition());
+		Console.debugPrint(
+			DebugPriority.MEDIUM,
+			"Freed $text-red %s $text-reset cells during garbage collection".formatted(count)
+		);
 	}
 
 	public Cell getTopCellTo(IntVector2 position) {
@@ -107,13 +109,16 @@ public class CellGrid {
 
 	public Cell[] getCellsAdjacentTo(IntVector2 position) {
 		Cell[] cells = new Cell[4];
-
 		cells[0] = getTopCellTo(position);
 		cells[1] = getBottomCellTo(position);
 		cells[2] = getLeftCellTo(position);
 		cells[3] = getRightCellTo(position);
 
 		return cells;
+	}
+
+	public Cell[] getCellsAdjacentTo(Cell cell) {
+		return getCellsAdjacentTo(cell.getPosition());
 	}
 
 	public IntVector2 getSize() {

@@ -127,7 +127,7 @@ public class GameSettings {
 			movement.getDebugInfo().setPrimaryColor("yellow");
 
 			SimulationSettings simulatedLag = new SimulationSettings()
-					.setFPS(1.0 / 60)
+					.setFPS(5)
 					.setProcessName("SimulatedLag");
 
 			simulatedLag.getDebugInfo().setPrimaryColor("purple");

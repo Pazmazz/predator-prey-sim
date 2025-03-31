@@ -1,24 +1,22 @@
 package classes.entity;
 
 import classes.abstracts.CellOccupant;
-import classes.util.Console;
 
 public class Cell {
-	final private IntVector2 position;
+	private IntVector2 position;
 	private CellType cellType;
 	private CellVacancy cellVacancy;
 	private CellOccupant cellOccupant;
-	private CellGrid grid;
 
 	public enum CellType {
 		OUT_OF_BOUNDS,
 		NORMAL,
+		GARBAGE_COLLECTED,
 	}
 
 	public enum CellVacancy {
 		EMPTY,
 		OCCUPIED,
-		NULL,
 	}
 
 	public enum CellDirection {
@@ -35,7 +33,7 @@ public class Cell {
 	public Cell(CellType cellType, IntVector2 position) {
 		this.position = position;
 		this.cellType = cellType;
-		this.cellVacancy = CellVacancy.NULL;
+		this.cellVacancy = CellVacancy.EMPTY;
 	}
 
 	public CellOccupant getOccupant() {
@@ -59,38 +57,49 @@ public class Cell {
 		return cellVacancy;
 	}
 
-	public CellGrid getGrid() {
-		return this.grid;
+	public boolean isEmpty() {
+		return cellVacancy == CellVacancy.EMPTY;
 	}
 
-	public CellDirection getDirectionRelativeTo(Cell cell) {
-		Vector2 unitDirection = cell.getPosition()
-			.subtract(this.getPosition())
-			.getUnit();
+	public boolean isOccupied() {
+		return !isEmpty();
+	}
 
-		if (unitDirection.X < 0) return CellDirection.RIGHT;
-		if (unitDirection.X > 0) return CellDirection.LEFT;
-		if (unitDirection.Y > 0) return CellDirection.TOP;
-		
+	public boolean isOutOfBounds() {
+		return cellType == CellType.OUT_OF_BOUNDS;
+	}
+
+	public boolean isInBounds() {
+		return cellType == CellType.NORMAL;
+	}
+
+	public boolean isCollectable() {
+		return isEmpty() || cellOccupant == null;
+	}
+
+	public CellDirection getDirectionRelativeTo(IntVector2 position) {
+		Vector2 unitDirection = position.subtract(this.getPosition()).getUnit();
+
+		if (unitDirection.X < 0)
+			return CellDirection.RIGHT;
+		if (unitDirection.X > 0)
+			return CellDirection.LEFT;
+		if (unitDirection.Y > 0)
+			return CellDirection.TOP;
+
 		return CellDirection.BOTTOM;
 	}
-
-	public Cell destroy() {
-		this.grid.destroyCell(this);
-		this.grid = null;
-		return this;
+	
+	public CellDirection getDirectionRelativeTo(Cell cell) {
+		return getDirectionRelativeTo(cell.getPosition());
 	}
 
-	public void setCellType(CellType cellType) {
+	public void setType(CellType cellType) {
 		this.cellType = cellType;
 	}
 
-	public void setCellVacancy(CellVacancy cellVacancy) {
+	public void setVacancy(CellVacancy cellVacancy) {
 		this.cellVacancy = cellVacancy;
-	}
-
-	public void setGrid(CellGrid grid) {
-		this.grid = grid;
 	}
 
 	public void setOccupant(CellOccupant cellOccupant) {

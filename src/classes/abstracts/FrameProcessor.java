@@ -50,11 +50,6 @@ public abstract class FrameProcessor extends Application {
 			deltaTime = 0;
 		}
 
-		lastPulseTick = preSimulationTime;
-		step(Time.nanoToSeconds(deltaTime));
-		lastDeltaTime = deltaTime;
-		long simulationTime = tick() - preSimulationTime;
-
 		Console.debugPrint(
 			"$text-%s [%s FRAME] $text-reset"
 				.formatted(
@@ -62,6 +57,11 @@ public abstract class FrameProcessor extends Application {
 					settings.getProcessName().toUpperCase()
 				)
 		);
+
+		lastPulseTick = preSimulationTime;
+		step(Time.nanoToSeconds(deltaTime));
+		lastDeltaTime = deltaTime;
+		long simulationTime = tick() - preSimulationTime;
 
 		Console.debugPrint(
 			"completed in: $text-%s %s $text-reset seconds"
