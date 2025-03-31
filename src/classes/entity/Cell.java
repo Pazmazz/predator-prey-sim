@@ -3,8 +3,9 @@ package classes.entity;
 import classes.abstracts.CellOccupant;
 
 public class Cell {
-	final private Vector2 position;
+	final private IntVector2 position;
 	private CellType cellType;
+	private CellVacancy cellVacancy;
 	private CellOccupant occupant;
 	private CellGrid grid;
 
@@ -13,13 +14,20 @@ public class Cell {
 		NORMAL,
 	}
 
-	public Cell(Vector2 position) {
+	public enum CellVacancy {
+		EMPTY,
+		OCCUPIED,
+		NULL,
+	}
+
+	public Cell(IntVector2 position) {
 		this(CellType.NORMAL, position);
 	}
 
-	public Cell(CellType cellType, Vector2 position) {
+	public Cell(CellType cellType, IntVector2 position) {
 		this.position = position;
 		this.cellType = cellType;
+		this.cellVacancy = CellVacancy.NULL;
 	}
 
 	public CellOccupant getOccupant() {
@@ -28,15 +36,33 @@ public class Cell {
 
 	public void setOccupant(CellOccupant occupant) {
 		occupant = occupant;
+		cellVacancy = CellVacancy.OCCUPIED;
 	}
 
-	public Vector2 getPosition() {
+	public void removeOccupant(CellOccupant occupant) {
+		occupant = null;
+		cellVacancy = CellVacancy.EMPTY;
+	}
+
+	public IntVector2 getPosition() {
 		return position;
 	}
 
-	public CellType getCellType() {
+	public CellType getType() {
 		return cellType;
 	}
+
+	public CellVacancy getVacancy() {
+		return cellVacancy;
+	}
+
+	public CellGrid getGrid() {
+		return this.grid;
+	}
+
+	// public Cell directionFrom(Cell cell) {
+
+	// }
 
 	public Cell destroy() {
 		this.grid.destroyCell(this);
@@ -48,12 +74,12 @@ public class Cell {
 		this.cellType = cellType;
 	}
 
-	public void setGrid(CellGrid grid) {
-		this.grid = grid;
+	public void setCellVacancy(CellVacancy cellVacancy) {
+		this.cellVacancy = cellVacancy;
 	}
 
-	public CellGrid getGrid() {
-		return this.grid;
+	public void setGrid(CellGrid grid) {
+		this.grid = grid;
 	}
 
 	@Override

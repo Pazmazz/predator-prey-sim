@@ -6,10 +6,11 @@
  */
 
 import classes.abstracts.Application;
+import classes.entity.Ant;
 import classes.entity.Cell;
 import classes.entity.CellGrid;
 import classes.entity.Game;
-import classes.entity.Vector2;
+import classes.entity.IntVector2;
 import classes.util.Console;
 
 public class App extends Application {
@@ -28,19 +29,14 @@ public class App extends Application {
 
 		CellGrid grid = game.getGameGrid();
 
-		Cell cell1 = grid.getCell(new Vector2(-1, 0));
-		Cell cell2 = grid.getCell(new Vector2(-1, 0));
-		Cell cell3 = grid.setCell(new Vector2(5, 5));
-		Cell cell4 = grid.setCell(new Vector2(-1, -1));
+		Cell cell1 = grid.getCell(new IntVector2(-1, 0));
+		Cell cell2 = grid.getCell(new IntVector2(-1, 0));
+		Cell cell3 = grid.setCell(new IntVector2(5, 5));
+		Cell cell4 = grid.setCell(new IntVector2(4, 5));
 
-		Console.println(cell1);
-		Console.println(cell1 == cell2);
-
-		Console.println(cell3);
-		Console.println(cell3.getCellType());
-
-		Console.println(cell4.destroy());
-
-		Console.println(grid.getCell(new Vector2(-1, -1)) == cell4);
+		grid.setCell(new IntVector2(6, 6));
+		grid.getCell(new IntVector2(6, 6)).setOccupant(new Ant());
+		Console.println(grid.getCell(new IntVector2(6, 6)).getVacancy());
+		
 	}
 }
