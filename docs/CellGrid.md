@@ -64,7 +64,10 @@ Both cases return a `Cell` object even though `cell0` is out-of-bounds. To check
 
 ## `CellGrid.collectCell()`
 
-- **Parameters:** `<IntVector2 position>` - _The 2D position of the cell to attempt to collect (free from memory)_
+- **Parameters:**
+
+  - **Overload 1:** `<IntVector2 position>` - _The 2D position of the cell to attempt to collect (free from memory)_
+  - **Overload 2:** `<Cell cell>` - _The Cell object to collect_
 
 - **Returns:** `<Cell collectedCell>`
 
@@ -101,11 +104,32 @@ grid.collectCell(cell);
 Console.println(cell == grid.getCell(new IntVector2(0, 0)) // => true
 ```
 
-Now that an `occupant` was set, the cell will not be garbage collected.
+Now that an `occupant` was set, the cell will not be garbage collected. If you want to collect _all_ collectable cells, you can use `CellGrid.collectCells()`
+
+### `CellGrid.collectCells()`
+
+- **Parameters:** _None_
+
+- **Returns:** `void`
+
+#### Example:
+
+```java
+Cell cell0 = grid.getCell(new IntVector2(0, 0));
+Cell cell1 = grid.getCell(new IntVector2(0, 1));
+Cell cell2 = grid.getCell(new IntVector2(0, 2));
+
+cell0.setOccupant(new Ant());
+
+grid.collectCells(); // Frees all cells except for cell0
+```
 
 ## `CellGrid.isInBounds()`
 
-- **Parameters:** `<IntVector2 position>` - _The 2D position of the cell to check_
+- **Parameters:**
+
+  - **Overload 1:** `<IntVector2 position>` - _The 2D position of the cell to check_
+  - **Overload 2:** `<Cell cell>` - _The Cell object to check_
 
 - **Returns:** `<boolean isInBounds>`
 
@@ -142,4 +166,129 @@ Console.println(grid.isInBounds(cell1));
 false
 <br/>
 true
+</blockquote>
+
+### `CellGrid.getTopCellTo()`
+
+- **Parameters:**
+
+  - **Overload 1:** `<IntVector2 position>` - _The 2D position of the cell to find the cell above it_
+  - **Overload 2:** `<Cell cell>` - _The Cell object to look above_
+
+- **Returns:** `<Cell cell>`
+
+Returns the `Cell` object that exists above a specified cell.
+
+#### Example:
+
+```java
+Cell cell0 = grid.getCell(new IntVector2(5, 5));
+Cell cell1 = grid.getCell(new IntVector2(5, 4));
+
+Console.println(grid.getTopCellTo(cell1)); // => Cell<5, 5>
+```
+
+### `CellGrid.getBottomCellTo()`
+
+- **Parameters:**
+
+  - **Overload 1:** `<IntVector2 position>` - _The 2D position of the cell to find the cell below it_
+  - **Overload 2:** `<Cell cell>` - _The Cell object to look below_
+
+- **Returns:** `<Cell cell>`
+
+Returns the `Cell` object that exists below a specified cell.
+
+#### Example:
+
+```java
+Cell cell0 = grid.getCell(new IntVector2(3, 6));
+Cell cell1 = grid.getCell(new IntVector2(3, 7));
+
+Console.println(grid.getBottomCellTo(cell0)); // => Cell<3, 7>
+```
+
+### `CellGrid.getLeftCellTo()`
+
+- **Parameters:**
+
+  - **Overload 1:** `<IntVector2 position>` - _The 2D position of the cell to find the cell left of it_
+  - **Overload 2:** `<Cell cell>` - _The Cell object to look left from_
+
+- **Returns:** `<Cell cell>`
+
+Returns the `Cell` object that exists left of a specified cell.
+
+#### Example:
+
+```java
+Cell cell0 = grid.getCell(new IntVector2(2, 2));
+Cell cell1 = grid.getCell(new IntVector2(1, 2));
+
+Console.println(grid.getLeftCellTo(cell0)); // => Cell<1, 2>
+```
+
+### `CellGrid.getRightCellTo()`
+
+- **Parameters:**
+
+  - **Overload 1:** `<IntVector2 position>` - _The 2D position of the cell to find the cell right of it_
+  - **Overload 2:** `<Cell cell>` - _The Cell object to look right from_
+
+- **Returns:** `<Cell cell>`
+
+Returns the `Cell` object that exists right of a specified cell.
+
+#### Example:
+
+```java
+Cell cell0 = grid.getCell(new IntVector2(8, 5));
+Cell cell1 = grid.getCell(new IntVector2(9, 5));
+
+Console.println(grid.getLeftCellTo(cell0)); // => Cell<9, 5>
+```
+
+### `CellGrid.getCellsAdjacentTo()`
+
+- **Parameters:**
+
+  - **Overload 1:** `<IntVector2 position>` - _The 2D position of the cell to return the adjacent cells of_
+  - **Overload 2:** `<Cell cell>` - _The Cell object to get the adjacent cells of_
+
+- **Returns:** `<Cell[] cells>`
+
+Returns the `Cell` object that exists left to a specified cell.
+
+#### Example:
+
+```java
+Cell cell = grid.getCell(new IntVector2(0, 0));
+
+Cell[] adjCells = grid.getCellsAdjacentTo(cell);
+
+for (Cell adjCell : adjCells) {
+	Console.println(adjCell);
+	Console.println(adjCell.getType());
+}
+```
+
+<blockquote>
+Cell<-1, 0>
+<br/>
+OUT_OF_BOUNDS
+
+<br/>
+Cell<1, 0>
+<br/>
+NORMAL
+
+<br/>
+Cell<0, 1>
+<br/>
+NORMAL
+
+<br/>
+Cell<0, -1>
+<br/>
+OUT_OF_BOUNDS
 </blockquote>
