@@ -28,18 +28,26 @@ public class App extends Application {
 		Game game = new Game();
 		game.start();
 
-		// CellGrid grid = new CellGrid(new IntVector2(10, 10));
+		CellGrid grid = new CellGrid(new IntVector2(20, 20));
 
-		// Cell cell0 = grid.getCell(new IntVector2(0, 0));
-		
-		// Cell[] adjCells = grid.getCellsAdjacentTo(cell0);
+		Cell cell0 = grid.getCell(new IntVector2(0, 0));
+		Cell cell1 = grid.getCell(new IntVector2(13, -2));
 
-		// for (Cell adjCell : adjCells) {
-		// 	Console.println(adjCell);
-		// 	Console.println(adjCell.getType());
-		// 	Console.println(adjCell.getVacancy());
-		// 	Console.println(adjCell.getDirectionRelativeTo(cell0));
-		// 	Console.br();
-		// }
+		grid.printCellsAdjacentTo(cell0);
+
+		// Cell nextCell = grid.getNextCellPath(cell0, cell1);
+		// Console.println(nextCell);
+
+		// nextCell = grid.getNextCellPath(nextCell, cell1);
+		// Console.println(nextCell);
+
+		// nextCell = grid.getNextCellPath(nextCell, cell1);
+		// Console.println(nextCell);
+
+		// nextCell = grid.getNextCellPath(nextCell, cell1);
+		// Console.println(nextCell);
+
+		// nextCell = grid.getNextCellPath(nextCell, cell1);
+		// Console.println(nextCell);
 	}
 }

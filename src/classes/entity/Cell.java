@@ -11,6 +11,7 @@
 package classes.entity;
 
 import classes.abstracts.CellOccupant;
+import classes.util.Console;
 
 public class Cell {
 	private IntVector2 position;
@@ -53,6 +54,11 @@ public class Cell {
 	public void removeOccupant() {
 		this.cellOccupant = null;
 		cellVacancy = CellVacancy.EMPTY;
+	}
+
+	public void moveOccupantTo(Cell cell) {
+		cell.setOccupant(getOccupant());
+		removeOccupant();
 	}
 
 	public IntVector2 getPosition() {
@@ -115,6 +121,20 @@ public class Cell {
 	public void setOccupant(CellOccupant cellOccupant) {
 		this.cellOccupant = cellOccupant;
 		cellVacancy = CellVacancy.OCCUPIED;
+	}
+
+	public void printInfo() {
+		Console.println(toString());
+		printInfoItem("Type", getType().toString());
+		printInfoItem("Vacancy", getVacancy().toString());
+
+		if (isOccupied()) {
+			printInfoItem("Occupant", getOccupant().toString());
+		}
+	}
+
+	public void printInfoItem(String item, String content) {
+		Console.println("- $text-yellow %s: $text-reset %s".formatted(item, content));
 	}
 
 	@Override

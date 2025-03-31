@@ -60,7 +60,7 @@ Cell<-1, 0>
 Cell<3, 5>
 </blockquote>
 
-Both cases return a `Cell` object even though `cell0` is out-of-bounds. To check for out-of-bounds cells, just use `Cell.isOutOfBounds()` or `Cell.getType()`. In cases where you want to check if the position is out of bounds before creating a `Cell` object, you can use `CellGrid.isInBounds()`
+Both cases return a `Cell` object even though `cell0` is out-of-bounds. To check for out-of-bounds cells, just use `Cell.isOutOfBounds()` or `Cell.getType()`. In cases where you want to check if the position is out of bounds before creating a `Cell` object, you can use `CellGrid.isInBounds(Cell)` or `Cell.isInBounds()`.
 
 ### `CellGrid.collectCell()`
 
@@ -132,6 +132,8 @@ grid.collectCells(); // Frees all cells except for cell0
   - **Overload 2:** `<Cell cell>` - _The Cell object to check_
 
 - **Returns:** `<boolean isInBounds>`
+
+Determines if a given `Cell` or `IntVector2` is within the `CellGrid` dimensions specified in the constructor.
 
 #### Example:
 

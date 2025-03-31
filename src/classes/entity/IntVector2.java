@@ -10,6 +10,13 @@ public class IntVector2 extends Vector2 {
 		this.Y = y;
 	}
 
+	public Vector2 getCenter() {
+		return new Vector2(
+			this.X - 0.5,
+			this.Y - 0.5
+		);
+	}
+
 	@Override
 	public String toString() {
 		return "<%s, %s>".formatted(X, Y);

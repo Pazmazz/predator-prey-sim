@@ -1,5 +1,9 @@
 # Predator-Prey Simulation
 
+**Collaberators:** Alex, Grier, Jaylen, Will
+
+<br/>
+
 This application simulates a simple world of bugs which inhabit the roles of _predators_ and _prey_
 
 ## Libraries used
@@ -17,7 +21,7 @@ _This application does not use any external third-party libraries, or any librar
 - `javax.swing`
   - Provides API for creating and manipulating GUI components
 
-## Native non-trivial classes used
+## Non-Trivial native classes used
 
 - `Thread`
 
@@ -25,6 +29,7 @@ _This application does not use any external third-party libraries, or any librar
 
 - `Map`
 - `HashMap`
+- `Iterator`
 - `JPanel`
 
   - Responsible for creating the GUI container components
