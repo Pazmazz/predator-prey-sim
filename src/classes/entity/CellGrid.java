@@ -36,8 +36,9 @@ public class CellGrid {
 	public Cell getCell(IntVector2 position) {
 		Cell cell = virtualGrid.get(position.toString());
 
-		if (cell != null) return cell;
-		
+		if (cell != null)
+			return cell;
+
 		cell = new Cell(position);
 		virtualGrid.put(position.toString(), cell);
 
@@ -47,11 +48,12 @@ public class CellGrid {
 
 		return cell;
 	}
-	
+
 	public Cell collectCell(IntVector2 position) {
 		Cell cell = virtualGrid.get(position.toString());
 
-		if (cell == null) return null;
+		if (cell == null)
+			return null;
 
 		if (cell.isCollectable()) {
 			virtualGrid.remove(position.toString());
@@ -78,25 +80,24 @@ public class CellGrid {
 		}
 
 		Console.debugPrint(
-			DebugPriority.MEDIUM,
-			"Freed $text-red %s $text-reset cells during garbage collection".formatted(count)
-		);
+				DebugPriority.MEDIUM,
+				"Freed $text-red %s $text-reset cells during garbage collection".formatted(count));
 	}
 
 	public Cell getCellTopOf(IntVector2 position) {
-		return getCell(new IntVector2(position.X - 1, position.Y));
-	}
-
-	public Cell getCellBottomOf(IntVector2 position) {
-		return getCell(new IntVector2(position.X + 1, position.Y));
-	}
-
-	public Cell getCellLeftOf(IntVector2 position) {
 		return getCell(new IntVector2(position.X, position.Y - 1));
 	}
 
-	public Cell getCellRightOf(IntVector2 position) {
+	public Cell getCellBottomOf(IntVector2 position) {
 		return getCell(new IntVector2(position.X, position.Y + 1));
+	}
+
+	public Cell getCellLeftOf(IntVector2 position) {
+		return getCell(new IntVector2(position.X - 1, position.Y));
+	}
+
+	public Cell getCellRightOf(IntVector2 position) {
+		return getCell(new IntVector2(position.X + 1, position.Y));
 	}
 
 	public Cell getCellTopOf(Cell cell) {
@@ -129,7 +130,40 @@ public class CellGrid {
 		return getCellsAdjacentTo(cell.getPosition());
 	}
 
+	// public Cell getNextCellPath(IntVector2 from, IntVector2 to) {
+	// 	Vector2 centerFrom = from.getCenter();
+	// 	Vector2 centerTo = to.getCenter();
+	// 	Vector2 direction = centerTo.subtract(centerFrom);
+
+	// 	double angle = Math.atan2(direction.Y, direction.X);
+	// 	final double FOURTH_PI = Math.PI / 4;
+
+	// 	if (angle % FOURTH_PI == 0) {
+	// 		Console.println("Angle is on fault, choosing: ", angle > 0 ? "top" : "bottom");
+	// 		return angle > 0 ? getCellTopOf(from) : getCellBottomOf(from);
+	// 	}
+
+	// 	return getCellBottomOf(from);
+	// }
+
+	// public Cell getNextCellPath(Cell fromCell, Cell toCell) {
+	// 	return getNextCellPath(fromCell.getPosition(), toCell.getPosition());
+	// }
+
 	public IntVector2 getSize() {
 		return size;
+	}
+
+	public void printCellsAdjacentTo(IntVector2 position) {
+		Cell[] adjCells = getCellsAdjacentTo(position);
+
+		for (Cell adjCell : adjCells) {
+			adjCell.printInfo();
+			adjCell.printInfoItem("Direction", adjCell.getDirectionRelativeTo(position).toString());
+		}
+	}
+
+	public void printCellsAdjacentTo(Cell cell) {
+		printCellsAdjacentTo(cell.getPosition());
 	}
 }
