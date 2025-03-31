@@ -55,6 +55,11 @@ public class Cell {
 		cellVacancy = CellVacancy.EMPTY;
 	}
 
+	public void moveOccupantTo(Cell cell) {
+		cell.setOccupant(getOccupant());
+		removeOccupant();
+	}
+
 	public IntVector2 getPosition() {
 		return position;
 	}

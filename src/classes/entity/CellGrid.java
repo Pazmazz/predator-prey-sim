@@ -71,9 +71,7 @@ public class CellGrid {
 
 		while (gridIterator.hasNext()) {
 			Map.Entry<String, Cell> cellEntry = gridIterator.next();
-			Cell cell = cellEntry.getValue();
-
-			if (cell.isCollectable()) {
+			if (cellEntry.getValue().isCollectable()) {
 				gridIterator.remove();
 				count++;
 			}
