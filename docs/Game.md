@@ -2,42 +2,26 @@ _**@Author:** [William J. Horn](https://github.com/william-horn)_
 
 # _class_ `Game`
 
-<br/>
-
 The `Game` class is responsible for creating a fully independant instance of the application. It will instantiate it's own main thread, create a mutable copy of `GameSettings`, and harbor an internal state independant of other game instances.
-
-<br/>
 
 ## Getting Started
 
-<br/>
-
 A new game instance can be created by simply calling the class constructor:
-
-<br/>
 
 ```java
 Game game = new Game();
 ```
 
-<br/>
-
 All other modifications such as changing game settings, pausing/resuming the game loop, or reading the game state, is now handled directly from the `game` object.
 
 When the game object is created, a window will immediately spawn and the GUI will be assembled and rendered. In the future, we will most likely change this so that nothing is rendered until a method is called to initiate the rendering. However, the game loop will not start automatically. In order to begin running the game, you must call the `start()` method:
-
-<br/>
 
 ```java
 Game game = new Game();
 game.start(); // Start the game loop
 ```
 
-<br/>
-
 ## Game State
-
-<br/>
 
 Before `game.start()` is called, the `game` object goes through 2 game states upon instantiation. The first state is the default value assigned as `GameState.INITIAL`.
 
@@ -68,8 +52,6 @@ Returns **true** if the game loop is still alive (if the game is in `GameState.R
 ### `gameState.isTerminated()`
 
 Returns **true** if the game state is `GameStart.TERMINATED` (happens when game is closing)
-
-<br/>
 
 ## API
 
