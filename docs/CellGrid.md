@@ -62,7 +62,7 @@ Cell<3, 5>
 
 Both cases return a `Cell` object even though `cell0` is out-of-bounds. To check for out-of-bounds cells, just use `Cell.isOutOfBounds()` or `Cell.getType()`. In cases where you want to check if the position is out of bounds before creating a `Cell` object, you can use `CellGrid.isInBounds()`
 
-## `CellGrid.collectCell()`
+### `CellGrid.collectCell()`
 
 - **Parameters:**
 

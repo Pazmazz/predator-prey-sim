@@ -1,3 +1,13 @@
+/*
+ * @Written: 3/30/2025
+ * 
+ * class CellGrid:
+ * 
+ * This class creates a virtual 2D grid using a HashMap, which
+ * maps a position string to a Cell object.
+ * 
+ * Documentation can be found here: https://github.com/Pazmazz/predator-prey-sim/blob/will-feature-1/docs/CellGrid.md
+ */
 package classes.entity;
 
 import classes.entity.Cell.CellType;

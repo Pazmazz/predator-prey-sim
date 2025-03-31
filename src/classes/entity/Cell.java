@@ -1,3 +1,13 @@
+/*
+ * @Written: 3/31/2025
+ * 
+ * class Cell:
+ * 
+ * This class allows you to interface with the virtual
+ * grid by adding occupants to a cell, checking grid
+ * conditions, finding other relative cell positions,
+ * etc.
+ */
 package classes.entity;
 
 import classes.abstracts.CellOccupant;
