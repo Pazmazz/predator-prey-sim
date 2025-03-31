@@ -8,6 +8,7 @@
 import classes.abstracts.Application;
 import classes.entity.Cell;
 import classes.entity.CellGrid;
+import classes.entity.Game;
 import classes.entity.IntVector2;
 import classes.util.Console;
 import classes.util.Console.DebugPriority;
@@ -21,24 +22,24 @@ public class App extends Application {
 	 */
 	public static void main(String[] args) {
 		Console.setDebugModeEnabled(true);
-		Console.hideDebugPriority(DebugPriority.LOW);
+		// Console.hideDebugPriority(DebugPriority.LOW);
 		Console.setConsoleColorsEnabled(true);
 
-		// Game game = new Game();
-		// game.start();
+		Game game = new Game();
+		game.start();
 
-		CellGrid grid = new CellGrid(new IntVector2(10, 10));
+		// CellGrid grid = new CellGrid(new IntVector2(10, 10));
 
-		Cell cell0 = grid.getCell(new IntVector2(0, 0));
+		// Cell cell0 = grid.getCell(new IntVector2(0, 0));
 		
-		Cell[] adjCells = grid.getCellsAdjacentTo(cell0);
+		// Cell[] adjCells = grid.getCellsAdjacentTo(cell0);
 
-		for (Cell adjCell : adjCells) {
-			Console.println(adjCell);
-			Console.println(adjCell.getType());
-			Console.println(adjCell.getVacancy());
-			Console.println(adjCell.getDirectionRelativeTo(cell0));
-			Console.br();
-		}
+		// for (Cell adjCell : adjCells) {
+		// 	Console.println(adjCell);
+		// 	Console.println(adjCell.getType());
+		// 	Console.println(adjCell.getVacancy());
+		// 	Console.println(adjCell.getDirectionRelativeTo(cell0));
+		// 	Console.br();
+		// }
 	}
 }
