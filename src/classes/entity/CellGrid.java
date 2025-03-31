@@ -85,44 +85,44 @@ public class CellGrid {
 		);
 	}
 
-	public Cell getTopCellTo(IntVector2 position) {
+	public Cell getCellTopOf(IntVector2 position) {
 		return getCell(new IntVector2(position.X - 1, position.Y));
 	}
 
-	public Cell getBottomCellTo(IntVector2 position) {
+	public Cell getCellBottomOf(IntVector2 position) {
 		return getCell(new IntVector2(position.X + 1, position.Y));
 	}
 
-	public Cell getLeftCellTo(IntVector2 position) {
+	public Cell getCellLeftOf(IntVector2 position) {
 		return getCell(new IntVector2(position.X, position.Y - 1));
 	}
 
-	public Cell getRightCellTo(IntVector2 position) {
+	public Cell getCellRightOf(IntVector2 position) {
 		return getCell(new IntVector2(position.X, position.Y + 1));
 	}
 
-	public Cell getTopCellTo(Cell cell) {
-		return getTopCellTo(cell.getPosition());
+	public Cell getCellTopOf(Cell cell) {
+		return getCellTopOf(cell.getPosition());
 	}
 
-	public Cell getBottomCellTo(Cell cell) {
-		return getBottomCellTo(cell.getPosition());
+	public Cell getCellBottomOf(Cell cell) {
+		return getCellBottomOf(cell.getPosition());
 	}
 
-	public Cell getLeftCellTo(Cell cell) {
-		return getLeftCellTo(cell.getPosition());
+	public Cell getCellLeftOf(Cell cell) {
+		return getCellLeftOf(cell.getPosition());
 	}
 
-	public Cell getRightCellTo(Cell cell) {
-		return getRightCellTo(cell.getPosition());
+	public Cell getCellRightOf(Cell cell) {
+		return getCellRightOf(cell.getPosition());
 	}
 
 	public Cell[] getCellsAdjacentTo(IntVector2 position) {
 		Cell[] cells = new Cell[4];
-		cells[0] = getTopCellTo(position);
-		cells[1] = getBottomCellTo(position);
-		cells[2] = getLeftCellTo(position);
-		cells[3] = getRightCellTo(position);
+		cells[0] = getCellTopOf(position);
+		cells[1] = getCellBottomOf(position);
+		cells[2] = getCellLeftOf(position);
+		cells[3] = getCellRightOf(position);
 
 		return cells;
 	}

@@ -168,7 +168,7 @@ false
 true
 </blockquote>
 
-### `CellGrid.getTopCellTo()`
+### `CellGrid.getCellTopOf()`
 
 - **Parameters:**
 
@@ -185,10 +185,10 @@ Returns the `Cell` object that exists above a specified cell.
 Cell cell0 = grid.getCell(new IntVector2(5, 5));
 Cell cell1 = grid.getCell(new IntVector2(5, 4));
 
-Console.println(grid.getTopCellTo(cell1)); // => Cell<5, 5>
+Console.println(grid.getCellTopOf(cell1)); // => Cell<5, 5>
 ```
 
-### `CellGrid.getBottomCellTo()`
+### `CellGrid.getCellBottomOf()`
 
 - **Parameters:**
 
@@ -205,10 +205,10 @@ Returns the `Cell` object that exists below a specified cell.
 Cell cell0 = grid.getCell(new IntVector2(3, 6));
 Cell cell1 = grid.getCell(new IntVector2(3, 7));
 
-Console.println(grid.getBottomCellTo(cell0)); // => Cell<3, 7>
+Console.println(grid.getCellBottomOf(cell0)); // => Cell<3, 7>
 ```
 
-### `CellGrid.getLeftCellTo()`
+### `CellGrid.getCellLeftOf()`
 
 - **Parameters:**
 
@@ -225,10 +225,10 @@ Returns the `Cell` object that exists left of a specified cell.
 Cell cell0 = grid.getCell(new IntVector2(2, 2));
 Cell cell1 = grid.getCell(new IntVector2(1, 2));
 
-Console.println(grid.getLeftCellTo(cell0)); // => Cell<1, 2>
+Console.println(grid.getCellLeftOf(cell0)); // => Cell<1, 2>
 ```
 
-### `CellGrid.getRightCellTo()`
+### `CellGrid.getCellRightOf()`
 
 - **Parameters:**
 
@@ -245,7 +245,7 @@ Returns the `Cell` object that exists right of a specified cell.
 Cell cell0 = grid.getCell(new IntVector2(8, 5));
 Cell cell1 = grid.getCell(new IntVector2(9, 5));
 
-Console.println(grid.getLeftCellTo(cell0)); // => Cell<9, 5>
+Console.println(grid.getCellLeftOf(cell0)); // => Cell<9, 5>
 ```
 
 ### `CellGrid.getCellsAdjacentTo()`
