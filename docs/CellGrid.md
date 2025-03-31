@@ -124,7 +124,7 @@ cell0.setOccupant(new Ant());
 grid.collectCells(); // Frees all cells except for cell0
 ```
 
-## `CellGrid.isInBounds()`
+### `CellGrid.isInBounds()`
 
 - **Parameters:**
 
