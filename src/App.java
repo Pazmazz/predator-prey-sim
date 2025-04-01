@@ -6,13 +6,10 @@
  */
 
 import classes.abstracts.Application;
-import classes.entity.Cell;
-import classes.entity.CellGrid;
-import classes.entity.Game;
+import classes.abstracts.Vector;
 import classes.entity.Unit2;
 import classes.entity.Vector2;
 import classes.util.Console;
-import classes.util.Console.DebugPriority;
 
 public class App extends Application {
 	/*
@@ -28,7 +25,8 @@ public class App extends Application {
 
 
 		Vector2 a = new Vector2(0, 1);
-		Console.println(a.subtract(new Vector2(1, 1)));
+		Vector2 c = a.subtract(new Vector2(1, 1));
+		Console.println(c);
 
 		Unit2 b = new Unit2(100, 100);
 		Console.println(b.subtract(new Unit2(40, 40)));

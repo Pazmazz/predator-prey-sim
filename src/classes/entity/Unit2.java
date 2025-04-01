@@ -1,11 +1,10 @@
 package classes.entity;
 
+import classes.abstracts.Vector;
 import java.util.ArrayList;
 import java.util.List;
 
-import classes.abstracts.Vector;
-
-public class Unit2 extends Vector<Integer> {
+public class Unit2 extends Vector {
 	private List<Integer> components;
 
 	public Unit2() {
@@ -24,7 +23,12 @@ public class Unit2 extends Vector<Integer> {
 	}
 
 	@Override
-	protected Vector<Integer> newVector(List<Integer> components) {
-		return new Unit2(components.get(0), components.get(1));
+	public int get(int index) {
+		return super.getInt();
+	}
+
+	@Override
+	protected Vector newVector(List<?> components) {
+		return new Unit2((int) components.get(0), (int) components.get(1));
 	}
 }

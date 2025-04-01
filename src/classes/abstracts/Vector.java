@@ -1,34 +1,25 @@
 package classes.abstracts;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import classes.util.Console;
+public abstract class Vector {
+	protected abstract List<? extends Number> getComponents();
+	protected abstract Vector newVector(List<? extends Number> components);
 
-public abstract class Vector<T extends Number> {
-	protected abstract List<T> getComponents();
-	protected abstract Vector<T> newVector(List<T> components);
-
-	public Vector<T> subtract(Vector<T> v) {
-		List<T> cv0 = getComponents();
-		List<T> cv1 = v.getComponents();
-		List<Double> cvr = new ArrayList<>();
-
-		for (int i = 0; i < cv0.size(); i++) {
-			double c0 = Double.valueOf("" + cv0.get(i));
-			double c1 = Double.valueOf("" + cv1.get(i));
-			Double cd = c0 - c1;
-
-			@SuppressWarnings("unchecked")
-			T result = (T) cd;
-			cvr.add(result);
-		}
-
-		return newVector(cvr);
+	public Vector subtract(Vector v) {
+		return newVector(getComponents());
 	}
 
-	public T get(int index) {
+	public Object get(int index) {
 		return getComponents().get(index);
+	}
+
+	public int getInt(int index) {
+		return (int) getComponents().get(index);
+	}
+
+	public double getDouble(int index) {
+		return (double) getComponents().get(index);
 	}
 
 	@Override
