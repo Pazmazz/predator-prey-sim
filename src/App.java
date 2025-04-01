@@ -5,9 +5,9 @@
  * Game entry point file
  */
 
-import classes.abstracts.Application;
-import classes.entity.Game;
-import classes.util.Console;
+import src.classes.abstracts.Application;
+import src.classes.entity.Game;
+import src.classes.util.Console;
 
 public class App extends Application {
 	/*

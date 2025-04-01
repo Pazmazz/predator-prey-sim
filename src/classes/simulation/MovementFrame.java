@@ -8,11 +8,11 @@
  * in the simulation should be written in this class's step method.
  */
 
-package classes.simulation;
+package src.classes.simulation;
 
-import classes.abstracts.FrameProcessor;
-import classes.entity.Game;
-import classes.settings.GameSettings.SimulationType;
+import src.classes.abstracts.FrameProcessor;
+import src.classes.entity.Game;
+import src.classes.settings.GameSettings.SimulationType;
 
 public class MovementFrame extends FrameProcessor {
 	public MovementFrame(Game game, SimulationType simulationFrame) {

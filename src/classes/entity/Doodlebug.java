@@ -1,6 +1,6 @@
-package classes.entity;
+package src.classes.entity;
 
-import classes.abstracts.Bug;
+import src.classes.abstracts.Bug;
 
 public class Doodlebug extends Bug {
     

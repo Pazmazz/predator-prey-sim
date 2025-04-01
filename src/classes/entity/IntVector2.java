@@ -1,4 +1,4 @@
-package classes.entity;
+package src.classes.entity;
 
 public class IntVector2 extends Vector2 {
 	final public int X;

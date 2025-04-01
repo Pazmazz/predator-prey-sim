@@ -7,9 +7,9 @@
  * the final project from the previous semester in CS-190.
  */
 
-package classes.util;
+package src.classes.util;
 
-import classes.abstracts.Application;
+import src.classes.abstracts.Application;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;

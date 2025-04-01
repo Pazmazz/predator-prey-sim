@@ -8,11 +8,11 @@
  * 
  * Documentation can be found here: https://github.com/Pazmazz/predator-prey-sim/blob/will-feature-1/docs/CellGrid.md
  */
-package classes.entity;
+package src.classes.entity;
 
-import classes.entity.Cell.CellType;
-import classes.util.Console;
-import classes.util.Console.DebugPriority;
+import src.classes.entity.Cell.CellType;
+import src.classes.util.Console;
+import src.classes.util.Console.DebugPriority;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
