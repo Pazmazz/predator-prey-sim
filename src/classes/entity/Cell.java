@@ -14,7 +14,8 @@ import classes.abstracts.CellOccupant;
 import classes.util.Console;
 
 public class Cell {
-	private IntVector2 position;
+	private Unit2 unit;
+	private Vector2 position;
 	private CellType cellType;
 	private CellVacancy cellVacancy;
 	private CellOccupant cellOccupant;
@@ -37,13 +38,9 @@ public class Cell {
 		RIGHT,
 	}
 
-	public Cell(IntVector2 position) {
-		this(CellType.NORMAL, position);
-	}
-
-	public Cell(CellType cellType, IntVector2 position) {
-		this.position = position;
-		this.cellType = cellType;
+	public Cell(Unit2 unit) {
+		this.unit = unit;
+		this.cellType = CellType.NORMAL;
 		this.cellVacancy = CellVacancy.EMPTY;
 	}
 
@@ -53,7 +50,7 @@ public class Cell {
 
 	public void removeOccupant() {
 		this.cellOccupant = null;
-		cellVacancy = CellVacancy.EMPTY;
+		setVacancy(CellVacancy.EMPTY);
 	}
 
 	public void moveOccupantTo(Cell cell) {
@@ -61,7 +58,7 @@ public class Cell {
 		removeOccupant();
 	}
 
-	public IntVector2 getPosition() {
+	public Unit2 getPosition() {
 		return position;
 	}
 
@@ -74,40 +71,27 @@ public class Cell {
 	}
 
 	public boolean isEmpty() {
-		return cellVacancy == CellVacancy.EMPTY;
+		return getVacancy() == CellVacancy.EMPTY;
 	}
 
 	public boolean isOccupied() {
-		return !isEmpty();
+		return getVacancy() == CellVacancy.OCCUPIED;
 	}
 
 	public boolean isOutOfBounds() {
-		return cellType == CellType.OUT_OF_BOUNDS;
+		return getType() == CellType.OUT_OF_BOUNDS;
 	}
 
 	public boolean isInBounds() {
-		return cellType == CellType.NORMAL;
+		return getType() == CellType.NORMAL;
+	}
+
+	public boolean isCollected() {
+		return getType() == CellType.GARBAGE_COLLECTED;
 	}
 
 	public boolean isCollectable() {
-		return isEmpty() || cellOccupant == null;
-	}
-
-	public CellDirection getDirectionRelativeTo(IntVector2 position) {
-		Vector2 unitDirection = position.subtract(this.getPosition()).getUnit();
-
-		if (unitDirection.X < 0)
-			return CellDirection.RIGHT;
-		if (unitDirection.X > 0)
-			return CellDirection.LEFT;
-		if (unitDirection.Y > 0)
-			return CellDirection.TOP;
-
-		return CellDirection.BOTTOM;
-	}
-	
-	public CellDirection getDirectionRelativeTo(Cell cell) {
-		return getDirectionRelativeTo(cell.getPosition());
+		return isEmpty() || getOccupant() == null;
 	}
 
 	public void setType(CellType cellType) {
@@ -120,7 +104,7 @@ public class Cell {
 
 	public void setOccupant(CellOccupant cellOccupant) {
 		this.cellOccupant = cellOccupant;
-		cellVacancy = CellVacancy.OCCUPIED;
+		setVacancy(CellVacancy.OCCUPIED);
 	}
 
 	public void printInfo() {

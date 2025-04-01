@@ -4,7 +4,7 @@
 
 package classes.settings;
 
-import classes.entity.IntVector2;
+import classes.entity.Unit2;
 import java.util.HashMap;
 
 public class GameSettings {
@@ -15,7 +15,7 @@ public class GameSettings {
 	final private String gameTitle;
 	
 	final private int cellSize;
-	final private IntVector2 gridSize;
+	final private Unit2 gridSize;
 
 	final private int screenWidth;
 	final private int screenHeight;
@@ -31,7 +31,7 @@ public class GameSettings {
 		gameTitle = "two"; // Title of game window
 
 		cellSize = 48; // Pixels
-		gridSize = new IntVector2(10, 10); // Cell units 
+		gridSize = new Unit2(20, 20); // Cell units 
 
 		/* Non-Editable */
 		screenWidth = gridSize.X * cellSize;
@@ -213,7 +213,7 @@ public class GameSettings {
 		return screenHeight;
 	}
 
-	public IntVector2 getGridSize() {
+	public Unit2 getGridSize() {
 		return gridSize;
 	}
 }

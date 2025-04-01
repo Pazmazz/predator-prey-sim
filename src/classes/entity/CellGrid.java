@@ -18,22 +18,22 @@ import java.util.Iterator;
 import java.util.Map;
 
 public class CellGrid {
-	final private IntVector2 size;
+	final private Unit2 size;
 	final private HashMap<String, Cell> virtualGrid = new HashMap<>();
 
-	public CellGrid(IntVector2 size) {
+	public CellGrid(Unit2 size) {
 		this.size = size;
 	}
 
-	public boolean isInBounds(IntVector2 position) {
-		return !(position.X < 0 || position.X >= size.X || position.Y < 0 || position.Y >= size.Y);
+	public boolean isInBounds(Unit2 position) {
+		return !(position.X <= 0 || position.X > size.X || position.Y <= 0 || position.Y > size.Y);
 	}
 
 	public boolean isInBounds(Cell cell) {
 		return isInBounds(cell.getPosition());
 	}
 
-	public Cell getCell(IntVector2 position) {
+	public Cell getCell(Unit2 position) {
 		Cell cell = virtualGrid.get(position.toString());
 
 		if (cell != null)
