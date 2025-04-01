@@ -12,7 +12,7 @@ public abstract class Vector<T extends Number> {
 	public Vector<T> subtract(Vector<T> v) {
 		List<T> cv0 = getComponents();
 		List<T> cv1 = v.getComponents();
-		List<? extends Number> cvr = new ArrayList<>();
+		List<Double> cvr = new ArrayList<>();
 
 		for (int i = 0; i < cv0.size(); i++) {
 			double c0 = Double.valueOf("" + cv0.get(i));
