@@ -8,9 +8,9 @@
  * a formatted string
  */
 
-package src.classes.util;
+package classes.util;
 
-import src.classes.abstracts.Application;
+import classes.abstracts.Application;
 
 public class Formatter extends Application {
 	/*

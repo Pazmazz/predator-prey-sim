@@ -7,7 +7,7 @@
  * spot. Mostly used for testing.
  */
 
-package src.classes.util;
+package classes.util;
 
 public class AsyncTask implements Runnable {
 	public Thread newThread;

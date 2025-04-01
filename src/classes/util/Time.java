@@ -1,4 +1,4 @@
-package src.classes.util;
+package classes.util;
 
 public class Time {
 	public static long secondsToNano(double seconds) {

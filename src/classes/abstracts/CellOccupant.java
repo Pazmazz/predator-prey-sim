@@ -1,4 +1,4 @@
-package src.classes.abstracts;
+package classes.abstracts;
 
 public abstract class CellOccupant {
 	

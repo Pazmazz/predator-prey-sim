@@ -1,4 +1,4 @@
-package src.classes.util;
+package classes.util;
 
 public abstract class AsyncCallback {
 	protected abstract void callback();

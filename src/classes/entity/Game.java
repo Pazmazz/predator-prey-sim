@@ -2,17 +2,17 @@
  * @Author(s): Alex, Grier, Jaylen, Will
  * @Written: 3/28/2025
  */
-package src.classes.entity;
+package classes.entity;
 
-import src.classes.abstracts.Application;
-import src.classes.abstracts.FrameProcessor;
-import src.classes.settings.GameSettings;
-import src.classes.settings.GameSettings.SimulationType;
-import src.classes.simulation.MovementFrame;
-import src.classes.simulation.RenderFrame;
-import src.classes.simulation.SimulatedLagFrame;
-import src.classes.util.Console;
-import src.classes.util.Time;
+import classes.abstracts.Application;
+import classes.abstracts.FrameProcessor;
+import classes.settings.GameSettings;
+import classes.settings.GameSettings.SimulationType;
+import classes.simulation.MovementFrame;
+import classes.simulation.RenderFrame;
+import classes.simulation.SimulatedLagFrame;
+import classes.util.Console;
+import classes.util.Time;
 import java.util.UUID;
 
 public class Game extends Application implements Runnable {

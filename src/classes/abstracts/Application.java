@@ -6,7 +6,7 @@
  * methods and/or cumulative runtime data.
  */
 
-package src.classes.abstracts;
+package classes.abstracts;
 
 public abstract class Application {
 	public long tick() {

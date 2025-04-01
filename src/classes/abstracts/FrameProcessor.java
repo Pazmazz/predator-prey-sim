@@ -9,13 +9,13 @@
  * occur on that frame.
  */
 
-package src.classes.abstracts;
+package classes.abstracts;
 
-import src.classes.entity.Game;
-import src.classes.settings.GameSettings.SimulationSettings;
-import src.classes.settings.GameSettings.SimulationType;
-import src.classes.util.Console;
-import src.classes.util.Time;
+import classes.entity.Game;
+import classes.settings.GameSettings.SimulationSettings;
+import classes.settings.GameSettings.SimulationType;
+import classes.util.Console;
+import classes.util.Time;
 
 public abstract class FrameProcessor extends Application {
 	public Game game;

@@ -2,9 +2,9 @@
  * All configurable game settings
  */
 
-package src.classes.settings;
+package classes.settings;
 
-import src.classes.entity.IntVector2;
+import classes.entity.IntVector2;
 import java.util.HashMap;
 
 public class GameSettings {

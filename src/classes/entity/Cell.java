@@ -8,9 +8,9 @@
  * conditions, finding other relative cell positions,
  * etc.
  */
-package src.classes.entity;
+package classes.entity;
 
-import src.classes.abstracts.CellOccupant;
+import classes.abstracts.CellOccupant;
 
 public class Cell {
 	private IntVector2 position;

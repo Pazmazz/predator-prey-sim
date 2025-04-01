@@ -1,6 +1,6 @@
-package src.classes.entity;
+package classes.entity;
 
-import src.classes.abstracts.Bug;
+import classes.abstracts.Bug;
 
 public class Ant extends Bug {
     

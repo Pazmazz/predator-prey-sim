@@ -7,7 +7,7 @@
  * game with few additional methods and functionality. This class is responsible
  * for rendering the top-level system screen window for the game.
  */
-package src.classes.entity;
+package classes.entity;
 
 import java.awt.Dimension;
 import java.awt.event.WindowAdapter;

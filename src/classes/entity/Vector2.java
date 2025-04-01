@@ -8,7 +8,7 @@
  * 
  * TODO: Create an abstract superclass for general vectors
  */
-package src.classes.entity;
+package classes.entity;
 
 public class Vector2 {
 	final public double X;
