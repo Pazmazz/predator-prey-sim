@@ -10,17 +10,20 @@
  */
 package classes.entity;
 
+import classes.abstracts.Vector;
+
 public class Vector2 extends Vector<Vector2> {
 	public Vector2() {
 		this(0, 0);
 	}
 
 	public Vector2(double x, double y) {
-		super(x, y);
+		this.components.add(x);
+		this.components.add(y);
 	}
 
-	// @Override
-	// public Vector2 newVector(Double[] components) {
-	// 	return new Vector2(components[0], components[1]);
-	// }
+	@Override
+	public Vector2 newVector(Double[] components) {
+		return new Vector2(components[0], components[1]);
+	}
 }

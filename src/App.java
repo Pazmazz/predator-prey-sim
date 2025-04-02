@@ -6,8 +6,8 @@
  */
 
 import classes.abstracts.Application;
+import classes.abstracts.Vector;
 import classes.entity.Unit2;
-import classes.entity.Vector;
 import classes.entity.Vector2;
 import classes.util.Console;
 
@@ -29,7 +29,8 @@ public class App extends Application {
 		Console.println(new Vector2(0, 1));
 
 		Vector2 c = a.add(new Vector2(1, 1));
-		Console.println(c);
+		Vector2 j = a.subtract(new Vector2(5, 5));
+		Console.println(j);
 
 
 		// Unit2 b = new Unit2(100, 100);
