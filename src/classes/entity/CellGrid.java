@@ -13,6 +13,8 @@ package classes.entity;
 import classes.entity.Cell.CellType;
 import classes.util.Console;
 import classes.util.Console.DebugPriority;
+
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -175,25 +177,9 @@ public class CellGrid {
 		return getCellsAdjacentTo(cell.getUnit2());
 	}
 
-	// public Cell getNextCellPath(Unit2 from, Unit2 to) {
-	// 	Vector2 centerFrom = from.getCenter();
-	// 	Vector2 centerTo = to.getCenter();
-	// 	Vector2 direction = centerTo.subtract(centerFrom);
-
-	// 	double angle = Math.atan2(direction.Y, direction.X);
-	// 	final double FOURTH_PI = Math.PI / 4;
-
-	// 	if (angle % FOURTH_PI == 0) {
-	// 		Console.println("Angle is on fault, choosing: ", angle > 0 ? "top" : "bottom");
-	// 		return angle > 0 ? getCellTopOf(from) : getCellBottomOf(from);
-	// 	}
-
-	// 	return getCellBottomOf(from);
-	// }
-
-	// public Cell getNextCellPath(Cell fromCell, Cell toCell) {
-	// 	return getNextCellPath(fromCell.getPosition(), toCell.getPosition());
-	// }
+	public ArrayList<Cell> getLinearCellPath(Unit2 from, Unit2 to) {
+		ArrayList<Cell> cells = new ArrayList<>();
+	}
 
 	public Unit2 getSize() {
 		return size;

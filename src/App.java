@@ -8,6 +8,7 @@
 import classes.abstracts.Application;
 import classes.entity.Cell;
 import classes.entity.CellGrid;
+import classes.entity.Game;
 import classes.entity.Unit2;
 import classes.entity.Vector2;
 import classes.util.Console;
@@ -22,10 +23,10 @@ public class App extends Application {
 	public static void main(String[] args) {
 		Console.setDebugModeEnabled(true);
 		// Console.hideDebugPriority(DebugPriority.LOW);
-		Console.setConsoleColorsEnabled(false);
+		Console.setConsoleColorsEnabled(true);
 
-		// Game game = new Game();
-		// game.start();
+		Game game = new Game();
+		game.start();
 
 		CellGrid grid = new CellGrid(new Unit2(20, 20));
 

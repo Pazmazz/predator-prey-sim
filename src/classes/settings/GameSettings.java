@@ -30,7 +30,7 @@ public class GameSettings {
 		gameHeaderText = "one"; // Text of the main header within the window
 		gameTitle = "two"; // Title of game window
 
-		cellSize = 48; // Pixels
+		cellSize = 36; // Pixels
 		gridSize = new Unit2(20, 20); // Cell units 
 
 		/* Non-Editable */

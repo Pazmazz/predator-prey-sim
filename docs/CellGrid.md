@@ -2,6 +2,25 @@ _**@Author:** [William J. Horn](https://github.com/william-horn)_
 
 # _class_ `CellGrid`
 
+### What's new:
+
+- **Changed** minimum cell unit to from `(0, 0)` to `(1, 1)`.
+
+- **Replaced** `IntVector2` with `Unit2`, so cells can now be accessed by their unit value as such:
+
+  - `CellGrid.getCell(new Unit2(1, 1))`
+
+- **Added method**
+
+  - `CellGrid.outOfBounds(<Cell, Unit2, Vector2>)`
+    - Inverted check method for verifying if a cell, cell unit, or cell position is out of bounds called which returns true if the location is out of bounds.
+
+- `Cell.getPosition()` now returns a `Vector2` object representing the cell's actual position on the screen.
+
+- `Cell.getUnit()` now returns the cell unit, which represents the integer location of the cell on the grid (i.e, `(1, 1)`, `(5, 5)`, etc)
+
+<br/>
+
 The `CellGrid` class creates a virtual 2D grid, bounded by a given `<x, y>` dimension. Instead of implementing a 2D array, this grid uses a `HashMap` and maps `Unit2` points to their corresponding `Cell` objects.
 
 This choice was made for two reasons:
