@@ -24,11 +24,10 @@
 
 package classes.abstracts;
 
-import java.util.ArrayList;
-
 import classes.util.Formatter;
 import exceptions.VectorMismatchException;
 import interfaces.Callback;
+import java.util.ArrayList;
 
 public abstract class BaseVector<T extends BaseVector> {
 	protected abstract T newVector(Double[] components);
@@ -272,11 +271,11 @@ public abstract class BaseVector<T extends BaseVector> {
 
 		String replacementStrings = Formatter
 			.concatArray(getComponentArray())
-			.replaceAll("\\-?\\d+.?\\d*", "%s");
+				.replaceAll("\\-?\\d+.?\\d*", "%s");
 
 		return String.format(
 			className + "<" + replacementStrings + ">",
-			getComponentArray()
+			(Object[]) getComponentArray()
 		);
 	}
 }
