@@ -4,7 +4,7 @@ _**@Author:** [William J. Horn](https://github.com/william-horn)_
 
 ### What's new:
 
-- **Changed** minimum unit on the grid from `(0, 0)` to `(1, 1)`.
+- **Changed** starting unit on the grid from `(0, 0)` to `(1, 1)`.
 
 - **Replaced** `IntVector2` with `Unit2`, so cells can now be accessed by their unit value like such:
 
@@ -17,7 +17,7 @@ _**@Author:** [William J. Horn](https://github.com/william-horn)_
 
 - `Cell.getPosition()` now returns a `Vector2` object representing the cell's actual position on the screen.
 
-- `Cell.getUnit()` now returns the cell unit, which represents the integer location of the cell on the grid (i.e, `(1, 1)`, `(5, 5)`, etc)
+- `Cell.getUnit()` now returns a `Unit2` object, which represents the integer location of the cell on the grid (i.e, `(1, 1)`, `(5, 5)`, etc)
 
 - `GridCell.getCell()` now additionally accepts `Vector2` arguments which will return the cell on the screen at that given point.
 
@@ -75,7 +75,6 @@ Cell cell1 = grid.getCell(new Unit2(3, 5));
 Console.println(cell0);
 Console.println(cell1);
 ```
-
 #### Output:
 
 <blockquote>
@@ -83,6 +82,30 @@ Cell<-1, 0>
 <br/>
 Cell<3, 5>
 </blockquote>
+
+#### Example with `Vector2`:
+```java
+import classes.entity.Unit2;
+CellGrid grid = new CellGrid(new Unit2(10, 10));
+
+// Returns Cell<1, 1>
+Cell cell0 = grid.getCell(new Vector2(0.5, 0.5));
+
+// Returns Cell<1, 2>
+Cell cell1 = grid.getCell(new Vector2(0.5, 1.1));
+
+Console.println(cell0);
+Console.println(cell1);
+```
+#### Output:
+
+<blockquote>
+Cell<1, 1>
+<br/>
+Cell<1, 2>
+</blockquote>
+
+<br/>
 
 Both cases return a `Cell` object even though `cell0` is out-of-bounds. To check for out-of-bounds cells, just use `Cell.isOutOfBounds()` or `Cell.getType()`. In cases where you want to check if the position is out of bounds before creating a `Cell` object, you can use `CellGrid.isInBounds(Cell)` or `Cell.isInBounds()`.
 

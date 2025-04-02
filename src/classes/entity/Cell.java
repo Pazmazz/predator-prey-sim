@@ -133,6 +133,6 @@ public class Cell {
 
 	@Override
 	public String toString() {
-		return "$text-green Cell$text-reset " + unit.toString();
+		return String.format("$text-green Cell$text-reset <%s, %s>", unit.getX(), unit.getY());
 	}
 }

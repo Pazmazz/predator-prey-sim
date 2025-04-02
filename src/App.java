@@ -23,49 +23,23 @@ public class App extends Application {
 	public static void main(String[] args) {
 		Console.setDebugModeEnabled(true);
 		// Console.hideDebugPriority(DebugPriority.LOW);
-		Console.setConsoleColorsEnabled(true);
+		Console.setConsoleColorsEnabled(false);
 
-		Game game = new Game();
-		game.start();
+		// Game game = new Game();
+		// game.start();
+
+		/*
+		 * TEST CODE:
+		 * 
+		 * Any code below this point is most likely test code -- code
+		 * written for debugging or testing out custom classes or
+		 * other features.
+		 */
 
 		CellGrid grid = new CellGrid(new Unit2(20, 20));
 
-		Cell cell0 = grid.getCell(new Unit2(2, 2));
-		Cell cell1 = grid.getCell(new Unit2(7, 4));
-
-		Vector2 p0 = cell0.getPosition();
-		Vector2 p1 = cell1.getPosition();
-
-		Vector2 direction = p1.subtract(p0);
-		Vector2 unit = direction.unit();
-
-		double STEP = (Math.sqrt(2) / 2);
-		Console.println("STEP: ", STEP);
-
-		Vector2 nextPoint = p0.add(unit.multiply(STEP * 1));
-		Cell nextCell = grid.getCell(nextPoint);
-		Console.println(nextCell);
-
-		nextPoint = p0.add(unit.multiply(STEP * 2));
-		nextCell = grid.getCell(nextPoint);
-		Console.println(nextCell);
-
-		nextPoint = p0.add(unit.multiply(STEP * 3));
-		nextCell = grid.getCell(nextPoint);
-		Console.println(nextCell);
-
-		nextPoint = p0.add(unit.multiply(STEP * 4));
-		nextCell = grid.getCell(nextPoint);
-		Console.println(nextCell);
-		Console.println(nextPoint);
-
-		nextPoint = p0.add(unit.multiply(STEP * 5));
-		nextCell = grid.getCell(nextPoint);
-		Console.println(nextCell);
-		Console.println(nextPoint);
-
-		nextPoint = p0.add(unit.multiply(STEP * 6));
-		nextCell = grid.getCell(nextPoint);
-		Console.println(nextCell);
+		Console.println(grid.getCell(new Vector2(0.5, 1.1)));
+		Console.println(new Vector2(5, 5));
+		Console.println(new Unit2(8, 3));
 	}
 }

@@ -37,4 +37,8 @@ public class Unit2 extends BaseVector<Unit2> {
 		);
 	}
 
+	@Override
+	public String toString() {
+		return String.format("Unit2<%s, %s>", getX(), getY());
+	}
 }
