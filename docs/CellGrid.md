@@ -19,7 +19,7 @@ _**@Author:** [William J. Horn](https://github.com/william-horn)_
 
 - `Cell.getUnit()` now returns the cell unit, which represents the integer location of the cell on the grid (i.e, `(1, 1)`, `(5, 5)`, etc)
 
-- `GridCell.getCell()` now accepts `Vector2` arguments which will return the cell on the screen at that given point.
+- `GridCell.getCell()` now additionally accepts `Vector2` arguments which will return the cell on the screen at that given point.
 
 ---
 

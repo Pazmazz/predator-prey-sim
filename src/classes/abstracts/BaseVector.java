@@ -266,6 +266,7 @@ public abstract class BaseVector<T extends BaseVector> {
 	 * 
 	 * Return a name of the object in the form: BaseVector<c0, c1, ...>
 	 */
+	@Override
 	public String toString() {
 		String className = this.getClass().getSimpleName();
 

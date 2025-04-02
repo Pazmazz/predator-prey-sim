@@ -13,7 +13,6 @@ package classes.entity;
 import classes.entity.Cell.CellType;
 import classes.util.Console;
 import classes.util.Console.DebugPriority;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -27,24 +26,38 @@ public class CellGrid {
 		this.size = size;
 	}
 
+	/*
+	 * isInBounds()
+	 * 
+	 * Returns true if a given cell unit exists within the
+	 * bounds of the specified grid size.
+	 */
 	public boolean isInBounds(Unit2 unit) {
-		return !(
-			unit.getX() <= 0 
+		return !(unit.getX() <= 0
 				|| unit.getX() > this.size.getX()
-				|| unit.getY() <= 0 
-				|| unit.getY() > this.size.getY()
-		);
+				|| unit.getY() <= 0
+				|| unit.getY() > this.size.getY());
 	}
 
+	/*
+	 * @overload: isInBounds()
+	 * 
+	 * Returns true if an actual coordinate point exists
+	 * within the bounds of the virtual grid
+	 */
 	public boolean isInBounds(Vector2 position) {
-		return !(
-			position.getX() < 0 
+		return !(position.getX() < 0
 				|| position.getX() > this.size.getX()
-				|| position.getY() < 0 
-				|| position.getY() > this.size.getY()
-		);
+				|| position.getY() < 0
+				|| position.getY() > this.size.getY());
 	}
 
+	/*
+	 * @overload: isInBounds()
+	 * 
+	 * Returns true if a cell object exists within the
+	 * bounds of the virtual grid
+	 */
 	public boolean isInBounds(Cell cell) {
 		return isInBounds(cell.getUnit2());
 	}
@@ -179,6 +192,8 @@ public class CellGrid {
 
 	public ArrayList<Cell> getLinearCellPath(Unit2 from, Unit2 to) {
 		ArrayList<Cell> cells = new ArrayList<>();
+
+		return cells;
 	}
 
 	public Unit2 getSize() {
