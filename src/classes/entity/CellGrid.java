@@ -25,38 +25,43 @@ public class CellGrid {
 		this.size = size;
 	}
 
-	public boolean isInBounds(Unit2 position) {
-		return !(position.X <= 0 || position.X > size.X || position.Y <= 0 || position.Y > size.Y);
+	public boolean isInBounds(Unit2 unit) {
+		return !(
+			unit.getX() <= 0 
+				|| unit.getX() > this.size.getX()
+				|| unit.getY() <= 0 
+				|| unit.getY() > this.size.getY()
+		);
 	}
 
 	public boolean isInBounds(Cell cell) {
-		return isInBounds(cell.getPosition());
+		return isInBounds(cell.getUnit2());
 	}
 
-	public Cell getCell(Unit2 position) {
-		Cell cell = virtualGrid.get(position.toString());
+	public Cell getCell(Unit2 unit) {
+		Cell cell = virtualGrid.get(unit.toString());
 
 		if (cell != null)
 			return cell;
 
-		cell = new Cell(position);
-		virtualGrid.put(position.toString(), cell);
+		cell = new Cell(unit);
+		virtualGrid.put(unit.toString(), cell);
 
-		if (!isInBounds(position)) {
+		if (!isInBounds(unit)) {
 			cell.setType(CellType.OUT_OF_BOUNDS);
 		}
 
 		return cell;
 	}
 
-	public Cell collectCell(IntVector2 position) {
-		Cell cell = virtualGrid.get(position.toString());
+	public Cell collectCell(Unit2 unit) {
+		Cell cell = virtualGrid.get(unit.toString());
 
 		if (cell == null)
 			return null;
 
 		if (cell.isCollectable()) {
-			virtualGrid.remove(position.toString());
+			virtualGrid.remove(unit.toString());
 			cell.setType(CellType.GARBAGE_COLLECTED);
 		}
 
@@ -64,7 +69,7 @@ public class CellGrid {
 	}
 
 	public Cell collectCell(Cell cell) {
-		return collectCell(cell.getPosition());
+		return collectCell(cell.getUnit2());
 	}
 
 	public void collectCells() {
@@ -84,50 +89,50 @@ public class CellGrid {
 				"Freed $text-red %s $text-reset cells during garbage collection".formatted(count));
 	}
 
-	public Cell getCellTopOf(IntVector2 position) {
-		return getCell(new IntVector2(position.X, position.Y - 1));
+	public Cell getCellTopOf(Unit2 unit) {
+		return getCell(unit.add(new Unit2(0, -1)));
 	}
 
-	public Cell getCellBottomOf(IntVector2 position) {
-		return getCell(new IntVector2(position.X, position.Y + 1));
+	public Cell getCellBottomOf(Unit2 unit) {
+		return getCell(unit.add(new Unit2(0, 1)));
 	}
 
-	public Cell getCellLeftOf(IntVector2 position) {
-		return getCell(new IntVector2(position.X - 1, position.Y));
+	public Cell getCellLeftOf(Unit2 unit) {
+		return getCell(unit.add(new Unit2(-1, 0)));
 	}
 
-	public Cell getCellRightOf(IntVector2 position) {
-		return getCell(new IntVector2(position.X + 1, position.Y));
+	public Cell getCellRightOf(Unit2 unit) {
+		return getCell(unit.add(new Unit2(1, 0)));
 	}
 
 	public Cell getCellTopOf(Cell cell) {
-		return getCellTopOf(cell.getPosition());
+		return getCellTopOf(cell.getUnit2());
 	}
 
 	public Cell getCellBottomOf(Cell cell) {
-		return getCellBottomOf(cell.getPosition());
+		return getCellBottomOf(cell.getUnit2());
 	}
 
 	public Cell getCellLeftOf(Cell cell) {
-		return getCellLeftOf(cell.getPosition());
+		return getCellLeftOf(cell.getUnit2());
 	}
 
 	public Cell getCellRightOf(Cell cell) {
-		return getCellRightOf(cell.getPosition());
+		return getCellRightOf(cell.getUnit2());
 	}
 
-	public Cell[] getCellsAdjacentTo(IntVector2 position) {
+	public Cell[] getCellsAdjacentTo(Unit2 unit) {
 		Cell[] cells = new Cell[4];
-		cells[0] = getCellTopOf(position);
-		cells[1] = getCellBottomOf(position);
-		cells[2] = getCellLeftOf(position);
-		cells[3] = getCellRightOf(position);
+		cells[0] = getCellTopOf(unit);
+		cells[1] = getCellBottomOf(unit);
+		cells[2] = getCellLeftOf(unit);
+		cells[3] = getCellRightOf(unit);
 
 		return cells;
 	}
 
 	public Cell[] getCellsAdjacentTo(Cell cell) {
-		return getCellsAdjacentTo(cell.getPosition());
+		return getCellsAdjacentTo(cell.getUnit2());
 	}
 
 	// public Cell getNextCellPath(IntVector2 from, IntVector2 to) {
@@ -150,20 +155,19 @@ public class CellGrid {
 	// 	return getNextCellPath(fromCell.getPosition(), toCell.getPosition());
 	// }
 
-	public IntVector2 getSize() {
+	public Unit2 getSize() {
 		return size;
 	}
 
-	public void printCellsAdjacentTo(IntVector2 position) {
-		Cell[] adjCells = getCellsAdjacentTo(position);
+	public void printCellsAdjacentTo(Unit2 unit) {
+		Cell[] adjCells = getCellsAdjacentTo(unit);
 
 		for (Cell adjCell : adjCells) {
 			adjCell.printInfo();
-			adjCell.printInfoItem("Direction", adjCell.getDirectionRelativeTo(position).toString());
 		}
 	}
 
 	public void printCellsAdjacentTo(Cell cell) {
-		printCellsAdjacentTo(cell.getPosition());
+		printCellsAdjacentTo(cell.getUnit2());
 	}
 }

@@ -21,6 +21,14 @@ public class Unit2 extends BaseVector<Unit2> {
 		this.components.add((double) y);
 	}
 
+	public int getX() {
+		return getInt(0);
+	}
+
+	public int getY() {
+		return getInt(1);
+	}
+
 	@Override
 	protected Unit2 newVector(Double[] components) {
 		return new Unit2(

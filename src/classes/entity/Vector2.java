@@ -23,6 +23,14 @@ public class Vector2 extends Vector<Vector2> {
 		this.components.add(y);
 	}
 
+	public double getX() {
+		return get(0);
+	}
+
+	public double getY() {
+		return get(1);
+	}
+
 	@Override
 	public Vector2 newVector(Double[] components) {
 		return new Vector2(components[0], components[1]);

@@ -6,6 +6,8 @@
  */
 
 import classes.abstracts.Application;
+import classes.entity.Cell;
+import classes.entity.CellGrid;
 import classes.entity.Unit2;
 import classes.entity.Vector2;
 import classes.util.Console;
@@ -25,10 +27,13 @@ public class App extends Application {
 		// Game game = new Game();
 		// game.start();
 
-		// Vector2 a = new Vector2(-1, 0);
-		// Vector2 b = new Vector2(0, -1);
+		CellGrid grid = new CellGrid(new Unit2(20, 20));
 
-		// Console.println(b.subtract(a).unit());
+		Cell c0 = grid.getCell(new Unit2(1, 1));
+		Cell c1 = grid.getCell(new Unit2(2, 2));
+		Cell c2 = grid.getCell(new Unit2(2, 3));
+
+		grid.printCellsAdjacentTo(c1);
 
 
 	}

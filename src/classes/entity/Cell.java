@@ -40,12 +40,18 @@ public class Cell {
 
 	public Cell(Unit2 unit) {
 		this.unit = unit;
+
+		this.position = new Vector2(
+			unit.getX() - 0.5,
+			unit.getY() - 0.5
+		);
+
 		this.cellType = CellType.NORMAL;
 		this.cellVacancy = CellVacancy.EMPTY;
 	}
 
 	public CellOccupant getOccupant() {
-		return cellOccupant;
+		return this.cellOccupant;
 	}
 
 	public void removeOccupant() {
@@ -58,40 +64,44 @@ public class Cell {
 		removeOccupant();
 	}
 
-	public Unit2 getPosition() {
-		return position;
+	public Vector2 getPosition() {
+		return this.position;
+	}
+
+	public Unit2 getUnit2() {
+		return this.unit;
 	}
 
 	public CellType getType() {
-		return cellType;
+		return this.cellType;
 	}
 
 	public CellVacancy getVacancy() {
-		return cellVacancy;
+		return this.cellVacancy;
 	}
 
 	public boolean isEmpty() {
-		return getVacancy() == CellVacancy.EMPTY;
+		return this.cellVacancy == CellVacancy.EMPTY;
 	}
 
 	public boolean isOccupied() {
-		return getVacancy() == CellVacancy.OCCUPIED;
+		return this.cellVacancy == CellVacancy.OCCUPIED;
 	}
 
 	public boolean isOutOfBounds() {
-		return getType() == CellType.OUT_OF_BOUNDS;
+		return this.cellType == CellType.OUT_OF_BOUNDS;
 	}
 
 	public boolean isInBounds() {
-		return getType() == CellType.NORMAL;
+		return this.cellType == CellType.NORMAL;
 	}
 
 	public boolean isCollected() {
-		return getType() == CellType.GARBAGE_COLLECTED;
+		return this.cellType == CellType.GARBAGE_COLLECTED;
 	}
 
 	public boolean isCollectable() {
-		return isEmpty() || getOccupant() == null;
+		return isEmpty() || this.cellOccupant == null;
 	}
 
 	public void setType(CellType cellType) {
@@ -123,6 +133,6 @@ public class Cell {
 
 	@Override
 	public String toString() {
-		return "$text-green Cell$text-reset " + position.toString();
+		return "$text-green Cell$text-reset " + unit.toString();
 	}
 }

@@ -34,8 +34,8 @@ public class GameSettings {
 		gridSize = new Unit2(20, 20); // Cell units 
 
 		/* Non-Editable */
-		screenWidth = gridSize.X * cellSize;
-		screenHeight = gridSize.Y * cellSize;
+		screenWidth = gridSize.getX() * cellSize;
+		screenHeight = gridSize.getY() * cellSize;
 
 		simulationInfo = new SimulationInfo();
 	}
