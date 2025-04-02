@@ -50,7 +50,10 @@ By default, the virtual grid is empty and does not contain any points or `Cell` 
 
 ### `CellGrid.getCell()`
 
-- **Parameters:** `<Unit2 position>` - _The 2D position of the requested cell_
+- **Parameters:**
+
+  - **Overload 1:** `<Unit2 unit>` - _Gets a Cell object by it's unit._
+  - **Overload 2:** `<Vector2 position>` - _Gets a cell object containing the point `position` on the grid_
 
 - **Returns:** `<Cell cell>`
 
@@ -87,10 +90,11 @@ Both cases return a `Cell` object even though `cell0` is out-of-bounds. To check
 
 - **Parameters:**
 
-  - **Overload 1:** `<Unit2 position>` - _The 2D position of the cell to attempt to collect (free from memory)_
-  - **Overload 2:** `<Cell cell>` - _The Cell object to collect_
+  - **Overload 1:** `<Unit2 position>` \- _The 2D position of the cell to attempt to collect (free from memory)_
+  - **Overload 2:** `<Cell cell>` \- _The Cell object to collect_
+  - **Overload 3:** `<Vector2 position>` - _Collects a cell object on a cell containing the position_
 
-- **Returns:** `<Cell collectedCell>`
+* **Returns:** `<Cell collectedCell>`
 
 Since the cell grid is a HashMap, `Cell` objects will not be freed from memory if all references to them are lost. This is because the HashMap itself keeps the `Cell` referenced in memory, which can lead to a memory leak if not handled. Thus, `CellGrid.collectCell()` can be called to free up unused cells (cells with no `occupant` in them)
 
@@ -149,8 +153,9 @@ grid.collectCells(); // Frees all cells except for cell0
 
 - **Parameters:**
 
-  - **Overload 1:** `<Unit2 position>` - _The 2D position of the cell to check_
-  - **Overload 2:** `<Cell cell>` - _The Cell object to check_
+  - **Overload 1:** `<Unit2 unit>` - _The unit of the cell to check in bounds of the grid._
+  - **Overload 2:** `<Cell cell>` - _The Cell object to check in bounds of the grid._
+  - **Overload 3:** `<Vector2 position>` - _The position of the cell to check the bounds of on the grid._
 
 - **Returns:** `<boolean isInBounds>`
 
@@ -191,12 +196,43 @@ false
 true
 </blockquote>
 
+### `CellGrid.outOfBounds()`
+
+- **Parameters:**
+
+  - **Overload 1:** `<Unit2 unit>` - _The unit of the cell to check if it's out of bounds on the grid._
+  - **Overload 2:** `<Cell cell>` - _The Cell object to check if it's out of bounds on the grid._
+  - **Overload 3:** `<Vector2 position>` - _The position of the cell to check if it's out of bounds on the grid._
+
+Returns the negation of `CellGrid.isInBounds()`
+
+#### Example:
+
+```java
+CellGrid grid = new CellGrid(new Unit2(10, 10));
+
+Cell inGridCell = grid.getCell(new Unit2(5, 5));
+Cell outOfGridCell = grid.getCell(new Unit2(12, 10));
+
+Console.println(grid.outOfBounds(inGridCell)); // => false
+Console.println(grid.outOfBounds(outOfGridCell));) // => true
+```
+
+#### Output:
+
+<blockquote>
+false
+<br/>
+true
+</blockquote>
+
 ### `CellGrid.getCellTopOf()`
 
 - **Parameters:**
 
-  - **Overload 1:** `<Unit2 position>` - _The 2D position of the cell to find the cell above it_
+  - **Overload 1:** `<Unit2 unit>` - _The 2D position of the cell to find the cell above it_
   - **Overload 2:** `<Cell cell>` - _The Cell object to look above_
+  - **Overload 3:** `<Vector2 position>` - _Get the cell above the cell containing this position._
 
 - **Returns:** `<Cell cell>`
 
@@ -215,8 +251,9 @@ Console.println(grid.getCellTopOf(cell1)); // => Cell<5, 5>
 
 - **Parameters:**
 
-  - **Overload 1:** `<Unit2 position>` - _The 2D position of the cell to find the cell below it_
+  - **Overload 1:** `<Unit2 unit>` - _The 2D position of the cell to find the cell below it_
   - **Overload 2:** `<Cell cell>` - _The Cell object to look below_
+  - **Overload 3:** `<Vector2 position>` - _Get the cell below the cell containing this position._
 
 - **Returns:** `<Cell cell>`
 
@@ -235,8 +272,9 @@ Console.println(grid.getCellBottomOf(cell0)); // => Cell<3, 7>
 
 - **Parameters:**
 
-  - **Overload 1:** `<Unit2 position>` - _The 2D position of the cell to find the cell left of it_
+  - **Overload 1:** `<Unit2 unit>` - _The 2D position of the cell to find the cell left of it_
   - **Overload 2:** `<Cell cell>` - _The Cell object to look left from_
+  - **Overload 3:** `<Vector2 position>` - _Get the cell left of the cell containing this position._
 
 - **Returns:** `<Cell cell>`
 
@@ -257,6 +295,7 @@ Console.println(grid.getCellLeftOf(cell0)); // => Cell<1, 2>
 
   - **Overload 1:** `<Unit2 position>` - _The 2D position of the cell to find the cell right of it_
   - **Overload 2:** `<Cell cell>` - _The Cell object to look right from_
+  - **Overload 3:** `<Vector2 position>` - _Get the cell right of the cell containing this position._
 
 - **Returns:** `<Cell cell>`
 
@@ -275,8 +314,9 @@ Console.println(grid.getCellLeftOf(cell0)); // => Cell<9, 5>
 
 - **Parameters:**
 
-  - **Overload 1:** `<Unit2 position>` - _The 2D position of the cell to return the adjacent cells of_
+  - **Overload 1:** `<Unit2 unit>` - _The 2D position of the cell to return the adjacent cells of_
   - **Overload 2:** `<Cell cell>` - _The Cell object to get the adjacent cells of_
+  - **Overload 3:** `<Vector2 position>` - _Get the cells adjacent of the cell containing this position._
 
 - **Returns:** `<Cell[] cells>`
 
