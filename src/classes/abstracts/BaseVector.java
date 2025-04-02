@@ -11,28 +11,24 @@ public abstract class BaseVector<T extends BaseVector> {
 	protected ArrayList<Double> components = new ArrayList<>();
 	private T negated;
 
-	public Double[] computedComponents(String methodName, Callback callback) {
-		Double[] resultComponents = newResultArray();
+	public Double[] computeComponents(String methodName, Callback callback) {
+		Double[] resultComponents = new Double[size()];
 		for (int i = 0; i < size(); i++) {
 			resultComponents[i] = (Double) callback.call(get(i));
 		}
 		return resultComponents;
 	}
 
-	public Double[] computedComponents(T v, String methodName, Callback callback) {
+	public Double[] computeComponents(T v, String methodName, Callback callback) {
 		if (!v.isSize(size())) {
 			throw new VectorMismatchException(methodName);
 		}
 
-		Double[] resultComponents = newResultArray();
+		Double[] resultComponents = new Double[size()];
 		for (int i = 0; i < size(); i++) {
 			resultComponents[i] = (Double) callback.call(get(i), v.get(i));
 		}
 		return resultComponents;
-	}
-
-	public Double[] newResultArray() {
-		return new Double[size()];
 	}
 
 	public ArrayList<Double> getComponents() {
@@ -62,7 +58,7 @@ public abstract class BaseVector<T extends BaseVector> {
 	public T negate() {
 		if (negated != null) return negated;
 
-		negated = newVector(computedComponents(
+		negated = newVector(computeComponents(
 			"negate",
 			(args) -> (Double) args[0] * -1
 		));
@@ -71,7 +67,7 @@ public abstract class BaseVector<T extends BaseVector> {
 	}
 
 	public T add(T v) {
-		return newVector(computedComponents(
+		return newVector(computeComponents(
 			v,
 			"add",
 			(args) -> (Double) args[0] + (Double) args[1]
@@ -83,7 +79,7 @@ public abstract class BaseVector<T extends BaseVector> {
 	}
 
 	public T scale(int scalar) {
-		return newVector(computedComponents(
+		return newVector(computeComponents(
 			"negate",
 			(args) -> (Double) args[0] * scalar
 		));

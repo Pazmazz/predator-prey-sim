@@ -1,17 +1,10 @@
 package classes.abstracts;
 
 import java.util.ArrayList;
-import java.util.List;
-
-import classes.util.Console;
-import classes.util.Formatter;
-import exceptions.VectorMismatchException;
-import interfaces.Callback;
 
 public abstract class Vector<T extends Vector> extends BaseVector<T> {
-
 	public T multiply(T v) {
-		return newVector(computedComponents(
+		return newVector(computeComponents(
 			v,
 			"add",
 			(args) -> (Double) args[0] * (Double) args[1]
@@ -19,10 +12,17 @@ public abstract class Vector<T extends Vector> extends BaseVector<T> {
 	}
 
 	public T divide(T v) {
-		return newVector(computedComponents(
+		return newVector(computeComponents(
 			v,
 			"add",
 			(args) -> (Double) args[0] / (Double) args[1]
+		));
+	}
+
+	public T scale(double scalar) {
+		return newVector(computeComponents(
+			"negate",
+			(args) -> (Double) args[0] * scalar
 		));
 	}
 
