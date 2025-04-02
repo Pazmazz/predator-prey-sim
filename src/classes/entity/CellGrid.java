@@ -168,7 +168,6 @@ public class CellGrid {
 		cells[1] = getCellBottomOf(unit);
 		cells[2] = getCellLeftOf(unit);
 		cells[3] = getCellRightOf(unit);
-
 		return cells;
 	}
 
