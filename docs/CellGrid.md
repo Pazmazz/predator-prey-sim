@@ -4,16 +4,16 @@ _**@Author:** [William J. Horn](https://github.com/william-horn)_
 
 ### What's new:
 
-- **Changed** minimum cell unit to from `(0, 0)` to `(1, 1)`.
+- **Changed** minimum unit on the grid from `(0, 0)` to `(1, 1)`.
 
-- **Replaced** `IntVector2` with `Unit2`, so cells can now be accessed by their unit value as such:
+- **Replaced** `IntVector2` with `Unit2`, so cells can now be accessed by their unit value like such:
 
   - `CellGrid.getCell(new Unit2(1, 1))`
 
 - **Added method**
 
   - `CellGrid.outOfBounds(<Cell, Unit2, Vector2>)`
-    - Inverted check method for verifying if a cell, cell unit, or cell position is out of bounds called which returns true if the location is out of bounds.
+    - Inverted check method for verifying if a cell, cell unit, or cell position is out of bounds. Returns true if the location is out of bounds.
 
 - `Cell.getPosition()` now returns a `Vector2` object representing the cell's actual position on the screen.
 
