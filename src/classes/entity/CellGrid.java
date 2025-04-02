@@ -47,6 +47,18 @@ public class CellGrid {
 		return isInBounds(cell.getUnit2());
 	}
 
+	public boolean outOfBounds(Unit2 unit) {
+		return !isInBounds(unit);
+	}
+
+	public boolean outOfBounds(Vector2 position) {
+		return !isInBounds(position);
+	}
+
+	public boolean outOfBounds(Cell cell) {
+		return !isInBounds(cell);
+	}
+
 	public Cell getCell(Unit2 unit) {
 		Cell cell = virtualGrid.get(unit.toString());
 
@@ -56,7 +68,7 @@ public class CellGrid {
 		cell = new Cell(unit);
 		virtualGrid.put(unit.toString(), cell);
 
-		if (!isInBounds(unit)) {
+		if (outOfBounds(unit)) {
 			cell.setType(CellType.OUT_OF_BOUNDS);
 		}
 
@@ -134,13 +146,28 @@ public class CellGrid {
 		return getCellRightOf(cell.getUnit2());
 	}
 
+	public Cell getCellTopOf(Vector2 position) {
+		return getCellTopOf(getCell(position));
+	}
+
+	public Cell getCellBottomOf(Vector2 position) {
+		return getCellBottomOf(getCell(position));
+	}
+
+	public Cell getCellLeftOf(Vector2 position) {
+		return getCellLeftOf(getCell(position));
+	}
+
+	public Cell getCellRightOf(Vector2 position) {
+		return getCellRightOf(getCell(position));
+	}
+
 	public Cell[] getCellsAdjacentTo(Unit2 unit) {
 		Cell[] cells = new Cell[4];
 		cells[0] = getCellTopOf(unit);
 		cells[1] = getCellBottomOf(unit);
 		cells[2] = getCellLeftOf(unit);
 		cells[3] = getCellRightOf(unit);
-
 		return cells;
 	}
 
