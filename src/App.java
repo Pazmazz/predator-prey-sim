@@ -6,7 +6,6 @@
  */
 
 import classes.abstracts.Application;
-import classes.abstracts.Vector;
 import classes.entity.Unit2;
 import classes.entity.Vector2;
 import classes.util.Console;
@@ -26,10 +25,10 @@ public class App extends Application {
 		// Game game = new Game();
 		// game.start();
 
-		Vector2 t = new Vector2(5, 3);
-		Vector2 c = t.divide(new Vector2(5, 3));
+		// Vector2 a = new Vector2(-1, 0);
+		// Vector2 b = new Vector2(0, -1);
 
-		Unit2 a = new Unit2(4, 2);
+		// Console.println(b.subtract(a).unit());
 
 
 	}

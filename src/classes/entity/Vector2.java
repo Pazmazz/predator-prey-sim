@@ -6,7 +6,8 @@
  * A custom implementation of a Vector class for
  * dealing with math in higher dimensional space
  * 
- * TODO: Create an abstract superclass for general vectors
+ * TODO: 
+ * - Create an abstract superclass for general vectors [DONE]
  */
 package classes.entity;
 
