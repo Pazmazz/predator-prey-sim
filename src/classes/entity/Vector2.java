@@ -10,36 +10,17 @@
  */
 package classes.entity;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import classes.abstracts.Vector;
-
-public class Vector2 extends Vector<Double> {
-	private List<Double> components;
-
+public class Vector2 extends Vector<Vector2> {
 	public Vector2() {
 		this(0, 0);
 	}
 
 	public Vector2(double x, double y) {
-		components = new ArrayList<>();
-		components.add(x);
-		components.add(y);
-	}
-
-	@Override
-	protected List<Double> getComponents() {
-		return components;
-	}
-
-	@Override
-	protected Vector<Double> newVector(List<Double> components) {
-		return new Vector2(components.get(0), components.get(1));
+		super(x, y);
 	}
 
 	// @Override
-	// public String toString() {
-	// 	return String.format(this.getClass().getSimpleName() + "<%s, %s>", get(0), get(1));
+	// public Vector2 newVector(Double[] components) {
+	// 	return new Vector2(components[0], components[1]);
 	// }
 }
