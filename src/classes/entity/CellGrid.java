@@ -135,7 +135,7 @@ public class CellGrid {
 		return getCellsAdjacentTo(cell.getUnit2());
 	}
 
-	// public Cell getNextCellPath(IntVector2 from, IntVector2 to) {
+	// public Cell getNextCellPath(Unit2 from, Unit2 to) {
 	// 	Vector2 centerFrom = from.getCenter();
 	// 	Vector2 centerTo = to.getCenter();
 	// 	Vector2 direction = centerTo.subtract(centerFrom);
