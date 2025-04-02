@@ -14,7 +14,7 @@ public abstract class BaseVector<T extends BaseVector> {
 	public Double[] computedComponents(String methodName, Callback callback) {
 		Double[] resultComponents = newResultArray();
 		for (int i = 0; i < size(); i++) {
-			resultComponents[i] = callback.computeDouble(get(i));
+			resultComponents[i] = (Double) callback.call(get(i));
 		}
 		return resultComponents;
 	}
@@ -26,7 +26,7 @@ public abstract class BaseVector<T extends BaseVector> {
 
 		Double[] resultComponents = newResultArray();
 		for (int i = 0; i < size(); i++) {
-			resultComponents[i] = callback.computeDoubles(get(i), v.get(i));
+			resultComponents[i] = (Double) callback.call(get(i), v.get(i));
 		}
 		return resultComponents;
 	}
@@ -64,10 +64,29 @@ public abstract class BaseVector<T extends BaseVector> {
 
 		negated = newVector(computedComponents(
 			"negate",
-			(prev) -> { return prev * -1; }
+			(args) -> (Double) args[0] * -1
 		));
 
 		return negated;
+	}
+
+	public T add(T v) {
+		return newVector(computedComponents(
+			v,
+			"add",
+			(args) -> (Double) args[0] + (Double) args[1]
+		));
+	}
+
+	public T subtract(T v) {
+		return add((T) v.negate());
+	}
+
+	public T scale(int scalar) {
+		return newVector(computedComponents(
+			"negate",
+			(args) -> (Double) args[0] * scalar
+		));
 	}
 
 	public String toString() {
@@ -81,26 +100,5 @@ public abstract class BaseVector<T extends BaseVector> {
 			className + "<" + replacementStrings + ">",
 			getComponentArray()
 		);
-	}
-
-	public T add(T v) {
-		if (!v.isSize(size())) {
-			throw new VectorMismatchException("add");
-		}
-
-		Double[] resultComponents = new Double[size()];
-		for (int i = 0; i < size(); i++) {
-			resultComponents[i] = get(i) + v.get(i);
-		}
-		return newVector(resultComponents);
-	}
-
-	public T subtract(T v) {
-		return add((T) v.negate());
-	}
-
-	public Vector scale(int scalar) {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Unimplemented method 'scale'");
 	}
 }

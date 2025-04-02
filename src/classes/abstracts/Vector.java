@@ -11,19 +11,19 @@ import interfaces.Callback;
 public abstract class Vector<T extends Vector> extends BaseVector<T> {
 
 	public T multiply(T v) {
-		Double[] resultComponents = newResultArray();
-		for (int i = 0; i < size(); i++) {
-			resultComponents[i] = get(i) * v.get(i);
-		}
-		return newVector(resultComponents);
+		return newVector(computedComponents(
+			v,
+			"add",
+			(args) -> (Double) args[0] * (Double) args[1]
+		));
 	}
 
 	public T divide(T v) {
-		Double[] resultComponents = newResultArray();
-		for (int i = 0; i < size(); i++) {
-			resultComponents[i] = get(i) / v.get(i);
-		}
-		return newVector(resultComponents);
+		return newVector(computedComponents(
+			v,
+			"add",
+			(args) -> (Double) args[0] / (Double) args[1]
+		));
 	}
 
 	public Integer[] getComponentArrayAsInt() {
