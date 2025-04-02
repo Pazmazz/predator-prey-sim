@@ -1,29 +1,36 @@
+/*
+ * @Written: 4/2/2025
+ * 
+ * abstract class Vector:
+ * 
+ * A more specific sub-category of BaseVector which includes
+ * implementation that does not assume that it's components
+ * are necessarily strictly int values. Therefore, methods 
+ * such as:
+ * - multiply(
+ */
 package classes.abstracts;
 
 import java.util.ArrayList;
 
 public abstract class Vector<T extends Vector> extends BaseVector<T> {
-	public T multiply(T v) {
-		return newVector(computeComponents(
-			v,
-			"add",
-			(args) -> (Double) args[0] * (Double) args[1]
-		));
-	}
-
 	public T divide(T v) {
 		return newVector(computeComponents(
 			v,
-			"add",
+			"divide(Vector<T>)",
 			(args) -> (Double) args[0] / (Double) args[1]
 		));
 	}
 
-	public T scale(double scalar) {
+	public T divide(double scalar) {
 		return newVector(computeComponents(
-			"negate",
-			(args) -> (Double) args[0] * scalar
+			"divide(int scalar)",
+			(args) -> (Double) args[0] / scalar
 		));
+	}
+
+	public T divide(int scalar) {
+		return divide((double) scalar);
 	}
 
 	public Integer[] getComponentArrayAsInt() {

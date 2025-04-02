@@ -16,6 +16,7 @@
  * - add()
  * - subtract()
  * - multiply(int x)
+ * - multiply(T extends BaseVector)
  * 
  * Cannot not generate a decimal value if the components are initialized
  * as integers.
@@ -52,7 +53,7 @@ public abstract class BaseVector<T extends BaseVector> {
 	}
 
 	/*
-	 * overload: computeComponents()
+	 * @overload: computeComponents()
 	 * 
 	 * If a child of BaseVector is provided, then the lambda function
 	 * is passed two arguments:
@@ -82,7 +83,7 @@ public abstract class BaseVector<T extends BaseVector> {
 	 * getComponents()
 	 * 
 	 * Return the ArrayList consisting of the all of the
-	 * components making up the BaseVector child.
+	 * components making up BaseVector<T>.
 	 */
 	public ArrayList<Double> getComponents() {
 		return this.components;
@@ -91,7 +92,7 @@ public abstract class BaseVector<T extends BaseVector> {
 	/*
 	 * size()
 	 * 
-	 * Return the size of the BaseVector child. The size
+	 * Return the size of the BaseVector<T>. The size
 	 * represents the dimensions of the vector, i.e how
 	 * many components it is comprised of.
 	 */
@@ -102,7 +103,9 @@ public abstract class BaseVector<T extends BaseVector> {
 	/*
 	 * isSize()
 	 * 
-	 * Return true or false by checking the size of itself.
+	 * Return true or false by checking the size of itself
+	 * (checks the number of components it has with a
+	 * compared size).
 	 */
 	public boolean isSize(int comparedSize) {
 		return size() == comparedSize;
@@ -138,7 +141,7 @@ public abstract class BaseVector<T extends BaseVector> {
 	/*
 	 * invert()
 	 * 
-	 * Return a new BaseVector child with inverted components.
+	 * Return a new BaseVector<T> with inverted components.
 	 * 
 	 * Example:
 	 * ```
@@ -161,7 +164,7 @@ public abstract class BaseVector<T extends BaseVector> {
 	/*
 	 * add()
 	 * 
-	 * Return a new BaseChild instance with all components
+	 * Return a new BaseVector<T> with all components
 	 * of itself added to all components of the operand vector.
 	 * 
 	 * Example:
@@ -174,16 +177,28 @@ public abstract class BaseVector<T extends BaseVector> {
 	public T add(T v) {
 		return newVector(computeComponents(
 			v,
-			"add",
+			"add(BaseVector<T>)",
 			(args) -> (Double) args[0] + (Double) args[1]
+		));
+	}
+
+	/*
+	 * @overload: add()
+	 * 
+	 * Add all components of BaseVector<T> by some scalar integer
+	 */
+	public T add(int scalar) {
+		return newVector(computeComponents(
+			"add(int scalar)",
+			(args) -> (Double) args[0] + scalar
 		));
 	}
 
 	/*
 	 * subtract()
 	 * 
-	 * Return a new BaseChild instance with all components
-	 * of the target vector subtracted from itself.
+	 * Return a new BaseVector<T> instance with all components
+	 * of the target BaseVector<T> subtracted from itself.
 	 * 
 	 * Example:
 	 * ```
@@ -193,25 +208,55 @@ public abstract class BaseVector<T extends BaseVector> {
 	 * Output: Vector2<3.0, 3.0>
 	 */
 	public T subtract(T v) {
-		return add((T) v.invert());
+		return newVector(computeComponents(
+			v,
+			"subtract(BaseVector<T>)",
+			(args) -> (Double) args[0] - (Double) args[1]
+		));
 	}
 
 	/*
-	 * multiply()
+	 * @overload: subtract()
 	 * 
-	 * Return a new BaseChild instance with all components
-	 * of itself multiplied by some integer scalar.
+	 * Subtract all components of BaseVector<T> by some scalar integer
+	 */
+	public T subtract(int scalar) {
+		return newVector(computeComponents(
+			"subtract(int scalar)",
+			(args) -> (Double) args[0] - scalar
+		));
+	}
+
+	/*
+	 * @overload: multiply()
+	 * 
+	 * Return a new BaseVector<T> instance with all components
+	 * of itself multiplied by all components of the operand
+	 * BaseVector<T>.
 	 * 
 	 * Example:
 	 * ```
 	 * Vector2 v = new Vector2(4, 4);
-	 * Console.println(4);
+	 * Console.println(v.multiply(new Vector2(2, 3)));
 	 * ```
-	 * Output: Vector2<16.0, 16.0>
+	 * Output: Vector2<8.0, 12.0>
+	 */
+	public T multiply(T v) {
+		return newVector(computeComponents(
+			v,
+			"multiply(BaseVector<T>)",
+			(args) -> (Double) args[0] * (Double) args[1]
+		));
+	}
+
+	/*
+	 * @overload: multiply()
+	 * 
+	 * Multiply all components of BaseVector<T> by some scalar integer
 	 */
 	public T multiply(int scalar) {
 		return newVector(computeComponents(
-			"negate",
+			"multiply(int scalar)",
 			(args) -> (Double) args[0] * scalar
 		));
 	}

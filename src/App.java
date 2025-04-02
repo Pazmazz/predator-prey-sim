@@ -25,5 +25,12 @@ public class App extends Application {
 
 		// Game game = new Game();
 		// game.start();
+
+		Vector2 t = new Vector2(5, 3);
+		Vector2 c = t.divide(new Vector2(5, 3));
+
+		Unit2 a = new Unit2(4, 2);
+
+
 	}
 }
