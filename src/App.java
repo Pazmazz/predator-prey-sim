@@ -26,7 +26,7 @@ public class App extends Application {
 
 		Vector2 a = new Vector2(0, 1);
 		Console.println(a);
-		Console.println(new Vector2(0, 1));
+		Console.println(new Vector2(0, 1).negate());
 
 		Vector2 c = a.add(new Vector2(1, 1));
 		Vector2 j = a.subtract(new Vector2(5, 5));
