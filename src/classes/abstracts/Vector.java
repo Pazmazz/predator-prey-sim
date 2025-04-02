@@ -63,6 +63,18 @@ public abstract class Vector<T extends Vector> extends BaseVector<T> {
 	}
 
 	/*
+	 * @overload: multiply()
+	 * 
+	 * Multiply all components of BaseVector<T> by some double value
+	 */
+	public T multiply(double dec) {
+		return newVector(computeComponents(
+			"multiply(double scalar)",
+			(args) -> (Double) args[0] * dec
+		));
+	}
+
+	/*
 	 * magnitude()
 	 * 
 	 * Return the magnitude of Vector<T>

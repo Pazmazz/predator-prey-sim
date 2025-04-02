@@ -34,6 +34,15 @@ public class CellGrid {
 		);
 	}
 
+	public boolean isInBounds(Vector2 position) {
+		return !(
+			position.getX() < 0 
+				|| position.getX() > this.size.getX()
+				|| position.getY() < 0 
+				|| position.getY() > this.size.getY()
+		);
+	}
+
 	public boolean isInBounds(Cell cell) {
 		return isInBounds(cell.getUnit2());
 	}
@@ -52,6 +61,10 @@ public class CellGrid {
 		}
 
 		return cell;
+	}
+
+	public Cell getCell(Vector2 position) {
+		return getCell(new Unit2((int) Math.ceil(position.getX()), (int) Math.ceil(position.getY())));
 	}
 
 	public Cell collectCell(Unit2 unit) {
