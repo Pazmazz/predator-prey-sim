@@ -19,7 +19,9 @@ _**@Author:** [William J. Horn](https://github.com/william-horn)_
 
 - `Cell.getUnit()` now returns the cell unit, which represents the integer location of the cell on the grid (i.e, `(1, 1)`, `(5, 5)`, etc)
 
-<br/>
+- `GridCell.getCell()` now accepts `Vector2` arguments which will return the cell on the screen at that given point.
+
+---
 
 The `CellGrid` class creates a virtual 2D grid, bounded by a given `<x, y>` dimension. Instead of implementing a 2D array, this grid uses a `HashMap` and maps `Unit2` points to their corresponding `Cell` objects.
 
