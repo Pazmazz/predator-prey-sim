@@ -102,12 +102,12 @@ Since the cell grid is a HashMap, `Cell` objects will not be freed from memory i
 
 ```java
 // Figure 1.
-Cell cell = grid.getCell(new Unit2(0, 0));
-Console.println(cell == grid.getCell(new Unit2(0, 0))); // => true
+Cell cell = grid.getCell(new Unit2(1, 1));
+Console.println(cell == grid.getCell(new Unit2(1, 1))); // => true
 
 // Figure 2.
 grid.collectCell(cell);
-Console.println(cell == grid.getCell(new Unit2(0, 0))); // => false
+Console.println(cell == grid.getCell(new Unit2(1, 1))); // => false
 ```
 
 Normally, `CellGrid.getCell()` will return the exact same `Cell` object when getting the same position, like in _Figure 1_. However, since `cell` has no occupant set and we call `CellGrid.collectCell()` in _Figure 2_ before printing the next comparison, `cell` has now been freed up and the next call to `CellGrid.getCell()` generates an entirely new `Cell` object.
@@ -120,13 +120,13 @@ As mentioned before, the cell will not be collected if it contains an `occupant`
 import classes.entity.Ant;
 
 // Figure 1.
-Cell cell = grid.getCell(new Unit2(0, 0));
+Cell cell = grid.getCell(new Unit2(1, 1));
 cell.setOccupant(new Ant()); // Set an occupant
-Console.println(cell == grid.getCell(new Unit2(0, 0))); // => true
+Console.println(cell == grid.getCell(new Unit2(1, 1))); // => true
 
 // Figure 2.
 grid.collectCell(cell);
-Console.println(cell == grid.getCell(new Unit2(0, 0)) // => true
+Console.println(cell == grid.getCell(new Unit2(1, 1)) // => true
 ```
 
 Now that an `occupant` was set, the cell will not be garbage collected. If you want to collect _all_ collectable cells, you can use `CellGrid.collectCells()`
@@ -140,9 +140,9 @@ Now that an `occupant` was set, the cell will not be garbage collected. If you w
 #### Example:
 
 ```java
-Cell cell0 = grid.getCell(new Unit2(0, 0));
-Cell cell1 = grid.getCell(new Unit2(0, 1));
-Cell cell2 = grid.getCell(new Unit2(0, 2));
+Cell cell0 = grid.getCell(new Unit2(1, 1));
+Cell cell1 = grid.getCell(new Unit2(1, 2));
+Cell cell2 = grid.getCell(new Unit2(1, 3));
 
 cell0.setOccupant(new Ant());
 
@@ -165,7 +165,7 @@ Determines if a given `Cell` or `Unit2` is within the `CellGrid` dimensions spec
 
 ```java
 Console.println(grid.isInBounds(new Unit2(-3, 0)));
-Console.println(grid.isInBounds(new Unit2(0, 0)));
+Console.println(grid.isInBounds(new Unit2(1, 1)));
 ```
 
 #### Output:
@@ -182,7 +182,7 @@ As with all `CellGrid` methods that take a `Unit2` parameter (with the exception
 
 ```java
 Cell cell0 = grid.getCell(new Unit2(-3, 0));
-Cell cell1 = grid.getCell(new Unit2(0, 0));
+Cell cell1 = grid.getCell(new Unit2(1, 1));
 
 Console.println(grid.isInBounds(cell0));
 Console.println(grid.isInBounds(cell1));
@@ -325,7 +325,7 @@ Returns the `Cell` object that exists left to a specified cell.
 #### Example:
 
 ```java
-Cell cell = grid.getCell(new Unit2(0, 0));
+Cell cell = grid.getCell(new Unit2(1, 1));
 
 Cell[] adjCells = grid.getCellsAdjacentTo(cell);
 
@@ -336,22 +336,22 @@ for (Cell adjCell : adjCells) {
 ```
 
 <blockquote>
-Cell<-1, 0>
+Cell<0, 1>
 <br/>
 OUT_OF_BOUNDS
 
 <br/>
+Cell<2, 1>
+<br/>
+NORMAL
+
+<br/>
+Cell<1, 2>
+<br/>
+NORMAL
+
+<br/>
 Cell<1, 0>
-<br/>
-NORMAL
-
-<br/>
-Cell<0, 1>
-<br/>
-NORMAL
-
-<br/>
-Cell<0, -1>
 <br/>
 OUT_OF_BOUNDS
 </blockquote>
