@@ -31,16 +31,6 @@ public class Vector2 extends Vector<Vector2> {
 		return get(1);
 	}
 
-	public Double slopeX() {
-		if (getX() == 0) return null;
-		return getY() / getX();
-	}
-
-	public Double slopeY() {
-		if (getY() == 0) return null;
-		return getX() / getY();
-	}
-
 	public double angle() {
 		return Math.atan2(getY(), getX());
 	}
@@ -72,7 +62,7 @@ public class Vector2 extends Vector<Vector2> {
 	}
 
 	public Double evalFunctionY(Vector2 p2, double y) {
-		return evaluateLinearFunctionWithRespectToN(getY(), p2.getY(), getX(), p2.getY(), y);
+		return evaluateLinearFunctionWithRespectToN(getY(), p2.getY(), getX(), p2.getX(), y);
 	}
 
 	@Override
