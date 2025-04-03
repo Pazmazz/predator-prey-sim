@@ -38,8 +38,8 @@ public class App extends Application {
 
 		CellGrid grid = new CellGrid(new Unit2(20, 20));
 
-		Vector2 p_0 = new Vector2(1.8,1.8);
-		Vector2 p_n = new Vector2(2.2,-5.6);
+		Vector2 p_0 = new Vector2(2,1);
+		Vector2 p_n = new Vector2(1,2);
 
 		Console.println(getNextGridInterceptY(p_0, p_n));
 	}
@@ -54,12 +54,12 @@ public class App extends Application {
 	public static Vector2 getNextGridInterceptY(Vector2 start, Vector2 end) {
 		Vector2 unit = end.subtract(start).unit();
 
-		double x, y;
+		Double x, y;
 
 		boolean pos_x = unit.getX() > 0;
-		boolean pos_y = unit.getY() > 0;
+		boolean pos_y = unit.getY() >= 0;
 		boolean neg_x = unit.getX() < 0;
-		boolean neg_y = unit.getY() < 0;
+		boolean neg_y = unit.getY() <= 0;
 
 		if (pos_x && pos_y || pos_x && neg_y) {
 			x = Math.ceil(start.getX());
@@ -70,6 +70,12 @@ public class App extends Application {
 		}
 
 		y = start.evalFunctionX(end, x);
+
+		if (y == null) {
+			Console.println("Something went wrong");
+			return new Vector2();
+		}
+
 		return new Vector2(x, y);
 	}
 }
