@@ -67,14 +67,14 @@ public class Vector2 extends Vector<Vector2> {
 	/*
 	 * Evaluate with respect to X, solving for Y
 	 */
-	public Double solveFunctionOfXForY(Vector2 p2, double x) {
+	public Double solveFOfXForY(Vector2 p2, double x) {
 		return evaluateLinearFunctionWithRespectToN(getX(), p2.getX(), getY(), p2.getY(), x);
 	}
 
 	/*
 	 * Evaluate with respect to X, solving for X
 	 */
-	public Double solveFunctionOfXForX(Vector2 p2, double y) {
+	public Double solveFOfXForX(Vector2 p2, double y) {
 		return evaluateLinearFunctionWithRespectToN(getY(), p2.getY(), getX(), p2.getX(), y);
 	}
 

@@ -236,7 +236,7 @@ public class CellGrid {
 		}
 
 		/* Evaluate the function with respect to X, solving for Y */
-		y = start.solveFunctionOfXForY(end, maxX);
+		y = start.solveFOfXForY(end, maxX);
 		
 		/*
 		 * If the floor of both Y coordinates are equal, then the grid intersection
@@ -251,7 +251,7 @@ public class CellGrid {
 		 * line must be intersecting with a horizontal grid line (whole
 		 * steps on the Y-axis)
 		 */
-		y = start.solveFunctionOfXForX(end, maxY);
+		y = start.solveFOfXForX(end, maxY);
 		return new Vector2(y, maxY);
 	}
 
