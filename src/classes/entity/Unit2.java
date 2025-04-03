@@ -29,6 +29,10 @@ public class Unit2 extends BaseVector<Unit2> {
 		return getInt(1);
 	}
 
+	public Vector2 toVector2() {
+		return new Vector2(getX(), getY());
+	}
+
 	@Override
 	protected Unit2 newVector(Double[] components) {
 		return new Unit2(

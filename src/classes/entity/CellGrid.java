@@ -22,6 +22,19 @@ public class CellGrid {
 	final private Unit2 size;
 	final private HashMap<String, Cell> virtualGrid = new HashMap<>();
 
+	private class CellIterator implements Iterator<Cell> {
+
+		@Override
+		public boolean hasNext() {
+			throw new UnsupportedOperationException("Unimplemented method 'hasNext'");
+		}
+
+		@Override
+		public Cell next() {
+			throw new UnsupportedOperationException("Unimplemented method 'next'");
+		}
+	}
+
 	public CellGrid(Unit2 size) {
 		this.size = size;
 	}

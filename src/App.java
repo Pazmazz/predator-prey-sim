@@ -38,8 +38,9 @@ public class App extends Application {
 
 		CellGrid grid = new CellGrid(new Unit2(20, 20));
 
-		Console.println(grid.getCell(new Vector2(0.5, 1.1)));
-		Console.println(new Vector2(5, 5));
-		Console.println(new Unit2(8, 3));
+		Vector2 p0 = new Vector2(0, 0);
+		Vector2 p1 = new Vector2(0, 5);
+
+		Console.println(p0.evalFunctionX(p1, 4.5));
 	}
 }
