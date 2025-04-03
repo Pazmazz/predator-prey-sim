@@ -6,9 +6,7 @@
  */
 
 import classes.abstracts.Application;
-import classes.entity.Cell;
 import classes.entity.CellGrid;
-import classes.entity.Game;
 import classes.entity.Unit2;
 import classes.entity.Vector2;
 import classes.util.Console;
@@ -23,7 +21,7 @@ public class App extends Application {
 	public static void main(String[] args) {
 		Console.setDebugModeEnabled(true);
 		// Console.hideDebugPriority(DebugPriority.LOW);
-		Console.setConsoleColorsEnabled(false);
+		Console.setConsoleColorsEnabled(true);
 
 		// Game game = new Game();
 		// game.start();
@@ -36,18 +34,18 @@ public class App extends Application {
 		 * other features.
 		 */
 
+		
+		/*
+		* y-int = f(ceil(x)) when p.unit() is (+, +) or (+, -)
+		* y-int = f(floor(x)) when p.unit() is (-, +) or (-, -)
+		* 
+		* if floor(f(g(x))) == floor(p.y), then cell = { LEFT, RIGHT } and p_n = (g(x), f(g(x))
+		*/
 		CellGrid grid = new CellGrid(new Unit2(20, 20));
 
-		Vector2 p_0 = new Vector2(1.5, 1.5);
-		Vector2 p_n = new Vector2(1.75, 2.5);
+		Vector2 p_0 = new Vector2(0.49,0.52);
+		Vector2 p_n = new Vector2(0.14,1.16);
 
-		Console.println(grid.getNextGridIntercept(p_0, p_n));
+		Console.println(grid.getGridInterceptPoint(p_0, p_n));
 	}
-
-	/*
-	 * y-int = f(ceil(x)) when p.unit() is (+, +) or (+, -)
-	 * y-int = f(floor(x)) when p.unit() is (-, +) or (-, -)
-	 * 
-	 * if floor(f(g(x))) == floor(p.y), then cell = { LEFT, RIGHT } and p_n = (g(x), f(g(x))
-	 */
 }

@@ -214,7 +214,7 @@ public class CellGrid {
 	 * ```
 	 * > Output: Vector2<1.625, 2.0>
 	 */
-	public Vector2 getNextGridIntercept(Vector2 start, Vector2 end) {
+	public Vector2 getGridInterceptPoint(Vector2 start, Vector2 end) {
 		Vector2 unit = end.subtract(start).unit();
 
 		Double maxX, maxY;
@@ -222,6 +222,7 @@ public class CellGrid {
 
 		boolean pos_x = unit.getX() > 0;
 		boolean neg_x = unit.getX() < 0;
+		boolean pos_y = unit.getY() >= 0;
 		boolean neg_y = unit.getY() <= 0;
 
 		/*
@@ -229,21 +230,29 @@ public class CellGrid {
 		 * are potential grid-line intersections
 		 */
 		if (pos_x || neg_x) {
-			maxX = pos_x ? Math.ceil(start.getX()) : Math.floor(start.getX());
-			maxY = (pos_x && neg_y) || (neg_x && neg_y) ? Math.floor(start.getY()) : Math.ceil(start.getY());
-		} else {
-			throw new Error("Not a function");
-		}
+			maxX = pos_x
+				? Math.ceil(start.getX())
+				: Math.floor(start.getX());
+				
+			maxY = (pos_x && neg_y) || (neg_x && neg_y)
+				? Math.floor(start.getY())
+				: Math.ceil(start.getY());
 
-		/* Evaluate the function with respect to X, solving for Y */
-		y = start.solveFOfXForY(end, maxX);
-		
-		/*
-		 * If the floor of both Y coordinates are equal, then the grid intersection
-		 * occurs on the vertical grid lines (whole steps on the X-axis)
-		 */
-		if (Math.floor(y) == Math.floor(start.getY())) {
-			return new Vector2(maxX, y);
+			/* Evaluate the function with respect to X, solving for Y */
+			y = start.solveFunctionOfXForY(end, maxX);
+
+			/*
+			* If the floor of both Y coordinates are equal, then the grid intersection
+			* occurs on the vertical grid lines (whole steps on the X-axis)
+			*/
+			if (Math.floor(y) == Math.floor(start.getY())) {
+				return new Vector2(maxX, y);
+			}
+		} else {
+			return new Vector2(
+				start.getX(),
+				pos_y ? Math.ceil(start.getY()) : Math.floor(start.getY())
+			);
 		}
 
 		/*
@@ -251,8 +260,19 @@ public class CellGrid {
 		 * line must be intersecting with a horizontal grid line (whole
 		 * steps on the Y-axis)
 		 */
-		y = start.solveFOfXForX(end, maxY);
+		y = start.solveFunctionOfXForX(end, maxY);
 		return new Vector2(y, maxY);
+	}
+
+	public ArrayList<Cell> getCellPath(Vector2 from, Vector2 to) {
+		CellPathCollection path = new CellPathCollection(from, to);
+		Iterator<Cell> pathIterator = path.iterator();
+
+		while (pathIterator.hasNext()) {
+			pathIterator.next();
+		}
+
+		return path.getCellPath();
 	}
 
 	public Unit2 getSize() {
@@ -269,5 +289,33 @@ public class CellGrid {
 
 	public void printCellsAdjacentTo(Cell cell) {
 		printCellsAdjacentTo(cell.getUnit2());
+	}
+
+	public class CellPathCollection {
+		private ArrayList<Cell> cellPath;
+
+		public CellPathCollection(Vector2 from, Vector2 to) {
+		}
+
+		public Iterator<Cell> iterator() {
+			return new CellPathIterator();
+		}
+
+		public ArrayList<Cell> getCellPath() {
+			return cellPath;
+		}
+		
+		private class CellPathIterator implements Iterator<Cell> {
+			@Override
+			public boolean hasNext() {
+				throw new UnsupportedOperationException("Unimplemented method 'hasNext'");
+			}
+
+			@Override
+			public Cell next() {
+
+				throw new UnsupportedOperationException("Unimplemented method 'next'");
+			}
+		}
 	}
 }

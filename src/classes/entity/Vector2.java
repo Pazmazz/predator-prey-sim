@@ -51,8 +51,14 @@ public class Vector2 extends Vector<Vector2> {
 		double x1, 
 		double y0, 
 		double y1, 
-		double n
+		double n,
+		boolean useDomain
 	) {
+		/* NEEDS FIXING */
+		if (useDomain && (n < x0 || n > x1)) {
+			return null;
+		}
+		
 		double dx = x1 - x0;
 		double dy = y1 - y0;
 
@@ -61,35 +67,31 @@ public class Vector2 extends Vector<Vector2> {
 		}
 
 		Double m = dy / dx;
-		return m*(n - x0) + y0;
+		Double y = m * (n - x0) + y0;
+		
+		return y;
 	}
 
 	/*
 	 * Evaluate with respect to X, solving for Y
 	 */
-	public Double solveFOfXForY(Vector2 p2, double x) {
-		return evaluateLinearFunctionWithRespectToN(getX(), p2.getX(), getY(), p2.getY(), x);
+	public Double solveFunctionOfXForY(Vector2 p2, double x) {
+		return evaluateLinearFunctionWithRespectToN(
+			getX(), p2.getX(),
+			getY(), p2.getY(),
+			x, true
+		);
 	}
 
 	/*
 	 * Evaluate with respect to X, solving for X
 	 */
-	public Double solveFOfXForX(Vector2 p2, double y) {
-		return evaluateLinearFunctionWithRespectToN(getY(), p2.getY(), getX(), p2.getX(), y);
-	}
-
-	/*
-	 * Evaluate with respect to Y, solving for Y
-	 */
-	public Double solveFunctionOfYForY(Vector2 p2, double x) {
-		return evaluateLinearFunctionWithRespectToN(getY(), p2.getY(), getX(), p2.getX(), x);
-	}
-
-	/*
-	 * Evaluate with respect to Y, solving for X
-	 */
-	public Double solveFunctionOfYForX(Vector2 p2, double y) {
-		return evaluateLinearFunctionWithRespectToN(getX(), p2.getX(), getY(), p2.getY(), y);
+	public Double solveFunctionOfXForX(Vector2 p2, double y) {
+		return evaluateLinearFunctionWithRespectToN(
+			getY(), p2.getY(),
+			getX(), p2.getX(),
+			y, true
+		);
 	}
 
 	@Override
