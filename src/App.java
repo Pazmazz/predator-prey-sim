@@ -38,10 +38,10 @@ public class App extends Application {
 
 		CellGrid grid = new CellGrid(new Unit2(20, 20));
 
-		Vector2 p_0 = new Vector2(2,1);
-		Vector2 p_n = new Vector2(1,2);
+		Vector2 p_0 = new Vector2(1.5, 1.5);
+		Vector2 p_n = new Vector2(1.75, 2.5);
 
-		Console.println(getNextGridInterceptY(p_0, p_n));
+		Console.println(grid.getNextGridIntercept(p_0, p_n));
 	}
 
 	/*
@@ -50,32 +50,4 @@ public class App extends Application {
 	 * 
 	 * if floor(f(g(x))) == floor(p.y), then cell = { LEFT, RIGHT } and p_n = (g(x), f(g(x))
 	 */
-
-	public static Vector2 getNextGridInterceptY(Vector2 start, Vector2 end) {
-		Vector2 unit = end.subtract(start).unit();
-
-		Double x, y;
-
-		boolean pos_x = unit.getX() > 0;
-		boolean pos_y = unit.getY() >= 0;
-		boolean neg_x = unit.getX() < 0;
-		boolean neg_y = unit.getY() <= 0;
-
-		if (pos_x && pos_y || pos_x && neg_y) {
-			x = Math.ceil(start.getX());
-		} else if (neg_x && pos_y || neg_x && neg_y) {
-			x = Math.floor(start.getX());
-		} else {
-			throw new Error("Bad value");
-		}
-
-		y = start.evalFunctionX(end, x);
-
-		if (y == null) {
-			Console.println("Something went wrong");
-			return new Vector2();
-		}
-
-		return new Vector2(x, y);
-	}
 }

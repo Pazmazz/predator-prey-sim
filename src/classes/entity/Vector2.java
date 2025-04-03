@@ -39,6 +39,13 @@ public class Vector2 extends Vector<Vector2> {
 		return Math.atan2(-getY(), getX());
 	}
 
+	/*
+	 * evaluateLinearFunctionWithRespectToN()
+	 * 
+	 * Evaluate the general linear function of the line passing through
+	 * this Vector2 (x0, y0) and a target Vector2 (x1, y1), with
+	 * respect to `n` (x or y)
+	 */
 	private Double evaluateLinearFunctionWithRespectToN(
 		double x0, 
 		double x1, 
@@ -57,12 +64,32 @@ public class Vector2 extends Vector<Vector2> {
 		return m*(n - x0) + y0;
 	}
 
-	public Double evalFunctionX(Vector2 p2, double x) {
+	/*
+	 * Evaluate with respect to X, solving for Y
+	 */
+	public Double solveFunctionOfXForY(Vector2 p2, double x) {
 		return evaluateLinearFunctionWithRespectToN(getX(), p2.getX(), getY(), p2.getY(), x);
 	}
 
-	public Double evalFunctionY(Vector2 p2, double y) {
+	/*
+	 * Evaluate with respect to X, solving for X
+	 */
+	public Double solveFunctionOfXForX(Vector2 p2, double y) {
 		return evaluateLinearFunctionWithRespectToN(getY(), p2.getY(), getX(), p2.getX(), y);
+	}
+
+	/*
+	 * Evaluate with respect to Y, solving for Y
+	 */
+	public Double solveFunctionOfYForY(Vector2 p2, double x) {
+		return evaluateLinearFunctionWithRespectToN(getY(), p2.getY(), getX(), p2.getX(), x);
+	}
+
+	/*
+	 * Evaluate with respect to Y, solving for X
+	 */
+	public Double solveFunctionOfYForX(Vector2 p2, double y) {
+		return evaluateLinearFunctionWithRespectToN(getX(), p2.getX(), getY(), p2.getY(), y);
 	}
 
 	@Override

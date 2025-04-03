@@ -22,19 +22,6 @@ public class CellGrid {
 	final private Unit2 size;
 	final private HashMap<String, Cell> virtualGrid = new HashMap<>();
 
-	private class CellIterator implements Iterator<Cell> {
-
-		@Override
-		public boolean hasNext() {
-			throw new UnsupportedOperationException("Unimplemented method 'hasNext'");
-		}
-
-		@Override
-		public Cell next() {
-			throw new UnsupportedOperationException("Unimplemented method 'next'");
-		}
-	}
-
 	public CellGrid(Unit2 size) {
 		this.size = size;
 	}
@@ -207,6 +194,65 @@ public class CellGrid {
 		ArrayList<Cell> cells = new ArrayList<>();
 
 		return cells;
+	}
+
+	/*
+	 * getNextGridIntercept()
+	 * 
+	 * Given a start point and an end point, find the next point
+	 * that intersects either grid lines and return that point
+	 * as a Vector2.
+	 * 
+	 * Example:
+	 * ```
+	 * CellGrid grid = new CellGrid(new Unit2(10, 10));
+	 * 
+	 * Vector2 p0 = new Vector2(1.5, 1.5);
+	 * Vector2 p1 = new Vector2(1.75, 2.5);
+	 * 
+	 * Console.println(grid.getNextGridIntercept(p0, p1));
+	 * ```
+	 * > Output: Vector2<1.625, 2.0>
+	 */
+	public Vector2 getNextGridIntercept(Vector2 start, Vector2 end) {
+		Vector2 unit = end.subtract(start).unit();
+
+		Double maxX, maxY;
+		Double y;
+
+		boolean pos_x = unit.getX() > 0;
+		boolean neg_x = unit.getX() < 0;
+		boolean neg_y = unit.getY() <= 0;
+
+		/*
+		 * For all x != 0, compute the maximum X and Y values that
+		 * are potential grid-line intersections
+		 */
+		if (pos_x || neg_x) {
+			maxX = pos_x ? Math.ceil(start.getX()) : Math.floor(start.getX());
+			maxY = (pos_x && neg_y) || (neg_x && neg_y) ? Math.floor(start.getY()) : Math.ceil(start.getY());
+		} else {
+			throw new Error("Not a function");
+		}
+
+		/* Evaluate the function with respect to X, solving for Y */
+		y = start.solveFunctionOfXForY(end, maxX);
+		
+		/*
+		 * If the floor of both Y coordinates are equal, then the grid intersection
+		 * occurs on the vertical grid lines (whole steps on the X-axis)
+		 */
+		if (Math.floor(y) == Math.floor(start.getY())) {
+			return new Vector2(maxX, y);
+		}
+
+		/*
+		 * If the floor of both Y coordinates are not equal, then the
+		 * line must be intersecting with a horizontal grid line (whole
+		 * steps on the Y-axis)
+		 */
+		y = start.solveFunctionOfXForX(end, maxY);
+		return new Vector2(y, maxY);
 	}
 
 	public Unit2 getSize() {
