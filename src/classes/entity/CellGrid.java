@@ -226,7 +226,9 @@ public class CellGrid {
 		boolean neg_y = unit.getY() <= 0;
 
 		/*
-		 * For all x != 0, compute the maximum X and Y values that
+		 * FOR ALL X != 0 CASE:
+		 * 
+		 *  compute the maximum X and Y values that
 		 * are potential domains for a grid-line intersection
 		 */
 		if (pos_x || neg_x) {
@@ -242,26 +244,40 @@ public class CellGrid {
 			y = start.solveFunctionOfXForY(end, maxX);
 
 			/*
-			 * If Y exists and the floor of both Y coordinates are equal, then 
-			 * the grid intersection occurs on the vertical grid lines (whole steps on the X-axis)
+			 * Y GRID-LINE CASE:
+			 * 
+			 * If Y could not be solved, then the grid intersection
+			 * occurs on a Y grid-line axis. So, solve the equation
+			 * for X and return the result
 			 */
-			if (y != null && Math.floor(y) == Math.floor(start.getY())) {
+			if (y == null) {
+				y = start.solveFunctionOfXForX(end, maxY);
+				return new Vector2(y, maxY);
+
+			/*
+			 * X GRID-LINE CASE:
+			 * 
+			 * If Y was solved and is the same integer value as the Y value
+			 * of the starting point, then the intersection occurs on the
+			 * X grid-line axis.
+			 */
+			} else if (Math.floor(y) == Math.floor(start.getY())) {
 				return new Vector2(maxX, y);
 			}
-		} else {
-			return new Vector2(
-				start.getX(),
-				pos_y ? Math.ceil(start.getY()) : Math.floor(start.getY())
-			);
 		}
 
 		/*
-		 * If the floor of both Y coordinates are not equal, then the
-		 * line must be intersecting with a horizontal grid line (whole
-		 * steps on the Y-axis) so solve for X
+		 * X = 0 CASE:
+		 * 
+		 * If X = 0, then the line is not a function and the equation
+		 * cannot be solved. In such a case, the grid-line intersection
+		 * occurs directly above or below the starting point, depending
+		 * on `pos_y`
 		 */
-		y = start.solveFunctionOfXForX(end, maxY);
-		return new Vector2(y, maxY);
+		return new Vector2(
+			start.getX(),
+			pos_y ? Math.ceil(start.getY()) : Math.floor(start.getY())
+		);
 	}
 
 	public ArrayList<Cell> getCellPath(Vector2 from, Vector2 to) {
