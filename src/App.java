@@ -21,7 +21,7 @@ public class App extends Application {
 	public static void main(String[] args) {
 		Console.setDebugModeEnabled(true);
 		// Console.hideDebugPriority(DebugPriority.LOW);
-		Console.setConsoleColorsEnabled(true);
+		Console.setConsoleColorsEnabled(false);
 
 		// Game game = new Game();
 		// game.start();
@@ -43,8 +43,8 @@ public class App extends Application {
 		*/
 		CellGrid grid = new CellGrid(new Unit2(20, 20));
 
-		Vector2 p_0 = new Vector2(0.49,0.52);
-		Vector2 p_n = new Vector2(0.14,1.16);
+		Vector2 p_0 = new Vector2(0.5, 0.5);
+		Vector2 p_n = new Vector2(1.5,1.5);
 
 		Console.println(grid.getGridInterceptPoint(p_0, p_n));
 	}

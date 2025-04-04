@@ -12,6 +12,7 @@
 package classes.entity;
 
 import classes.abstracts.Vector;
+import classes.util.Console;
 
 public class Vector2 extends Vector<Vector2> {
 	public Vector2() {
@@ -54,13 +55,15 @@ public class Vector2 extends Vector<Vector2> {
 		double n,
 		boolean useDomain
 	) {
-		/* NEEDS FIXING */
-		if (useDomain && (n < x0 || n > x1)) {
-			return null;
-		}
-		
 		double dx = x1 - x0;
 		double dy = y1 - y0;
+
+		/*
+		 * Check domain
+		 */
+		if (useDomain && n < Math.min(x0, x1) || n > Math.max(x0, x1)) {
+			return null;
+		}
 
 		if (dx == 0) {
 			return null;

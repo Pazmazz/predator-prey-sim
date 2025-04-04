@@ -227,7 +227,7 @@ public class CellGrid {
 
 		/*
 		 * For all x != 0, compute the maximum X and Y values that
-		 * are potential grid-line intersections
+		 * are potential domains for a grid-line intersection
 		 */
 		if (pos_x || neg_x) {
 			maxX = pos_x
@@ -242,10 +242,10 @@ public class CellGrid {
 			y = start.solveFunctionOfXForY(end, maxX);
 
 			/*
-			* If the floor of both Y coordinates are equal, then the grid intersection
-			* occurs on the vertical grid lines (whole steps on the X-axis)
-			*/
-			if (Math.floor(y) == Math.floor(start.getY())) {
+			 * If Y exists and the floor of both Y coordinates are equal, then 
+			 * the grid intersection occurs on the vertical grid lines (whole steps on the X-axis)
+			 */
+			if (y != null && Math.floor(y) == Math.floor(start.getY())) {
 				return new Vector2(maxX, y);
 			}
 		} else {
@@ -258,7 +258,7 @@ public class CellGrid {
 		/*
 		 * If the floor of both Y coordinates are not equal, then the
 		 * line must be intersecting with a horizontal grid line (whole
-		 * steps on the Y-axis)
+		 * steps on the Y-axis) so solve for X
 		 */
 		y = start.solveFunctionOfXForX(end, maxY);
 		return new Vector2(y, maxY);
