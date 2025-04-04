@@ -10,6 +10,8 @@ import classes.entity.CellGrid;
 import classes.entity.Unit2;
 import classes.entity.Vector2;
 import classes.util.Console;
+import java.util.Iterator;
+import classes.entity.Cell;
 
 public class App extends Application {
 	/*
@@ -43,9 +45,14 @@ public class App extends Application {
 		*/
 		CellGrid grid = new CellGrid(new Unit2(20, 20));
 
-		Vector2 p_0 = new Vector2(1.4,5.4);
-		Vector2 p_n = new Vector2(3.4, 5.4);
+		Vector2 p_0 = new Vector2(-0.4,-0.2);
+		Vector2 p_n = new Vector2(2.565, 4.44);
 
-		Console.println(grid.getGridInterceptPoint(p_0, p_n));
+		Iterator<Cell> itr = grid.getCellPathIterator(p_0, p_n);
+
+		itr.next();
+		itr.next();
+		itr.next();
+		itr.next();
 	}
 }

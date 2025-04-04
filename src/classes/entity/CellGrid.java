@@ -190,10 +190,20 @@ public class CellGrid {
 		return getCellsAdjacentTo(cell.getUnit2());
 	}
 
-	public ArrayList<Cell> getLinearCellPath(Unit2 from, Unit2 to) {
-		ArrayList<Cell> cells = new ArrayList<>();
+	public Unit2 getSize() {
+		return size;
+	}
 
-		return cells;
+	public void printCellsAdjacentTo(Unit2 unit) {
+		Cell[] adjCells = getCellsAdjacentTo(unit);
+
+		for (Cell adjCell : adjCells) {
+			adjCell.printInfo();
+		}
+	}
+
+	public void printCellsAdjacentTo(Cell cell) {
+		printCellsAdjacentTo(cell.getUnit2());
 	}
 
 	/*
@@ -314,26 +324,18 @@ public class CellGrid {
 		return path.getCellPath();
 	}
 
-	public Unit2 getSize() {
-		return size;
+	public Iterator<Cell> getCellPathIterator(Vector2 from, Vector2 to) {
+		return new CellPathCollection(from, to).iterator();
 	}
-
-	public void printCellsAdjacentTo(Unit2 unit) {
-		Cell[] adjCells = getCellsAdjacentTo(unit);
-
-		for (Cell adjCell : adjCells) {
-			adjCell.printInfo();
-		}
-	}
-
-	public void printCellsAdjacentTo(Cell cell) {
-		printCellsAdjacentTo(cell.getUnit2());
-	}
-
-	public class CellPathCollection {
-		private ArrayList<Cell> cellPath;
+	
+	private class CellPathCollection {
+		private ArrayList<Cell> cellPath = new ArrayList<>();
+		private Vector2 from;
+		private Vector2 to;
 
 		public CellPathCollection(Vector2 from, Vector2 to) {
+			this.from = from;
+			this.to = to;
 		}
 
 		public Iterator<Cell> iterator() {
@@ -347,13 +349,16 @@ public class CellGrid {
 		private class CellPathIterator implements Iterator<Cell> {
 			@Override
 			public boolean hasNext() {
-				throw new UnsupportedOperationException("Unimplemented method 'hasNext'");
+				return from != null;
 			}
 
 			@Override
 			public Cell next() {
+				if (!hasNext()) return null;
+				from = getGridInterceptPoint(from, to);
+				Console.println("NEXT LINE: ", from);
 
-				throw new UnsupportedOperationException("Unimplemented method 'next'");
+				return getCell(from);
 			}
 		}
 	}
