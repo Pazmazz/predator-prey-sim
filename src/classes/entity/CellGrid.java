@@ -201,7 +201,8 @@ public class CellGrid {
 	 * 
 	 * Given a start point and an end point, find the next point
 	 * that intersects either grid lines and return that point
-	 * as a Vector2.
+	 * as a Vector2. If the start point and end point are within
+	 * the same cell, then the method returns null.
 	 * 
 	 * Example:
 	 * ```
@@ -240,20 +241,46 @@ public class CellGrid {
 				? Math.floor(start.getY())
 				: Math.ceil(start.getY());
 
+			/*
+			 * If either maxX = start.X or maxY = start.Y, then 
+			 * the start point is already on a grid line, so 
+			 * bump up the value to the next grid line intersection
+			 */
+			if (maxX == start.getX()) {
+				// maxX++;
+				Console.debugPrint("Starting on X grid line");
+			}
+			if (maxY == start.getY()) {
+				// maxY++;
+				Console.debugPrint("Starting on Y grid line");
+			}
+
 			/* Evaluate the function with respect to X, solving for Y */
 			y = start.solveFunctionOfXForY(end, maxX);
 
 			/*
 			 * Y GRID-LINE CASE:
 			 * 
-			 * If Y could not be solved, then the grid intersection
+			 * If Y could not be solved, or it's value is not on the
+			 * same y-level as the start point, then the grid intersection
 			 * occurs on a Y grid-line axis. So, solve the equation
 			 * for X and return the result
 			 */
-			if (y == null) {
+			if (y == null || (Math.floor(y) != Math.floor(start.getY()))) {
 				y = start.solveFunctionOfXForX(end, maxY);
-				return new Vector2(y, maxY);
 
+				/*
+				 * If Y still doesn't exist, then there is no grid-line intersection
+				 * (both start and end points are in the same cell)
+				 */
+				if (y == null) {
+					Console.debugPrint("Point is inside the cell");
+					return null;
+				} else {
+					return new Vector2(y, maxY);
+				}
+			} 
+			
 			/*
 			 * X GRID-LINE CASE:
 			 * 
@@ -261,9 +288,7 @@ public class CellGrid {
 			 * of the starting point, then the intersection occurs on the
 			 * X grid-line axis.
 			 */
-			} else if (Math.floor(y) == Math.floor(start.getY())) {
-				return new Vector2(maxX, y);
-			}
+			return new Vector2(maxX, y);
 		}
 
 		/*

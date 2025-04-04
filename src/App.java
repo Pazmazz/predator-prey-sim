@@ -43,8 +43,8 @@ public class App extends Application {
 		*/
 		CellGrid grid = new CellGrid(new Unit2(20, 20));
 
-		Vector2 p_0 = new Vector2(0.87, 0.55);
-		Vector2 p_n = new Vector2(1.05,1.4);
+		Vector2 p_0 = new Vector2(2.2,3);
+		Vector2 p_n = new Vector2(3, 2.6);
 
 		Console.println(grid.getGridInterceptPoint(p_0, p_n));
 	}

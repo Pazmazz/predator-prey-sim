@@ -24,6 +24,7 @@
 
 package classes.abstracts;
 
+import classes.util.Console;
 import classes.util.Formatter;
 import exceptions.VectorMismatchException;
 import interfaces.Callback;
@@ -158,6 +159,27 @@ public abstract class BaseVector<T extends BaseVector> {
 		));
 
 		return inverted;
+	}
+
+	/*
+	 * equals()
+	 * 
+	 * Return true if all components in the current BaseVector<T>
+	 * are equal to all components in the target base vector. If both
+	 * vectors have different dimensions, the result is false.
+	 */
+	public boolean equals(T v) {
+		if (!v.isSize(size())) {
+			return false;
+		}
+
+		for (int i = 0; i < size(); i++) {
+			if ((double) get(i) != (double) v.get(i)) {
+				return false;
+			}
+		}
+		
+		return true;
 	}
 
 	/*

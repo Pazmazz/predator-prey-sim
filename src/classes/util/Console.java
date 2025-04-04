@@ -18,9 +18,9 @@ import java.util.regex.Pattern;
 public class Console extends Application {
 	// Debug info (immutable at runtime)
 	final private static Map<DebugPriority, String> debugPrefixes = new HashMap<>() {{
-		put(DebugPriority.LOW, "$text-green [Debug Low]$text-reset");
-		put(DebugPriority.MEDIUM, "$text-purple [Debug Medium]$text-reset");
-		put(DebugPriority.HIGH, "$text-red [Debug High]$text-reset");
+		put(DebugPriority.LOW, "$text-green [Debug Low]$text-reset ");
+		put(DebugPriority.MEDIUM, "$text-purple [Debug Medium] $text-reset ");
+		put(DebugPriority.HIGH, "$text-red [Debug High] $text-reset ");
 		}
 	};
 
@@ -148,7 +148,7 @@ public class Console extends Application {
 
 	public static void debugPrint(DebugPriority priority, Object ...messages) {
 		if (isDebugMode() && isShowingDebugPriority(priority)) {
-			Console.println(
+			println(
 				"%s: %s".formatted(
 					debugPrefixes.get(priority), 
 					Formatter.concatArray(messages, " | ")
