@@ -313,8 +313,8 @@ public class CellGrid {
 					.setAxisOfIntersection(CellGridAxis.Y_GRID)
 					.setPointOfIntersection(new Vector2(y, maxY))
 					.setCellUnit(new Unit2(
-						(int) (pos_x ? Math.ceil(y) : Math.floor(y)),
-						(int) (maxX)
+						(int) (),
+						(int) (maxY + signedUnit.getY())
 					));
 			} 
 			
@@ -329,8 +329,8 @@ public class CellGrid {
 				.setAxisOfIntersection(CellGridAxis.X_GRID)
 				.setPointOfIntersection(new Vector2(maxX, y))
 				.setCellUnit(new Unit2(
-					(int) (maxX + signedUnit.getX()),
-					(int) (snapYDown)
+					(int) (maxX >= 0 ? (neg_x ? maxX : maxX + 1) : (neg_x ? maxX - 1 : maxX)),
+					(int) (y >= 0 ? Math.ceil(y) : Math.floor(y))
 				));
 		}
 

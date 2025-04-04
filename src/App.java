@@ -47,8 +47,8 @@ public class App extends Application {
 		*/
 		CellGrid grid = new CellGrid(new Unit2(20, 20));
 
-		Vector2 p_0 = new Vector2(0.8,-2.69);
-		Vector2 p_n = new Vector2(3.815,0.845);
+		Vector2 p_0 = new Vector2(1.66,-1.62);
+		Vector2 p_n = new Vector2(3.53, 1.23);
 
 		Iterator<Cell> itr = grid.getCellPathIterator(p_0, p_n);
 
@@ -58,10 +58,12 @@ public class App extends Application {
 
 		itr.next();
 		itr.next();
-		itr.next();
-		itr.next();
-		itr.next();
-		itr.next();
+		// itr.next();
+		// itr.next();
+		// itr.next();
+		// itr.next();
+		// itr.next();
+		// itr.next();
 
 	}
 }
