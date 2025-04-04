@@ -260,11 +260,12 @@ public class CellGrid {
 		boolean neg_y = unit.getY() <= 0;
 
 		GridIntercept interceptResult = new GridIntercept();
+		interceptResult.setDirection(unit);
 
 		/*
 		 * FOR ALL X != 0 CASE:
 		 * 
-		 *  compute the maximum X and Y values that
+		 * compute the maximum X and Y values that
 		 * are potential domains for a grid-line intersection
 		 */
 		if (pos_x || neg_x) {
@@ -279,7 +280,7 @@ public class CellGrid {
 			/*
 			 * If either maxX = start.X or maxY = start.Y, then 
 			 * the start point is already on a grid line, so 
-			 * bump up the value to the next grid line intersection
+			 * snap the value to the next grid line intersection
 			 */
 			if (maxX == start.getX())
 				maxX += pos_x ? 1 : -1;
@@ -336,7 +337,7 @@ public class CellGrid {
 			.setAxisOfIntersection(CellGridAxis.XY_GRID)
 			.setPointOfIntersection(new Vector2(
 				start.getX(),
-				pos_y ? Math.ceil(start.getY()) : Math.floor(start.getY())
+				pos_y ? snapYUp : snapYDown
 			));
 	}
 
@@ -374,25 +375,31 @@ public class CellGrid {
 		}
 		
 		private class CellPathIterator implements Iterator<Cell> {
-			private GridIntercept gridIntercept;
+			private GridIntercept nextGridIntercept = getGridIntercept(from, to);
 
 			@Override
 			public boolean hasNext() {
-				return gridIntercept.exists();
+				return nextGridIntercept.exists();
 			}
 
 			@Override
 			public Cell next() {
 				if (!hasNext()) throw new NoSuchElementException("Dead Cell path");
-				gridIntercept = getGridIntercept(from, to);
+				GridIntercept gridIntercept = nextGridIntercept;
+				nextGridIntercept = getGridIntercept(gridIntercept.getPointOfIntersection(), to);
 
-				if (gridIntercept.exists()) {
-					Console.debugPrint("NEXT INTERCEPT: " + gridIntercept);
+				Vector2 direction = gridIntercept.getDirection();
+				Vector2 point = gridIntercept.getPointOfIntersection();
+				Unit2 cellUnit;
+
+				if (gridIntercept.hasX()) {
+					cellUnit = new Unit2(
+						(int) (point.getX() + direction.getX()), 
+						(int) Math.floor(point.getY())
+					);
 				}
 
-				Cell c = getCell(new Unit2(2, 2));
-				cellPath.add(c);
-				return c;
+				return getCell(cellUnit);
 			}
 		}
 	}
@@ -400,6 +407,7 @@ public class CellGrid {
 	public class GridIntercept {
 		private CellGridAxis axisOfIntersection = CellGridAxis.NONE;
 		private Vector2 pointOfIntersection;
+		private Vector2 direction;
 
 		public GridIntercept setAxisOfIntersection(CellGridAxis axis) {
 			this.axisOfIntersection = axis;
@@ -409,6 +417,15 @@ public class CellGrid {
 		public GridIntercept setPointOfIntersection(Vector2 point) {
 			this.pointOfIntersection = point;
 			return this;
+		}
+
+		public GridIntercept setDirection(Vector2 direction) {
+			this.direction = direction;
+			return this;
+		}
+
+		public Vector2 getDirection() {
+			return this.direction;
 		}
 
 		public CellGridAxis getAxisOfIntersection() {
@@ -421,6 +438,18 @@ public class CellGrid {
 
 		public boolean exists() {
 			return this.axisOfIntersection != CellGridAxis.NONE;
+		}
+
+		public boolean hasX() {
+			return this.axisOfIntersection == CellGridAxis.X_GRID;
+		}
+
+		public boolean hasY() {
+			return this.axisOfIntersection == CellGridAxis.Y_GRID;
+		}
+
+		public boolean hasXY() {
+			return this.axisOfIntersection == CellGridAxis.XY_GRID;
 		}
 
 		@Override

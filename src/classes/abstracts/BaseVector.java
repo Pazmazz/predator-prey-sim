@@ -178,7 +178,7 @@ public abstract class BaseVector<T extends BaseVector> {
 				return false;
 			}
 		}
-		
+
 		return true;
 	}
 
@@ -212,6 +212,37 @@ public abstract class BaseVector<T extends BaseVector> {
 		return newVector(computeComponents(
 			"add(int scalar)",
 			(args) -> (Double) args[0] + scalar
+		));
+	}
+
+	/*
+	 * abs()
+	 * 
+	 * Take the absolute value of all the components
+	 */
+	public T abs() {
+		return newVector(computeComponents(
+			"abs()",
+			(args) -> Math.abs((Double) args[0])
+		));
+	}
+
+	/*
+	 * signedUnit()
+	 * 
+	 * Return the unit vector of Vector<T>
+	 */
+	public T signedUnit() {
+		return newVector(computeComponents(
+			"signedUnit()",
+			(args) -> {
+				Double c = (Double) args[0];
+				return c > 0
+					? 1.0
+					: c < 0
+						? -1.0
+						: 0.0;
+			}
 		));
 	}
 

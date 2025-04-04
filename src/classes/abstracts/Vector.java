@@ -20,7 +20,7 @@ public abstract class Vector<T extends Vector> extends BaseVector<T> {
 	/*
 	 * divide()
 	 * 
-	 * Return a new BaseVector<T> with all components
+	 * Return a new Vector<T> with all components
 	 * of itself divided by all components of the operand vector.
 	 * 
 	 * Example:
@@ -41,7 +41,7 @@ public abstract class Vector<T extends Vector> extends BaseVector<T> {
 	/*
 	 * @overload: divide()
 	 * 
-	 * Divide all components of BaseVector<T> by some double value
+	 * Divide all components of Vector<T> by some double value
 	 */
 	public T divide(double dec) {
 		return newVector(computeComponents(
@@ -53,7 +53,7 @@ public abstract class Vector<T extends Vector> extends BaseVector<T> {
 	/*
 	 * @overload: divide()
 	 * 
-	 * Divide all components of BaseVector<T> by some scalar integer
+	 * Divide all components of Vector<T> by some scalar integer
 	 */
 	public T divide(int scalar) {
 		return newVector(computeComponents(
@@ -65,12 +65,56 @@ public abstract class Vector<T extends Vector> extends BaseVector<T> {
 	/*
 	 * @overload: multiply()
 	 * 
-	 * Multiply all components of BaseVector<T> by some double value
+	 * Multiply all components of Vector<T> by some double value
 	 */
 	public T multiply(double dec) {
 		return newVector(computeComponents(
 			"multiply(double scalar)",
 			(args) -> (Double) args[0] * dec
+		));
+	}
+	
+	/*
+	 * @overload: add()
+	 */
+	public T add(double dec) {
+		return newVector(computeComponents(
+			"add(double dec)",
+			(args) -> (Double) args[0] + dec
+		));
+	}
+
+	/*
+	 * @overload: subtract()
+	 */
+	public T subtract(double dec) {
+		return newVector(computeComponents(
+			"subtract(double dec)",
+			(args) -> (Double) args[0] - dec
+		));
+	}
+
+	/*
+	 * floor()
+	 * 
+	 * Floor all components of Vector<T>
+	 */
+	public T floor() {
+		return newVector(computeComponents(
+			"floor()",
+			(args) -> Math.floor((Double) args[0])
+		));
+	}
+
+	/*
+	 * ceil()
+	 * 
+	 * Ceil all components of Vector<T>
+	 */
+	public T ceil() {
+		return newVector(computeComponents(
+			"ceil()",
+			(args) -> Math.ceil((Double) args[0])
 		));
 	}
 

@@ -47,13 +47,21 @@ public class App extends Application {
 		*/
 		CellGrid grid = new CellGrid(new Unit2(20, 20));
 
-		Vector2 p_0 = new Vector2(-0.4,-0.2);
-		Vector2 p_n = new Vector2(2.565, 4.44);
+		Vector2 p_0 = new Vector2(-0.49,0);
+		Vector2 p_n = new Vector2(3.2, 1.2);
 
 		Iterator<Cell> itr = grid.getCellPathIterator(p_0, p_n);
 
-		ArrayList<Cell> all = grid.getCellPath(p_0, p_n);
-		Console.println(all);
+		Console.println(p_0.signedUnit());
+		// ArrayList<Cell> all = grid.getCellPath(p_0, p_n);
+		// Console.println(all);
+
+		// itr.next();
+		// itr.next();
+		// itr.next();
+		// itr.next();
+		// itr.next();
+		// itr.next();
 
 	}
 }
