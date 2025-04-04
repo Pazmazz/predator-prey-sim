@@ -10,6 +10,8 @@ import classes.entity.CellGrid;
 import classes.entity.Unit2;
 import classes.entity.Vector2;
 import classes.util.Console;
+
+import java.util.ArrayList;
 import java.util.Iterator;
 import classes.entity.Cell;
 
@@ -50,9 +52,8 @@ public class App extends Application {
 
 		Iterator<Cell> itr = grid.getCellPathIterator(p_0, p_n);
 
-		itr.next();
-		itr.next();
-		itr.next();
-		itr.next();
+		ArrayList<Cell> all = grid.getCellPath(p_0, p_n);
+		Console.println(all);
+
 	}
 }

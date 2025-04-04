@@ -30,14 +30,7 @@ public class Cell {
 		EMPTY,
 		OCCUPIED,
 	}
-
-	public enum CellDirection {
-		TOP,
-		BOTTOM,
-		LEFT,
-		RIGHT,
-	}
-
+	
 	public Cell(Unit2 unit) {
 		this.unit = unit;
 

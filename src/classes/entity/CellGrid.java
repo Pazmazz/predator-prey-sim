@@ -17,10 +17,28 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.NoSuchElementException;
 
 public class CellGrid {
 	final private Unit2 size;
 	final private HashMap<String, Cell> virtualGrid = new HashMap<>();
+
+	public enum CellGridAxis {
+		X,
+		Y,
+		XY,
+		X_GRID,
+		Y_GRID,
+		XY_GRID,
+		NONE
+	}
+
+	public enum GridDirection {
+		UP,
+		DOWN,
+		LEFT,
+		RIGHT
+	}
 
 	public CellGrid(Unit2 size) {
 		this.size = size;
@@ -225,7 +243,7 @@ public class CellGrid {
 	 * ```
 	 * > Output: Vector2<1.625, 2.0>
 	 */
-	public Vector2 getGridInterceptPoint(Vector2 start, Vector2 end) {
+	public GridIntercept getGridIntercept(Vector2 start, Vector2 end) {
 		Vector2 unit = end.subtract(start).unit();
 
 		Double snapXDown 	= Math.floor(start.getX());
@@ -240,6 +258,8 @@ public class CellGrid {
 		boolean neg_x = unit.getX() < 0;
 		boolean pos_y = unit.getY() >= 0;
 		boolean neg_y = unit.getY() <= 0;
+
+		GridIntercept interceptResult = new GridIntercept();
 
 		/*
 		 * FOR ALL X != 0 CASE:
@@ -285,8 +305,11 @@ public class CellGrid {
 				 * If Y still doesn't exist, then there is no grid-line intersection
 				 * (both start and end points are in the same cell)
 				 */
-				if (y == null) return null;
-				return new Vector2(y, maxY);
+				if (y == null) return interceptResult;
+
+				return interceptResult
+					.setAxisOfIntersection(CellGridAxis.Y_GRID)
+					.setPointOfIntersection(new Vector2(y, maxY));
 			} 
 			
 			/*
@@ -296,7 +319,9 @@ public class CellGrid {
 			 * of the starting point, then the intersection occurs on the
 			 * X grid-line axis.
 			 */
-			return new Vector2(maxX, y);
+			return interceptResult
+				.setAxisOfIntersection(CellGridAxis.X_GRID)
+				.setPointOfIntersection(new Vector2(maxX, y));
 		}
 
 		/*
@@ -307,10 +332,12 @@ public class CellGrid {
 		 * occurs directly above or below the starting point, depending
 		 * on `pos_y`
 		 */
-		return new Vector2(
-			start.getX(),
-			pos_y ? Math.ceil(start.getY()) : Math.floor(start.getY())
-		);
+		return interceptResult
+			.setAxisOfIntersection(CellGridAxis.XY_GRID)
+			.setPointOfIntersection(new Vector2(
+				start.getX(),
+				pos_y ? Math.ceil(start.getY()) : Math.floor(start.getY())
+			));
 	}
 
 	public ArrayList<Cell> getCellPath(Vector2 from, Vector2 to) {
@@ -327,7 +354,7 @@ public class CellGrid {
 	public Iterator<Cell> getCellPathIterator(Vector2 from, Vector2 to) {
 		return new CellPathCollection(from, to).iterator();
 	}
-	
+
 	private class CellPathCollection {
 		private ArrayList<Cell> cellPath = new ArrayList<>();
 		private Vector2 from;
@@ -347,19 +374,62 @@ public class CellGrid {
 		}
 		
 		private class CellPathIterator implements Iterator<Cell> {
+			private GridIntercept gridIntercept;
+
 			@Override
 			public boolean hasNext() {
-				return from != null;
+				return gridIntercept.exists();
 			}
 
 			@Override
 			public Cell next() {
-				if (!hasNext()) return null;
-				from = getGridInterceptPoint(from, to);
-				Console.println("NEXT LINE: ", from);
+				if (!hasNext()) throw new NoSuchElementException("Dead Cell path");
+				gridIntercept = getGridIntercept(from, to);
 
-				return getCell(from);
+				if (gridIntercept.exists()) {
+					Console.debugPrint("NEXT INTERCEPT: " + gridIntercept);
+				}
+
+				Cell c = getCell(new Unit2(2, 2));
+				cellPath.add(c);
+				return c;
 			}
+		}
+	}
+
+	public class GridIntercept {
+		private CellGridAxis axisOfIntersection = CellGridAxis.NONE;
+		private Vector2 pointOfIntersection;
+
+		public GridIntercept setAxisOfIntersection(CellGridAxis axis) {
+			this.axisOfIntersection = axis;
+			return this;
+		}
+
+		public GridIntercept setPointOfIntersection(Vector2 point) {
+			this.pointOfIntersection = point;
+			return this;
+		}
+
+		public CellGridAxis getAxisOfIntersection() {
+			return this.axisOfIntersection;
+		}
+
+		public Vector2 getPointOfIntersection() {
+			return this.pointOfIntersection;
+		}
+
+		public boolean exists() {
+			return this.axisOfIntersection != CellGridAxis.NONE;
+		}
+
+		@Override
+		public String toString() {
+			return String.format(
+				"$text-green GridIntercept$text-reset <Axis: %s, Point: %s>", 
+				this.axisOfIntersection, 
+				this.pointOfIntersection
+			);
 		}
 	}
 }
