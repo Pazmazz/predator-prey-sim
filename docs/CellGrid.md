@@ -75,6 +75,7 @@ Cell cell1 = grid.getCell(new Unit2(3, 5));
 Console.println(cell0);
 Console.println(cell1);
 ```
+
 #### Output:
 
 <blockquote>
@@ -84,6 +85,7 @@ Cell<3, 5>
 </blockquote>
 
 #### Example with `Vector2`:
+
 ```java
 import classes.entity.Unit2;
 CellGrid grid = new CellGrid(new Unit2(10, 10));
@@ -97,6 +99,7 @@ Cell cell1 = grid.getCell(new Vector2(0.5, 1.1));
 Console.println(cell0);
 Console.println(cell1);
 ```
+
 #### Output:
 
 <blockquote>
@@ -378,3 +381,49 @@ Cell<1, 0>
 <br/>
 OUT_OF_BOUNDS
 </blockquote>
+
+### `CellGrid.getCellGridIntercept()`
+
+- **Parameters:**
+
+  - `<Vector2 from, Vector2 to>` - _The two points required to find the next grid intercept_
+
+- **Returns:** `<GridIntercept metadata>`
+
+Given two points, find and return the next point that intersects the grid lines between those two points.
+
+#### Example:
+
+```java
+CellGrid grid = new CellGrid(new Unit2(10, 10));
+
+Cell p0 = grid.getCell(new Unit2(3, 3));
+Cell p1 = grid.getCell(new Unit2(5, 7));
+
+GridIntercept inter = grid.getGridIntercept(p0, p1);
+
+Console.println(inter.hasX());
+Console.println(inter.hasY());
+```
+
+### `CellGrid.getCellPath()`
+
+- **Parameters:**
+
+  - `<Vector2 from, Vector2 to>` - _The two points required to determine the line which passes through the pathway of cells_
+
+- **Returns:** `<ArrayList<Cell> cellPath>`
+
+Given two points, find and return the next point that intersects the grid lines between those two points.
+
+#### Example:
+
+```java
+CellGrid grid = new CellGrid(new Unit2(10, 10));
+Cell p0 = grid.getCell(new Unit2(1, 1));
+Cell p1 = grid.getCell(new Unit2(3, 8));
+
+ArrayList<Cell> cells = grid.getCellPath(p0, p1);
+
+Console.println(cells);
+```

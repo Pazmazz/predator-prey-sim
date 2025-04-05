@@ -42,6 +42,6 @@ public class Formatter extends Application {
 	 * Default the separator parameter to ", "
 	 */
 	public static String concatArray(Object[] array) {
-		return concatArray(array, ", ");
+		return concatArray(array, "   ");
 	}
 }

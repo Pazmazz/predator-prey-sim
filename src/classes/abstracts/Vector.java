@@ -13,7 +13,7 @@ package classes.abstracts;
 
 import java.util.ArrayList;
 
-public abstract class Vector<T extends Vector> extends BaseVector<T> {
+public abstract class Vector<T extends Vector<T>> extends BaseVector<T> {
 	private Double magnitude;
 	private T unit;
 

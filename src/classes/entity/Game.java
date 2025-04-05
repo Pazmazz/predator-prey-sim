@@ -88,11 +88,7 @@ public class Game extends Application implements Runnable {
 	 * A method for terminating the game loop in the current game thread.
 	 */
 	public void terminate() {
-		if (isThreadRunning()) {
-			setState(GameState.TERMINATED);
-		} else {
-			Console.error("terminate() can only be called if the game is running or paused");
-		}
+		setState(GameState.TERMINATED);
 	}
 
 	/*

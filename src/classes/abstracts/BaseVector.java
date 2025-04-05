@@ -24,13 +24,12 @@
 
 package classes.abstracts;
 
-import classes.util.Console;
 import classes.util.Formatter;
 import exceptions.VectorMismatchException;
 import interfaces.Callback;
 import java.util.ArrayList;
 
-public abstract class BaseVector<T extends BaseVector> {
+public abstract class BaseVector<T extends BaseVector<T>> {
 	protected abstract T newVector(Double[] components);
 	protected ArrayList<Double> components = new ArrayList<>();
 	private T inverted;
@@ -230,7 +229,8 @@ public abstract class BaseVector<T extends BaseVector> {
 	/*
 	 * signedUnit()
 	 * 
-	 * Return the unit vector of Vector<T>
+	 * Return a BaseVector<T> with multiplicative identities
+	 * representing the quadrant it's in
 	 */
 	public T signedUnit() {
 		return newVector(computeComponents(

@@ -19,8 +19,8 @@ public class Console extends Application {
 	// Debug info (immutable at runtime)
 	final private static Map<DebugPriority, String> debugPrefixes = new HashMap<>() {{
 		put(DebugPriority.LOW, "$text-green [Debug Low]$text-reset ");
-		put(DebugPriority.MEDIUM, "$text-purple [Debug Medium] $text-reset ");
-		put(DebugPriority.HIGH, "$text-red [Debug High] $text-reset ");
+		put(DebugPriority.MEDIUM, "$text-purple [Debug Medium]$text-reset ");
+		put(DebugPriority.HIGH, "$text-red [Debug High]$text-reset ");
 		}
 	};
 

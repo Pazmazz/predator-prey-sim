@@ -10,7 +10,6 @@
  */
 package classes.entity;
 
-import classes.abstracts.CellOccupant;
 import classes.util.Console;
 
 public class Cell {
@@ -35,26 +34,46 @@ public class Cell {
 		this.unit = unit;
 
 		this.position = new Vector2(
-			unit.getX() - 0.5,
-			unit.getY() - 0.5
-		);
+				unit.getX() - 0.5,
+				unit.getY() - 0.5);
 
 		this.cellType = CellType.NORMAL;
 		this.cellVacancy = CellVacancy.EMPTY;
+	}
+	
+	public void setOccupant(CellOccupant cellOccupant, boolean updateOccupant) {
+		if (isOccupied()) {
+			throw new Error(
+					String.format(
+						"Cell<%s, %s> tried to set a new occupant without removing its current occupant",
+						this.getUnit2().getX(),
+						this.getUnit2().getY()
+					)
+			);
+		}
+
+		this.cellOccupant = cellOccupant;
+		setVacancy(CellVacancy.OCCUPIED);
+		if (updateOccupant) cellOccupant.setCell(this, false);
+	}
+
+	public void setOccupant(CellOccupant cellOccupant) {
+		setOccupant(cellOccupant, true);
 	}
 
 	public CellOccupant getOccupant() {
 		return this.cellOccupant;
 	}
 
-	public void removeOccupant() {
+	public CellOccupant removeOccupant() {
+		CellOccupant cellOccupant = this.cellOccupant;
 		this.cellOccupant = null;
 		setVacancy(CellVacancy.EMPTY);
+		return cellOccupant;
 	}
 
-	public void moveOccupantTo(Cell cell) {
-		cell.setOccupant(getOccupant());
-		removeOccupant();
+	public void moveOccupantTo(Cell targetCell) {
+		targetCell.setOccupant(removeOccupant());
 	}
 
 	public Vector2 getPosition() {
@@ -103,11 +122,6 @@ public class Cell {
 
 	public void setVacancy(CellVacancy cellVacancy) {
 		this.cellVacancy = cellVacancy;
-	}
-
-	public void setOccupant(CellOccupant cellOccupant) {
-		this.cellOccupant = cellOccupant;
-		setVacancy(CellVacancy.OCCUPIED);
 	}
 
 	public void printInfo() {

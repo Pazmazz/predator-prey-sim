@@ -80,6 +80,11 @@ public class CellGrid {
 		return isInBounds(cell.getUnit2());
 	}
 
+	/*
+	 * outOfBounds()
+	 * 
+	 * Returns the negation of isInBounds()
+	 */
 	public boolean outOfBounds(Unit2 unit) {
 		return !isInBounds(unit);
 	}
@@ -225,133 +230,33 @@ public class CellGrid {
 	}
 
 	/*
-	 * getNextGridIntercept()
-	 * 
-	 * Given a start point and an end point, find the next point
-	 * that intersects either grid lines and return that point
-	 * as a Vector2. If the start point and end point are within
-	 * the same cell, then the method returns null.
-	 * 
-	 * Example:
-	 * ```
-	 * CellGrid grid = new CellGrid(new Unit2(10, 10));
-	 * 
-	 * Vector2 p0 = new Vector2(1.5, 1.5);
-	 * Vector2 p1 = new Vector2(1.75, 2.5);
-	 * 
-	 * Console.println(grid.getNextGridIntercept(p0, p1));
-	 * ```
-	 * > Output: Vector2<1.625, 2.0>
+	 * getGridIntercept()
+	 *
 	 */
 	public GridIntercept getGridIntercept(Vector2 start, Vector2 end) {
 		Vector2 unit = end.subtract(start).unit();
 		Vector2 signedUnit = unit.signedUnit();
 
-		double snapXDown 	= Math.floor(start.getX());
-		double snapXUp 		= Math.ceil(start.getX());
-		double snapYDown 	= Math.floor(start.getY());
-		double snapYUp 		= Math.ceil(start.getY());
-
-		double maxX, maxY;
-		Double y;
-
-		boolean pos_x = unit.getX() > 0;
-		boolean neg_x = unit.getX() < 0;
-		boolean pos_y = unit.getY() >= 0;
-		boolean neg_y = unit.getY() <= 0;
-
 		GridIntercept interceptResult = new GridIntercept();
 		interceptResult.setDirection(signedUnit);
 
-		/*
-		 * FOR ALL X != 0 CASE:
-		 * 
-		 * compute the maximum X and Y values that
-		 * are potential domains for a grid-line intersection
-		 */
-		if (pos_x || neg_x) {
-			maxX = pos_x
-				? snapXUp
-				: snapXDown;
-				
-			maxY = (pos_x && neg_y) || (neg_x && neg_y)
-				? snapYDown
-				: snapYUp;
-
-			/*
-			 * If either maxX = start.X or maxY = start.Y, then 
-			 * the start point is already on a grid line, so 
-			 * snap the value to the next grid line intersection
-			 */
-			if (maxX == start.getX())
-				maxX += pos_x ? 1 : -1;
-
-			if (maxY == start.getY())
-				maxY += pos_y ? 1 : -1;
-
-			/* Evaluate the function with respect to X, solving for Y */
-			y = start.solveFunctionOfXForY(end, maxX);
-
-			/*
-			 * Y GRID-LINE CASE:
-			 * 
-			 * If Y could not be solved, or it's value is not on the
-			 * same y-level as the start point, then the grid intersection
-			 * occurs on a Y grid-line axis. So, solve the equation
-			 * for X and return the result
-			 */
-			if (y == null || (Math.floor(y) != snapYDown) && (Math.ceil(y) != snapYUp)) {
-				y = start.solveFunctionOfXForX(end, maxY);
-
-				/*
-				 * If Y still doesn't exist, then there is no grid-line intersection
-				 * (both start and end points are in the same cell)
-				 */
-				if (y == null) return interceptResult;
-
-				return interceptResult
-					.setAxisOfIntersection(CellGridAxis.Y_GRID)
-					.setPointOfIntersection(new Vector2(y, maxY))
-					.setCellUnit(new Unit2(
-						(int) (),
-						(int) (maxY + signedUnit.getY())
-					));
-			} 
+		double limitX = unit.getX() < 0
+			? Math.floor(start.getX())
+			: Math.ceil(start.getX());
 			
-			/*
-			 * X GRID-LINE CASE:
-			 * 
-			 * If Y was solved and is the same integer value as the Y value
-			 * of the starting point, then the intersection occurs on the
-			 * X grid-line axis.
-			 */
-			return interceptResult
-				.setAxisOfIntersection(CellGridAxis.X_GRID)
-				.setPointOfIntersection(new Vector2(maxX, y))
-				.setCellUnit(new Unit2(
-					(int) (maxX >= 0 ? (neg_x ? maxX : maxX + 1) : (neg_x ? maxX - 1 : maxX)),
-					(int) (y >= 0 ? Math.ceil(y) : Math.floor(y))
-				));
-		}
+		double limitY = unit.getY() < 0
+			? Math.floor(start.getY())
+			: Math.ceil(start.getY());
+			
+		double ty = (limitY - start.getY()) / (end.getY() - start.getY());
+		double tx = (limitX - start.getX()) / (end.getX() - start.getX());
 
-		/*
-		 * X = 0 CASE:
-		 * 
-		 * If X = 0, then the line is not a function and the equation
-		 * cannot be solved. In such a case, the grid-line intersection
-		 * occurs directly above or below the starting point, depending
-		 * on `pos_y`
-		 */
-		return interceptResult
-			.setAxisOfIntersection(CellGridAxis.XY_GRID)
-			.setPointOfIntersection(new Vector2(
-				start.getX(),
-				pos_y ? snapYUp : snapYDown
-			))
-			.setCellUnit(new Unit2(
-				(int) (start.getX() > 0 ? snapXUp : snapXDown),
-				(int) (pos_y ? snapYUp : snapYDown)
-			));
+
+
+		Console.println("Unit: ", unit);
+		Console.println(limitX, limitY);
+		Console.println(tx, ty);
+		return new GridIntercept();
 	}
 
 	public ArrayList<Cell> getCellPath(Vector2 from, Vector2 to) {
@@ -400,7 +305,7 @@ public class CellGrid {
 				if (!hasNext()) throw new NoSuchElementException("Dead Cell path");
 				GridIntercept gridIntercept = nextGridIntercept;
 				nextGridIntercept = getGridIntercept(gridIntercept.getPointOfIntersection(), to);
-				Console.println(gridIntercept, gridIntercept.getCellUnit());
+				Console.println(gridIntercept);
 
 				return getCell(gridIntercept.getCellUnit());
 			}
