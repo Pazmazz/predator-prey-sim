@@ -113,9 +113,8 @@ public abstract class Vector<T extends Vector<T>> extends BaseVector<T> {
 	 */
 	public T ceil() {
 		return newVector(computeComponents(
-			"ceil()",
-			(args) -> Math.ceil((Double) args[0])
-		));
+				"ceil()",
+				(args) -> Math.ceil((Double) args[0])));
 	}
 
 	/*

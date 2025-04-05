@@ -114,7 +114,12 @@ public class CellGrid {
 	}
 
 	public Cell getCell(Vector2 position) {
-		return getCell(new Unit2((int) Math.ceil(position.getX()), (int) Math.ceil(position.getY())));
+		Vector2 signedUnit = position.signedUnit();
+
+		return getCell(new Unit2(
+			(int) Math.floor(position.getX() + signedUnit.getX()),
+			(int) Math.floor(position.getY() + signedUnit.getY())
+		));
 	}
 
 	public Cell collectCell(Unit2 unit) {
@@ -240,22 +245,62 @@ public class CellGrid {
 		GridIntercept interceptResult = new GridIntercept();
 		interceptResult.setDirection(signedUnit);
 
-		double limitX = unit.getX() < 0
-			? Math.floor(start.getX())
-			: Math.ceil(start.getX());
+		double startX = start.getX();
+		double startY = start.getY();
+		double endX = end.getX();
+		double endY = end.getY();
+
+		double startXRight = Math.ceil(startX);
+		double startXLeft = Math.floor(startX);
+		double startYTop = Math.ceil(startY);
+		double startYBottom = Math.floor(startY);
+
+		double endXRight = Math.ceil(endX);
+		double endXLeft = Math.floor(endX);
+		double endYTop = Math.ceil(endX);
+		double endYBottom = Math.floor(endX);
+
+		boolean pos_x = unit.getX() > 0;
+		boolean neg_x = unit.getX() < 0;
+		boolean pos_y = unit.getY() >= 0;
+		boolean neg_y = unit.getY() <= 0;
+
+		double limitX = pos_x
+			? Math.ceil(startX)
+			: Math.floor(startX);
+
+		double limitY = pos_y
+			? Math.ceil(startY)
+			: Math.floor(startY);
+
+		if (startX == limitX)
+			limitX += signedUnit.getX();
+
+		if (startY == limitY)
+			limitY += signedUnit.getY();
 			
-		double limitY = unit.getY() < 0
-			? Math.floor(start.getY())
-			: Math.ceil(start.getY());
+		// Solve parametric equations for t
+		double ty = (limitY - startY) / (endY - startY);
+		double tx = (limitX - startX) / (endX - startX);
+		double x, y;
+
+		// X-intercept
+		if (tx < ty) {
+			x = limitX;
+			y = tx * (endY - startY) + startY;
+
+		// Y-intercept
+		} else if (ty < tx) {
+			y = limitY;
+			x = ty * (endX - startX) + startX;
 			
-		double ty = (limitY - start.getY()) / (end.getY() - start.getY());
-		double tx = (limitX - start.getX()) / (end.getX() - start.getX());
-
-
-
-		Console.println("Unit: ", unit);
-		Console.println(limitX, limitY);
-		Console.println(tx, ty);
+		} else {
+			x = limitX;
+			y = limitY;
+		}
+		
+		Console.println(x, y, tx, ty);
+		interceptResult.setPointOfIntersection(new Vector2(x, y));
 		return new GridIntercept();
 	}
 

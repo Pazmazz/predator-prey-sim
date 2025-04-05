@@ -57,16 +57,11 @@ public class Vector2 extends Vector<Vector2> {
 		double dx = x1 - x0;
 		double dy = y1 - y0;
 
-		/*
-		 * Check domain
-		 */
-		if (useDomain && n < Math.min(x0, x1) || n > Math.max(x0, x1)) {
+		if (useDomain && n < Math.min(x0, x1) || n > Math.max(x0, x1))
 			return null;
-		}
 
-		if (dx == 0) {
+		if (dx == 0)
 			return null;
-		}
 
 		Double m = dy / dx;
 		Double y = m * (n - x0) + y0;
@@ -90,10 +85,9 @@ public class Vector2 extends Vector<Vector2> {
 	 */
 	public Double evaluateX(Vector2 p2, double y) {
 		return evaluateLinearFunctionWithRespectToN(
-			getY(), p2.getY(),
-			getX(), p2.getX(),
-			y, true
-		);
+				getY(), p2.getY(),
+				getX(), p2.getX(),
+				y, true);
 	}
 
 	@Override
