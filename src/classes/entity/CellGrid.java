@@ -11,8 +11,10 @@
 package classes.entity;
 
 import classes.entity.Cell.CellType;
+import classes.entity.CellGrid.CellGridAxis;
 import classes.util.Console;
 import classes.util.Console.DebugPriority;
+import classes.util.Math2;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -106,20 +108,44 @@ public class CellGrid {
 		cell = new Cell(unit);
 		virtualGrid.put(unit.toString(), cell);
 
-		if (outOfBounds(unit)) {
+		if (outOfBounds(unit))
 			cell.setType(CellType.OUT_OF_BOUNDS);
-		}
 
 		return cell;
 	}
 
 	public Cell getCell(Vector2 position) {
-		Vector2 signedUnit = position.signedUnit();
+		Vector2 quadrant = position.signedUnit();
+		Vector2 snapPos = position.floor();
 
-		return getCell(new Unit2(
-			(int) Math.floor(position.getX() + signedUnit.getX()),
-			(int) Math.floor(position.getY() + signedUnit.getY())
-		));
+		int snapX = (int) snapPos.getX();
+		int snapY = (int) snapPos.getY();
+
+		int x, y;
+
+		boolean posX = quadrant.getX() > 0;
+		boolean negX = quadrant.getX() < 0;
+		boolean posY = quadrant.getY() >= 0;
+		boolean negY = quadrant.getY() <= 0;
+
+		if (posX && posY) {
+			y = snapY + 1;
+			x = snapX + 1;
+
+		} else if (negX && posY) {
+			y = snapY + 1;
+			x = snapX;
+
+		} else if (negX && negY) {
+			y = snapY;
+			x = snapX;
+
+		} else {
+			x = snapX + 1;
+			y = snapY;
+		}
+
+		return getCell(new Unit2(x, y));
 	}
 
 	public Cell collectCell(Unit2 unit) {
@@ -225,9 +251,8 @@ public class CellGrid {
 	public void printCellsAdjacentTo(Unit2 unit) {
 		Cell[] adjCells = getCellsAdjacentTo(unit);
 
-		for (Cell adjCell : adjCells) {
+		for (Cell adjCell : adjCells)
 			adjCell.printInfo();
-		}
 	}
 
 	public void printCellsAdjacentTo(Cell cell) {
@@ -241,35 +266,26 @@ public class CellGrid {
 	public GridIntercept getGridIntercept(Vector2 start, Vector2 end) {
 		Vector2 unit = end.subtract(start).unit();
 		Vector2 signedUnit = unit.signedUnit();
-
+		Cell cell = getCell(start);
+		
+		Console.println("Start: ", cell);
+		
 		GridIntercept interceptResult = new GridIntercept();
 		interceptResult.setDirection(signedUnit);
 
 		double startX = start.getX();
 		double startY = start.getY();
-		double endX = end.getX();
-		double endY = end.getY();
+		double endX 	= end.getX();
+		double endY 	= end.getY();
 
-		double startXRight = Math.ceil(startX);
-		double startXLeft = Math.floor(startX);
-		double startYTop = Math.ceil(startY);
-		double startYBottom = Math.floor(startY);
+		boolean posX 	= unit.getX() > 0;
+		boolean posY 	= unit.getY() >= 0;
 
-		double endXRight = Math.ceil(endX);
-		double endXLeft = Math.floor(endX);
-		double endYTop = Math.ceil(endX);
-		double endYBottom = Math.floor(endX);
-
-		boolean pos_x = unit.getX() > 0;
-		boolean neg_x = unit.getX() < 0;
-		boolean pos_y = unit.getY() >= 0;
-		boolean neg_y = unit.getY() <= 0;
-
-		double limitX = pos_x
+		double limitX = posX
 			? Math.ceil(startX)
 			: Math.floor(startX);
 
-		double limitY = pos_y
+		double limitY = posY
 			? Math.ceil(startY)
 			: Math.floor(startY);
 
@@ -282,26 +298,47 @@ public class CellGrid {
 		// Solve parametric equations for t
 		double ty = (limitY - startY) / (endY - startY);
 		double tx = (limitX - startX) / (endX - startX);
-		double x, y;
+
+		Vector2 pointOfIntersection = null;
+		CellGridAxis axisOfIntersection = null;
+
+		// No intercepts (points are inside the cell)
+		if (tx > 1 && ty > 1) {
+			interceptResult.setCell(cell);
 
 		// X-intercept
-		if (tx < ty) {
-			x = limitX;
-			y = tx * (endY - startY) + startY;
+	} else if (tx < ty) {
+			axisOfIntersection = CellGridAxis.X_GRID;
+			pointOfIntersection = new Vector2(
+				limitX,
+				Math2.lerp(tx, startY, endY));
+
+			cell = posX
+				? getCellRightOf(cell)
+				: getCellLeftOf(cell);
 
 		// Y-intercept
 		} else if (ty < tx) {
-			y = limitY;
-			x = ty * (endX - startX) + startX;
+			axisOfIntersection = CellGridAxis.Y_GRID;
+			pointOfIntersection = new Vector2(
+				Math2.lerp(ty, startX, endX),
+				limitY);
+
+			cell = posY
+				? getCellBottomOf(cell)
+				: getCellTopOf(cell);
 			
 		} else {
-			x = limitX;
-			y = limitY;
+			axisOfIntersection = CellGridAxis.XY_GRID;
+			pointOfIntersection = new Vector2(
+					limitX,
+					limitY);
 		}
 		
-		Console.println(x, y, tx, ty);
-		interceptResult.setPointOfIntersection(new Vector2(x, y));
-		return new GridIntercept();
+		return interceptResult
+			.setPointOfIntersection(pointOfIntersection)
+			.setCell(cell)
+			.setAxisOfIntersection(axisOfIntersection);
 	}
 
 	public ArrayList<Cell> getCellPath(Vector2 from, Vector2 to) {
@@ -320,9 +357,9 @@ public class CellGrid {
 	}
 
 	private class CellPathCollection {
-		private ArrayList<Cell> cellPath = new ArrayList<>();
-		private Vector2 from;
-		private Vector2 to;
+		final private ArrayList<Cell> cellPath = new ArrayList<>();
+		final private Vector2 from;
+		final private Vector2 to;
 
 		public CellPathCollection(Vector2 from, Vector2 to) {
 			this.from = from;
@@ -352,7 +389,7 @@ public class CellGrid {
 				nextGridIntercept = getGridIntercept(gridIntercept.getPointOfIntersection(), to);
 				Console.println(gridIntercept);
 
-				return getCell(gridIntercept.getCellUnit());
+				return gridIntercept.getCell();
 			}
 		}
 	}
@@ -361,7 +398,7 @@ public class CellGrid {
 		private CellGridAxis axisOfIntersection = CellGridAxis.NONE;
 		private Vector2 pointOfIntersection;
 		private Vector2 direction;
-		private Unit2 cellUnit;
+		private Cell cell;
 
 		public GridIntercept setAxisOfIntersection(CellGridAxis axis) {
 			this.axisOfIntersection = axis;
@@ -378,8 +415,8 @@ public class CellGrid {
 			return this;
 		}
 
-		public GridIntercept setCellUnit(Unit2 cellUnit) {
-			this.cellUnit = cellUnit;
+		public GridIntercept setCell(Cell cell) {
+			this.cell = cell;
 			return this;
 		}
 
@@ -395,8 +432,8 @@ public class CellGrid {
 			return this.pointOfIntersection;
 		}
 
-		public Unit2 getCellUnit() {
-			return this.cellUnit;
+		public Cell getCell() {
+			return this.cell;
 		}
 
 		public boolean exists() {

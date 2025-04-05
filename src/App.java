@@ -6,11 +6,13 @@
  */
 
 import classes.abstracts.Application;
+import classes.entity.Cell;
 import classes.entity.CellGrid;
 import classes.entity.Game;
 import classes.entity.Unit2;
 import classes.entity.Vector2;
 import classes.util.Console;
+import java.util.Iterator;
 
 public class App extends Application {
 	/*
@@ -36,11 +38,18 @@ public class App extends Application {
 		 * other features.
 		 */
 
-		Vector2 v0 = new Vector2(-2.2,-2.6);
-		Vector2 v1 = new Vector2(-2.8,-2.6);
+		Vector2 v0 = new Vector2(5.566,-0.565);
+		Vector2 v1 = new Vector2(0.18,1.676);
 		CellGrid grid = new CellGrid(new Unit2(10, 10));
 
-		grid.getGridIntercept(v0, v1);
+		// Console.println(grid.getGridIntercept(v0, v1));
+		Iterator<Cell> itr = grid.getCellPathIterator(v0, v1);
+
+		Console.println(itr.next());
+		Console.println(itr.next());
+		Console.println(itr.next());
+		Console.println(itr.next());
+		Console.println(itr.next());
 		
 		/*
 		* y-int = f(ceil(x)) when p.unit() is (+, +) or (+, -)
