@@ -1,219 +1,202 @@
 /*
  * All configurable game settings
  */
-
 package classes.settings;
 
 import classes.entity.Unit2;
 import java.util.HashMap;
 
 public class GameSettings {
-	/* ============ */
-	/* CLASS FIELDS */
-	/* ============ */
-	final private String gameHeaderText;
-	final private String gameTitle;
-	
-	final private int cellSize;
-	final private Unit2 gridSize;
 
-	final private int screenWidth;
-	final private int screenHeight;
+    final private String gameHeaderText;
+    final private String gameTitle;
 
-	final private SimulationInfo simulationInfo;
+    final private int cellSize;
+    final private Unit2 gridSize;
 
-	/* =========== */
-	/* CONSTRUCTOR */
-	/* =========== */
-	public GameSettings() {
-		/* Editable */
-		gameHeaderText = "one"; // Text of the main header within the window
-		gameTitle = "two"; // Title of game window
+    final private int screenWidth;
+    final private int screenHeight;
 
-		cellSize = 36; // Pixels
-		gridSize = new Unit2(20, 20); // Cell units 
+    final private SimulationInfo simulationInfo;
 
-		/* Non-Editable */
-		screenWidth = gridSize.getX() * cellSize;
-		screenHeight = gridSize.getY() * cellSize;
+    public GameSettings() {
+        //
+        // Editable
+        //
+        this.gameHeaderText = "one"; // Text of the main header within the window
+        this.gameTitle = "two"; // Title of game window
 
-		simulationInfo = new SimulationInfo();
-	}
+        this.cellSize = 36; // Pixels
+        this.gridSize = new Unit2(20, 20); // Cell units 
 
-	/* ===== */
-	/* ENUMS */
-	/* ===== */
-	public enum SimulationType {
-		MOVEMENT,
-		RENDER,
-		SIMULATED_LAG,
-	}
+        //
+        // Non-Editable
+        //
+        this.screenWidth = gridSize.getX() * this.cellSize;
+        this.screenHeight = gridSize.getY() * this.cellSize;
+        this.simulationInfo = new SimulationInfo();
+    }
 
-	/* ==================== */
-	/* SETTINGS API CLASSES */
-	/* ==================== */
-	/*
-	 * class DebugInfo:
-	 * 
-	 * A simple API for getting and setting debug info
-	 * variables. For now, the sole purpose of this class
-	 * is to get and set debug message colors
-	 */
-	public class DebugInfo {
-		private String primaryColor;
-		private String secondaryColor;
+    public enum SimulationType {
+        MOVEMENT,
+        RENDER,
+        SIMULATED_LAG,
+    }
 
-		public DebugInfo() {
-			/* Editable */
-			primaryColor = "green";
-			secondaryColor = "cyan";
-		}
+    public class DebugInfo {
 
-		public String getPrimaryColor() {
-			return primaryColor;
-		}
+        private String primaryColor;
+        private String secondaryColor;
 
-		public String getSecondaryColor() {
-			return secondaryColor;
-		}
+        public DebugInfo() {
+            //
+            // Editable
+            //
+            this.primaryColor = "green";
+            this.secondaryColor = "cyan";
+        }
 
-		public DebugInfo setPrimaryColor(String color) {
-			primaryColor = color;
-			return this;
-		}
+        public String getPrimaryColor() {
+            return this.primaryColor;
+        }
 
-		public DebugInfo setSecondaryColor(String color) {
-			secondaryColor = color;
-			return this;
-		}
-	}
+        public String getSecondaryColor() {
+            return this.secondaryColor;
+        }
 
-	/*
-	 * class SimulationInfo:
-	 * 
-	 * This class is the main API for accessing simulation
-	 * settings such as FPS. It holds all information about
-	 * each simulation frame and can be accessed with chained
-	 * getter methods, for example:
-	 * 
-	 * ```
-	 * SimulationInfo info = new SimulationInfo();
-	 * 
-	 * info.getFPS();
-	 * info.getSettings(simulationType).getDebugInfo();
-	 * ```
-	 * 
-	 * This class aggregates instances of `SimulationSettings`
-	 */
-	public class SimulationInfo {
-		final private double FPS;
-		final private HashMap<SimulationType, SimulationSettings> settings;
+        public DebugInfo setPrimaryColor(String color) {
+            this.primaryColor = color;
+            return this;
+        }
 
-		public SimulationInfo() {
-			/* Editable */
-			FPS = 1.0 / 60;
-			settings = new HashMap<>();
+        public DebugInfo setSecondaryColor(String color) {
+            this.secondaryColor = color;
+            return this;
+        }
+    }
 
-			SimulationSettings render = new SimulationSettings()
-					.setFPS(1.0 / 60)
-					.setProcessName("Render");
+    /**
+     * This class is the main API for accessing simulation settings such as FPS.
+     * It holds all information about each simulation frame and can be accessed
+     * with chained getter methods
+     *
+     * <p>
+     * This class aggregates instances of `SimulationSettings`
+     */
+    public class SimulationInfo {
 
-			render.getDebugInfo().setPrimaryColor("red");
+        final private double FPS;
+        final private HashMap<SimulationType, SimulationSettings> settings;
 
-			SimulationSettings movement = new SimulationSettings()
-					.setFPS(1.0)
-					.setProcessName("Movement");
+        public SimulationInfo() {
+            //
+            // Editable
+            //
+            FPS = 1.0 / 60;
+            settings = new HashMap<>();
 
-			movement.getDebugInfo().setPrimaryColor("yellow");
+            // Render
+            SimulationSettings render = new SimulationSettings()
+                    .setFPS(1.0 / 60)
+                    .setProcessName("Render");
 
-			SimulationSettings simulatedLag = new SimulationSettings()
-					.setFPS(5)
-					.setProcessName("SimulatedLag");
+            // Movement
+            SimulationSettings movement = new SimulationSettings()
+                    .setFPS(1.0)
+                    .setProcessName("Movement");
 
-			simulatedLag.getDebugInfo().setPrimaryColor("purple");
+            // SimulatedLag
+            SimulationSettings simulatedLag = new SimulationSettings()
+                    .setFPS(5)
+                    .setProcessName("SimulatedLag");
 
-			/* Non-Editable */
-			settings.put(SimulationType.RENDER, render);
-			settings.put(SimulationType.MOVEMENT, movement);
-			settings.put(SimulationType.SIMULATED_LAG, simulatedLag);
-		}
+            render.getDebugInfo().setPrimaryColor("red");
+            movement.getDebugInfo().setPrimaryColor("yellow");
+            simulatedLag.getDebugInfo().setPrimaryColor("purple");
 
-		public double getFPS() {
-			return FPS;
-		}
+            //
+            // Non-Editable
+            //
+            settings.put(SimulationType.RENDER, render);
+            settings.put(SimulationType.MOVEMENT, movement);
+            settings.put(SimulationType.SIMULATED_LAG, simulatedLag);
+        }
 
-		public SimulationSettings getSettings(SimulationType simulationType) {
-			return settings.get(simulationType);
-		}
-	}
+        public double getFPS() {
+            return FPS;
+        }
 
-	/*
-	 * class SimulationSettings:
-	 * 
-	 * A settings class that holds all relevant information
-	 * about a given simulation process. These instances are
-	 * aggregated in the Simulation class for central organization.
-	 */
-	public class SimulationSettings {
-		private double FPS;
-		private String processName;
-		final private DebugInfo debugInfo;
+        public SimulationSettings getSettings(SimulationType simulationType) {
+            return settings.get(simulationType);
+        }
+    }
 
-		public SimulationSettings() {
-			debugInfo = new DebugInfo();
-		}
+    /**
+     * A settings class that holds all relevant information about a given
+     * simulation process. These instances are aggregated in the Simulation
+     * class for central organization.
+     */
+    public class SimulationSettings {
 
-		public String getProcessName() {
-			return processName;
-		}
+        private double FPS;
+        private String processName;
+        final private DebugInfo debugInfo;
 
-		public double getFPS() {
-			return FPS;
-		}
+        public SimulationSettings() {
+            this.debugInfo = new DebugInfo();
+        }
 
-		public DebugInfo getDebugInfo() {
-			return debugInfo;
-		}
+        public String getProcessName() {
+            return this.processName;
+        }
 
-		public SimulationSettings setFPS(double FPS) {
-			this.FPS = FPS;
-			return this;
-		}
+        public double getFPS() {
+            return FPS;
+        }
 
-		public SimulationSettings setProcessName(String name) {
-			processName = name;
-			return this;
-		}
-	}
+        public DebugInfo getDebugInfo() {
+            return this.debugInfo;
+        }
 
-	/* ================= */
-	/* GAME SETTINGS API */
-	/* ================= */
-	public SimulationInfo getSimulation() {
-		return simulationInfo;
-	}
+        public SimulationSettings setFPS(double FPS) {
+            this.FPS = FPS;
+            return this;
+        }
 
-	public String getTitle() {
-		return gameTitle;
-	}
+        public SimulationSettings setProcessName(String name) {
+            this.processName = name;
+            return this;
+        }
+    }
 
-	public String getHeaderText() {
-		return gameHeaderText;
-	}
+    //
+    // Public getters
+    //
+    public SimulationInfo getSimulation() {
+        return this.simulationInfo;
+    }
 
-	public int getCellSize() {
-		return cellSize;
-	}
+    public String getTitle() {
+        return this.gameTitle;
+    }
 
-	public int getScreenWidth() {
-		return screenWidth;
-	}
+    public String getHeaderText() {
+        return this.gameHeaderText;
+    }
 
-	public int getScreenHeight() {
-		return screenHeight;
-	}
+    public int getCellSize() {
+        return this.cellSize;
+    }
 
-	public Unit2 getGridSize() {
-		return gridSize;
-	}
+    public int getScreenWidth() {
+        return this.screenWidth;
+    }
+
+    public int getScreenHeight() {
+        return this.screenHeight;
+    }
+
+    public Unit2 getGridSize() {
+        return this.gridSize;
+    }
 }

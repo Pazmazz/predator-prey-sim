@@ -1,10 +1,5 @@
 /*
  * @written 3/29/2025
- * 
- * class Console:
- * 
- * Used for interacting with and styling the console. Much of this code was reused from
- * the final project from the previous semester in CS-190.
  */
 package classes.util;
 
@@ -14,9 +9,15 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * Used for interacting with and styling the console. Much of this code was
+ * reused from the final project from the previous semester in CS-190.
+ */
 public class Console extends Application {
-    // Debug info (immutable at runtime)
 
+    //
+    // Debug info (immutable at runtime)
+    //
     final private static Map<DebugPriority, String> debugPrefixes = new HashMap<>() {
         {
             put(DebugPriority.LOW, "$text-green [Debug Low]$text-reset ");
@@ -89,6 +90,12 @@ public class Console extends Application {
                 {"bright_white", "\u001B[107m"}
             };
 
+    /**
+     * Internally calls {@code System.out.println} but applies conditional
+     * console colors.
+     *
+     * @param contents the collection of objects to print
+     */
     public static void println(Object... contents) {
         if (consoleColorsEnabled) {
             System.out.println(substituteColors(Formatter.concatArray(contents)));
@@ -97,6 +104,12 @@ public class Console extends Application {
         }
     }
 
+    /**
+     * Internally calls {@code System.out.print} but applies conditional console
+     * colors
+     *
+     * @param message the message to inline print
+     */
     public static void print(String message) {
         if (consoleColorsEnabled) {
             System.out.print(substituteColors(message));
@@ -105,38 +118,88 @@ public class Console extends Application {
         }
     }
 
+    /**
+     * Throws a generic unchecked error
+     *
+     * @param contents the objects to include in the error
+     */
     public static void error(Object... contents) {
         throw new Error(Formatter.concatArray(contents));
     }
 
+    /**
+     * Prints an ASCII line to the console of a specified length
+     *
+     * @param repeat
+     */
     public static void br(int repeat) {
         println("-".repeat(repeat));
     }
 
+    /**
+     * Override: {@code br}
+     *
+     * Calls the root method but passes a default length value of {@code 50}
+     */
     public static void br() {
         br(50);
     }
 
+    /**
+     * Checks if the console is currently in debug mode
+     *
+     * @return true if the console is in debug mode
+     */
     public static boolean isDebugMode() {
         return debugModeEnabled;
     }
 
+    /**
+     * Sets the console's debug mode to either enabled or disabled
+     *
+     * @param enabled whether debug mode is enabled or disabled (true = enabled)
+     */
     public static void setDebugModeEnabled(boolean enabled) {
         debugModeEnabled = enabled;
     }
 
+    /**
+     * Disables a specified {@code DebugPriority} level from being printed to
+     * the output window.
+     *
+     * @param priority the {@code DebugPriority} level to hide
+     */
     public static void hideDebugPriority(DebugPriority priority) {
         listeningDebugPriorities.put(priority, Boolean.FALSE);
     }
 
+    /**
+     * Enables a specified {@code DebugPriority} level to being printed to the
+     * output window.
+     *
+     * @param priority the {@code DebugPriority} level to show
+     */
     public static void showDebugPriority(DebugPriority priority) {
         listeningDebugPriorities.put(priority, Boolean.TRUE);
     }
 
+    /**
+     * Checks whether a specified {@code DebugPriority} is currently enabled
+     *
+     * @param priority the {@code DebugPriority} to check for
+     * @return true if the console has the specified {@code DebugPriority}
+     * enabled
+     */
     public static boolean isShowingDebugPriority(DebugPriority priority) {
         return listeningDebugPriorities.get(priority);
     }
 
+    /**
+     * Sets a {@code DebugPriority} to be exclusively shown, disabling all the
+     * other priority levels.
+     *
+     * @param priority the {@code DebugPriority} to exlusively show
+     */
     public static void setDebugPriority(DebugPriority priority) {
         for (DebugPriority key : listeningDebugPriorities.keySet()) {
             if (priority == key) {
@@ -147,48 +210,62 @@ public class Console extends Application {
         }
     }
 
+    /**
+     * Wraps around {@code Console.println} to conditionally execute only IF
+     * {@code debugModeEnabled} is true AND the specified {@code DebugPriority}
+     * level is enabled.
+     *
+     * @param priority the {@code DebugPriority} level to set the print message
+     * to
+     * @param messages the object messages to be printed
+     */
     public static void debugPrint(DebugPriority priority, Object... messages) {
         if (isDebugMode() && isShowingDebugPriority(priority)) {
-            println(
-                    "%s: %s".formatted(
-                            debugPrefixes.get(priority),
-                            Formatter.concatArray(messages, " | ")
-                    )
-            );
+            println(String.format(
+                    "%s: %s",
+                    debugPrefixes.get(priority),
+                    Formatter.concatArray(messages, " | ")));
         }
     }
 
+    /**
+     * Wraps around {@code Console.println} to conditionally execute only IF
+     * {@code debugModeEnabled} is true AND the specified {@code DebugPriority}
+     * level is enabled.
+     *
+     * @param priority the {@code DebugPriority} level to set the print message
+     * to
+     * @param messages the object messages to be printed
+     */
     public static void debugPrint(Object... messages) {
         debugPrint(DebugPriority.LOW, messages);
     }
 
+    /**
+     * Sets console colors to be enabled or disabled.
+     *
+     * <p>
+     * Its worth noting that on some systems, the character codes for rendering
+     * console colors are not supported, hence the setting.
+     *
+     * @param enabled whether console colors are enabled or disabled (true =
+     * enabled)
+     */
     public static void setConsoleColorsEnabled(boolean enabled) {
         consoleColorsEnabled = enabled;
     }
 
-    /*
-   * substituteColors() with default: <String[][]> theme, <boolean> reset
-     */
+    //
+    // Console colors parsing
+    //
     private static String substituteColors(String source) {
         return substituteColors(DEFAULT_THEME, source);
     }
 
-    /*
-   * substituteColors() with default: <boolean> reset
-     */
     private static String substituteColors(String[][] theme, String source) {
         return substituteColors(theme, source, true);
     }
 
-    /*
-   * substituteColors(<String[][]> theme, String source, <boolean> reset):
-   * 
-   * Takes an input string and parses it for the tokens: "$colorType-colorValue"
-   * or "$colorSet". Replaces those tokens with their respective color values inside the
-   * TEXT_COLORS and BG_COLORS arrays, and then substitutes them in the newly built 
-   * string.
-   * 
-     */
     private static String substituteColors(String[][] theme, String source, boolean reset) {
         if (source == null) {
             return "";
@@ -255,50 +332,19 @@ public class Console extends Application {
                 + (reset ? getColor(TEXT_COLORS, "reset") : "");
     }
 
-    /*
-   * escapeColorTag(<String> str):
-   * 
-   * Escapes the "$colorType-colorValue" tokens in
-   * a given string by using the "/" character
-   * 
-   * Ex:
-   *    escapeColorTag("/$text-green hello world") -> "\0esc hello world"
-     */
     private static String escapeColorTag(String str) {
         return str.replaceAll("/\\$", "\0esc");
     }
 
-    /*
-   * unescapeColorTag(<String> str):
-   * 
-   * Unescapes an already escaped string and returns the 
-   * intended text.
-   * 
-   * Ex:
-   *    unescapeColorTag(escapeColorTag("/$text-green hello world")) -> "$text-green hello world"
-     */
     private static String unescapeColorTag(String str) {
         return str.replaceAll("\0esc", "\\$");
     }
 
-    /*
-   * replaceColorTags(<Object> message):
-   * 
-   * Replaces all "$colorType-colorValue" tokens with an
-   * empty string - used when the system does not support
-   * console colors
-     */
     private static String replaceColorTags(Object message) {
         String text = "" + message;
         return text.replaceAll(COLOR_TAG_PATTERN + " ", "");
     }
 
-    /*
-   * getColor(<String[][]> colorList, <String> name):
-   * 
-   * Returns an ASCII console color from a given
-   * color list
-     */
     private static String getColor(String[][] colorList, String name) {
         for (String[] colorData : colorList) {
             if (name.equals(colorData[0])) {
@@ -309,12 +355,6 @@ public class Console extends Application {
         return "[color not found]";
     }
 
-    /*
-   * getThemeToken(<String[][]> theme, String token):
-   * 
-   * Returns a given theme token from a selected
-   * theme array
-     */
     private static String[] getThemeToken(String[][] theme, String token) {
         for (String[] themeData : theme) {
             if (token.equals(themeData[0])) {

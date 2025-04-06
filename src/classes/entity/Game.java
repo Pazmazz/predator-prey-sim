@@ -1,5 +1,4 @@
 /*
- * @Author(s): Alex, Grier, Jaylen, Will
  * @written 3/28/2025
  */
 package classes.entity;
@@ -15,6 +14,11 @@ import classes.util.Console;
 import classes.util.Time;
 import java.util.UUID;
 
+/**
+ * This class instantiates the entire game context. All methods for interacting
+ * with the game and all game state is managed through the instance of this
+ * class.
+ */
 public class Game extends Application implements Runnable {
 
     final private Thread mainThread;
@@ -25,13 +29,17 @@ public class Game extends Application implements Runnable {
 
     private GameState state = GameState.INITIAL;
 
+    //
     // Update frames
+    //
     public MovementFrame movementFrame;
     public RenderFrame renderFrame;
     public SimulatedLagFrame simulatedLagFrame;
     public FrameProcessor[] frameProcesses;
 
+    //
     // Internal states
+    //
     public static enum GameState {
         INITIAL,
         LOADED,
@@ -40,20 +48,13 @@ public class Game extends Application implements Runnable {
         TERMINATED,
     }
 
-    /*
-	 * Game():
-	 * 
-	 * A constructor method for the main Game class to initialize 
-	 * prerequisite conditions for the game such as UI components
-	 * and the game loop thread.
-     */
     public Game() {
-        // IMPORTANT: `settings` must be defined first, since other classes reference it
+        // IMPORTANT: settings must be defined first, since other classes reference it
         settings = new GameSettings();
+
         sessionId = UUID.randomUUID().toString();
         screen = new GameScreen(this);
         mainThread = new Thread(this);
-
         gameGrid = new CellGrid(settings.getGridSize());
 
         movementFrame = new MovementFrame(this, SimulationType.MOVEMENT);
@@ -69,10 +70,11 @@ public class Game extends Application implements Runnable {
         state = GameState.LOADED;
     }
 
-    /*
-	 * start():
-	 * 
-	 * A method for running the main game loop thread.
+    /**
+     * Begins running the game loop and sets the game state from {@code LOADED}
+     * to {@code RUNNING}
+     *
+     * @throws Error if this method is called more than once
      */
     public void start() {
         if (isLoaded()) {
@@ -83,24 +85,21 @@ public class Game extends Application implements Runnable {
         }
     }
 
-    /*
-	 * terminate():
-	 * 
-	 * A method for terminating the game loop in the current game thread.
+    /**
+     * Terminates the game loop by setting the game state to {@code TERMINATED}
      */
     public void terminate() {
         setState(GameState.TERMINATED);
     }
 
-    /*
-	 * run():
-	 * 
-	 * A required method override from the `Runnable` interface which
-	 * is called once the `gameThread.start()` method is called. 
-	 * 
-	 * This method serves as the main game loop, which is responsible
-	 * for updating game steps, rendering frames, and handling all other
-	 * incremental game logic.
+    /**
+     * A required method override from the {@code Runnable} interface which is
+     * called once the {@code start} method is called.
+     *
+     * <p>
+     * This method serves as the main game loop, which is responsible for
+     * updating game steps, rendering frames, and handling all other incremental
+     * game logic.
      */
     @Override
     public void run() {
@@ -122,9 +121,9 @@ public class Game extends Application implements Runnable {
         }
     }
 
-    /* -------------- */
- /* Getter methods */
- /* -------------- */
+    //
+    // Public getters
+    //
     public GameScreen getScreen() {
         return screen;
     }
@@ -145,9 +144,9 @@ public class Game extends Application implements Runnable {
         return gameGrid;
     }
 
-    /* ------------------------- */
- /* Boolean condition methods */
- /* ------------------------- */
+    //
+    // Public logic checks
+    //
     public boolean isRunning() {
         return state == GameState.RUNNING;
     }
@@ -172,9 +171,9 @@ public class Game extends Application implements Runnable {
         return state == GameState.TERMINATED;
     }
 
-    /* -------------- */
- /* Setter methods */
- /* -------------- */
+    //
+    // Public setters
+    //
     public void setState(GameState newState) {
         state = newState;
     }

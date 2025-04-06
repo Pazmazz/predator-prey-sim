@@ -1,11 +1,5 @@
 /*
  * @written 3/28/2025
- * 
- * class GameScreen:
- * 
- * An extension of the JFrame class, providing only default settings specific for
- * game with few additional methods and functionality. This class is responsible
- * for rendering the top-level system screen window for the game.
  */
 package classes.entity;
 
@@ -15,6 +9,11 @@ import java.awt.event.WindowEvent;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
+/**
+ * An extension of the JFrame class, providing only default settings specific
+ * for game with few additional methods and functionality. This class is
+ * responsible for rendering the top-level system screen window for the game.
+ */
 public class GameScreen extends JFrame {
 
     final private JPanel masterFrame;
