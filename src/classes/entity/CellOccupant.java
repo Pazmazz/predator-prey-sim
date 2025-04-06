@@ -4,6 +4,7 @@
 package classes.entity;
 
 import exceptions.CellIsOccupiedException;
+import exceptions.NoCellFoundException;
 
 /**
  * A superclass representing the most general entity that is allowed to be
@@ -31,22 +32,26 @@ public class CellOccupant {
     }
 
     /**
-     * Assigns the current entity to a given cell. Each entity can only be
-     * assigned one cell at a time, so it is not required to remove the entity's
-     * cell before assigning them to a new cell.
+     * Assigns the current occupant to a given cell. Each occupant can only be
+     * assigned one cell at a time, so it is not required to remove the
+     * occupant's cell before assigning them to a new cell. This is done
+     * internally.
      *
      * <p>
-     * If {@code assignCell} is called, and the entity already belongs to a
-     * cell, then {@code cell.removeOccupant} is called on the old.
+     * If {@code assignCell} is called, and the occupant already belongs to a
+     * cell, then {@code cell.removeOccupant} is called on the current cell
+     * before assigning the occupant to the new cell, if the new cell is not
+     * already occupied.
      *
-     * @param targetCell
-     * @param updateCell
+     * @param targetCell the cell to assign the occupant
+     * @param cellAggregatesOccupant whether the assigned cell aggregates the
+     * occupant
      *
      * @throws CellIsOccupiedException if the assigned cell already has an
      * occupant
      */
     public void assignCell(Cell targetCell, boolean cellAggregatesOccupant) {
-        if (targetCell.isOccupied() && targetCell.getOccupant() != this) {
+        if (targetCell.hasOccupant() && targetCell.getOccupant() != this) {
             throw new CellIsOccupiedException();
         }
 
@@ -61,6 +66,14 @@ public class CellOccupant {
         this.currentCell = targetCell;
     }
 
+    /**
+     * Overload: {@code assignCell}
+     *
+     * Calls the root method while passing {@code cellAggregatesOccupant = true}
+     * as default
+     *
+     * @param targetCell the cell to assign the occupant
+     */
     public void assignCell(Cell targetCell) {
         assignCell(targetCell, true);
     }
@@ -73,7 +86,19 @@ public class CellOccupant {
         return this.currentCell != null;
     }
 
+    /**
+     * Removes the occupant's cell from the occupant, and removes the occupant
+     * from the current cell. Does not check if a current cell already exists;
+     * this must be checked for using {@code hasCell} before attempting to use
+     * this method.
+     *
+     * @throws NoCellFoundException if the calling this method when the occupant
+     * has no cell
+     */
     public void removeCell() {
+        if (!hasCell()) {
+            throw new NoCellFoundException();
+        }
         this.currentCell.removeOccupant();
         this.currentCell = null;
     }

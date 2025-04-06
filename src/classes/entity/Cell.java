@@ -5,6 +5,7 @@ package classes.entity;
 
 import classes.util.Console;
 import exceptions.CellIsOccupiedException;
+import exceptions.NoOccupantFoundException;
 import exceptions.OccupantHasCellException;
 
 /**
@@ -67,7 +68,7 @@ public class Cell {
      * another cell
      */
     public void setOccupant(CellOccupant cellOccupant, boolean occupantAggregatesCell) {
-        if (isOccupied() && this.cellOccupant != cellOccupant) {
+        if (hasOccupant() && this.cellOccupant != cellOccupant) {
             throw new CellIsOccupiedException();
         }
 
@@ -102,21 +103,29 @@ public class Cell {
     }
 
     /**
-     * Removes the current occupant in the cell.
+     * Removes the current occupant in the cell. Does not check if the cell
+     * already has an occupant; this must be done manually with
+     * {@code hasOccupant}
      *
-     * @return
+     * @return the removed occupant
+     *
+     * @throws NoOccupantFoundException if calling this method when the cell has
+     * no occupant
      */
     public CellOccupant removeOccupant() {
+        if (!hasOccupant()) {
+            throw new NoOccupantFoundException();
+        }
+
         CellOccupant _cellOccupant = this.cellOccupant;
         this.cellOccupant = null;
         setVacancy(CellVacancy.EMPTY);
         return _cellOccupant;
     }
 
-    public void moveOccupantTo(Cell targetCell) {
-        targetCell.setOccupant(removeOccupant());
-    }
-
+    //
+    // Public getters and logic checks
+    //
     public Vector2 getPosition() {
         return this.position;
     }
@@ -137,7 +146,7 @@ public class Cell {
         return this.cellVacancy == CellVacancy.EMPTY;
     }
 
-    public boolean isOccupied() {
+    public boolean hasOccupant() {
         return this.cellVacancy == CellVacancy.OCCUPIED;
     }
 
@@ -170,7 +179,7 @@ public class Cell {
         printInfoItem("Type", getType().toString());
         printInfoItem("Vacancy", getVacancy().toString());
 
-        if (isOccupied()) {
+        if (hasOccupant()) {
             printInfoItem("Occupant", getOccupant().toString());
         }
     }

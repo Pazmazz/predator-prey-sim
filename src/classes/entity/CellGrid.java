@@ -558,6 +558,9 @@ public class CellGrid {
                 return this.nextGridIntercept.exists();
             }
 
+            /**
+             * TODO: Handle case when line intersects both grid axes.
+             */
             @Override
             public Cell next() {
                 if (!hasNext()) {
@@ -566,19 +569,17 @@ public class CellGrid {
 
                 GridIntercept thisIntercept = this.nextGridIntercept;
                 GridIntercept nextIntercept = getGridIntercept(thisIntercept.getPointOfIntersection(), to);
-                // this.nextGridIntercept = nextIntercept;
+                this.nextGridIntercept = nextIntercept;
 
-                if (nextIntercept.hasXY()) {
-                    Vector2 direction = nextIntercept.getDirection();
-                    Cell sideCell = direction.getX() < 0
-                            ? getCellLeftOf(thisIntercept.getCell())
-                            : getCellRightOf(thisIntercept.getCell());
-
-                    Console.println("Sidecell: ", sideCell.getPosition(), sideCell.getUnit2());
-                } else {
-                    this.nextGridIntercept = nextIntercept;
-                }
-
+                // if (nextIntercept.hasXY()) {
+                //     Vector2 direction = nextIntercept.getDirection();
+                //     Cell sideCell = direction.getX() < 0
+                //             ? getCellLeftOf(thisIntercept.getCell())
+                //             : getCellRightOf(thisIntercept.getCell());
+                //     Console.println("Sidecell: ", sideCell.getPosition(), sideCell.getUnit2());
+                // } else {
+                //     this.nextGridIntercept = nextIntercept;
+                // }
                 Console.println(thisIntercept);
                 return thisIntercept.getCell();
             }
@@ -596,6 +597,9 @@ public class CellGrid {
         private Vector2 direction;
         private Cell cell;
 
+        //
+        // Public setters and getters
+        //
         public GridIntercept setAxisOfIntersection(CellGridAxis axis) {
             this.axisOfIntersection = axis;
             return this;

@@ -1,35 +1,22 @@
 /*
  * @written 4/2/2025
- * 
- * abstract class Vector:
- * 
- * A more specific sub-category of BaseVector which includes
- * implementation that does not assume that it's components
- * are necessarily strictly int values. Therefore, methods 
- * such as:
- * - multiply(
  */
 package classes.abstracts;
 
-import java.util.ArrayList;
-
+/**
+ * A more specific sub-category of BaseVector which includes implementation that
+ * does not assume that it's components are necessarily strictly int values.
+ */
 public abstract class Vector<T extends Vector<T>> extends BaseVector<T> {
 
     private Double magnitude;
     private T unit;
 
-    /*
-	 * divide()
-	 * 
-	 * Return a new Vector<T> with all components
-	 * of itself divided by all components of the operand vector.
-	 * 
-	 * Example:
-	 * ```
-	 * Vector2 v = new Vector2(4, 4);
-	 * Console.println(v.divide(new Vector2(4, 4));
-	 * ```
-	 * Output: Vector2<1.0, 1.0>
+    /**
+     * Divide the components of this Vector<T> by some other Vector<T>
+     *
+     * @param v the Vector<T> to divide the components of
+     * @return the Vector<T> quotient
      */
     public T divide(T v) {
         return newVector(computeComponents(
@@ -38,83 +25,90 @@ public abstract class Vector<T extends Vector<T>> extends BaseVector<T> {
                 (args) -> (Double) args[0] / (Double) args[1]));
     }
 
-    /*
-	 * @overload: divide()
-	 * 
-	 * Divide all components of Vector<T> by some double value
+    /**
+     * Overload: {@code divide}
+     *
+     * Divide the components of this Vector<T> with some common divisor
+     *
+     * @param dec the common divisor to divide into the components of this
+     * Vector<T>
+     * @return ...
      */
     public T divide(double dec) {
         return newVector(computeComponents(
-                "divide(int scalar)",
                 (args) -> (Double) args[0] / dec));
     }
 
-    /*
-	 * @overload: divide()
-	 * 
-	 * Divide all components of Vector<T> by some scalar integer
+    /**
+     * Overload: {@code divide}
+     *
+     * @param scalar the common integer divisor to divide into the components of
+     * this Vector<T>
+     * @return ...
      */
     public T divide(int scalar) {
         return newVector(computeComponents(
-                "divide(int scalar)",
                 (args) -> (Double) args[0] / scalar));
     }
 
-    /*
-	 * @overload: multiply()
-	 * 
-	 * Multiply all components of Vector<T> by some double value
+    /**
+     * Overload: {@code multiply}
+     *
+     * @param dec the common double to multiply the components of this Vector<T>
+     * by
+     * @return ...
      */
     public T multiply(double dec) {
         return newVector(computeComponents(
-                "multiply(double scalar)",
                 (args) -> (Double) args[0] * dec));
     }
 
-    /*
-	 * @overload: add()
+    /**
+     * Overload: {@code add}
+     *
+     * @param dec
+     * @return ...
      */
     public T add(double dec) {
         return newVector(computeComponents(
-                "add(double dec)",
                 (args) -> (Double) args[0] + dec));
     }
 
-    /*
-	 * @overload: subtract()
+    /**
+     * Overload: {@code subtract}
+     *
+     * @param dec
+     * @return ...
      */
     public T subtract(double dec) {
         return newVector(computeComponents(
-                "subtract(double dec)",
                 (args) -> (Double) args[0] - dec));
     }
 
-    /*
-	 * floor()
-	 * 
-	 * Floor all components of Vector<T>
+    /**
+     * Floor the components of this Vector<T>
+     *
+     * @return the new Vector<T> with floored components of this Vector<T>
      */
     public T floor() {
         return newVector(computeComponents(
-                "floor()",
                 (args) -> Math.floor((Double) args[0])));
     }
 
-    /*
-	 * ceil()
-	 * 
-	 * Ceil all components of Vector<T>
+    /**
+     * Ceil the components of this Vector<T>
+     *
+     * @return the new Vector<T> with ceiled components of this Vector<T>
      */
     public T ceil() {
         return newVector(computeComponents(
-                "ceil()",
                 (args) -> Math.ceil((Double) args[0])));
     }
 
-    /*
-	 * magnitude()
-	 * 
-	 * Return the magnitude of Vector<T>
+    /**
+     * Get the magnitude of this Vector<T>
+     *
+     * @return the magnitude of this Vector<T>
      */
     public double magnitude() {
         if (this.magnitude != null) {
@@ -128,10 +122,11 @@ public abstract class Vector<T extends Vector<T>> extends BaseVector<T> {
         return this.magnitude;
     }
 
-    /*
-	 * midpoint()
-	 * 
-	 * Returns the midpoint between two Vector<T> objects
+    /**
+     * Get the midpoint between this Vector<T> and some other Vector<T>
+     *
+     * @param v the Vector<T> to get the midpoint between
+     * @return the resulting Vector<T> representing the midpoint
      */
     public T midpoint(T v) {
         return newVector(computeComponents(
@@ -140,10 +135,10 @@ public abstract class Vector<T extends Vector<T>> extends BaseVector<T> {
                 (args) -> (((Double) args[0] + (Double) args[1]) / 2)));
     }
 
-    /*
-	 * unit()
-	 * 
-	 * Return the unit vector of Vector<T>
+    /**
+     * Get the unit vector of this Vector<T>
+     *
+     * @return the unit vector of this Vector<T>
      */
     public T unit() {
         if (this.unit != null) {
@@ -151,21 +146,5 @@ public abstract class Vector<T extends Vector<T>> extends BaseVector<T> {
         }
         this.unit = divide(magnitude());
         return this.unit;
-    }
-
-    /*
-	 * getComponentsAsInt()
-	 * 
-	 * Return the component ArrayList as an ArrayList of
-	 * int values
-     */
-    public ArrayList<Integer> getComponentsAsInt() {
-        ArrayList<Integer> intComponents = new ArrayList<>();
-
-        for (Double d : this.components) {
-            intComponents.add(d.intValue());
-        }
-
-        return intComponents;
     }
 }

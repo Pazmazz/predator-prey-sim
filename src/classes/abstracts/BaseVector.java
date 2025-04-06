@@ -1,50 +1,39 @@
 /*
  * @written 4/2/2025
- * 
- * abstract class BaseVector:
- * 
- * An abstract class that provides base functionality for any
- * vector-related object. This class assumes that all interactions
- * with vector components of it's subclasses are integers, however, 
- * it stores all components as double values. This is done so that
- * if a subclass wishes to restrict the manipulation of it's 
- * components to int types, it can extend this class and guarantee 
- * that all inherited methods will not generate a non-int value
- * as a result.
- * 
- * For example, methods such as:
- * - add()
- * - subtract()
- * - multiply(int x)
- * - multiply(T extends BaseVector)
- * 
- * Cannot not generate a decimal value if the components are initialized
- * as integers.
  */
 package classes.abstracts;
 
 import classes.util.Formatter;
-import exceptions.VectorArgumentIsNullException;
 import exceptions.VectorMismatchException;
 import interfaces.Callback;
 import java.util.ArrayList;
 
+/**
+ * An abstract class that provides base functionality for any vector-related
+ * object.
+ *
+ * <p>
+ * This class assumes that all interactions with vector components of it's
+ * subclasses are integers, however, it stores all components as double values.
+ * This is done so that if a subclass wishes to restrict the manipulation of
+ * it's components to int types, it can extend this class and guarantee that all
+ * inherited methods will not generate a non-int value as a result.
+ */
 public abstract class BaseVector<T extends BaseVector<T>> {
 
     protected abstract T newVector(Double[] components);
     protected ArrayList<Double> components = new ArrayList<>();
     private T inverted;
 
-    /*
-	 * computeComponents()
-	 * 
-	 * Accept a lambda function as the callback parameter to
-	 * calculate what the new value of an individual component
-	 * should be. The argument sent to the callback is the current
-	 * value of the component. The return value of the callback
-	 * is the updated component value.
+    /**
+     * Accepts a lambda function as the callback parameter to calculate what the
+     * new value of an individual BaseVector<T> components should be.
+     *
+     * @param callback the lambda function to execute
+     *
+     * @return a double array of the new calculated components
      */
-    public Double[] computeComponents(String methodName, Callback callback) {
+    public Double[] computeComponents(Callback callback) {
         Double[] resultComponents = new Double[size()];
         for (int i = 0; i < size(); i++) {
             resultComponents[i] = (Double) callback.call(get(i));
@@ -52,24 +41,21 @@ public abstract class BaseVector<T extends BaseVector<T>> {
         return resultComponents;
     }
 
-    /*
-	 * @overload: computeComponents()
-	 * 
-	 * If a child of BaseVector is provided, then the lambda function
-	 * is passed two arguments:
-	 * - 1. Component from `this` BaseVector
-	 * - 2. Component from the target BaseVector
-	 * 
-	 * The computed value with respect to both vector components should
-	 * be returned, denoting the computed component in the newly returned
-	 * vector result.
-	 * 
-	 * If attempting to compute the components of two vectors of mismatched
-	 * size, an unchecked exception `VectorMismatchException` will be thrown.
+    /**
+     * Computes the components of BaseVector<T>_0 and BaseVector<T>_1 by
+     * processing their new values with a callback lamdba function. The
+     * resulting values are stored in a double array.
+     *
+     * @param v
+     * @param methodName the name of the calling method
+     * @param callback the lamdba function that processes components from both
+     * BaseVector<T> objects
+     *
+     * @return the double array containing the resulting components
      */
     public Double[] computeComponents(T v, String methodName, Callback callback) {
         if (v == null) {
-            throw new VectorArgumentIsNullException();
+            throw new IllegalArgumentException(String.format("BaseVector<T> is null (calling method: %s)", methodName));
         }
 
         if (!v.isSize(size())) {
@@ -83,76 +69,65 @@ public abstract class BaseVector<T extends BaseVector<T>> {
         return resultComponents;
     }
 
-    /*
-	 * getComponents()
-	 * 
-	 * Return the ArrayList consisting of the all of the
-	 * components making up BaseVector<T>.
-     */
-    public ArrayList<Double> getComponents() {
+    public ArrayList<Double> components() {
         return this.components;
     }
 
-    /*
-	 * size()
-	 * 
-	 * Return the size of the BaseVector<T>. The size
-	 * represents the dimensions of the vector, i.e how
-	 * many components it is comprised of.
+    /**
+     * Get the size of the BaseVector<T>, denoted by how many components it is
+     * comprised of.
+     *
+     * @return the size of the BaseVector<T>
      */
     public int size() {
         return this.components.size();
     }
 
-    /*
-	 * isSize()
-	 * 
-	 * Return true or false by checking the size of itself
-	 * (checks the number of components it has with a
-	 * compared size).
+    /**
+     * Checks if the BaseVector<T> is a given size
+     *
+     * @param comparedSize the size to check against
+     * @return true if the BaseVector<T> is the given size
      */
     public boolean isSize(int comparedSize) {
         return size() == comparedSize;
     }
 
-    /*
-	 * getComponentArray()
-	 * 
-	 * Return the components as a native array of double values
+    /**
+     * Gets the BaseVector<T> components and converts them to a fixed array of
+     * doubles
+     *
+     * @return a Double array of the BaseVector<T> compnents
      */
-    public Double[] getComponentArray() {
-        return this.components.toArray(new Double[this.components.size()]);
+    public Double[] componentsArray() {
+        return this.components.toArray(new Double[size()]);
     }
 
-    /*
-	 * get()
-	 * 
-	 * Return a component at a given index as a double
+    /**
+     * Get a BaseVector<T> component at a specific index
+     *
+     * @param index the index position of the component
+     * @return the component value at the index
      */
     public Double get(int index) {
         return this.components.get(index);
     }
 
-    /*
-	 * getInt()
-	 * 
-	 * Return a component at a given index as an int
+    /**
+     * Get a BaseVector<T> component at a specific index, converted to an int
+     * value.
+     *
+     * @param index the index position of the component
+     * @return the (int) component value at the index
      */
     public Integer getInt(int index) {
         return get(index).intValue();
     }
 
-    /*
-	 * invert()
-	 * 
-	 * Return a new BaseVector<T> with inverted components.
-	 * 
-	 * Example:
-	 * ```
-	 * Vector2 v = new Vector2(1, 5);
-	 * Console.println(v.invert())
-	 * ```
-	 * Output: Vector2<-1.0, -5.0>
+    /**
+     * Inverts the BaseVector<T> components by changing their individual signs.
+     *
+     * @return BaseVector<T> with inverted (flipped sign) components
      */
     public T invert() {
         if (inverted != null) {
@@ -160,19 +135,17 @@ public abstract class BaseVector<T extends BaseVector<T>> {
         }
 
         inverted = newVector(computeComponents(
-                "invert",
-                (args) -> (Double) args[0] * -1
-        ));
+                (args) -> (Double) args[0] * -1));
 
         return inverted;
     }
 
-    /*
-	 * equals()
-	 * 
-	 * Return true if all components in the current BaseVector<T>
-	 * are equal to all components in the target base vector. If both
-	 * vectors have different dimensions, the result is false.
+    /**
+     * Checks if a given BaseVector<T> is equal to another child instance by
+     * comparing their size and the value of their components.
+     *
+     * @param v the BaseVector<T> to check against
+     * @return true if both BaseVector<T> objects are equal
      */
     public boolean equals(T v) {
         if (!v.isSize(size())) {
@@ -188,60 +161,52 @@ public abstract class BaseVector<T extends BaseVector<T>> {
         return true;
     }
 
-    /*
-	 * add()
-	 * 
-	 * Return a new BaseVector<T> with all components
-	 * of itself added to all components of the operand vector.
-	 * 
-	 * Example:
-	 * ```
-	 * Vector2 v = new Vector2(4, 4);
-	 * Console.println(v.add(new Vector2(1, 1));
-	 * ```
-	 * Output: Vector2<5.0, 5.0>
+    /**
+     * Sums the components of two BaseVector<T> objects
+     *
+     * @param v the BaseVector<T> components to add to these components
+     * @return the resulting BaseVector<T> with summed components
      */
     public T add(T v) {
         return newVector(computeComponents(
                 v,
                 "add(BaseVector<T>)",
-                (args) -> (Double) args[0] + (Double) args[1]
-        ));
+                (args) -> (Double) args[0] + (Double) args[1]));
     }
 
-    /*
-	 * @overload: add()
-	 * 
-	 * Add all components of BaseVector<T> by some scalar integer
+    /**
+     * Overload: {@code add}
+     *
+     * Add a common scalar value to all BaseVector<T> components
+     *
+     * @param scalar the value to add to all components of this BaseVector<T>
+     * @return ...
      */
     public T add(int scalar) {
         return newVector(computeComponents(
-                "add(int scalar)",
-                (args) -> (Double) args[0] + scalar
-        ));
+                (args) -> (Double) args[0] + scalar));
     }
 
-    /*
-	 * abs()
-	 * 
-	 * Take the absolute value of all the components
+    /**
+     * Take the absolute value of all components in this BaseVector<T>
+     *
+     * @return the resulting BaseVector<T> with absolute valued components
      */
     public T abs() {
         return newVector(computeComponents(
-                "abs()",
-                (args) -> Math.abs((Double) args[0])
-        ));
+                (args) -> Math.abs((Double) args[0])));
     }
 
-    /*
-	 * signedUnit()
-	 * 
-	 * Return a BaseVector<T> with multiplicative identities
-	 * representing the quadrant it's in
+    /**
+     * Get the signed components denoting which n-D spacial quadrant the
+     * BaseVector<T> is in (the direction BaseVector<T> is facing from the
+     * origin)
+     *
+     * @return the unit vector of BaseVector<T> with only signed components
+     * (i.e, (-1, 0))
      */
     public T signedUnit() {
         return newVector(computeComponents(
-                "signedUnit()",
                 (args) -> {
                     Double c = (Double) args[0];
                     return c > 0
@@ -249,93 +214,67 @@ public abstract class BaseVector<T extends BaseVector<T>> {
                             : c < 0
                                     ? -1.0
                                     : 0.0;
-                }
-        ));
+                }));
     }
 
-    /*
-	 * subtract()
-	 * 
-	 * Return a new BaseVector<T> instance with all components
-	 * of the target BaseVector<T> subtracted from itself.
-	 * 
-	 * Example:
-	 * ```
-	 * Vector2 v = new Vector2(4, 4);
-	 * Console.println(v.subtract(new Vector2(1, 1));
-	 * ```
-	 * Output: Vector2<3.0, 3.0>
+    /**
+     * Subtracts the components of some BaseVector<T> from this BaseVector<T>.
+     *
+     * @param v the BaseVector<T> to subtract the components of
+     * @return the resulting BaseVector<T> with subtracted components
      */
     public T subtract(T v) {
         return newVector(computeComponents(
                 v,
                 "subtract(BaseVector<T>)",
-                (args) -> (Double) args[0] - (Double) args[1]
-        ));
+                (args) -> (Double) args[0] - (Double) args[1]));
     }
 
-    /*
-	 * @overload: subtract()
-	 * 
-	 * Subtract all components of BaseVector<T> by some scalar integer
+    /**
+     * Overload: {@code subtract}
+     *
+     * Subtract a common integer scalar value from this BaseVector<T>
+     *
+     * @param scalar the integer scalar value to subtract from all components
+     * @return the resulting BaseVector<T> with components subtracted by
+     * {@code scalar}
      */
     public T subtract(int scalar) {
         return newVector(computeComponents(
-                "subtract(int scalar)",
-                (args) -> (Double) args[0] - scalar
-        ));
+                (args) -> (Double) args[0] - scalar));
     }
 
-    /*
-	 * @overload: multiply()
-	 * 
-	 * Return a new BaseVector<T> instance with all components
-	 * of itself multiplied by all components of the operand
-	 * BaseVector<T>.
-	 * 
-	 * Example:
-	 * ```
-	 * Vector2 v = new Vector2(4, 4);
-	 * Console.println(v.multiply(new Vector2(2, 3)));
-	 * ```
-	 * Output: Vector2<8.0, 12.0>
+    /**
+     * Multiply all components of this BaseVector<T> by the components of some
+     * other BaseVector<T>
+     *
+     * @param v the BaseVector<T> that multiplies against this BaseVector<T>
+     * @return the resulting product of both BaseVector<T> components
      */
     public T multiply(T v) {
         return newVector(computeComponents(
                 v,
                 "multiply(BaseVector<T>)",
-                (args) -> (Double) args[0] * (Double) args[1]
-        ));
+                (args) -> (Double) args[0] * (Double) args[1]));
     }
 
-    /*
-	 * @overload: multiply()
-	 * 
-	 * Multiply all components of BaseVector<T> by some scalar integer
+    /**
+     * Multiply all components of this BaseVector<T> by a common integer scalar
+     *
+     * @param scalar the integer to multiply all components of this
+     * BaseVector<T> by
+     * @return the resulting BaseVector<T> with it's components multiplied by
+     * {@code scalar}
      */
     public T multiply(int scalar) {
         return newVector(computeComponents(
-                "multiply(int scalar)",
-                (args) -> (Double) args[0] * scalar
-        ));
+                (args) -> (Double) args[0] * scalar));
     }
 
-    /*
-	 * toString()
-	 * 
-	 * Return a name of the object in the form: BaseVector<c0, c1, ...>
-     */
     @Override
     public String toString() {
-        String className = this.getClass().getSimpleName();
-
-        String replacementStrings = Formatter
-                .concatArray(getComponentArray())
-                .replaceAll("\\-?\\d+.?\\d*", "%s");
-
-        return String.format(
-                className + "<" + replacementStrings + ">",
-                (Object[]) getComponentArray()
-        );
+        return this.getClass()
+                .getSimpleName()
+                + "<" + Formatter.concatArray(componentsArray()) + ">";
     }
 }
