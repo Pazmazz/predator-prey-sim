@@ -37,9 +37,12 @@ public class App extends Application {
 		 * other features.
 		 */
 
-		Vector2 v0 = new Vector2(-2,-2);
-		Vector2 v1 = new Vector2(2,2);
+		Vector2 v0 = new Vector2(2,2);
+		Vector2 v1 = new Vector2(8,-2);
 		CellGrid grid = new CellGrid(new Unit2(10, 10));
+
+		// Cell cell0 = grid.getCell(new Unit2(-2, -2));
+		// Console.println(grid.getCellRightOf(cell0));
 
 		// Console.println(grid.getGridIntercept(v0, v1).getPointOfIntersection());
 
@@ -51,7 +54,6 @@ public class App extends Application {
 			Console.println(itr.next());
 			Console.br();
 		}
-		// Console.println(itr.next());
 		
 		/*
 		* y-int = f(ceil(x)) when p.unit() is (+, +) or (+, -)

@@ -34,8 +34,8 @@ public class Cell {
 		this.unit = unit;
 
 		this.position = new Vector2(
-				unit.getX() - 0.5,
-				unit.getY() - 0.5);
+				unit.getX() - unit.signedUnit().getX() * 0.5,
+				unit.getY() - unit.signedUnit().getY() * 0.5);
 
 		this.cellType = CellType.NORMAL;
 		this.cellVacancy = CellVacancy.EMPTY;

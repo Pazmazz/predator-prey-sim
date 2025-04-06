@@ -305,8 +305,8 @@ public class CellGrid {
 		double ty = (limitY - startY) / (endY - startY);
 		double tx = (limitX - startX) / (endX - startX);
 
-		Vector2 pointOfIntersection = null;
-		CellGridAxis axisOfIntersection = null;
+		Vector2 pointOfIntersection;
+		CellGridAxis axisOfIntersection;
 
 		// No intercepts (points are inside the cell or reached endpoint)
 		if (tx >= 1 && ty >= 1) {
@@ -327,6 +327,7 @@ public class CellGrid {
 					Math2.lerp(ty, startX, endX),
 					limitY);
 			
+		// X- and Y-intercept
 		} else {
 			axisOfIntersection = CellGridAxis.XY_GRID;
 			pointOfIntersection = new Vector2(
@@ -387,9 +388,20 @@ public class CellGrid {
 					throw new NoSuchElementException("Dead Cell path");
 
 				GridIntercept thisIntercept = this.nextGridIntercept;
-				this.nextGridIntercept = getGridIntercept(thisIntercept.getPointOfIntersection(), to);
-				Console.println(thisIntercept);
+				GridIntercept nextIntercept = getGridIntercept(thisIntercept.getPointOfIntersection(), to);
 
+				if (nextIntercept.hasXY()) {
+					Vector2 direction = thisIntercept.getDirection();
+					Cell sideCell = direction.getX() < 0
+						? getCellLeftOf(thisIntercept.getCell())
+						: getCellRightOf(thisIntercept.getCell());
+
+					this.nextGridIntercept = getGridIntercept(sideCell.getPosition(), to);
+				} else {
+					this.nextGridIntercept = nextIntercept;
+				}
+
+				Console.println(thisIntercept);
 				return thisIntercept.getCell();
 			}
 		}
