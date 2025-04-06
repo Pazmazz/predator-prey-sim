@@ -57,9 +57,11 @@ public class Vector2 extends Vector<Vector2> {
 		double dx = x1 - x0;
 		double dy = y1 - y0;
 
+		/* Check domain */
 		if (useDomain && n < Math.min(x0, x1) || n > Math.max(x0, x1))
 			return null;
 
+		/* X is not a function */
 		if (dx == 0)
 			return null;
 
@@ -70,6 +72,8 @@ public class Vector2 extends Vector<Vector2> {
 	}
 
 	/*
+	 * evaluateY()
+	 * 
 	 * Evaluate with respect to X, solving for Y
 	 */
 	public Double evaluateY(Vector2 p2, double x) {
@@ -81,6 +85,8 @@ public class Vector2 extends Vector<Vector2> {
 	}
 
 	/*
+	 * evaluateX()
+	 * 
 	 * Evaluate with respect to X, solving for X
 	 */
 	public Double evaluateX(Vector2 p2, double y) {

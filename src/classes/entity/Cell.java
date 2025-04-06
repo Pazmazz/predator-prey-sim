@@ -13,8 +13,8 @@ package classes.entity;
 import classes.util.Console;
 
 public class Cell {
-	private Unit2 unit;
-	private Vector2 position;
+	final private Unit2 unit;
+	final private Vector2 position;
 	private CellType cellType;
 	private CellVacancy cellVacancy;
 	private CellOccupant cellOccupant;
@@ -32,7 +32,6 @@ public class Cell {
 	
 	public Cell(Unit2 unit) {
 		this.unit = unit;
-
 		this.position = new Vector2(
 				unit.getX() - unit.signedUnit().getX() * 0.5,
 				unit.getY() - unit.signedUnit().getY() * 0.5);
@@ -42,19 +41,19 @@ public class Cell {
 	}
 	
 	public void setOccupant(CellOccupant cellOccupant, boolean updateOccupant) {
-		if (isOccupied()) {
+		if (isOccupied())
 			throw new Error(
 					String.format(
-						"Cell<%s, %s> tried to set a new occupant without removing its current occupant",
-						this.getUnit2().getX(),
-						this.getUnit2().getY()
-					)
-			);
-		}
+							"Cell<%s, %s> tried to set a new occupant without removing its current occupant",
+							this.getUnit2().getX(),
+							this.getUnit2().getY()));
+						
 
 		this.cellOccupant = cellOccupant;
 		setVacancy(CellVacancy.OCCUPIED);
-		if (updateOccupant) cellOccupant.setCell(this, false);
+
+		if (updateOccupant)
+			cellOccupant.setCell(this, false);
 	}
 
 	public void setOccupant(CellOccupant cellOccupant) {
@@ -66,10 +65,10 @@ public class Cell {
 	}
 
 	public CellOccupant removeOccupant() {
-		CellOccupant cellOccupant = this.cellOccupant;
+		CellOccupant _cellOccupant = this.cellOccupant;
 		this.cellOccupant = null;
 		setVacancy(CellVacancy.EMPTY);
-		return cellOccupant;
+		return _cellOccupant;
 	}
 
 	public void moveOccupantTo(Cell targetCell) {

@@ -1,17 +1,11 @@
 /*
- * @Written: 3/30/2025
- * 
- * class CellGrid:
- * 
- * This class creates a virtual 2D grid using a HashMap, which
- * maps a position string to a Cell object.
+ * @written: 3/30/2025
  * 
  * Documentation can be found here: https://github.com/Pazmazz/predator-prey-sim/blob/will-feature-1/docs/CellGrid.md
  */
 package classes.entity;
 
 import classes.entity.Cell.CellType;
-import classes.entity.CellGrid.CellGridAxis;
 import classes.util.Console;
 import classes.util.Console.DebugPriority;
 import classes.util.Math2;
@@ -21,6 +15,12 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.NoSuchElementException;
 
+/**
+ * The primary API for interacting with the virtual game grid.
+ * Implements a HashMap for mapping all cell coordinates to their 
+ * corresponding cell objects instead of using a 2D array for scalability
+ * and ease-of-access.
+ */
 public class CellGrid {
 	final private Unit2 size;
 	final private HashMap<String, Cell> virtualGrid = new HashMap<>();
@@ -47,11 +47,15 @@ public class CellGrid {
 		this.size = size;
 	}
 
-	/*
-	 * isInBounds()
+	/**
+	 * Checks if given `Unit2` dimensions are within the
+	 * boundaries of the grid.
 	 * 
-	 * Returns true if a given cell unit exists within the
-	 * bounds of the specified grid size.
+	 * @param		unit	The `Unit2` that is checked for being contained
+	 * 					within the boundaries of the grid
+	 * 
+	 * @return	`true` if a given cell unit exists within the
+	 * 					bounds of the specified grid size.
 	 */
 	public boolean isInBounds(Unit2 unit) {
 		return !(unit.getX() <= 0
@@ -60,11 +64,13 @@ public class CellGrid {
 				|| unit.getY() > this.size.getY());
 	}
 
-	/*
-	 * @overload: isInBounds()
-	 * 
+	/**
 	 * Returns true if an actual coordinate point exists
-	 * within the bounds of the virtual grid
+	 * within the bounds of the virtual grid (not limited to
+	 * integer components like Unit2).
+	 * 
+	 * @param		position 	The position that is checked for being within 
+	 * 										bounds of the grid.
 	 */
 	public boolean isInBounds(Vector2 position) {
 		return !(position.getX() < 0
@@ -73,48 +79,90 @@ public class CellGrid {
 				|| position.getY() > this.size.getY());
 	}
 
-	/*
-	 * @overload: isInBounds()
+	/**
+	 * Returns a `GridIntercept` object with metadata containing
+	 * information about what the line from vectors `start` to `end`
+	 * intersects with.
 	 * 
-	 * Returns true if a cell object exists within the
-	 * bounds of the virtual grid
-	 */
-	public boolean isInBounds(Cell cell) {
-		return isInBounds(cell.getUnit2());
-	}
-
-	/*
-	 * outOfBounds()
+	 * @param 	start		The starting point
+	 * @param 	end 		The ending point
 	 * 
-	 * Returns the negation of isInBounds()
+	 * @return 	<GridIntercept> Object that contains metadata about
+	 * 					what the line between `start` and `end` intersected
+	 * 					with.
 	 */
-	public boolean outOfBounds(Unit2 unit) {
-		return !isInBounds(unit);
+	public GridIntercept getGridIntercept(Vector2 start, Vector2 end) {
+		if (start.equals(end))
+			return new GridIntercept().setAxisOfIntersection(CellGridAxis.ENDPOINT);
+
+		Vector2 signedUnit = end.subtract(start).signedUnit();
+		GridIntercept interceptResult = new GridIntercept();
+		interceptResult.setDirection(signedUnit);
+
+		double startX = start.getX();
+		double startY = start.getY();
+		double endX = end.getX();
+		double endY = end.getY();
+
+		boolean posX = signedUnit.getX() > 0;
+		boolean posY = signedUnit.getY() >= 0;
+
+		double limitX = posX
+				? Math.ceil(startX)
+				: Math.floor(startX);
+
+		double limitY = posY
+				? Math.ceil(startY)
+				: Math.floor(startY);
+
+		if (startX == limitX)
+			limitX += signedUnit.getX();
+
+		if (startY == limitY)
+			limitY += signedUnit.getY();
+
+		double ty = (limitY - startY) / (endY - startY);
+		double tx = (limitX - startX) / (endX - startX);
+
+		Vector2 pointOfIntersection;
+		CellGridAxis axisOfIntersection;
+
+		/*
+		 * No intercepts (both points are inside the cell
+		 * or an endpoint was reached).
+		 */
+		if (tx >= 1 && ty >= 1) {
+			pointOfIntersection = end;
+			axisOfIntersection = CellGridAxis.NONE;
+
+			/* X-intercept */
+		} else if (tx < ty) {
+			axisOfIntersection = CellGridAxis.X_GRID;
+			pointOfIntersection = new Vector2(
+					limitX,
+					Math2.lerp(tx, startY, endY));
+
+			/* Y-intercept */
+		} else if (ty < tx) {
+			axisOfIntersection = CellGridAxis.Y_GRID;
+			pointOfIntersection = new Vector2(
+					Math2.lerp(ty, startX, endX),
+					limitY);
+
+			/* X- and Y-intercept */
+		} else {
+			axisOfIntersection = CellGridAxis.XY_GRID;
+			pointOfIntersection = new Vector2(
+					limitX,
+					limitY);
+		}
+
+		return interceptResult
+				.setPointOfIntersection(pointOfIntersection)
+				.setCell(getCell(start, pointOfIntersection))
+				.setAxisOfIntersection(axisOfIntersection);
 	}
-
-	public boolean outOfBounds(Vector2 position) {
-		return !isInBounds(position);
-	}
-
-	public boolean outOfBounds(Cell cell) {
-		return !isInBounds(cell);
-	}
-
-	public Cell getCell(Unit2 unit) {
-		Cell cell = this.virtualGrid.get(unit.toString());
-
-		if (cell != null)
-			return cell;
-
-		cell = new Cell(unit);
-		this.virtualGrid.put(unit.toString(), cell);
-
-		if (outOfBounds(unit))
-			cell.setType(CellType.OUT_OF_BOUNDS);
-
-		return cell;
-	}
-
+	
 	public Cell getCell(Vector2 position) {
 		Vector2 quadrant = position.signedUnit();
 		Vector2 snapPos = position.floor();
@@ -149,6 +197,54 @@ public class CellGrid {
 		return getCell(new Unit2(x, y));
 	}
 
+	/*
+	 * @overload: isInBounds()
+	 * 
+	 * Returns true if a cell object exists within the
+	 * bounds of the virtual grid
+	 */
+	public boolean isInBounds(Cell cell) {
+		return isInBounds(cell.getUnit2());
+	}
+
+	/*
+	 * outOfBounds()
+	 * 
+	 * Returns the negation of isInBounds()
+	 */
+	public boolean outOfBounds(Unit2 unit) {
+		return !isInBounds(unit);
+	}
+
+	public boolean outOfBounds(Vector2 position) {
+		return !isInBounds(position);
+	}
+
+	public boolean outOfBounds(Cell cell) {
+		return !isInBounds(cell);
+	}
+
+	/*
+	 * getCell()
+	 * 
+	 * The root method for retrieving a cell object from
+	 * the virtual cell grid.
+	 */
+	public Cell getCell(Unit2 unit) {
+		Cell cell = this.virtualGrid.get(unit.toString());
+
+		if (cell != null)
+			return cell;
+
+		cell = new Cell(unit);
+		this.virtualGrid.put(unit.toString(), cell);
+
+		if (outOfBounds(unit))
+			cell.setType(CellType.OUT_OF_BOUNDS);
+
+		return cell;
+	}
+
 	public Cell getCell(Vector2 segment0, Vector2 segment1) {
 		return getCell(segment0.midpoint(segment1));
 	}
@@ -172,7 +268,9 @@ public class CellGrid {
 	}
 
 	public void collectCells() {
-		Iterator<Map.Entry<String, Cell>> gridIterator = this.virtualGrid.entrySet().iterator();
+		Iterator<Map.Entry<String, Cell>> gridIterator = 
+				this.virtualGrid.entrySet().iterator();
+
 		int count = 0;
 
 		while (gridIterator.hasNext()) {
@@ -264,83 +362,6 @@ public class CellGrid {
 		printCellsAdjacentTo(cell.getUnit2());
 	}
 
-	/*
-	 * getGridIntercept()
-	 *
-	 */
-	public GridIntercept getGridIntercept(Vector2 start, Vector2 end) {
-		if (start.equals(end))
-			return new GridIntercept()
-					.setAxisOfIntersection(CellGridAxis.ENDPOINT);
-
-		Vector2 unit = end.subtract(start).unit();
-		Vector2 signedUnit = unit.signedUnit();
-
-		GridIntercept interceptResult = new GridIntercept();
-		interceptResult.setDirection(signedUnit);
-
-		double startX = start.getX();
-		double startY = start.getY();
-		double endX 	= end.getX();
-		double endY 	= end.getY();
-
-		boolean posX 	= unit.getX() > 0;
-		boolean posY 	= unit.getY() >= 0;
-
-		double limitX = posX
-			? Math.ceil(startX)
-			: Math.floor(startX);
-
-		double limitY = posY
-			? Math.ceil(startY)
-			: Math.floor(startY);
-
-		if (startX == limitX)
-			limitX += signedUnit.getX();
-
-		if (startY == limitY)
-			limitY += signedUnit.getY();
-			
-		// Solve parametric equations for t
-		double ty = (limitY - startY) / (endY - startY);
-		double tx = (limitX - startX) / (endX - startX);
-
-		Vector2 pointOfIntersection;
-		CellGridAxis axisOfIntersection;
-
-		// No intercepts (points are inside the cell or reached endpoint)
-		if (tx >= 1 && ty >= 1) {
-			pointOfIntersection = end;
-			axisOfIntersection = CellGridAxis.NONE;
-
-		// X-intercept
-		} else if (tx < ty) {
-			axisOfIntersection = CellGridAxis.X_GRID;
-			pointOfIntersection = new Vector2(
-					limitX,
-					Math2.lerp(tx, startY, endY));
-
-		// Y-intercept
-		} else if (ty < tx) {
-			axisOfIntersection = CellGridAxis.Y_GRID;
-			pointOfIntersection = new Vector2(
-					Math2.lerp(ty, startX, endX),
-					limitY);
-			
-		// X- and Y-intercept
-		} else {
-			axisOfIntersection = CellGridAxis.XY_GRID;
-			pointOfIntersection = new Vector2(
-					limitX,
-					limitY);
-		}
-		
-		return interceptResult
-				.setPointOfIntersection(pointOfIntersection)
-				.setCell(getCell(start, pointOfIntersection))
-				.setAxisOfIntersection(axisOfIntersection);
-	}
-
 	public ArrayList<Cell> getCellPath(Vector2 from, Vector2 to) {
 		CellPathCollection path = new CellPathCollection(from, to);
 		Iterator<Cell> pathIterator = path.iterator();
@@ -356,6 +377,10 @@ public class CellGrid {
 		return new CellPathCollection(from, to).iterator();
 	}
 
+	/*
+	 * Inner class for creating a new path cell collection.
+	 * Primary purpose is to serve as an API for 
+	 */
 	private class CellPathCollection {
 		final private ArrayList<Cell> cellPath = new ArrayList<>();
 		final private Vector2 from;
@@ -389,14 +414,15 @@ public class CellGrid {
 
 				GridIntercept thisIntercept = this.nextGridIntercept;
 				GridIntercept nextIntercept = getGridIntercept(thisIntercept.getPointOfIntersection(), to);
+				// this.nextGridIntercept = nextIntercept;
 
 				if (nextIntercept.hasXY()) {
-					Vector2 direction = thisIntercept.getDirection();
+					Vector2 direction = nextIntercept.getDirection();
 					Cell sideCell = direction.getX() < 0
 						? getCellLeftOf(thisIntercept.getCell())
 						: getCellRightOf(thisIntercept.getCell());
 
-					this.nextGridIntercept = getGridIntercept(sideCell.getPosition(), to);
+					Console.println("Sidecell: ", sideCell.getPosition(), sideCell.getUnit2());
 				} else {
 					this.nextGridIntercept = nextIntercept;
 				}

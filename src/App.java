@@ -37,8 +37,8 @@ public class App extends Application {
 		 * other features.
 		 */
 
-		Vector2 v0 = new Vector2(2,2);
-		Vector2 v1 = new Vector2(8,-2);
+		Vector2 v0 = new Vector2(7,3);
+		Vector2 v1 = new Vector2(-1,1);
 		CellGrid grid = new CellGrid(new Unit2(10, 10));
 
 		// Cell cell0 = grid.getCell(new Unit2(-2, -2));
