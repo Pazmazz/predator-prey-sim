@@ -216,39 +216,39 @@ public class CellGrid {
      *
      * @return {@code Cell} object containing metadata about the cell
      */
-		public Cell getCell(Vector2 position) {
-			Vector2 quadrant = position.signedUnit();
-			Vector2 snapPos = position.floor();
+    public Cell getCell(Vector2 position) {
+        Vector2 quadrant = position.signedUnit();
+        Vector2 snapPos = position.floor();
 
-			int snapX = (int) snapPos.getX();
-			int snapY = (int) snapPos.getY();
+        int snapX = (int) snapPos.getX();
+        int snapY = (int) snapPos.getY();
 
-			int x, y;
+        int x, y;
 
-			boolean posX = quadrant.getX() > 0;
-			boolean negX = quadrant.getX() < 0;
-			boolean posY = quadrant.getY() >= 0;
-			boolean negY = quadrant.getY() <= 0;
+        boolean posX = quadrant.getX() > 0;
+        boolean negX = quadrant.getX() < 0;
+        boolean posY = quadrant.getY() >= 0;
+        boolean negY = quadrant.getY() <= 0;
 
-			if (posX && posY) {
-				y = snapY + 1;
-				x = snapX + 1;
+        if (posX && posY) {
+            y = snapY + 1;
+            x = snapX + 1;
 
-			} else if (negX && posY) {
-				y = snapY + 1;
-				x = snapX;
+        } else if (negX && posY) {
+            y = snapY + 1;
+            x = snapX;
 
-			} else if (negX && negY) {
-				y = snapY;
-				x = snapX;
+        } else if (negX && negY) {
+            y = snapY;
+            x = snapX;
 
-			} else {
-				y = snapY;
-				x = snapX + 1;
-			}
+        } else {
+            y = snapY;
+            x = snapX + 1;
+        }
 
-			return getCell(new Unit2(x, y));
-		}
+        return getCell(new Unit2(x, y));
+    }
 
     /**
      * Gets the cell that lies between a segment of two given points.
@@ -258,7 +258,6 @@ public class CellGrid {
      *
      * @return {@code Cell} object that contains the points
      */
-    
     public Cell getCell(Vector2 segment0, Vector2 segment1) {
         return getCell(segment0.midpoint(segment1));
     }
@@ -295,6 +294,19 @@ public class CellGrid {
         return !isInBounds(cell);
     }
 
+    /**
+     * Collects a {@code Cell} object at a given cell label. Once collected, the
+     * cell instance will be removed from the virtual grid.
+     *
+     * <p>
+     * {@code Cell} objects will only be collected if they do NOT contain an
+     * occupant. Once an occupant is removed and there is no replacement, the
+     * cell will have an internal state of
+     *
+     * @param unit the cell at the specified {@code unit} to collect
+     *
+     * @return the collected {@code Cell} object if one prevously existed
+     */
     public Cell collectCell(Unit2 unit) {
         Cell cell = this.virtualGrid.get(unit.toString());
 
@@ -310,6 +322,16 @@ public class CellGrid {
         return cell;
     }
 
+    /**
+     * Overload: {@code collectCell}
+     *
+     * Calls {@code getUnit2} internally with the option of just passing a cell
+     * object to this method.
+     *
+     * @param cell the {@code cell} cell object collect
+     *
+     * @return {@code Cell} object
+     */
     public Cell collectCell(Cell cell) {
         return collectCell(cell.getUnit2());
     }
