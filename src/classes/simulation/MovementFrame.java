@@ -21,5 +21,6 @@ public class MovementFrame extends FrameProcessor {
 
 	@Override
 	public void step(double deltaTimeSeconds) {
+		
 	}
 }

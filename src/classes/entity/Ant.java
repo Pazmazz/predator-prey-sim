@@ -7,15 +7,37 @@ import classes.entity.CellGrid;
 public class Ant extends Bug {
     
     public Ant(){
-        idNum = (Math.random() * 1000);
+        idNum = (int)(Math.random() * 1000);
+        this.setEatable(isEatable());
     }
 
-    public void movementChecks(){
-        //TODO: Code for movement checks
+    @Override
+    public void move(Cell currentCell, CellGrid grid){
+        Cell[] adjCells = grid.getCellsAdjacentTo(currentCell);
+
+        for (Cell adjCell : adjCells) {
+            if (adjCell.isInBounds() && adjCell.isEmpty()) {
+                currentCell.moveOccupantTo(adjCell);
+                this.currentCell = adjCell;
+                break;
+            }
+        }
+        movementCounter++;
+
+        if(movementCounter == 3){
+            movementCounter = 0;
+            this.breed(adjCells);
+        }
     }
 
-    public void onEaten(){
-
+    @Override
+    public void breed(Cell[] adjCells){
+        for (Cell adjCell : adjCells) {
+            if (adjCell.isInBounds() && adjCell.isEmpty()) {
+                currentCell.setOccupant(new Ant());
+                break;
+            }
+        }
     }
 
     @Override

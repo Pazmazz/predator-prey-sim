@@ -25,7 +25,7 @@ game.start(); // Start the game loop
 
 Before `game.start()` is called, the `game` object goes through 2 game states upon instantiation. The first state is the default value assigned as `GameState.INITIAL`.
 
-After the constructor has finished executing, the internal game state will then immediately update to `GameState.LOADED`.
+After the constructor has finished executing, the internal game state will then immediately update to `GameState.LOADED`. The game state is immediately set to `GameState.RUNNING` as soon as `game.start()` is called.
 
 You can access the current state of the game with the following methods:
 
@@ -59,7 +59,7 @@ These are all of the current ways to interact with the `game` object through the
 
 ### `game.start()`
 
-Starts the game
+Starts the game by running the main game loop. Also changes game state from `GameState.LOADED` to `GameState.RUNNING`
 
 ### `game.getSessionId()`
 

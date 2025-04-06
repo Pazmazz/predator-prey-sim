@@ -23,7 +23,7 @@ public class Formatter extends Application {
 	 * 
 	 * concatArray(new String[] {"a", "b", "c"}, ", ") => "a, b, c"
 	 */
-	static String concatArray(Object[] array, String separator) {
+	public static String concatArray(Object[] array, String separator) {
 		String out = "";
 
 		for (int index = 0; index < array.length; index++) {
@@ -41,7 +41,7 @@ public class Formatter extends Application {
 	 * 
 	 * Default the separator parameter to ", "
 	 */
-	static String concatArray(Object[] array) {
-		return concatArray(array, ", ");
+	public static String concatArray(Object[] array) {
+		return concatArray(array, "   ");
 	}
 }
