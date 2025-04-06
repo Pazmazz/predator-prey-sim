@@ -34,6 +34,6 @@ public class App extends Application {
         Console.println(grid.getCellTopOf(cell0).getOccupant());
         Console.println(grid.getCellLeftOf(cell0));
 
-        cell0.moveOccupantTo(cell1);
+        // cell0.moveOccupantTo(cell1);
     }
 }
