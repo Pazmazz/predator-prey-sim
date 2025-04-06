@@ -19,10 +19,9 @@ public class CellOccupant {
     private boolean isEatable = false;
     private Cell currentCell;
 
-    public CellOccupant() {
-
-    }
-
+    // Unused constructor for now
+    // public CellOccupant() {
+    // }
     public void setEatable(boolean eatable) {
         this.isEatable = eatable;
     }

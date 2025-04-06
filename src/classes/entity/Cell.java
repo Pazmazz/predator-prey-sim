@@ -94,6 +94,19 @@ public class Cell {
     }
 
     /**
+     * Added isOccupantEatable method (by Jaylen)
+     *
+     * This checks to see if the occupant in the specified cell is eatable
+     *
+     * @param cell
+     * @return
+     */
+    public boolean isOccupantEatable(Cell cell) {
+        CellOccupant _cellOccupant = cell.getOccupant();
+        return _cellOccupant.isEatable();
+    }
+
+    /**
      * Retrieves the current occupant in the cell
      *
      * @return the current cell's occupant
