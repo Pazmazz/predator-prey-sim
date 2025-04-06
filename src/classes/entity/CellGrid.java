@@ -251,15 +251,16 @@ public class CellGrid {
     }
 
     /**
-     * Gets the cell that lies between a segment of two given points.
+     * Gets the {@code Cell} object that lies on the midpoint of a segment of
+     * two given points.
      *
-     * @param segment0 the first point
-     * @param segment1 the second point
+     * @param p0 the first point
+     * @param p1 the second point
      *
-     * @return {@code Cell} object that contains the points
+     * @return {@code Cell} object on the segment
      */
-    public Cell getCell(Vector2 segment0, Vector2 segment1) {
-        return getCell(segment0.midpoint(segment1));
+    public Cell getCell(Vector2 p0, Vector2 p1) {
+        return getCell(p0.midpoint(p1));
     }
 
     /**
@@ -336,9 +337,13 @@ public class CellGrid {
         return collectCell(cell.getUnit2());
     }
 
+    /**
+     * Iterates over the entire virtual grid and frees up all non-used
+     * {@code Cell} objects (i.e cells that do not contain any occupants in
+     * them).
+     */
     public void collectCells() {
-        Iterator<Map.Entry<String, Cell>> gridIterator
-                = this.virtualGrid.entrySet().iterator();
+        Iterator<Map.Entry<String, Cell>> gridIterator = this.virtualGrid.entrySet().iterator();
 
         int count = 0;
 
@@ -355,6 +360,17 @@ public class CellGrid {
                 "Freed $text-red %s $text-reset cells during garbage collection".formatted(count));
     }
 
+    /**
+     * Gets a {@code Cell} object from a specific adjacent cell relative to a
+     * target {@code Cell} cell, {@code Vector2} position, or {@code Unit2}
+     * unit.
+     *
+     * <p>
+     * This accounts for all variant methods of the form {@code getCell___Of}.
+     *
+     * @param unit
+     * @return
+     */
     public Cell getCellTopOf(Unit2 unit) {
         return getCell(unit.add(new Unit2(0, -1)));
     }
@@ -403,6 +419,20 @@ public class CellGrid {
         return getCellRightOf(getCell(position));
     }
 
+    /**
+     * Gets all {@code Cell} objects directly adjacent to a given target
+     * {@code Cell} cell, {@code Unit2} unit2, or {@code Vector2} position.
+     *
+     * <p>
+     * This method will always return four {@code Cell} objects, representing
+     * the four adjacent grid cells, even if they are out of bounds or occupied.
+     * Because of this, we will have to check cell conditions using
+     * {@code cell.isEmpty()} and such, manually.
+     *
+     * @param unit the unit of the cell to get the adjacent cells of
+     *
+     * @return fixed array of all four adjacent cells
+     */
     public Cell[] getCellsAdjacentTo(Unit2 unit) {
         Cell[] cells = new Cell[4];
         cells[0] = getCellTopOf(unit);
@@ -412,14 +442,31 @@ public class CellGrid {
         return cells;
     }
 
+    /**
+     * Overload: {@code getCellsAdjacentTo}
+     *
+     * @param cell the cell object to get the surrounding adjacent cells from
+     * @return ...
+     */
     public Cell[] getCellsAdjacentTo(Cell cell) {
         return getCellsAdjacentTo(cell.getUnit2());
     }
 
+    /**
+     * Get the size of the grid as its instantiated {@code Unit2} value
+     *
+     * @return the size of the grid as a {@code Unit2} object
+     */
     public Unit2 getSize() {
         return size;
     }
 
+    /**
+     * Debug methods for testing/displaying/formatting data related to the game
+     * grid.
+     *
+     * @param unit the unit of the cell to print the adjacent cell data of
+     */
     public void printCellsAdjacentTo(Unit2 unit) {
         Cell[] adjCells = getCellsAdjacentTo(unit);
 
@@ -428,10 +475,22 @@ public class CellGrid {
         }
     }
 
+    /**
+     * Overload: {@code printCellsAdjacentTo}
+     */
     public void printCellsAdjacentTo(Cell cell) {
         printCellsAdjacentTo(cell.getUnit2());
     }
 
+    /**
+     * Find and calculate grid cell objects forming a line across the two points
+     * {@code from} and {@code to}.
+     *
+     * @param from the starting point
+     * @param to the ending point
+     *
+     * @return array list of cell objects to be returned all at once
+     */
     public ArrayList<Cell> getCellPath(Vector2 from, Vector2 to) {
         CellPathCollection path = new CellPathCollection(from, to);
         Iterator<Cell> pathIterator = path.iterator();
