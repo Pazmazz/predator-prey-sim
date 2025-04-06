@@ -1,17 +1,22 @@
 /*
  * @written 3/31/2025
- * 
- * class Cell:
- * 
- * This class allows you to interface with the virtual
- * grid by adding occupants to a cell, checking grid
- * conditions, finding other relative cell positions,
- * etc.
  */
 package classes.entity;
 
 import classes.util.Console;
+import exceptions.CellIsOccupiedException;
+import exceptions.OccupantHasCellException;
 
+/**
+ * This class allows you to interface with individual {@code Cell} components
+ * that make up the virtual grid, which contains important metadata about that
+ * specific cell location.
+ *
+ * <p>
+ * Each cell object contains important data such as if something is currently
+ * occupying the cell, what type of cell it is ({@code CellType} enum), and
+ * setters/getters/update methods for interacting with the cell.
+ */
 public class Cell {
 
     final private Unit2 unit;
@@ -41,31 +46,66 @@ public class Cell {
         this.cellVacancy = CellVacancy.EMPTY;
     }
 
-    public void setOccupant(CellOccupant cellOccupant, boolean updateOccupant) {
-        if (isOccupied()) {
-            throw new Error(
-                    String.format(
-                            "Cell<%s, %s> tried to set a new occupant without removing its current occupant",
-                            this.getUnit2().getX(),
-                            this.getUnit2().getY()));
+    /**
+     * Aggregates {@code cellOccupant} to this cell as long as the current cell
+     * does not already have an occupant.
+     *
+     * <p>
+     * An optional argument {@code occupantAggregatesCell} is provided which
+     * dictates whether or not the occupant should incorperate the cell object
+     * into itself. Used for preventing a callback loop between the cell's
+     * {@code setOccupant} method and the occupant's {@code setCell} method,
+     * since they both call each other.
+     *
+     * @param cellOccupant the aggregated occupant to nest within the cell
+     * @param updateOccupant whether the occupant should aggregate the cell
+     * object
+     *
+     * @throws CellIsOccupiedException if the current cell already has an
+     * occupant
+     * @throws OccupantHasCellException if the cellOccupant already belongs to
+     * another cell
+     */
+    public void setOccupant(CellOccupant cellOccupant, boolean occupantAggregatesCell) {
+        if (isOccupied() && this.cellOccupant != cellOccupant) {
+            throw new CellIsOccupiedException();
+        }
+
+        if (cellOccupant.hasCell() && cellOccupant.getCell() != this) {
+            throw new OccupantHasCellException();
+        }
+
+        if (occupantAggregatesCell) {
+            cellOccupant.assignCell(this, false);
         }
 
         this.cellOccupant = cellOccupant;
         setVacancy(CellVacancy.OCCUPIED);
-
-        if (updateOccupant) {
-            cellOccupant.setCell(this, false);
-        }
     }
 
+    /**
+     * Overload: {@code setOccupant}
+     *
+     * @param cellOccupant the occupant to set the current cell's occupant to
+     */
     public void setOccupant(CellOccupant cellOccupant) {
         setOccupant(cellOccupant, true);
     }
 
+    /**
+     * Retrieves the current occupant in the cell
+     *
+     * @return the current cell's occupant
+     */
     public CellOccupant getOccupant() {
         return this.cellOccupant;
     }
 
+    /**
+     * Removes the current occupant in the cell.
+     *
+     * @return
+     */
     public CellOccupant removeOccupant() {
         CellOccupant _cellOccupant = this.cellOccupant;
         this.cellOccupant = null;

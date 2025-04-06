@@ -13,8 +13,6 @@ import java.util.Iterator;
 
 /**
  * The entry-point file for the application
- *
- * @param testing javadoc
  */
 public class App extends Application {
 
@@ -25,10 +23,8 @@ public class App extends Application {
 
         // Game game = new Game();
         // game.start();
-        /*
-				 * TEST CODE:
-				 * 
-				 * All code below is most likely test code for now
+        /**
+         * TEST CODE:
          */
         Vector2 v0 = new Vector2(7, 3);
         Vector2 v1 = new Vector2(-1, 1);

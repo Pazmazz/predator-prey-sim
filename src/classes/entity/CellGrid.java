@@ -477,6 +477,8 @@ public class CellGrid {
 
     /**
      * Overload: {@code printCellsAdjacentTo}
+     *
+     * @param cell the {@code Cell} object to print relative adjacent cells from
      */
     public void printCellsAdjacentTo(Cell cell) {
         printCellsAdjacentTo(cell.getUnit2());
@@ -502,13 +504,31 @@ public class CellGrid {
         return path.getCellPath();
     }
 
+    /**
+     * Create an iterator for a generated cell path between some {@code Vector2}
+     * point {@code from} and {@code to}. Each call to the iterator will
+     * generate the next {@code Cell} object that is intersected by the line
+     * created between the two points.
+     *
+     * @param from the starting point
+     * @param to the ending point
+     *
+     * @return the iterator for generating the cell path
+     */
     public Iterator<Cell> getCellPathIterator(Vector2 from, Vector2 to) {
         return new CellPathCollection(from, to).iterator();
     }
 
-    /*
-	 * Inner class for creating a new path cell collection.
-	 * Primary purpose is to serve as an API for 
+    /**
+     * Inner-class for creating a new collection of {@code Cell} objects that
+     * make up a cell path. Contains the ArrayList which stores the generated
+     * cells, and the iterator class for creating the iterator.
+     *
+     * <p>
+     * When a new {@code CellPathCollection} is created, the {@code cellPath}
+     * ArrayList will be empty since no path cells have been generated yet.
+     * Every call to {@code CellPathCollection.iterator().next()} will compute
+     * the next path cell and add it to the {@code cellPath} ArrayList.
      */
     private class CellPathCollection {
 
@@ -565,6 +585,10 @@ public class CellGrid {
         }
     }
 
+    /**
+     * Inner-class for creating grid intercept metadata for whenever some line
+     * crosses a grid axis.
+     */
     public class GridIntercept {
 
         private CellGridAxis axisOfIntersection = CellGridAxis.NONE;
