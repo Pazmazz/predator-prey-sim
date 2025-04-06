@@ -4,6 +4,10 @@
  */
 
 import classes.abstracts.Application;
+import classes.entity.Ant;
+import classes.entity.Cell;
+import classes.entity.CellGrid;
+import classes.entity.Unit2;
 import classes.util.Console;
 
 /**
@@ -18,16 +22,18 @@ public class App extends Application {
 
         // Game game = new Game();
         // game.start();
-        /**
-         * TEST CODE:
-         */
-        // Vector2 v0 = new Vector2(7, 3);
-        // Vector2 v1 = new Vector2(-1, 1);
-        // CellGrid grid = new CellGrid(new Unit2(10, 10));
-        // Iterator<Cell> itr = grid.getCellPathIterator(v0, v1);
-        // while (itr.hasNext()) {
-        //     Console.println(itr.next());
-        //     Console.br();
-        // }
+        //
+        // TEST CODE:
+        //
+        CellGrid grid = new CellGrid(new Unit2(10, 10));
+
+        Cell cell0 = grid.getCell(new Unit2(1, 1));
+        Cell cell1 = grid.getCell(new Unit2(1, 2));
+        cell1.setOccupant(new Ant());
+
+        Console.println(grid.getCellTopOf(cell0).getOccupant());
+        Console.println(grid.getCellLeftOf(cell0));
+
+        cell0.moveOccupantTo(cell1);
     }
 }

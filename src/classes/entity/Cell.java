@@ -107,6 +107,18 @@ public class Cell {
     }
 
     /**
+     * Moves the occupant from the current cell, to a new target cell. Does not
+     * account for target cell being occupied.
+     *
+     * @deprecated use {@link classes.entity.CellOccupant#assignCell(Cell)} now
+     * instead.
+     */
+    @Deprecated
+    public void moveOccupantTo(Cell targetCell) {
+        targetCell.setOccupant(removeOccupant());
+    }
+
+    /**
      * Retrieves the current occupant in the cell
      *
      * @return the current cell's occupant

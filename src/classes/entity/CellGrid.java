@@ -264,6 +264,18 @@ public class CellGrid {
     }
 
     /**
+     * Gets a {@code Cell} object at unit {@code new Unit2(1, 1)} (mostly for
+     * one-off testing purposes)
+     *
+     * @param unit
+     *
+     * @return
+     */
+    public Cell getCell() {
+        return getCell(new Unit2(1, 1));
+    }
+
+    /**
      * The root method that checks if a given {@code Unit2} is outside the
      * boundary of the grid size.
      *
@@ -279,6 +291,7 @@ public class CellGrid {
      * Overload: {@code outOfBounds}
      *
      * @param position position vector to check for out of bounds
+     *
      * @return ...
      */
     public boolean outOfBounds(Vector2 position) {
@@ -289,6 +302,7 @@ public class CellGrid {
      * Overload: {@code outOfBounds}
      *
      * @param cell the cell object to check for out of bounds
+     *
      * @return ...
      */
     public boolean outOfBounds(Cell cell) {
@@ -372,11 +386,11 @@ public class CellGrid {
      * @return
      */
     public Cell getCellTopOf(Unit2 unit) {
-        return getCell(unit.add(new Unit2(0, -1)));
+        return getCell(unit.add(new Unit2(0, 1)));
     }
 
     public Cell getCellBottomOf(Unit2 unit) {
-        return getCell(unit.add(new Unit2(0, 1)));
+        return getCell(unit.add(new Unit2(0, -1)));
     }
 
     public Cell getCellLeftOf(Unit2 unit) {
