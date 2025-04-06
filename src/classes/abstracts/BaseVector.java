@@ -25,6 +25,7 @@
 package classes.abstracts;
 
 import classes.util.Formatter;
+import exceptions.VectorArgumentIsNullException;
 import exceptions.VectorMismatchException;
 import interfaces.Callback;
 import java.util.ArrayList;
@@ -67,6 +68,9 @@ public abstract class BaseVector<T extends BaseVector<T>> {
 	 * size, an unchecked exception `VectorMismatchException` will be thrown.
 	 */
 	public Double[] computeComponents(T v, String methodName, Callback callback) {
+		if (v == null)
+			throw new VectorArgumentIsNullException();
+
 		if (!v.isSize(size())) {
 			throw new VectorMismatchException(methodName);
 		}

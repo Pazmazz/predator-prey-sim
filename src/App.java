@@ -8,7 +8,6 @@
 import classes.abstracts.Application;
 import classes.entity.Cell;
 import classes.entity.CellGrid;
-import classes.entity.Game;
 import classes.entity.Unit2;
 import classes.entity.Vector2;
 import classes.util.Console;
@@ -26,7 +25,7 @@ public class App extends Application {
 		// Console.hideDebugPriority(DebugPriority.LOW);
 		Console.setConsoleColorsEnabled(true);
 
-		Game game = new Game();
+		// Game game = new Game();
 		// game.start();
 
 
@@ -38,18 +37,21 @@ public class App extends Application {
 		 * other features.
 		 */
 
-		Vector2 v0 = new Vector2(5.566,-0.565);
-		Vector2 v1 = new Vector2(0.18,1.676);
+		Vector2 v0 = new Vector2(-2,-2);
+		Vector2 v1 = new Vector2(2,2);
 		CellGrid grid = new CellGrid(new Unit2(10, 10));
+
+		// Console.println(grid.getGridIntercept(v0, v1).getPointOfIntersection());
+
 
 		// Console.println(grid.getGridIntercept(v0, v1));
 		Iterator<Cell> itr = grid.getCellPathIterator(v0, v1);
 
-		Console.println(itr.next());
-		Console.println(itr.next());
-		Console.println(itr.next());
-		Console.println(itr.next());
-		Console.println(itr.next());
+		while (itr.hasNext()) {
+			Console.println(itr.next());
+			Console.br();
+		}
+		// Console.println(itr.next());
 		
 		/*
 		* y-int = f(ceil(x)) when p.unit() is (+, +) or (+, -)

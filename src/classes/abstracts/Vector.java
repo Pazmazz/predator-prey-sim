@@ -32,10 +32,9 @@ public abstract class Vector<T extends Vector<T>> extends BaseVector<T> {
 	 */
 	public T divide(T v) {
 		return newVector(computeComponents(
-			v,
-			"divide(Vector<T>)",
-			(args) -> (Double) args[0] / (Double) args[1]
-		));
+				v,
+				"divide(Vector<T>)",
+				(args) -> (Double) args[0] / (Double) args[1]));
 	}
 
 	/*
@@ -45,9 +44,8 @@ public abstract class Vector<T extends Vector<T>> extends BaseVector<T> {
 	 */
 	public T divide(double dec) {
 		return newVector(computeComponents(
-			"divide(int scalar)",
-			(args) -> (Double) args[0] / dec
-		));
+				"divide(int scalar)",
+				(args) -> (Double) args[0] / dec));
 	}
 
 	/*
@@ -57,9 +55,8 @@ public abstract class Vector<T extends Vector<T>> extends BaseVector<T> {
 	 */
 	public T divide(int scalar) {
 		return newVector(computeComponents(
-			"divide(int scalar)",
-			(args) -> (Double) args[0] / scalar
-		));
+				"divide(int scalar)",
+				(args) -> (Double) args[0] / scalar));
 	}
 
 	/*
@@ -69,9 +66,8 @@ public abstract class Vector<T extends Vector<T>> extends BaseVector<T> {
 	 */
 	public T multiply(double dec) {
 		return newVector(computeComponents(
-			"multiply(double scalar)",
-			(args) -> (Double) args[0] * dec
-		));
+				"multiply(double scalar)",
+				(args) -> (Double) args[0] * dec));
 	}
 	
 	/*
@@ -79,9 +75,8 @@ public abstract class Vector<T extends Vector<T>> extends BaseVector<T> {
 	 */
 	public T add(double dec) {
 		return newVector(computeComponents(
-			"add(double dec)",
-			(args) -> (Double) args[0] + dec
-		));
+				"add(double dec)",
+				(args) -> (Double) args[0] + dec));
 	}
 
 	/*
@@ -89,9 +84,8 @@ public abstract class Vector<T extends Vector<T>> extends BaseVector<T> {
 	 */
 	public T subtract(double dec) {
 		return newVector(computeComponents(
-			"subtract(double dec)",
-			(args) -> (Double) args[0] - dec
-		));
+				"subtract(double dec)",
+				(args) -> (Double) args[0] - dec));
 	}
 
 	/*
@@ -101,9 +95,8 @@ public abstract class Vector<T extends Vector<T>> extends BaseVector<T> {
 	 */
 	public T floor() {
 		return newVector(computeComponents(
-			"floor()",
-			(args) -> Math.floor((Double) args[0])
-		));
+				"floor()",
+				(args) -> Math.floor((Double) args[0])));
 	}
 
 	/*
@@ -123,13 +116,26 @@ public abstract class Vector<T extends Vector<T>> extends BaseVector<T> {
 	 * Return the magnitude of Vector<T>
 	 */
 	public double magnitude() {
-		if (this.magnitude != null) return this.magnitude;
+		if (this.magnitude != null)
+			return this.magnitude;
 
 		this.magnitude = 0.0;
 		this.components.forEach(cn -> this.magnitude += cn * cn);
 		this.magnitude = Math.sqrt(this.magnitude);
 
 		return this.magnitude;
+	}
+	
+	/*
+	 * midpoint()
+	 * 
+	 * Returns the midpoint between two Vector<T> objects
+	 */
+	public T midpoint(T v) {
+		return newVector(computeComponents(
+				v,
+				"midpoint(Vector<T>)",
+				(args) -> (((Double) args[0] + (Double) args[1]) / 2)));
 	}
 
 	/*
@@ -144,15 +150,6 @@ public abstract class Vector<T extends Vector<T>> extends BaseVector<T> {
 	}
 
 	/*
-	 * getComponentArrayAsInt()
-	 * 
-	 * Return the component ArrayList as a native int array
-	 */
-	public Integer[] getComponentArrayAsInt() {
-		return this.components.toArray(new Integer[size()]);
-	}
-
-	/*
 	 * getComponentsAsInt()
 	 * 
 	 * Return the component ArrayList as an ArrayList of
@@ -160,9 +157,10 @@ public abstract class Vector<T extends Vector<T>> extends BaseVector<T> {
 	 */
 	public ArrayList<Integer> getComponentsAsInt() {
 		ArrayList<Integer> intComponents = new ArrayList<>();
-		for (Double d : this.components) {
+
+		for (Double d : this.components) 
 			intComponents.add(d.intValue());
-		}
+
 		return intComponents;
 	}
 }
