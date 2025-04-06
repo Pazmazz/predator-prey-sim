@@ -1,5 +1,5 @@
 /*
- * @Written: 3/29/2025
+ * @written 3/29/2025
  * 
  * class Formatter:
  * 
@@ -7,13 +7,13 @@
  * string format needs, or converting complex data into
  * a formatted string
  */
-
 package classes.util;
 
 import classes.abstracts.Application;
 
 public class Formatter extends Application {
-	/*
+
+    /*
 	 * concatArray(Object[] array, String separator):
 	 * 
 	 * Takes any array and returns a string separating the array
@@ -22,26 +22,26 @@ public class Formatter extends Application {
 	 * Ex:
 	 * 
 	 * concatArray(new String[] {"a", "b", "c"}, ", ") => "a, b, c"
-	 */
-	public static String concatArray(Object[] array, String separator) {
-		String out = "";
+     */
+    public static String concatArray(Object[] array, String separator) {
+        String out = "";
 
-		for (int index = 0; index < array.length; index++) {
-			out += array[index].toString();
-			if (index < array.length - 1) {
-				out += separator;
-			}
-		}
+        for (int index = 0; index < array.length; index++) {
+            out += array[index].toString();
+            if (index < array.length - 1) {
+                out += separator;
+            }
+        }
 
-		return out;
-	}
+        return out;
+    }
 
-	/*
+    /*
 	 * concatArray(Object[] array)
 	 * 
 	 * Default the separator parameter to ", "
-	 */
-	public static String concatArray(Object[] array) {
-		return concatArray(array, ", ");
-	}
+     */
+    public static String concatArray(Object[] array) {
+        return concatArray(array, ", ");
+    }
 }

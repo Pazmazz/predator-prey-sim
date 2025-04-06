@@ -1,5 +1,5 @@
 /*
- * @Written: 3/28/2025
+ * @written 3/28/2025
  * 
  * class GameScreen:
  * 
@@ -16,40 +16,41 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 public class GameScreen extends JFrame {
-	final private JPanel masterFrame;
 
-	public GameScreen(Game game) {
-		// Default game screen settings
-		this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		this.setResizable(false);
-		this.setTitle(game.getSettings().getTitle());
+    final private JPanel masterFrame;
 
-		// Build UI components
-		masterFrame = new JPanel();
-		masterFrame.setDoubleBuffered(true);
-		masterFrame.setPreferredSize(
-			new Dimension(
-				game.getSettings().getScreenWidth(),
-				game.getSettings().getScreenHeight()
-			)
-		);
-		this.add(masterFrame);
+    public GameScreen(Game game) {
+        // Default game screen settings
+        this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        this.setResizable(false);
+        this.setTitle(game.getSettings().getTitle());
 
-		// Finalize game screen
-		this.pack();
-		this.setLocationRelativeTo(null);
-		this.setVisible(true);
+        // Build UI components
+        masterFrame = new JPanel();
+        masterFrame.setDoubleBuffered(true);
+        masterFrame.setPreferredSize(
+                new Dimension(
+                        game.getSettings().getScreenWidth(),
+                        game.getSettings().getScreenHeight()
+                )
+        );
+        this.add(masterFrame);
 
-		// Handle game window closing event
-		this.addWindowListener(new WindowAdapter() {
-			@Override
-			public void windowClosed(WindowEvent e) {
-				game.terminate();
-			}
-		});
-	}
+        // Finalize game screen
+        this.pack();
+        this.setLocationRelativeTo(null);
+        this.setVisible(true);
 
-	public JPanel getMasterFrame() {
-		return masterFrame;
-	}
+        // Handle game window closing event
+        this.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosed(WindowEvent e) {
+                game.terminate();
+            }
+        });
+    }
+
+    public JPanel getMasterFrame() {
+        return masterFrame;
+    }
 }

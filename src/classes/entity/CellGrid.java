@@ -1,5 +1,5 @@
 /*
- * @written: 3/30/2025
+ * @written 3/30/2025
  * Documentation can be found here: https://github.com/Pazmazz/predator-prey-sim/blob/will-feature-1/docs/CellGrid.md
  */
 package classes.entity;

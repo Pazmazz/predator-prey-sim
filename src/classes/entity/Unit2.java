@@ -1,5 +1,5 @@
 /*
- * @Written: 4/2/2025
+ * @written 4/2/2025
  * 
  * class Unit2:
  * 
@@ -12,37 +12,38 @@ package classes.entity;
 import classes.abstracts.BaseVector;
 
 public class Unit2 extends BaseVector<Unit2> {
-	public Unit2() {
-		this(0, 0);
-	}
 
-	public Unit2(int x, int y) {
-		this.components.add((double) x);
-		this.components.add((double) y);
-	}
+    public Unit2() {
+        this(0, 0);
+    }
 
-	public int getX() {
-		return getInt(0);
-	}
+    public Unit2(int x, int y) {
+        this.components.add((double) x);
+        this.components.add((double) y);
+    }
 
-	public int getY() {
-		return getInt(1);
-	}
+    public int getX() {
+        return getInt(0);
+    }
 
-	public Vector2 toVector2() {
-		return new Vector2(getX(), getY());
-	}
+    public int getY() {
+        return getInt(1);
+    }
 
-	@Override
-	protected Unit2 newVector(Double[] components) {
-		return new Unit2(
-			components[0].intValue(), 
-			components[1].intValue()
-		);
-	}
+    public Vector2 toVector2() {
+        return new Vector2(getX(), getY());
+    }
 
-	@Override
-	public String toString() {
-		return String.format("Unit2<%s, %s>", getX(), getY());
-	}
+    @Override
+    protected Unit2 newVector(Double[] components) {
+        return new Unit2(
+                components[0].intValue(),
+                components[1].intValue()
+        );
+    }
+
+    @Override
+    public String toString() {
+        return String.format("Unit2<%s, %s>", getX(), getY());
+    }
 }

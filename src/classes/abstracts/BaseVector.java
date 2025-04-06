@@ -1,5 +1,5 @@
 /*
- * @Written: 4/2/2025
+ * @written 4/2/2025
  * 
  * abstract class BaseVector:
  * 
@@ -21,7 +21,6 @@
  * Cannot not generate a decimal value if the components are initialized
  * as integers.
  */
-
 package classes.abstracts;
 
 import classes.util.Formatter;
@@ -31,11 +30,12 @@ import interfaces.Callback;
 import java.util.ArrayList;
 
 public abstract class BaseVector<T extends BaseVector<T>> {
-	protected abstract T newVector(Double[] components);
-	protected ArrayList<Double> components = new ArrayList<>();
-	private T inverted;
 
-	/*
+    protected abstract T newVector(Double[] components);
+    protected ArrayList<Double> components = new ArrayList<>();
+    private T inverted;
+
+    /*
 	 * computeComponents()
 	 * 
 	 * Accept a lambda function as the callback parameter to
@@ -43,16 +43,16 @@ public abstract class BaseVector<T extends BaseVector<T>> {
 	 * should be. The argument sent to the callback is the current
 	 * value of the component. The return value of the callback
 	 * is the updated component value.
-	 */
-	public Double[] computeComponents(String methodName, Callback callback) {
-		Double[] resultComponents = new Double[size()];
-		for (int i = 0; i < size(); i++) {
-			resultComponents[i] = (Double) callback.call(get(i));
-		}
-		return resultComponents;
-	}
+     */
+    public Double[] computeComponents(String methodName, Callback callback) {
+        Double[] resultComponents = new Double[size()];
+        for (int i = 0; i < size(); i++) {
+            resultComponents[i] = (Double) callback.call(get(i));
+        }
+        return resultComponents;
+    }
 
-	/*
+    /*
 	 * @overload: computeComponents()
 	 * 
 	 * If a child of BaseVector is provided, then the lambda function
@@ -66,82 +66,83 @@ public abstract class BaseVector<T extends BaseVector<T>> {
 	 * 
 	 * If attempting to compute the components of two vectors of mismatched
 	 * size, an unchecked exception `VectorMismatchException` will be thrown.
-	 */
-	public Double[] computeComponents(T v, String methodName, Callback callback) {
-		if (v == null)
-			throw new VectorArgumentIsNullException();
+     */
+    public Double[] computeComponents(T v, String methodName, Callback callback) {
+        if (v == null) {
+            throw new VectorArgumentIsNullException();
+        }
 
-		if (!v.isSize(size())) {
-			throw new VectorMismatchException(methodName);
-		}
+        if (!v.isSize(size())) {
+            throw new VectorMismatchException(methodName);
+        }
 
-		Double[] resultComponents = new Double[size()];
-		for (int i = 0; i < size(); i++) {
-			resultComponents[i] = (Double) callback.call(get(i), v.get(i));
-		}
-		return resultComponents;
-	}
+        Double[] resultComponents = new Double[size()];
+        for (int i = 0; i < size(); i++) {
+            resultComponents[i] = (Double) callback.call(get(i), v.get(i));
+        }
+        return resultComponents;
+    }
 
-	/*
+    /*
 	 * getComponents()
 	 * 
 	 * Return the ArrayList consisting of the all of the
 	 * components making up BaseVector<T>.
-	 */
-	public ArrayList<Double> getComponents() {
-		return this.components;
-	}
+     */
+    public ArrayList<Double> getComponents() {
+        return this.components;
+    }
 
-	/*
+    /*
 	 * size()
 	 * 
 	 * Return the size of the BaseVector<T>. The size
 	 * represents the dimensions of the vector, i.e how
 	 * many components it is comprised of.
-	 */
-	public int size() {
-		return this.components.size();
-	}
+     */
+    public int size() {
+        return this.components.size();
+    }
 
-	/*
+    /*
 	 * isSize()
 	 * 
 	 * Return true or false by checking the size of itself
 	 * (checks the number of components it has with a
 	 * compared size).
-	 */
-	public boolean isSize(int comparedSize) {
-		return size() == comparedSize;
-	}
+     */
+    public boolean isSize(int comparedSize) {
+        return size() == comparedSize;
+    }
 
-	/*
+    /*
 	 * getComponentArray()
 	 * 
 	 * Return the components as a native array of double values
-	 */
-	public Double[] getComponentArray() {
-		return this.components.toArray(new Double[this.components.size()]);
-	}
+     */
+    public Double[] getComponentArray() {
+        return this.components.toArray(new Double[this.components.size()]);
+    }
 
-	/*
+    /*
 	 * get()
 	 * 
 	 * Return a component at a given index as a double
-	 */
-	public Double get(int index) {
-		return this.components.get(index);
-	}
+     */
+    public Double get(int index) {
+        return this.components.get(index);
+    }
 
-	/*
+    /*
 	 * getInt()
 	 * 
 	 * Return a component at a given index as an int
-	 */
-	public Integer getInt(int index) {
-		return get(index).intValue();
-	}
+     */
+    public Integer getInt(int index) {
+        return get(index).intValue();
+    }
 
-	/*
+    /*
 	 * invert()
 	 * 
 	 * Return a new BaseVector<T> with inverted components.
@@ -152,40 +153,42 @@ public abstract class BaseVector<T extends BaseVector<T>> {
 	 * Console.println(v.invert())
 	 * ```
 	 * Output: Vector2<-1.0, -5.0>
-	 */
-	public T invert() {
-		if (inverted != null) return inverted;
+     */
+    public T invert() {
+        if (inverted != null) {
+            return inverted;
+        }
 
-		inverted = newVector(computeComponents(
-			"invert",
-			(args) -> (Double) args[0] * -1
-		));
+        inverted = newVector(computeComponents(
+                "invert",
+                (args) -> (Double) args[0] * -1
+        ));
 
-		return inverted;
-	}
+        return inverted;
+    }
 
-	/*
+    /*
 	 * equals()
 	 * 
 	 * Return true if all components in the current BaseVector<T>
 	 * are equal to all components in the target base vector. If both
 	 * vectors have different dimensions, the result is false.
-	 */
-	public boolean equals(T v) {
-		if (!v.isSize(size())) {
-			return false;
-		}
+     */
+    public boolean equals(T v) {
+        if (!v.isSize(size())) {
+            return false;
+        }
 
-		for (int i = 0; i < size(); i++) {
-			if ((double) get(i) != (double) v.get(i)) {
-				return false;
-			}
-		}
+        for (int i = 0; i < size(); i++) {
+            if ((double) get(i) != (double) v.get(i)) {
+                return false;
+            }
+        }
 
-		return true;
-	}
+        return true;
+    }
 
-	/*
+    /*
 	 * add()
 	 * 
 	 * Return a new BaseVector<T> with all components
@@ -197,60 +200,60 @@ public abstract class BaseVector<T extends BaseVector<T>> {
 	 * Console.println(v.add(new Vector2(1, 1));
 	 * ```
 	 * Output: Vector2<5.0, 5.0>
-	 */
-	public T add(T v) {
-		return newVector(computeComponents(
-			v,
-			"add(BaseVector<T>)",
-			(args) -> (Double) args[0] + (Double) args[1]
-		));
-	}
+     */
+    public T add(T v) {
+        return newVector(computeComponents(
+                v,
+                "add(BaseVector<T>)",
+                (args) -> (Double) args[0] + (Double) args[1]
+        ));
+    }
 
-	/*
+    /*
 	 * @overload: add()
 	 * 
 	 * Add all components of BaseVector<T> by some scalar integer
-	 */
-	public T add(int scalar) {
-		return newVector(computeComponents(
-			"add(int scalar)",
-			(args) -> (Double) args[0] + scalar
-		));
-	}
+     */
+    public T add(int scalar) {
+        return newVector(computeComponents(
+                "add(int scalar)",
+                (args) -> (Double) args[0] + scalar
+        ));
+    }
 
-	/*
+    /*
 	 * abs()
 	 * 
 	 * Take the absolute value of all the components
-	 */
-	public T abs() {
-		return newVector(computeComponents(
-			"abs()",
-			(args) -> Math.abs((Double) args[0])
-		));
-	}
+     */
+    public T abs() {
+        return newVector(computeComponents(
+                "abs()",
+                (args) -> Math.abs((Double) args[0])
+        ));
+    }
 
-	/*
+    /*
 	 * signedUnit()
 	 * 
 	 * Return a BaseVector<T> with multiplicative identities
 	 * representing the quadrant it's in
-	 */
-	public T signedUnit() {
-		return newVector(computeComponents(
-			"signedUnit()",
-			(args) -> {
-				Double c = (Double) args[0];
-				return c > 0
-					? 1.0
-					: c < 0
-						? -1.0
-						: 0.0;
-			}
-		));
-	}
+     */
+    public T signedUnit() {
+        return newVector(computeComponents(
+                "signedUnit()",
+                (args) -> {
+                    Double c = (Double) args[0];
+                    return c > 0
+                            ? 1.0
+                            : c < 0
+                                    ? -1.0
+                                    : 0.0;
+                }
+        ));
+    }
 
-	/*
+    /*
 	 * subtract()
 	 * 
 	 * Return a new BaseVector<T> instance with all components
@@ -262,28 +265,28 @@ public abstract class BaseVector<T extends BaseVector<T>> {
 	 * Console.println(v.subtract(new Vector2(1, 1));
 	 * ```
 	 * Output: Vector2<3.0, 3.0>
-	 */
-	public T subtract(T v) {
-		return newVector(computeComponents(
-			v,
-			"subtract(BaseVector<T>)",
-			(args) -> (Double) args[0] - (Double) args[1]
-		));
-	}
+     */
+    public T subtract(T v) {
+        return newVector(computeComponents(
+                v,
+                "subtract(BaseVector<T>)",
+                (args) -> (Double) args[0] - (Double) args[1]
+        ));
+    }
 
-	/*
+    /*
 	 * @overload: subtract()
 	 * 
 	 * Subtract all components of BaseVector<T> by some scalar integer
-	 */
-	public T subtract(int scalar) {
-		return newVector(computeComponents(
-			"subtract(int scalar)",
-			(args) -> (Double) args[0] - scalar
-		));
-	}
+     */
+    public T subtract(int scalar) {
+        return newVector(computeComponents(
+                "subtract(int scalar)",
+                (args) -> (Double) args[0] - scalar
+        ));
+    }
 
-	/*
+    /*
 	 * @overload: multiply()
 	 * 
 	 * Return a new BaseVector<T> instance with all components
@@ -296,43 +299,43 @@ public abstract class BaseVector<T extends BaseVector<T>> {
 	 * Console.println(v.multiply(new Vector2(2, 3)));
 	 * ```
 	 * Output: Vector2<8.0, 12.0>
-	 */
-	public T multiply(T v) {
-		return newVector(computeComponents(
-			v,
-			"multiply(BaseVector<T>)",
-			(args) -> (Double) args[0] * (Double) args[1]
-		));
-	}
+     */
+    public T multiply(T v) {
+        return newVector(computeComponents(
+                v,
+                "multiply(BaseVector<T>)",
+                (args) -> (Double) args[0] * (Double) args[1]
+        ));
+    }
 
-	/*
+    /*
 	 * @overload: multiply()
 	 * 
 	 * Multiply all components of BaseVector<T> by some scalar integer
-	 */
-	public T multiply(int scalar) {
-		return newVector(computeComponents(
-			"multiply(int scalar)",
-			(args) -> (Double) args[0] * scalar
-		));
-	}
+     */
+    public T multiply(int scalar) {
+        return newVector(computeComponents(
+                "multiply(int scalar)",
+                (args) -> (Double) args[0] * scalar
+        ));
+    }
 
-	/*
+    /*
 	 * toString()
 	 * 
 	 * Return a name of the object in the form: BaseVector<c0, c1, ...>
-	 */
-	@Override
-	public String toString() {
-		String className = this.getClass().getSimpleName();
+     */
+    @Override
+    public String toString() {
+        String className = this.getClass().getSimpleName();
 
-		String replacementStrings = Formatter
-			.concatArray(getComponentArray())
-				.replaceAll("\\-?\\d+.?\\d*", "%s");
+        String replacementStrings = Formatter
+                .concatArray(getComponentArray())
+                .replaceAll("\\-?\\d+.?\\d*", "%s");
 
-		return String.format(
-			className + "<" + replacementStrings + ">",
-			(Object[]) getComponentArray()
-		);
-	}
+        return String.format(
+                className + "<" + replacementStrings + ">",
+                (Object[]) getComponentArray()
+        );
+    }
 }

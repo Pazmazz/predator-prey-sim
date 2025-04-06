@@ -1,5 +1,5 @@
 /*
- * @Written: 3/31/2025
+ * @written 3/31/2025
  * 
  * class Cell:
  * 
@@ -13,132 +13,134 @@ package classes.entity;
 import classes.util.Console;
 
 public class Cell {
-	final private Unit2 unit;
-	final private Vector2 position;
-	private CellType cellType;
-	private CellVacancy cellVacancy;
-	private CellOccupant cellOccupant;
 
-	public enum CellType {
-		OUT_OF_BOUNDS,
-		NORMAL,
-		GARBAGE_COLLECTED,
-	}
+    final private Unit2 unit;
+    final private Vector2 position;
+    private CellType cellType;
+    private CellVacancy cellVacancy;
+    private CellOccupant cellOccupant;
 
-	public enum CellVacancy {
-		EMPTY,
-		OCCUPIED,
-	}
-	
-	public Cell(Unit2 unit) {
-		this.unit = unit;
-		this.position = new Vector2(
-				unit.getX() - unit.signedUnit().getX() * 0.5,
-				unit.getY() - unit.signedUnit().getY() * 0.5);
+    public enum CellType {
+        OUT_OF_BOUNDS,
+        NORMAL,
+        GARBAGE_COLLECTED,
+    }
 
-		this.cellType = CellType.NORMAL;
-		this.cellVacancy = CellVacancy.EMPTY;
-	}
-	
-	public void setOccupant(CellOccupant cellOccupant, boolean updateOccupant) {
-		if (isOccupied())
-			throw new Error(
-					String.format(
-							"Cell<%s, %s> tried to set a new occupant without removing its current occupant",
-							this.getUnit2().getX(),
-							this.getUnit2().getY()));
-						
+    public enum CellVacancy {
+        EMPTY,
+        OCCUPIED,
+    }
 
-		this.cellOccupant = cellOccupant;
-		setVacancy(CellVacancy.OCCUPIED);
+    public Cell(Unit2 unit) {
+        this.unit = unit;
+        this.position = new Vector2(
+                unit.getX() - unit.signedUnit().getX() * 0.5,
+                unit.getY() - unit.signedUnit().getY() * 0.5);
 
-		if (updateOccupant)
-			cellOccupant.setCell(this, false);
-	}
+        this.cellType = CellType.NORMAL;
+        this.cellVacancy = CellVacancy.EMPTY;
+    }
 
-	public void setOccupant(CellOccupant cellOccupant) {
-		setOccupant(cellOccupant, true);
-	}
+    public void setOccupant(CellOccupant cellOccupant, boolean updateOccupant) {
+        if (isOccupied()) {
+            throw new Error(
+                    String.format(
+                            "Cell<%s, %s> tried to set a new occupant without removing its current occupant",
+                            this.getUnit2().getX(),
+                            this.getUnit2().getY()));
+        }
 
-	public CellOccupant getOccupant() {
-		return this.cellOccupant;
-	}
+        this.cellOccupant = cellOccupant;
+        setVacancy(CellVacancy.OCCUPIED);
 
-	public CellOccupant removeOccupant() {
-		CellOccupant _cellOccupant = this.cellOccupant;
-		this.cellOccupant = null;
-		setVacancy(CellVacancy.EMPTY);
-		return _cellOccupant;
-	}
+        if (updateOccupant) {
+            cellOccupant.setCell(this, false);
+        }
+    }
 
-	public void moveOccupantTo(Cell targetCell) {
-		targetCell.setOccupant(removeOccupant());
-	}
+    public void setOccupant(CellOccupant cellOccupant) {
+        setOccupant(cellOccupant, true);
+    }
 
-	public Vector2 getPosition() {
-		return this.position;
-	}
+    public CellOccupant getOccupant() {
+        return this.cellOccupant;
+    }
 
-	public Unit2 getUnit2() {
-		return this.unit;
-	}
+    public CellOccupant removeOccupant() {
+        CellOccupant _cellOccupant = this.cellOccupant;
+        this.cellOccupant = null;
+        setVacancy(CellVacancy.EMPTY);
+        return _cellOccupant;
+    }
 
-	public CellType getType() {
-		return this.cellType;
-	}
+    public void moveOccupantTo(Cell targetCell) {
+        targetCell.setOccupant(removeOccupant());
+    }
 
-	public CellVacancy getVacancy() {
-		return this.cellVacancy;
-	}
+    public Vector2 getPosition() {
+        return this.position;
+    }
 
-	public boolean isEmpty() {
-		return this.cellVacancy == CellVacancy.EMPTY;
-	}
+    public Unit2 getUnit2() {
+        return this.unit;
+    }
 
-	public boolean isOccupied() {
-		return this.cellVacancy == CellVacancy.OCCUPIED;
-	}
+    public CellType getType() {
+        return this.cellType;
+    }
 
-	public boolean isOutOfBounds() {
-		return this.cellType == CellType.OUT_OF_BOUNDS;
-	}
+    public CellVacancy getVacancy() {
+        return this.cellVacancy;
+    }
 
-	public boolean isInBounds() {
-		return this.cellType == CellType.NORMAL;
-	}
+    public boolean isEmpty() {
+        return this.cellVacancy == CellVacancy.EMPTY;
+    }
 
-	public boolean isCollected() {
-		return this.cellType == CellType.GARBAGE_COLLECTED;
-	}
+    public boolean isOccupied() {
+        return this.cellVacancy == CellVacancy.OCCUPIED;
+    }
 
-	public boolean isCollectable() {
-		return isEmpty() || this.cellOccupant == null;
-	}
+    public boolean isOutOfBounds() {
+        return this.cellType == CellType.OUT_OF_BOUNDS;
+    }
 
-	public void setType(CellType cellType) {
-		this.cellType = cellType;
-	}
+    public boolean isInBounds() {
+        return this.cellType == CellType.NORMAL;
+    }
 
-	public void setVacancy(CellVacancy cellVacancy) {
-		this.cellVacancy = cellVacancy;
-	}
+    public boolean isCollected() {
+        return this.cellType == CellType.GARBAGE_COLLECTED;
+    }
 
-	public void printInfo() {
-		Console.println(toString());
-		printInfoItem("Type", getType().toString());
-		printInfoItem("Vacancy", getVacancy().toString());
+    public boolean isCollectable() {
+        return isEmpty() || this.cellOccupant == null;
+    }
 
-		if (isOccupied()) {
-			printInfoItem("Occupant", getOccupant().toString());
-		}
-	}
+    public void setType(CellType cellType) {
+        this.cellType = cellType;
+    }
 
-	public void printInfoItem(String item, String content) {
-		Console.println("- $text-yellow %s: $text-reset %s".formatted(item, content));
-	}
+    public void setVacancy(CellVacancy cellVacancy) {
+        this.cellVacancy = cellVacancy;
+    }
 
-	@Override
-	public String toString() {
-		return String.format("$text-green Cell$text-reset <%s, %s>", unit.getX(), unit.getY());
-	}
+    public void printInfo() {
+        Console.println(toString());
+        printInfoItem("Type", getType().toString());
+        printInfoItem("Vacancy", getVacancy().toString());
+
+        if (isOccupied()) {
+            printInfoItem("Occupant", getOccupant().toString());
+        }
+    }
+
+    public void printInfoItem(String item, String content) {
+        Console.println("- $text-yellow %s: $text-reset %s".formatted(item, content));
+    }
+
+    @Override
+    public String toString() {
+        return String.format("$text-green Cell$text-reset <%s, %s>", unit.getX(), unit.getY());
+    }
 }
