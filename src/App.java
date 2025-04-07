@@ -7,6 +7,7 @@ import classes.abstracts.Application;
 import classes.entity.Ant;
 import classes.entity.Cell;
 import classes.entity.CellGrid;
+import classes.entity.Game;
 import classes.entity.Unit2;
 import classes.util.Console;
 
@@ -20,19 +21,22 @@ public class App extends Application {
         // Console.hideDebugPriority(DebugPriority.LOW);
         Console.setConsoleColorsEnabled(true);
 
-        // Game game = new Game();
+        Game game = new Game();
         // game.start();
         //
         // TEST CODE:
         //
-        CellGrid grid = new CellGrid(new Unit2(10, 10));
+        CellGrid grid = game.getGameGrid();
 
         Cell cell0 = grid.getCell(new Unit2(1, 1));
         Cell cell1 = grid.getCell(new Unit2(1, 2));
-        cell1.setOccupant(new Ant());
+				cell1.setOccupant(new Ant());
 
         Console.println(grid.getCellTopOf(cell0).getOccupant());
-        Console.println(grid.getCellLeftOf(cell0));
+				Console.println(grid.getCellRightOf(cell0));
+
+				Console.println(grid.getCellLeftOf(cell0));
+				
 
         // cell0.moveOccupantTo(cell1);
     }

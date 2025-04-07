@@ -375,60 +375,109 @@ public class CellGrid {
     }
 
     /**
-     * Gets a {@code Cell} object from a specific adjacent cell relative to a
-     * target {@code Cell} cell, {@code Vector2} position, or {@code Unit2}
-     * unit.
+     * Gets the {@code Cell} directly above a given {@code Unit2} location on
+     * the grid.
      *
-     * <p>
-     * This accounts for all variant methods of the form {@code getCell___Of}.
+     * @param unit the {@code Unit2} location to get the cell above it
      *
-     * @param unit
-     * @return
+     * @return the {@code Cell} above the given {@code unit}
      */
     public Cell getCellTopOf(Unit2 unit) {
-        return getCell(unit.add(new Unit2(0, 1)));
+        int y = unit.getY() == -1 ? 2 : 1;
+        return getCell(unit.add(new Unit2(0, y)));
     }
 
+    /**
+     * Gets the {@code Cell} directly below a given {@code Unit2} location on
+     * the grid.
+     *
+     * @param unit the {@code Unit2} location to get the cell below it
+     *
+     * @return the {@code Cell} below the given {@code unit}
+     */
     public Cell getCellBottomOf(Unit2 unit) {
-        return getCell(unit.add(new Unit2(0, -1)));
+        int y = unit.getY() == 1 ? -2 : -1;
+        return getCell(unit.add(new Unit2(0, y)));
     }
 
+    /**
+     * Gets the {@code Cell} directly to the left of a given {@code Unit2}
+     * location on the grid.
+     *
+     * @param unit the {@code Unit2} location to get the cell left of it
+     *
+     * @return the {@code Cell} left of the given {@code unit}
+     */
     public Cell getCellLeftOf(Unit2 unit) {
-        return getCell(unit.add(new Unit2(-1, 0)));
+        int x = unit.getX() == 1 ? -2 : -1;
+        return getCell(unit.add(new Unit2(x, 0)));
     }
 
+    /**
+     * Gets the {@code Cell} directly to the right of a given {@code Unit2}
+     * location on the grid.
+     *
+     * @param unit the {@code Unit2} location to get the cell right of it
+     *
+     * @return the {@code Cell} right of the given {@code unit}
+     */
     public Cell getCellRightOf(Unit2 unit) {
-        return getCell(unit.add(new Unit2(1, 0)));
+        int x = unit.getX() == -1 ? 2 : 1;
+        return getCell(unit.add(new Unit2(x, 0)));
     }
 
+    /**
+     * @see {@link #getCellTopOf(Unit2)}
+     */
     public Cell getCellTopOf(Cell cell) {
         return getCellTopOf(cell.getUnit2());
     }
 
+    /**
+     * @see {@link #getCellBottomOf(Unit2)}
+     */
     public Cell getCellBottomOf(Cell cell) {
         return getCellBottomOf(cell.getUnit2());
     }
 
+    /**
+     * @see {@link #getCellLeftOf(Unit2)}
+     */
     public Cell getCellLeftOf(Cell cell) {
         return getCellLeftOf(cell.getUnit2());
     }
 
+    /**
+     * @see {@link #getCellRightOf(Unit2)}
+     */
     public Cell getCellRightOf(Cell cell) {
         return getCellRightOf(cell.getUnit2());
     }
 
+    /**
+     * @see {@link #getCellTopOf(Unit2)}
+     */
     public Cell getCellTopOf(Vector2 position) {
         return getCellTopOf(getCell(position));
     }
 
+    /**
+     * @see {@link #getCellBottomOf(Unit2)}
+     */
     public Cell getCellBottomOf(Vector2 position) {
         return getCellBottomOf(getCell(position));
     }
 
+    /**
+     * @see {@link #getCellLeftOf(Unit2)}
+     */
     public Cell getCellLeftOf(Vector2 position) {
         return getCellLeftOf(getCell(position));
     }
 
+    /**
+     * @see {@link #getCellRightOf(Unit2)}
+     */
     public Cell getCellRightOf(Vector2 position) {
         return getCellRightOf(getCell(position));
     }
