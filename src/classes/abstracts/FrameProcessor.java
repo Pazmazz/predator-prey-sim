@@ -4,6 +4,7 @@
 package classes.abstracts;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 
 import classes.entity.Game;
@@ -11,7 +12,7 @@ import classes.settings.GameSettings.SimulationSettings;
 import classes.settings.GameSettings.SimulationType;
 import classes.util.Console;
 import classes.util.Time;
-import interfaces.Callback;
+import interfaces.TaskCallback;
 
 /**
  * An abstract class that provides a {@code pulse} method for updating frame
@@ -20,16 +21,18 @@ import interfaces.Callback;
  */
 public abstract class FrameProcessor extends Application {
 
-	public enum TaskStatus {
-		END
-	}
-
 	public Game game;
 	public long lastPulseTick;
 	public long lastDeltaTime = 0;
 	public long currentDeltaTime = 0;
 	public SimulationSettings settings;
-	private ArrayList<Callback> tasks = new ArrayList<>();
+	private ArrayList<Task> tasks = new ArrayList<>();
+
+	public enum TaskState {
+		END,
+		SUSPENDED,
+		RUNNING,
+	}
 
 	protected FrameProcessor(Game game, SimulationType simulationType) {
 		settings = game.getSettings()
@@ -100,8 +103,8 @@ public abstract class FrameProcessor extends Application {
 	 * <p>
 	 * Currently a testing method
 	 */
-	public void addTask(Callback callback) {
-		this.tasks.add(callback);
+	public void addTask(Task task) {
+		this.tasks.add(task);
 	}
 
 	/**
@@ -110,15 +113,60 @@ public abstract class FrameProcessor extends Application {
 	 * Currently a testing method
 	 */
 	public void executeTasks() {
-		Iterator<Callback> taskIterator = tasks.iterator();
+		Iterator<Task> taskIterator = tasks.iterator();
+		long startCycle = tick();
 
 		while (taskIterator.hasNext()) {
-			Callback task = taskIterator.next();
-			TaskStatus status = (TaskStatus) task.call(this.currentDeltaTime);
+			Task task = taskIterator.next();
+			task.setElapsed(startCycle - task.started());
 
-			if (status == TaskStatus.END) {
+			TaskState state = task.execute(this.currentDeltaTime);
+
+			if (state == TaskState.END) {
 				taskIterator.remove();
 			}
+		}
+	}
+
+	public static class Task {
+		private TaskCallback taskCaller;
+		final private HashMap<String, Object> env = new HashMap<>();
+		final private long started;
+		private long elapsed = 0;
+
+		public Task() {
+			this.started = tick();
+		}
+
+		public Task setCallback(TaskCallback taskCaller) {
+			this.taskCaller = taskCaller;
+			return this;
+		}
+
+		public TaskState execute(Object... args) {
+			return (TaskState) this.taskCaller.call();
+		}
+
+		public Task set(String key, Object value) {
+			env.put(key, value);
+			return this;
+		}
+
+		public Object get(String key) {
+			return env.get(key);
+		}
+
+		public Task setElapsed(long elapsed) {
+			this.elapsed = elapsed;
+			return this;
+		}
+
+		public long started() {
+			return this.started;
+		}
+
+		public long getElapsed() {
+			return this.elapsed;
 		}
 	}
 

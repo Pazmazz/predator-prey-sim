@@ -11,7 +11,9 @@
  */
 
 import classes.abstracts.Application;
-import classes.abstracts.FrameProcessor.TaskStatus;
+import classes.abstracts.FrameProcessor;
+import classes.abstracts.FrameProcessor.Task;
+import classes.abstracts.FrameProcessor.TaskState;
 import classes.entity.Ant;
 import classes.entity.Cell;
 import classes.entity.CellGrid;
@@ -20,8 +22,10 @@ import classes.entity.Unit2;
 import classes.entity.Vector2;
 import classes.util.Console;
 import classes.util.Formatter;
+import classes.util.Time;
 import classes.util.Console.DebugPriority;
 
+import java.util.HashMap;
 import java.util.Iterator;
 
 /**
@@ -65,17 +69,41 @@ public class App extends Application {
 
 		// cell0.moveOccupantTo(cell1);
 
-		game.renderFrame.addTask((n) -> {
-			Console.println("Running task");
-			return TaskStatus.END;
+		Task task = new Task();
+		task.set("count", 0.0);
+		task.set("word", "something");
+		task.set("duration", 5);
+
+		task.setCallback(() -> {
+			int duration = (int) task.get("duration");
+			Console.println("elapsed: " + task.getElapsed());
+
+			if (Time.nanoToSeconds(task.getElapsed()) > duration) {
+				return TaskState.END;
+			}
+
+			return TaskState.RUNNING;
 		});
 
-		Console.println(
-				Formatter.concatArray(
-						game.getGameGrid().getCellsAdjacentTo(new Unit2(1, 1))));
+		Task task0 = new Task();
+		task0.set("count", 0);
+		task0.set("word", "something");
+		task0.set("duration", 5);
 
-		// game.getGameGrid().getCell();
-		game.getGameGrid().getCell();
+		task0.setCallback(() -> {
+			int duration = (int) task0.get("duration");
+			Console.println("$text-red elapsed 2: " + task0.getElapsed());
+
+			if (Time.nanoToSeconds(task0.getElapsed()) > 20) {
+				return TaskState.END;
+			}
+
+			return TaskState.RUNNING;
+		});
+
+		// game.renderFrame.addTask(task);
+		// game.renderFrame.addTask(task0);
+		game.movementFrame.addTask(task0);
 
 	}
 }

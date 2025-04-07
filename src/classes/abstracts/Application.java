@@ -9,7 +9,7 @@ package classes.abstracts;
  */
 public abstract class Application {
 
-	public long tick() {
+	public static long tick() {
 		return System.nanoTime();
 	}
 
