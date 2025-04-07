@@ -50,24 +50,24 @@ public class Game extends Application implements Runnable {
 
 	public Game() {
 		// IMPORTANT: settings must be defined first, since other classes reference it
-		settings = new GameSettings();
+		this.settings = new GameSettings();
 
-		sessionId = UUID.randomUUID().toString();
-		screen = new GameScreen(this);
-		mainThread = new Thread(this);
-		gameGrid = new CellGrid(settings.getGridSize());
+		this.sessionId = UUID.randomUUID().toString();
+		this.screen = new GameScreen(this);
+		this.mainThread = new Thread(this);
+		this.gameGrid = new CellGrid(settings.getGridSize());
 
-		movementFrame = new MovementFrame(this, SimulationType.MOVEMENT);
-		renderFrame = new RenderFrame(this, SimulationType.RENDER);
-		simulatedLagFrame = new SimulatedLagFrame(this, SimulationType.SIMULATED_LAG);
+		this.movementFrame = new MovementFrame(this, SimulationType.MOVEMENT);
+		this.renderFrame = new RenderFrame(this, SimulationType.RENDER);
+		this.simulatedLagFrame = new SimulatedLagFrame(this, SimulationType.SIMULATED_LAG);
 
-		frameProcesses = new FrameProcessor[] {
+		this.frameProcesses = new FrameProcessor[] {
 				movementFrame,
 				renderFrame,
 				simulatedLagFrame
 		};
 
-		state = GameState.LOADED;
+		this.state = GameState.LOADED;
 	}
 
 	/**
@@ -89,7 +89,7 @@ public class Game extends Application implements Runnable {
 	 * Terminates the game loop by setting the game state to {@code TERMINATED}
 	 */
 	public void terminate() {
-		setState(GameState.TERMINATED);
+		this.setState(GameState.TERMINATED);
 	}
 
 	/**
@@ -106,7 +106,7 @@ public class Game extends Application implements Runnable {
 		while (isThreadRunning()) {
 			long simulationDelta = 0;
 
-			for (FrameProcessor frame : frameProcesses) {
+			for (FrameProcessor frame : this.frameProcesses) {
 				long frameDelta = frame.pulse();
 				if (frameDelta > -1) {
 					simulationDelta += frameDelta;
@@ -125,30 +125,30 @@ public class Game extends Application implements Runnable {
 	// Public getters
 	//
 	public GameScreen getScreen() {
-		return screen;
+		return this.screen;
 	}
 
 	public GameState getState() {
-		return state;
+		return this.state;
 	}
 
 	public String getSessionId() {
-		return sessionId;
+		return this.sessionId;
 	}
 
 	public GameSettings getSettings() {
-		return settings;
+		return this.settings;
 	}
 
 	public CellGrid getGameGrid() {
-		return gameGrid;
+		return this.gameGrid;
 	}
 
 	//
 	// Public logic checks
 	//
 	public boolean isRunning() {
-		return state == GameState.RUNNING;
+		return this.state == GameState.RUNNING;
 	}
 
 	public boolean isThreadRunning() {
@@ -156,25 +156,25 @@ public class Game extends Application implements Runnable {
 	}
 
 	public boolean isInitial() {
-		return state == GameState.INITIAL;
+		return this.state == GameState.INITIAL;
 	}
 
 	public boolean isLoaded() {
-		return state == GameState.LOADED;
+		return this.state == GameState.LOADED;
 	}
 
 	public boolean isPaused() {
-		return state == GameState.PAUSED;
+		return this.state == GameState.PAUSED;
 	}
 
 	public boolean isTerminated() {
-		return state == GameState.TERMINATED;
+		return this.state == GameState.TERMINATED;
 	}
 
 	//
 	// Public setters
 	//
 	public void setState(GameState newState) {
-		state = newState;
+		this.state = newState;
 	}
 }

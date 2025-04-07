@@ -710,6 +710,7 @@ public class CellGrid {
 				if (!hasNext()) {
 					throw new NoSuchElementException("Dead Cell path");
 				}
+
 				if (cellQueue.size() > 0) {
 					return cellQueue.remove(0);
 				}
@@ -729,7 +730,7 @@ public class CellGrid {
 					this.nextGridIntercept = nextIntercept;
 				}
 
-				Console.println(thisIntercept);
+				Console.debugPrint(DebugPriority.MEDIUM, thisIntercept);
 				cellPath.add(thisIntercept.getCell());
 				return thisIntercept.getCell();
 			}
@@ -805,7 +806,7 @@ public class CellGrid {
 		@Override
 		public String toString() {
 			return String.format(
-					"$text-yellow GridIntercept$text-reset <Axis: %s, Point: %s>",
+					"$text-yellow GridIntercept$text-reset <Axis: $text-purple %s$text-reset , Point: %s>",
 					this.axisOfIntersection,
 					this.pointOfIntersection);
 		}
