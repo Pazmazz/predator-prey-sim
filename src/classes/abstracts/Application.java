@@ -9,15 +9,15 @@ package classes.abstracts;
  */
 public abstract class Application {
 
-    public long tick() {
-        return System.nanoTime();
-    }
+	public long tick() {
+		return System.nanoTime();
+	}
 
-    public void wait(double milliseconds) {
-        try {
-            Thread.sleep((long) milliseconds);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-    }
+	public void wait(double milliseconds) {
+		try {
+			Thread.sleep((long) milliseconds);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+	}
 }

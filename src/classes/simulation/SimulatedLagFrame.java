@@ -14,13 +14,13 @@ import classes.settings.GameSettings.SimulationType;
  */
 public class SimulatedLagFrame extends FrameProcessor {
 
-    public SimulatedLagFrame(Game game, SimulationType simulationFrame) {
-        super(game, simulationFrame);
-    }
+	public SimulatedLagFrame(Game game, SimulationType simulationFrame) {
+		super(game, simulationFrame);
+	}
 
-    @Override
-    public void step(double deltaTimeSeconds) {
-        // wait(Math.random()*100);
-        game.getGameGrid().collectCells();
-    }
+	@Override
+	public void step(double deltaTimeSeconds) {
+		// wait(Math.random()*100);
+		game.getGameGrid().collectCells();
+	}
 }

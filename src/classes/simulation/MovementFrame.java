@@ -14,12 +14,12 @@ import classes.settings.GameSettings.SimulationType;
  */
 public class MovementFrame extends FrameProcessor {
 
-    public MovementFrame(Game game, SimulationType simulationFrame) {
-        super(game, simulationFrame);
-    }
+	public MovementFrame(Game game, SimulationType simulationFrame) {
+		super(game, simulationFrame);
+	}
 
-    @Override
-    public void step(double deltaTimeSeconds) {
+	@Override
+	public void step(double deltaTimeSeconds) {
 
-    }
+	}
 }

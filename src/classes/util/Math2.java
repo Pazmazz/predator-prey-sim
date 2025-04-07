@@ -9,16 +9,16 @@ package classes.util;
  */
 public class Math2 {
 
-    /**
-     * Linear interpolation bewtween {@code a} and {@code b} using some value >=
-     * 1 {@code t} >= 0
-     *
-     * @param t paramaterized variable for {@code a} and {@code b}
-     * @param a initial value
-     * @param b final value
-     * @return the interpolation between {@code a} and {@code b} using t
-     */
-    public static double lerp(double t, double a, double b) {
-        return a + t * (b - a);
-    }
+	/**
+	 * Linear interpolation bewtween {@code a} and {@code b} using some value >=
+	 * 1 {@code t} >= 0
+	 *
+	 * @param t paramaterized variable for {@code a} and {@code b}
+	 * @param a initial value
+	 * @param b final value
+	 * @return the interpolation between {@code a} and {@code b} using t
+	 */
+	public static double lerp(double t, double a, double b) {
+		return a + t * (b - a);
+	}
 }

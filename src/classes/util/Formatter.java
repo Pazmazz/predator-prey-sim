@@ -11,38 +11,38 @@ import classes.abstracts.Application;
  */
 public class Formatter extends Application {
 
-    /**
-     * Takes any array and returns a string separating the array contents by
-     * some separator string.
-     *
-     * @param array the array to concat
-     * @param separator the string to separate each array element by in the
-     * returned string
-     *
-     * @return the returned string of the concatenated array
-     */
-    public static String concatArray(Object[] array, String separator) {
-        String out = "";
+	/**
+	 * Takes any array and returns a string separating the array contents by
+	 * some separator string.
+	 *
+	 * @param array     the array to concat
+	 * @param separator the string to separate each array element by in the
+	 *                  returned string
+	 *
+	 * @return the returned string of the concatenated array
+	 */
+	public static String concatArray(Object[] array, String separator) {
+		String out = "";
 
-        for (int index = 0; index < array.length; index++) {
-            out += array[index].toString();
-            if (index < array.length - 1) {
-                out += separator;
-            }
-        }
+		for (int index = 0; index < array.length; index++) {
+			out += array[index].toString();
+			if (index < array.length - 1) {
+				out += separator;
+			}
+		}
 
-        return out;
-    }
+		return out;
+	}
 
-    /**
-     * @Overload: {@code concatArray}
-     *
-     * Calls the root method but uses {@code ", "} as a default delimiter
-     *
-     * @param array ...
-     * @return ...
-     */
-    public static String concatArray(Object[] array) {
-        return concatArray(array, ", ");
-    }
+	/**
+	 * @Overload: {@code concatArray}
+	 *
+	 *            Calls the root method but uses {@code ", "} as a default delimiter
+	 *
+	 * @param array ...
+	 * @return ...
+	 */
+	public static String concatArray(Object[] array) {
+		return concatArray(array, ", ");
+	}
 }
