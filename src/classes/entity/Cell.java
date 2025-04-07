@@ -141,7 +141,6 @@ public class Cell {
 	 * other.
 	 * 
 	 * @param cellOccupant the occupant to assign to the cell
-	 *
 	 * @see #setOccupant(CellOccupant, boolean)
 	 */
 	public void setOccupant(CellOccupant cellOccupant) {
@@ -204,7 +203,6 @@ public class Cell {
 	 * {@code hasOccupant}
 	 *
 	 * @return the removed occupant
-	 *
 	 * @throws NoOccupantFoundException if calling this method when the cell has
 	 *                                  no occupant
 	 */
@@ -326,7 +324,6 @@ public class Cell {
 	 * with a {@code CellGrid}.
 	 * 
 	 * @see #isOutOfBounds()
-	 * 
 	 * @return true if the cell is within boundaries of it's grid
 	 */
 	public boolean isInBounds() {
@@ -368,7 +365,6 @@ public class Cell {
 	 * Sets the {@link CellType} of this cell.
 	 * 
 	 * @see #getType()
-	 * 
 	 * @param cellType the {@link CellType} to set the cell to
 	 */
 	public void setType(CellType cellType) {
@@ -379,7 +375,6 @@ public class Cell {
 	 * Sets the {@link CellVacancy} of this cell
 	 * 
 	 * @see #getVacancy()
-	 * 
 	 * @param cellVacancy the {@link CellVacancy} to set the cell to
 	 */
 	public void setVacancy(CellVacancy cellVacancy) {

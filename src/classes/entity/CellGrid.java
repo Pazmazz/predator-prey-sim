@@ -64,16 +64,17 @@ public class CellGrid {
 	}
 
 	/**
-	 * Overload: {@code isInBounds()}
+	 * Checks if a given {@code Vector2} <i>coordinate point</i> is within the
+	 * boundaries of the grid. Unlike {@code Unit2}, the point's components may be
+	 * {@code double} values.
 	 *
-	 * Checks if a given {@code Vector2} point is within the boundaries of the
-	 * grid. Unlike {@code Unit2}, the point's components may be doubles
-	 *
-	 * @param position The position that is checked for being within bounds of
-	 *                 the grid
-	 *
+	 * @param position The {@code Vector2} position that is checked for being within
+	 *                 bounds of the grid
 	 * @return true if a given position exists within the bounds of the
 	 *         specified grid size
+	 * 
+	 * @see #isInBounds(Unit2)
+	 * @see #isInBounds(Cell)
 	 */
 	public boolean isInBounds(Vector2 position) {
 		return !(position.getX() < 0
@@ -83,12 +84,14 @@ public class CellGrid {
 	}
 
 	/**
-	 * Overload: {@code isInBounds()}
-	 *
+	 * Checks if a given {@code Cell} object is within the boundaries of the grid.
+	 * 
 	 * @param cell The {@code Cell} object that is checked for being within
 	 *             bounds of the grid size.
-	 *
 	 * @return true if the cell object is within the grid size boundary
+	 * 
+	 * @see #isInBounds(Vector2)
+	 * @see #isInBounds(Unit2)
 	 */
 	public boolean isInBounds(Cell cell) {
 		return isInBounds(cell.getUnit2());
@@ -265,12 +268,10 @@ public class CellGrid {
 	}
 
 	/**
-	 * Gets a {@code Cell} object at unit {@code new Unit2(1, 1)} (mostly for
+	 * Gets a {@code Cell} object at unit {@code (1, 1)} (mostly for
 	 * one-off testing purposes)
 	 *
-	 * @param unit
-	 *
-	 * @return
+	 * @return a {@code Cell} object at {@code (1, 1)}
 	 */
 	public Cell getCell() {
 		return getCell(new Unit2(1, 1));
@@ -281,7 +282,6 @@ public class CellGrid {
 	 * boundary of the grid size.
 	 *
 	 * @param unit the cell label of {@code Unit2} to check if outside bounds
-	 *
 	 * @return true if the {@code Unit2} object is out of bounds
 	 */
 	public boolean outOfBounds(Unit2 unit) {
@@ -289,41 +289,46 @@ public class CellGrid {
 	}
 
 	/**
-	 * Overload: {@code outOfBounds}
+	 * Checks if the given {@code Vector2} <i>coordinate point</i> is out of the
+	 * grid bounrary.
 	 *
-	 * @param position position vector to check for out of bounds
-	 *
-	 * @return ...
+	 * @param position position vector to check for being out out of bounds
+	 * @return true if the {@code position} is out of bounds
+	 * @see #outOfBounds(Unit2)
 	 */
 	public boolean outOfBounds(Vector2 position) {
 		return !isInBounds(position);
 	}
 
 	/**
-	 * Overload: {@code outOfBounds}
+	 * Checks if the given {@code Cell} object is within the grid boundary.
 	 *
-	 * @param cell the cell object to check for out of bounds
-	 *
-	 * @return ...
+	 * @param cell the cell object to check for being out of bounds
+	 * @return true if the {@code cell} is out of bounds
+	 * @see #outOfBounds(Unit2)
+	 * @see #outOfBounds(Vector2)
 	 */
 	public boolean outOfBounds(Cell cell) {
 		return !isInBounds(cell);
 	}
 
 	/**
-	 * Collects a {@code Cell} object at a given cell label. Once collected, the
-	 * cell instance will be removed from the virtual grid.
+	 * Collects a {@code Cell} object at a given {@code Unit2} location. Once
+	 * collected, the cell instance will be removed from the virtual grid and be
+	 * assigned a {@code cellType} of
+	 * {@link classes.entity.Cell.CellType#GARBAGE_COLLECTED}
 	 *
 	 * <p>
 	 * {@code Cell} objects will only be collected if they do NOT contain an
 	 * occupant. Once an occupant is removed and there is no replacement, the
-	 * cell will have an internal state of
+	 * cell will be eligable for GC.
 	 *
 	 * @param unit the cell at the specified {@code unit} to collect
-	 *
 	 * @return the collected {@code Cell} object if one prevously existed
-	 * 
 	 * @throws NoCellFoundException if no cell was found at the given unit
+	 * 
+	 * @see classes.entity.Cell#isCollectable
+	 * @see classes.entity.Cell#isCollected
 	 */
 	public Cell collectCell(Unit2 unit) {
 		Cell cell = this.virtualGrid.get(unit.toString());
@@ -341,14 +346,13 @@ public class CellGrid {
 	}
 
 	/**
-	 * Overload: {@code collectCell}
+	 * Collects the given {@code Cell} object if that cell is collectable.
 	 *
-	 * Calls {@code getUnit2} internally with the option of just passing a cell
-	 * object to this method.
-	 *
-	 * @param cell the {@code cell} cell object collect
-	 *
-	 * @return {@code Cell} object
+	 * @param cell the {@code Cell} object to collect
+	 * @return the collected {@code Cell} object
+	 * @throws NoCellFoundException if the cell doesn't exist on the virtual grid
+	 * 
+	 * @see #collectCell(Unit2)
 	 */
 	public Cell collectCell(Cell cell) {
 		return collectCell(cell.getUnit2());
@@ -358,6 +362,10 @@ public class CellGrid {
 	 * Iterates over the entire virtual grid and frees up all non-used
 	 * {@code Cell} objects (i.e cells that do not contain any occupants in
 	 * them).
+	 * 
+	 * @see classes.entity.Cell#isCollectable
+	 * @see classes.entity.Cell#isCollected
+	 * @see classes.entity.CellGrid#collectCell
 	 */
 	public void collectCells() {
 		Iterator<Map.Entry<String, Cell>> gridIterator = this.virtualGrid.entrySet().iterator();
@@ -381,7 +389,6 @@ public class CellGrid {
 	 * the grid.
 	 *
 	 * @param unit the {@code Unit2} location to get the cell above it
-	 *
 	 * @return the {@code Cell} above the given {@code unit}
 	 */
 	public Cell getCellTopOf(Unit2 unit) {
@@ -394,7 +401,6 @@ public class CellGrid {
 	 * the grid.
 	 *
 	 * @param unit the {@code Unit2} location to get the cell below it
-	 *
 	 * @return the {@code Cell} below the given {@code unit}
 	 */
 	public Cell getCellBottomOf(Unit2 unit) {
@@ -407,7 +413,6 @@ public class CellGrid {
 	 * location on the grid.
 	 *
 	 * @param unit the {@code Unit2} location to get the cell left of it
-	 *
 	 * @return the {@code Cell} left of the given {@code unit}
 	 */
 	public Cell getCellLeftOf(Unit2 unit) {
@@ -420,7 +425,6 @@ public class CellGrid {
 	 * location on the grid.
 	 *
 	 * @param unit the {@code Unit2} location to get the cell right of it
-	 *
 	 * @return the {@code Cell} right of the given {@code unit}
 	 */
 	public Cell getCellRightOf(Unit2 unit) {
@@ -429,6 +433,10 @@ public class CellGrid {
 	}
 
 	/**
+	 * Get the cell above an existing {@code Cell} object
+	 * 
+	 * @param cell the {@code Cell} object to find the cell above
+	 * @return the cell above the given {@code cell} object
 	 * @see {@link #getCellTopOf(Unit2)}
 	 */
 	public Cell getCellTopOf(Cell cell) {
@@ -436,6 +444,10 @@ public class CellGrid {
 	}
 
 	/**
+	 * Get the cell below an existing {@code Cell} object
+	 * 
+	 * @param cell the {@code Cell} object to find the cell below
+	 * @return the cell below the given {@code cell} object
 	 * @see {@link #getCellBottomOf(Unit2)}
 	 */
 	public Cell getCellBottomOf(Cell cell) {
@@ -443,6 +455,10 @@ public class CellGrid {
 	}
 
 	/**
+	 * Get the cell left of an existing {@code Cell} object
+	 * 
+	 * @param cell the {@code Cell} object to find the left cell of
+	 * @return the cell left of the given {@code cell} object
 	 * @see {@link #getCellLeftOf(Unit2)}
 	 */
 	public Cell getCellLeftOf(Cell cell) {
@@ -450,6 +466,10 @@ public class CellGrid {
 	}
 
 	/**
+	 * Get the cell right of an existing {@code Cell} object
+	 * 
+	 * @param cell the {@code Cell} object to find the right cell of
+	 * @return the cell right of the given {@code cell} object
 	 * @see {@link #getCellRightOf(Unit2)}
 	 */
 	public Cell getCellRightOf(Cell cell) {
@@ -457,6 +477,7 @@ public class CellGrid {
 	}
 
 	/**
+	 * @param position
 	 * @see {@link #getCellTopOf(Unit2)}
 	 */
 	public Cell getCellTopOf(Vector2 position) {
@@ -464,6 +485,7 @@ public class CellGrid {
 	}
 
 	/**
+	 * @param position
 	 * @see {@link #getCellBottomOf(Unit2)}
 	 */
 	public Cell getCellBottomOf(Vector2 position) {
@@ -471,6 +493,7 @@ public class CellGrid {
 	}
 
 	/**
+	 * @param position
 	 * @see {@link #getCellLeftOf(Unit2)}
 	 */
 	public Cell getCellLeftOf(Vector2 position) {
@@ -478,6 +501,7 @@ public class CellGrid {
 	}
 
 	/**
+	 * @param position
 	 * @see {@link #getCellRightOf(Unit2)}
 	 */
 	public Cell getCellRightOf(Vector2 position) {
@@ -508,10 +532,12 @@ public class CellGrid {
 	}
 
 	/**
-	 * Overload: {@code getCellsAdjacentTo}
-	 *
-	 * @param cell the cell object to get the surrounding adjacent cells from
-	 * @return ...
+	 * Get the cells adjacent to a given {@code Cell} object.
+	 * 
+	 * @param cell the cell to find the adjacent cells to
+	 * @return an array of {@code Cell} objects representing the cells adjacent to
+	 *         {@code cell}
+	 * @see #getCellsAdjacentTo(Unit2)
 	 */
 	public Cell[] getCellsAdjacentTo(Cell cell) {
 		return getCellsAdjacentTo(cell.getUnit2());

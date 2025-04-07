@@ -37,12 +37,17 @@ public class App extends Application {
 
 		Cell cell0 = grid.getCell(new Unit2(1, 1));
 		Cell cell1 = grid.getCell(new Unit2(1, 2));
-		cell1.setOccupant(new Ant());
 
-		Console.println(grid.getCellTopOf(cell0).getOccupant());
-		Console.println(grid.getCellRightOf(cell0));
+		Ant ant0 = new Ant();
+		Ant ant1 = new Ant();
 
-		Console.println(grid.getCellLeftOf(cell0).getPosition());
+		cell0.setOccupant(ant0);
+		ant0.assignCell(cell1);
+		ant1.assignCell(cell0);
+
+		Console.println(cell0.getVacancy());
+		ant1.removeCell();
+		Console.println(cell0.getVacancy());
 
 		// cell0.moveOccupantTo(cell1);
 
