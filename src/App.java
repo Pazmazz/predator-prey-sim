@@ -21,6 +21,7 @@ import classes.entity.Game;
 import classes.entity.Unit2;
 import classes.entity.Vector2;
 import classes.util.Console;
+import java.util.Iterator;
 
 /**
  * The entry-point file for the application
@@ -46,6 +47,14 @@ public class App extends Application {
 		// for (Cell cell : cells) {
 		// Console.println(cell);
 		// }
+
+		Console.br();
+
+		Iterator<Cell> itr = grid.getCellPathIterator(start, end);
+
+		Console.println(itr.next());
+		Console.println(itr.next());
+		Console.println(itr.next());
 
 		// Cell cell0 = grid.getCell(new Unit2(1, 1));
 		// Cell cell1 = grid.getCell(new Unit2(1, 2));

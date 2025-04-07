@@ -48,6 +48,6 @@ public class GameScreen extends JFrame {
 	}
 
 	public JPanel getMasterFrame() {
-		return masterFrame;
+		return this.masterFrame;
 	}
 }

@@ -40,14 +40,14 @@ public class Cell {
 	/**
 	 * Creates a new {@code Cell} object. A cell object by itself does not belong to
 	 * a {@link classes.entity.CellGrid}. If the intention is to use this cell in
-	 * accordance with a {@code CellGrid}, then you sould use
+	 * accordance with a {@code CellGrid}, then you should use
 	 * {@link classes.entity.CellGrid#getCell(Unit2)} instead.
 	 * 
 	 * <p>
 	 * New {@code Cell} objects have these default fields:
 	 * <ul>
 	 * <li><i>type:</i> {@code NORMAL}</li>
-	 * <li><i>vacandy:</i> {@code EMPTY}</li>
+	 * <li><i>vacancy:</i> {@code EMPTY}</li>
 	 * </ul>
 	 * 
 	 * <p>
@@ -105,7 +105,7 @@ public class Cell {
 	 * 
 	 * <p>
 	 * An optional argument {@code occupantAggregatesCell} is provided which
-	 * dictates whether or not the occupant should incorperate the cell
+	 * dictates whether or not the occupant should incorporate the cell
 	 * object
 	 * into itself. Used for preventing a callback loop between the cell's
 	 * {@code setOccupant} method and the occupant's {@code setCell} method,
@@ -168,12 +168,12 @@ public class Cell {
 	 * This was deprecated because it doesn't make much sense to reference a cell
 	 * object in order to move it's occupant. Instead, the occupant should be the
 	 * one in charge of moving. As of now, the {@code Cell} class can exist
-	 * independantly of the {@code CellGrid} class. Therefore, it should make no
+	 * independently of the {@code CellGrid} class. Therefore, it should make no
 	 * reference to the cell grid because it is not a composition.
 	 * <p>
 	 * <b>Note:</b>
 	 * This may change in the future, because there is no real reason for the
-	 * {@code Cell} class to exist independantly when it is only used in tandem
+	 * {@code Cell} class to exist independently when it is only used in tandem
 	 * with {@code CellGrid}. As development continues, I think it makes more sense
 	 * for the {@code Cell} class to exist as a private inner-class of the
 	 * {@code CellGrid}. More on this later.
@@ -345,17 +345,17 @@ public class Cell {
 	}
 
 	/**
-	 * Checks if this cell is eligable to be garbage collected, but is not currently
+	 * Checks if this cell is eligible to be garbage collected, but is not currently
 	 * queued up to be GC'd.
 	 * <p>
-	 * For example, if a {@code Cell} object has no occupant, it may be eligable for
+	 * For example, if a {@code Cell} object has no occupant, it may be eligible for
 	 * garbage collection.
 	 * 
 	 * @see #isCollected
 	 * @see classes.entity.CellGrid#collectCell
 	 * @see classes.entity.CellGrid#collectCells
 	 * 
-	 * @return true if this cell is eligable for garbage collection
+	 * @return true if this cell is eligible for garbage collection
 	 */
 	public boolean isCollectable() {
 		return isEmpty() || this.cellOccupant == null;

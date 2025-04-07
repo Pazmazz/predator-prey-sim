@@ -10,10 +10,10 @@ package classes.util;
 public class Math2 {
 
 	/**
-	 * Linear interpolation bewtween {@code a} and {@code b} using some value >=
-	 * 1 {@code t} >= 0
+	 * Linear interpolation between {@code a} and {@code b} using some value
+	 * 1 >= {@code t} >= 0
 	 *
-	 * @param t paramaterized variable for {@code a} and {@code b}
+	 * @param t parameterized variable for {@code a} and {@code b}
 	 * @param a initial value
 	 * @param b final value
 	 * @return the interpolation between {@code a} and {@code b} using t
@@ -23,7 +23,7 @@ public class Math2 {
 	}
 
 	/**
-	 * Takes a {@code double} and converts it to a multiplicative identity of the
+	 * Takes a {@code double} and converts it to the multiplicative identity of the
 	 * same sign. If {@code n} is zero then the result stays zero.
 	 * 
 	 * @param n
