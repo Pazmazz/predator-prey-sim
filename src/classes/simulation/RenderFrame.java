@@ -6,9 +6,6 @@ package classes.simulation;
 import classes.abstracts.FrameProcessor;
 import classes.entity.Game;
 import classes.settings.GameSettings.SimulationType;
-import classes.util.Console;
-import interfaces.Callback;
-import java.util.ArrayList;
 
 /**
  * This implements the {@code step} method for FrameProcessor. All code that

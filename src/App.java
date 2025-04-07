@@ -10,8 +10,6 @@
  * - Language Support for Java(TM) by Red Hat
  */
 
-import java.util.ArrayList;
-
 import classes.abstracts.Application;
 import classes.abstracts.FrameProcessor.TaskStatus;
 import classes.entity.Ant;
@@ -34,7 +32,7 @@ public class App extends Application {
 		Console.setConsoleColorsEnabled(true);
 
 		Game game = new Game();
-		game.start();
+		// game.start();
 		//
 		// TEST CODE:
 		//
@@ -47,14 +45,6 @@ public class App extends Application {
 		// for (Cell cell : cells) {
 		// Console.println(cell);
 		// }
-
-		Console.br();
-
-		Iterator<Cell> itr = grid.getCellPathIterator(start, end);
-
-		Console.println(itr.next());
-		Console.println(itr.next());
-		Console.println(itr.next());
 
 		// Cell cell0 = grid.getCell(new Unit2(1, 1));
 		// Cell cell1 = grid.getCell(new Unit2(1, 2));
