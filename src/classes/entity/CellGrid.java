@@ -643,35 +643,39 @@ public class CellGrid {
 		private class CellPathIterator implements Iterator<Cell> {
 
 			private GridIntercept nextGridIntercept = getGridIntercept(from, to);
+			private ArrayList<Cell> cellQueue = new ArrayList<>();
 
 			@Override
 			public boolean hasNext() {
 				return this.nextGridIntercept.exists();
 			}
 
-			/**
-			 * TODO: Handle case when line intersects both grid axes.
-			 */
 			@Override
 			public Cell next() {
 				if (!hasNext()) {
 					throw new NoSuchElementException("Dead Cell path");
+				}
+				if (cellQueue.size() > 0) {
+					return cellQueue.removeFirst();
 				}
 
 				GridIntercept thisIntercept = this.nextGridIntercept;
 				GridIntercept nextIntercept = getGridIntercept(thisIntercept.getPointOfIntersection(), to);
 				this.nextGridIntercept = nextIntercept;
 
-				// if (nextIntercept.hasXY()) {
-				// Vector2 direction = nextIntercept.getDirection();
-				// Cell sideCell = direction.getX() < 0
-				// ? getCellLeftOf(thisIntercept.getCell())
-				// : getCellRightOf(thisIntercept.getCell());
-				// Console.println("Sidecell: ", sideCell.getPosition(), sideCell.getUnit2());
-				// } else {
-				// this.nextGridIntercept = nextIntercept;
-				// }
+				if (nextIntercept.hasXY()) {
+					Vector2 direction = nextIntercept.getDirection();
+					Cell sideCell = direction.getX() < 0
+							? getCellLeftOf(thisIntercept.getCell())
+							: getCellRightOf(thisIntercept.getCell());
+
+					cellQueue.addLast(sideCell);
+				} else {
+					this.nextGridIntercept = nextIntercept;
+				}
+
 				Console.println(thisIntercept);
+				cellPath.add(thisIntercept.getCell());
 				return thisIntercept.getCell();
 			}
 		}
