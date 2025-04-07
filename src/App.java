@@ -15,6 +15,7 @@ import classes.entity.Ant;
 import classes.entity.Cell;
 import classes.entity.CellGrid;
 import classes.entity.Unit2;
+import classes.entity.Vector2;
 import classes.util.Console;
 
 /**
@@ -41,7 +42,7 @@ public class App extends Application {
 		Console.println(grid.getCellTopOf(cell0).getOccupant());
 		Console.println(grid.getCellRightOf(cell0));
 
-		Console.println(grid.getCellLeftOf(cell0));
+		Console.println(grid.getCellLeftOf(cell0).getPosition());
 
 		// cell0.moveOccupantTo(cell1);
 

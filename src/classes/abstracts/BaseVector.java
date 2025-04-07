@@ -4,6 +4,7 @@
 package classes.abstracts;
 
 import classes.util.Formatter;
+import classes.util.Math2;
 import exceptions.VectorMismatchException;
 import interfaces.Callback;
 import java.util.ArrayList;
@@ -37,7 +38,7 @@ public abstract class BaseVector<T extends BaseVector<T>> {
 	public Double[] computeComponents(Callback callback) {
 		Double[] resultComponents = new Double[size()];
 		for (int i = 0; i < size(); i++) {
-			resultComponents[i] = (Double) callback.call(get(i));
+			resultComponents[i] = (double) callback.call(get(i));
 		}
 		return resultComponents;
 	}
@@ -65,7 +66,7 @@ public abstract class BaseVector<T extends BaseVector<T>> {
 
 		Double[] resultComponents = new Double[size()];
 		for (int i = 0; i < size(); i++) {
-			resultComponents[i] = (Double) callback.call(get(i), v.get(i));
+			resultComponents[i] = (double) callback.call(get(i), v.get(i));
 		}
 		return resultComponents;
 	}
@@ -136,7 +137,7 @@ public abstract class BaseVector<T extends BaseVector<T>> {
 		}
 
 		inverted = newVector(computeComponents(
-				(args) -> (Double) args[0] * -1));
+				(args) -> (double) args[0] * -1));
 
 		return inverted;
 	}
@@ -172,7 +173,7 @@ public abstract class BaseVector<T extends BaseVector<T>> {
 		return newVector(computeComponents(
 				v,
 				"add(BaseVector<T>)",
-				(args) -> (Double) args[0] + (Double) args[1]));
+				(args) -> (double) args[0] + (double) args[1]));
 	}
 
 	/**
@@ -185,7 +186,7 @@ public abstract class BaseVector<T extends BaseVector<T>> {
 	 */
 	public T add(int scalar) {
 		return newVector(computeComponents(
-				(args) -> (Double) args[0] + scalar));
+				(args) -> (double) args[0] + scalar));
 	}
 
 	/**
@@ -195,7 +196,7 @@ public abstract class BaseVector<T extends BaseVector<T>> {
 	 */
 	public T abs() {
 		return newVector(computeComponents(
-				(args) -> Math.abs((Double) args[0])));
+				(args) -> Math.abs((double) args[0])));
 	}
 
 	/**
@@ -208,14 +209,7 @@ public abstract class BaseVector<T extends BaseVector<T>> {
 	 */
 	public T signedUnit() {
 		return newVector(computeComponents(
-				(args) -> {
-					Double c = (Double) args[0];
-					return c > 0
-							? 1.0
-							: c < 0
-									? -1.0
-									: 0.0;
-				}));
+				(args) -> Math2.toSign((double) args[0])));
 	}
 
 	/**
@@ -228,7 +222,7 @@ public abstract class BaseVector<T extends BaseVector<T>> {
 		return newVector(computeComponents(
 				v,
 				"subtract(BaseVector<T>)",
-				(args) -> (Double) args[0] - (Double) args[1]));
+				(args) -> (double) args[0] - (double) args[1]));
 	}
 
 	/**
@@ -242,7 +236,7 @@ public abstract class BaseVector<T extends BaseVector<T>> {
 	 */
 	public T subtract(int scalar) {
 		return newVector(computeComponents(
-				(args) -> (Double) args[0] - scalar));
+				(args) -> (double) args[0] - scalar));
 	}
 
 	/**
@@ -256,7 +250,7 @@ public abstract class BaseVector<T extends BaseVector<T>> {
 		return newVector(computeComponents(
 				v,
 				"multiply(BaseVector<T>)",
-				(args) -> (Double) args[0] * (Double) args[1]));
+				(args) -> (double) args[0] * (double) args[1]));
 	}
 
 	/**
@@ -269,7 +263,7 @@ public abstract class BaseVector<T extends BaseVector<T>> {
 	 */
 	public T multiply(int scalar) {
 		return newVector(computeComponents(
-				(args) -> (Double) args[0] * scalar));
+				(args) -> (double) args[0] * scalar));
 	}
 
 	@Override

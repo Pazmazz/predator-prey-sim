@@ -21,4 +21,18 @@ public class Math2 {
 	public static double lerp(double t, double a, double b) {
 		return a + t * (b - a);
 	}
+
+	/**
+	 * Takes a {@code double} and converts it to a multiplicative identity of the
+	 * same sign. If {@code n} is zero then the result stays zero.
+	 * 
+	 * @param n
+	 * @return the signed multiplicative identity of {@code n}
+	 */
+	public static double toSign(double n) {
+		if (n == 0) {
+			return n;
+		}
+		return Math.abs(n) / n;
+	}
 }

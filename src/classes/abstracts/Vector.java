@@ -22,7 +22,7 @@ public abstract class Vector<T extends Vector<T>> extends BaseVector<T> {
 		return newVector(computeComponents(
 				v,
 				"divide(Vector<T>)",
-				(args) -> (Double) args[0] / (Double) args[1]));
+				(args) -> (double) args[0] / (double) args[1]));
 	}
 
 	/**
@@ -36,7 +36,7 @@ public abstract class Vector<T extends Vector<T>> extends BaseVector<T> {
 	 */
 	public T divide(double dec) {
 		return newVector(computeComponents(
-				(args) -> (Double) args[0] / dec));
+				(args) -> (double) args[0] / dec));
 	}
 
 	/**
@@ -48,7 +48,7 @@ public abstract class Vector<T extends Vector<T>> extends BaseVector<T> {
 	 */
 	public T divide(int scalar) {
 		return newVector(computeComponents(
-				(args) -> (Double) args[0] / scalar));
+				(args) -> (double) args[0] / scalar));
 	}
 
 	/**
@@ -60,7 +60,7 @@ public abstract class Vector<T extends Vector<T>> extends BaseVector<T> {
 	 */
 	public T multiply(double dec) {
 		return newVector(computeComponents(
-				(args) -> (Double) args[0] * dec));
+				(args) -> (double) args[0] * dec));
 	}
 
 	/**
@@ -71,7 +71,7 @@ public abstract class Vector<T extends Vector<T>> extends BaseVector<T> {
 	 */
 	public T add(double dec) {
 		return newVector(computeComponents(
-				(args) -> (Double) args[0] + dec));
+				(args) -> (double) args[0] + dec));
 	}
 
 	/**
@@ -82,7 +82,7 @@ public abstract class Vector<T extends Vector<T>> extends BaseVector<T> {
 	 */
 	public T subtract(double dec) {
 		return newVector(computeComponents(
-				(args) -> (Double) args[0] - dec));
+				(args) -> (double) args[0] - dec));
 	}
 
 	/**
@@ -92,7 +92,7 @@ public abstract class Vector<T extends Vector<T>> extends BaseVector<T> {
 	 */
 	public T floor() {
 		return newVector(computeComponents(
-				(args) -> Math.floor((Double) args[0])));
+				(args) -> Math.floor((double) args[0])));
 	}
 
 	/**
@@ -102,7 +102,7 @@ public abstract class Vector<T extends Vector<T>> extends BaseVector<T> {
 	 */
 	public T ceil() {
 		return newVector(computeComponents(
-				(args) -> Math.ceil((Double) args[0])));
+				(args) -> Math.ceil((double) args[0])));
 	}
 
 	/**
@@ -132,7 +132,7 @@ public abstract class Vector<T extends Vector<T>> extends BaseVector<T> {
 		return newVector(computeComponents(
 				v,
 				"midpoint(Vector<T>)",
-				(args) -> (((Double) args[0] + (Double) args[1]) / 2)));
+				(args) -> (((double) args[0] + (double) args[1]) / 2)));
 	}
 
 	/**
