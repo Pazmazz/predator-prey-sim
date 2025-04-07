@@ -1,6 +1,7 @@
 package classes.entity;
 
 import classes.abstracts.Bug;
+import classes.entity.Turn;
 
 public class Ant extends Bug {
     public static int antCount = 0;
@@ -12,8 +13,12 @@ public class Ant extends Bug {
         antCount++;
     }
 
+    public int getAntCount(){
+        return antCount;
+    }
+
     @Override
-    public void move(Cell currentCell, CellGrid grid){
+    public void move(Cell currentCell, CellGrid grid, Turn turn){
         Cell[] adjCells = grid.getCellsAdjacentTo(currentCell);
 
         for (Cell adjCell : adjCells) {
@@ -27,12 +32,12 @@ public class Ant extends Bug {
 
         if(movementCounter == 3){
             movementCounter = 0;
-            this.breed(adjCells);
+            this.breed(adjCells, turn);
         }
     }
 
     @Override
-    public void breed(Cell[] adjCells){
+    public void breed(Cell[] adjCells, Turn turn){
         for (Cell adjCell : adjCells) {
             if (adjCell.isInBounds() && adjCell.isEmpty()) {
                 currentCell.setOccupant(new Ant());

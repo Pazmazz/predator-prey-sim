@@ -13,7 +13,7 @@ public class Doodlebug extends Bug {
     }
     
     @Override
-    public void move(Cell currentCell, CellGrid grid){
+    public void move(Cell currentCell, CellGrid grid, Turn turn){
         Cell[] adjCells = grid.getCellsAdjacentTo(currentCell);
 
         for (Cell adjCell : adjCells) {
@@ -41,12 +41,12 @@ public class Doodlebug extends Bug {
 
         if(movementCounter == 8){
             movementCounter = 0;
-            this.breed(adjCells);
+            this.breed(adjCells, turn);
         }
     }
 
     @Override
-    public void breed(Cell[] adjCells){
+    public void breed(Cell[] adjCells, Turn turn){
         for (Cell adjCell : adjCells) {
             if (adjCell.isInBounds() && adjCell.isEmpty()) {
                 currentCell.setOccupant(new Doodlebug());
