@@ -7,6 +7,7 @@ package classes.entity;
 import classes.entity.Cell.CellType;
 import classes.util.Console;
 import classes.util.Console.DebugPriority;
+import exceptions.NoCellFoundException;
 import classes.util.Math2;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -321,12 +322,14 @@ public class CellGrid {
 	 * @param unit the cell at the specified {@code unit} to collect
 	 *
 	 * @return the collected {@code Cell} object if one prevously existed
+	 * 
+	 * @throws NoCellFoundException if no cell was found at the given unit
 	 */
 	public Cell collectCell(Unit2 unit) {
 		Cell cell = this.virtualGrid.get(unit.toString());
 
 		if (cell == null) {
-			return null;
+			throw new NoCellFoundException();
 		}
 
 		if (cell.isCollectable()) {
@@ -358,7 +361,6 @@ public class CellGrid {
 	 */
 	public void collectCells() {
 		Iterator<Map.Entry<String, Cell>> gridIterator = this.virtualGrid.entrySet().iterator();
-
 		int count = 0;
 
 		while (gridIterator.hasNext()) {

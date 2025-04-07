@@ -319,26 +319,76 @@ public class Cell {
 		return this.cellType == CellType.OUT_OF_BOUNDS;
 	}
 
+	/**
+	 * Checks if this cell is within the grid's boundaries.
+	 * <p>
+	 * <b>Note:</b> By default, a {@code Cell} object has <b>no</b> relationship
+	 * with a {@code CellGrid}.
+	 * 
+	 * @see #isOutOfBounds()
+	 * 
+	 * @return true if the cell is within boundaries of it's grid
+	 */
 	public boolean isInBounds() {
 		return this.cellType == CellType.NORMAL;
 	}
 
+	/**
+	 * Checks if this cell is currently queued up for garbage collection. Cells are
+	 * only queued for GC once {@link classes.entity.CellGrid#collectCell} has been
+	 * called on them.
+	 * 
+	 * @see classes.entity.CellGrid#collectCell
+	 * @see classes.entity.CellGrid#collectCells
+	 * 
+	 * @return true if the cell is staged for garbage collection
+	 */
 	public boolean isCollected() {
 		return this.cellType == CellType.GARBAGE_COLLECTED;
 	}
 
+	/**
+	 * Checks if this cell is eligable to be garbage collected, but is not currently
+	 * queued up to be GC'd.
+	 * <p>
+	 * For example, if a {@code Cell} object has no occupant, it may be eligable for
+	 * garbage collection.
+	 * 
+	 * @see #isCollected
+	 * @see classes.entity.CellGrid#collectCell
+	 * @see classes.entity.CellGrid#collectCells
+	 * 
+	 * @return true if this cell is eligable for garbage collection
+	 */
 	public boolean isCollectable() {
 		return isEmpty() || this.cellOccupant == null;
 	}
 
+	/**
+	 * Sets the {@link CellType} of this cell.
+	 * 
+	 * @see #getType()
+	 * 
+	 * @param cellType the {@link CellType} to set the cell to
+	 */
 	public void setType(CellType cellType) {
 		this.cellType = cellType;
 	}
 
+	/**
+	 * Sets the {@link CellVacancy} of this cell
+	 * 
+	 * @see #getVacancy()
+	 * 
+	 * @param cellVacancy the {@link CellVacancy} to set the cell to
+	 */
 	public void setVacancy(CellVacancy cellVacancy) {
 		this.cellVacancy = cellVacancy;
 	}
 
+	/**
+	 * Prints a blob of cell fields to the console
+	 */
 	public void printInfo() {
 		Console.println(toString());
 		printInfoItem("Type", getType().toString());
@@ -349,6 +399,13 @@ public class Cell {
 		}
 	}
 
+	/**
+	 * Print info related to the cell using the {@link #printInfo} format and
+	 * console colors
+	 * 
+	 * @param item    the prefix of the information
+	 * @param content the content of the information
+	 */
 	public void printInfoItem(String item, String content) {
 		Console.println("- $text-yellow %s: $text-reset %s".formatted(item, content));
 	}
