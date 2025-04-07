@@ -656,7 +656,7 @@ public class CellGrid {
 					throw new NoSuchElementException("Dead Cell path");
 				}
 				if (cellQueue.size() > 0) {
-					return cellQueue.removeFirst();
+					return cellQueue.remove(0);
 				}
 
 				GridIntercept thisIntercept = this.nextGridIntercept;
@@ -669,7 +669,7 @@ public class CellGrid {
 							? getCellLeftOf(thisIntercept.getCell())
 							: getCellRightOf(thisIntercept.getCell());
 
-					cellQueue.addLast(sideCell);
+					cellQueue.add(sideCell);
 				} else {
 					this.nextGridIntercept = nextIntercept;
 				}
