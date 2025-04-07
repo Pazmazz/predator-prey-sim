@@ -1,14 +1,15 @@
 package classes.entity;
 
 import classes.abstracts.Bug;
-import classes.entity.Cell;
-import classes.entity.CellGrid;
 
 public class Ant extends Bug {
-    
+    public static int antCount = 0;
+    public static int numOfAntBreeds = 0;
+
     public Ant(){
         idNum = (int)(Math.random() * 1000);
         this.setEatable(isEatable());
+        antCount++;
     }
 
     @Override
@@ -35,6 +36,7 @@ public class Ant extends Bug {
         for (Cell adjCell : adjCells) {
             if (adjCell.isInBounds() && adjCell.isEmpty()) {
                 currentCell.setOccupant(new Ant());
+                numOfAntBreeds++;
                 break;
             }
         }

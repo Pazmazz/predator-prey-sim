@@ -4,6 +4,9 @@ import classes.abstracts.Bug;
 
 public class Doodlebug extends Bug {
     int starvationTracker = 0;
+    public static int doodlebugCounter = 0;
+    public static int killCount = 0;
+    public static int numOfDoodlebugBreeds = 0;
 
     public Doodlebug(){
         idNum = (int)(Math.random() * 1000);
@@ -17,11 +20,14 @@ public class Doodlebug extends Bug {
             if (currentCell.isOccupantEatable(currentCell)){
                 currentCell.removeOccupant();
                 currentCell.moveOccupantTo(adjCell);
+                
                 this.currentCell = adjCell;
                 starvationTracker = 0;
+                killCount++;
                 break;
             } else if (adjCell.isInBounds() && adjCell.isEmpty()){
                 currentCell.moveOccupantTo(adjCell);
+                
                 this.currentCell = adjCell;
                 starvationTracker++;
                 break;
@@ -44,6 +50,7 @@ public class Doodlebug extends Bug {
         for (Cell adjCell : adjCells) {
             if (adjCell.isInBounds() && adjCell.isEmpty()) {
                 currentCell.setOccupant(new Doodlebug());
+                numOfDoodlebugBreeds++;
                 break;
             }
         }

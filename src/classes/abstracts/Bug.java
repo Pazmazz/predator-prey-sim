@@ -6,7 +6,6 @@ import classes.entity.CellOccupant;
 
 public abstract class Bug extends CellOccupant {
     public int idNum;
-    Cell cell;
     public int movementCounter = 0;
 
     public abstract void move(Cell currentCell, CellGrid grid);
