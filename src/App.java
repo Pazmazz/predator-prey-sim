@@ -19,6 +19,9 @@ import classes.entity.Game;
 import classes.entity.Unit2;
 import classes.entity.Vector2;
 import classes.util.Console;
+import classes.util.Formatter;
+import classes.util.Console.DebugPriority;
+
 import java.util.Iterator;
 
 /**
@@ -28,11 +31,11 @@ public class App extends Application {
 
 	public static void main(String[] args) {
 		Console.setDebugModeEnabled(true);
-		// Console.hideDebugPriority(DebugPriority.LOW);
+		Console.hideDebugPriority(DebugPriority.LOW);
 		Console.setConsoleColorsEnabled(true);
 
 		Game game = new Game();
-		// game.start();
+		game.start();
 		//
 		// TEST CODE:
 		//
@@ -66,6 +69,13 @@ public class App extends Application {
 			Console.println("Running task");
 			return TaskStatus.END;
 		});
+
+		Console.println(
+				Formatter.concatArray(
+						game.getGameGrid().getCellsAdjacentTo(new Unit2(1, 1))));
+
+		// game.getGameGrid().getCell();
+		game.getGameGrid().getCell();
 
 	}
 }

@@ -202,6 +202,8 @@ false
 true
 </blockquote>
 
+<br/>
+
 As with all `CellGrid` methods that take a `Unit2` parameter (with the exception of `CellGrid.getCell()`), you can also pass a `Cell` object to this method:
 
 #### Example:
