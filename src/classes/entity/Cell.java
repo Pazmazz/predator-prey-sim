@@ -120,7 +120,7 @@ public class Cell {
 	 * @throws OccupantHasCellException if the cellOccupant already belongs to
 	 *                                  another cell
 	 */
-	public void setOccupant(CellOccupant cellOccupant, boolean occupantAggregatesCell) {
+	protected void setOccupant(CellOccupant cellOccupant, boolean occupantAggregatesCell) {
 		if (hasOccupant() && this.cellOccupant != cellOccupant) {
 			throw new CellIsOccupiedException();
 		}

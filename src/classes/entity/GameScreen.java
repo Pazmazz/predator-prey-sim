@@ -36,7 +36,7 @@ public class GameScreen extends JFrame {
 		// Finalize game screen
 		this.pack();
 		this.setLocationRelativeTo(null);
-		this.setVisible(true);
+		this.setVisible(false);
 
 		// Handle game window closing event
 		this.addWindowListener(new WindowAdapter() {

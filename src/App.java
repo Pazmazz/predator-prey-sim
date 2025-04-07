@@ -13,9 +13,11 @@
 import java.util.ArrayList;
 
 import classes.abstracts.Application;
+import classes.abstracts.FrameProcessor.TaskStatus;
 import classes.entity.Ant;
 import classes.entity.Cell;
 import classes.entity.CellGrid;
+import classes.entity.Game;
 import classes.entity.Unit2;
 import classes.entity.Vector2;
 import classes.util.Console;
@@ -30,20 +32,20 @@ public class App extends Application {
 		// Console.hideDebugPriority(DebugPriority.LOW);
 		Console.setConsoleColorsEnabled(true);
 
-		// Game game = new Game();
-		// game.start();
+		Game game = new Game();
+		game.start();
 		//
 		// TEST CODE:
 		//
-		Vector2 start = new Vector2(-2, 4);
-		Vector2 end = new Vector2(7, -2);
+		// Vector2 start = new Vector2(-2, 4);
+		// Vector2 end = new Vector2(7, -2);
 
-		CellGrid grid = new CellGrid(new Unit2(10, 10));
-		ArrayList<Cell> cells = grid.getCellPath(start, end);
+		// CellGrid grid = new CellGrid(new Unit2(10, 10));
+		// ArrayList<Cell> cells = grid.getCellPath(start, end);
 
-		for (Cell cell : cells) {
-			Console.println(cell);
-		}
+		// for (Cell cell : cells) {
+		// Console.println(cell);
+		// }
 
 		// Cell cell0 = grid.getCell(new Unit2(1, 1));
 		// Cell cell1 = grid.getCell(new Unit2(1, 2));
@@ -60,6 +62,11 @@ public class App extends Application {
 		// Console.println(cell0.getVacancy());
 
 		// cell0.moveOccupantTo(cell1);
+
+		game.renderFrame.addTask((n) -> {
+			Console.println("Running task");
+			return TaskStatus.END;
+		});
 
 	}
 }

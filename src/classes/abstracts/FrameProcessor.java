@@ -3,11 +3,15 @@
  */
 package classes.abstracts;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+
 import classes.entity.Game;
 import classes.settings.GameSettings.SimulationSettings;
 import classes.settings.GameSettings.SimulationType;
 import classes.util.Console;
 import classes.util.Time;
+import interfaces.Callback;
 
 /**
  * An abstract class that provides a {@code pulse} method for updating frame
@@ -16,10 +20,16 @@ import classes.util.Time;
  */
 public abstract class FrameProcessor extends Application {
 
+	public enum TaskStatus {
+		END
+	}
+
 	public Game game;
 	public long lastPulseTick;
 	public long lastDeltaTime = 0;
+	public long currentDeltaTime = 0;
 	public SimulationSettings settings;
+	private ArrayList<Callback> tasks = new ArrayList<>();
 
 	protected FrameProcessor(Game game, SimulationType simulationType) {
 		settings = game.getSettings()
@@ -63,6 +73,7 @@ public abstract class FrameProcessor extends Application {
 		// Run the internal step
 		//
 		this.lastPulseTick = preSimulationTime;
+		this.currentDeltaTime = deltaTime;
 		step(Time.nanoToSeconds(deltaTime));
 		this.lastDeltaTime = deltaTime;
 		long simulationTime = tick() - preSimulationTime;
@@ -82,6 +93,33 @@ public abstract class FrameProcessor extends Application {
 
 	protected double getLastDeltaTimeSeconds() {
 		return Time.nanoToSeconds(lastDeltaTime);
+	}
+
+	/**
+	 * <b>DO NOT USE</b>
+	 * <p>
+	 * Currently a testing method
+	 */
+	public void addTask(Callback callback) {
+		this.tasks.add(callback);
+	}
+
+	/**
+	 * <b>DO NOT USE</b>
+	 * <p>
+	 * Currently a testing method
+	 */
+	public void executeTasks() {
+		Iterator<Callback> taskIterator = tasks.iterator();
+
+		while (taskIterator.hasNext()) {
+			Callback task = taskIterator.next();
+			TaskStatus status = (TaskStatus) task.call(this.currentDeltaTime);
+
+			if (status == TaskStatus.END) {
+				taskIterator.remove();
+			}
+		}
 	}
 
 	protected abstract void step(double deltaTimeSeconds);

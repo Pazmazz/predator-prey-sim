@@ -49,7 +49,7 @@ public class CellOccupant {
 	 * @throws CellIsOccupiedException if the assigned cell already has an
 	 *                                 occupant
 	 */
-	public void assignCell(Cell targetCell, boolean cellAggregatesOccupant) {
+	protected void assignCell(Cell targetCell, boolean cellAggregatesOccupant) {
 		if (targetCell.hasOccupant() && targetCell.getOccupant() != this) {
 			throw new CellIsOccupiedException();
 		}
