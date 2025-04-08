@@ -69,41 +69,17 @@ public class App extends Application {
 
 		// cell0.moveOccupantTo(cell1);
 
-		Task task = new Task();
-		task.set("count", 0.0);
-		task.set("word", "something");
-		task.set("duration", 5);
-
-		task.setCallback(() -> {
-			int duration = (int) task.get("duration");
-			Console.println("elapsed: " + task.getElapsed());
-
-			if (Time.nanoToSeconds(task.getElapsed()) > duration) {
-				return TaskState.END;
-			}
-
-			return TaskState.RUNNING;
-		});
-
 		Task task0 = new Task();
-		task0.set("count", 0);
-		task0.set("word", "something");
-		task0.set("duration", 5);
+		task0.setTimeout(5);
+		task0.set("position", new Vector2(0, 0));
 
 		task0.setCallback(() -> {
-			int duration = (int) task0.get("duration");
-			Console.println("$text-red elapsed 2: " + task0.getElapsed());
-
-			if (Time.nanoToSeconds(task0.getElapsed()) > 20) {
-				return TaskState.END;
-			}
-
-			return TaskState.RUNNING;
+			Console.println("Running");
 		});
 
 		// game.renderFrame.addTask(task);
 		// game.renderFrame.addTask(task0);
-		game.movementFrame.addTask(task0);
+		game.renderFrame.addTask(task0);
 
 	}
 }

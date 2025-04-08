@@ -23,8 +23,9 @@ public abstract class FrameProcessor extends Application {
 
 	public Game game;
 	public long lastPulseTick;
-	public long lastDeltaTime = 0;
-	public long currentDeltaTime = 0;
+	public long deltaTime = 0;
+	public long beforeStep;
+	public long afterStep;
 	public SimulationSettings settings;
 	private ArrayList<Task> tasks = new ArrayList<>();
 
@@ -53,18 +54,21 @@ public abstract class FrameProcessor extends Application {
 	 */
 	public long pulse() {
 		long preSimulationTime = tick();
-		long deltaTime = preSimulationTime - lastPulseTick;
+		long dt = preSimulationTime - lastPulseTick;
 
 		/**
 		 * Until we find a better solution to account for unpredictable sleeping
 		 * thread durations dipping below the simulation FPS, adding a
 		 * millisecond buffer when checking the last frame simulation works for
 		 * now.
+		 * 
+		 * If the delta time (time between last frame simulation step) is less than
+		 * the frame FPS, then return -1 (skip this request to run another simulation)
 		 */
-		if (deltaTime + 1_000_000 < Time.secondsToNano(settings.getFPS())) {
+		if (dt + 1_000_000 < Time.secondsToNano(settings.getFPS())) {
 			return -1;
-		} else if (lastPulseTick < 0) {
-			deltaTime = 0;
+		} else if (this.lastPulseTick < 0) {
+			dt = 0;
 		}
 
 		Console.debugPrint(String.format(
@@ -76,10 +80,14 @@ public abstract class FrameProcessor extends Application {
 		// Run the internal step
 		//
 		this.lastPulseTick = preSimulationTime;
-		this.currentDeltaTime = deltaTime;
+		this.deltaTime = dt;
+		this.beforeStep = preSimulationTime;
+
+		// run implemented step
 		step(Time.nanoToSeconds(deltaTime));
-		this.lastDeltaTime = deltaTime;
-		long simulationTime = tick() - preSimulationTime;
+
+		this.afterStep = tick();
+		long simulationTime = this.afterStep - preSimulationTime;
 
 		Console.debugPrint(String.format(
 				"completed in: $text-%s %s $text-reset seconds",
@@ -94,8 +102,8 @@ public abstract class FrameProcessor extends Application {
 		return simulationTime;
 	}
 
-	protected double getLastDeltaTimeSeconds() {
-		return Time.nanoToSeconds(lastDeltaTime);
+	public double getDeltaTimeSeconds() {
+		return Time.nanoToSeconds(this.deltaTime);
 	}
 
 	/**
@@ -114,28 +122,59 @@ public abstract class FrameProcessor extends Application {
 	 */
 	public void executeTasks() {
 		Iterator<Task> taskIterator = tasks.iterator();
-		long startCycle = tick();
+		long currentTime = tick();
 
 		while (taskIterator.hasNext()) {
 			Task task = taskIterator.next();
-			task.setElapsed(startCycle - task.started());
 
-			TaskState state = task.execute(this.currentDeltaTime);
+			if (task.started() == null) {
+				task.setStart(currentTime);
+			}
 
-			if (state == TaskState.END) {
+			if (task.suspended() > 0) {
+
+			}
+
+			task.setElapsedLifetime(currentTime - task.started());
+
+			// pass props from FrameProcessor to Task
+			task.setDeltaTime(this.deltaTime);
+
+			// execute task callback
+			task.execute();
+
+			// task was killed
+			if (task.isDead()) {
 				taskIterator.remove();
+				Console.println("Manual termination");
+			}
+
+			// task exceeded runtime duration
+			if (Time.nanoToSeconds(task.elapsedRuntime()) > task.duration()) {
+				taskIterator.remove();
+				task.setState(TaskState.END);
+				Console.println("Timeout termination");
 			}
 		}
 	}
 
 	public static class Task {
-		private TaskCallback taskCaller;
+
 		final private HashMap<String, Object> env = new HashMap<>();
-		final private long started;
-		private long elapsed = 0;
+
+		private TaskCallback taskCaller;
+
+		private Long started;
+		private long elapsedRuntime = 0;
+		private long elapsedLifetime = 0;
+		private long deltaTime = 0;
+		private double suspended = 0;
+		private double duration = Double.POSITIVE_INFINITY;
+
+		private TaskState state;
 
 		public Task() {
-			this.started = tick();
+			this.state = TaskState.SUSPENDED;
 		}
 
 		public Task setCallback(TaskCallback taskCaller) {
@@ -143,8 +182,8 @@ public abstract class FrameProcessor extends Application {
 			return this;
 		}
 
-		public TaskState execute(Object... args) {
-			return (TaskState) this.taskCaller.call();
+		public void execute() {
+			this.taskCaller.call();
 		}
 
 		public Task set(String key, Object value) {
@@ -156,17 +195,83 @@ public abstract class FrameProcessor extends Application {
 			return env.get(key);
 		}
 
-		public Task setElapsed(long elapsed) {
-			this.elapsed = elapsed;
+		public Task setElapsedLifetime(long elapsed) {
+			this.elapsedLifetime = elapsed;
 			return this;
 		}
 
-		public long started() {
+		public Task setDeltaTime(long lastDelta) {
+			this.deltaTime = lastDelta;
+			this.elapsedRuntime += lastDelta;
+			return this;
+		}
+
+		public Task suspend(double seconds) {
+			if (seconds < 0) {
+				throw new Error("Task suspension cannot be less than zero");
+			}
+
+			this.suspended = seconds;
+			return this;
+		}
+
+		public Task setDuration(double duration) {
+			if (duration < 0) {
+				throw new Error("Task duration cannot be less than zero");
+			}
+
+			this.duration = duration;
+			return this;
+		}
+
+		protected Task setStart(Long started) {
+			this.started = started;
+			return this;
+		}
+
+		protected Task setState(TaskState state) {
+			this.state = state;
+			return this;
+		}
+
+		public Long started() {
 			return this.started;
 		}
 
-		public long getElapsed() {
-			return this.elapsed;
+		public long elapsedRuntime() {
+			return this.elapsedRuntime;
+		}
+
+		public long elapsedLifetime() {
+			return this.elapsedLifetime;
+		}
+
+		public long delta() {
+			return this.deltaTime;
+		}
+
+		public double duration() {
+			return this.duration;
+		}
+
+		public double suspended() {
+			return this.suspended;
+		}
+
+		public void kill() {
+			this.state = TaskState.END;
+		}
+
+		public boolean isRunning() {
+			return this.state == TaskState.RUNNING;
+		}
+
+		public boolean isSuspended() {
+			return this.state == TaskState.SUSPENDED;
+		}
+
+		public boolean isDead() {
+			return this.state == TaskState.END;
 		}
 	}
 

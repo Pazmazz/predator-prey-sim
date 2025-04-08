@@ -108,7 +108,7 @@ public class Game extends Application implements Runnable {
 
 			for (FrameProcessor frame : this.frameProcesses) {
 				long frameDelta = frame.pulse();
-				if (frameDelta > -1) {
+				if (frameDelta != -1) {
 					simulationDelta += frameDelta;
 				}
 			}
