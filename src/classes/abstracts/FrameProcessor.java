@@ -77,16 +77,13 @@ public abstract class FrameProcessor extends Application {
 				settings.getDebugInfo().getPrimaryColor(),
 				settings.getProcessName().toUpperCase()));
 
-		//
-		// Run the internal step
-		//
 		this.lastPulseTick = preSimulationTime;
 		this.deltaTime = dt;
 		this.beforeStep = preSimulationTime;
 
-		// run implemented step
+		// run the implemented step
 		step(Time.nanoToSeconds(deltaTime));
-		//
+
 		this.afterStep = tick();
 		long simulationTime = this.afterStep - preSimulationTime;
 
@@ -153,7 +150,7 @@ public abstract class FrameProcessor extends Application {
 			if (task.isDead()) {
 				Console.debugPrint(
 						DebugPriority.HIGH,
-						String.format("%s", task));
+						String.format("%s was manually terminated", task));
 
 				taskIterator.remove();
 				continue;
@@ -163,7 +160,7 @@ public abstract class FrameProcessor extends Application {
 			if (task.duration() != -1 && task.elapsedRuntime() > task.duration()) {
 				Console.debugPrint(
 						DebugPriority.HIGH,
-						String.format("%s fulfilled its duration"));
+						String.format("%s fulfilled its runtime duration"));
 
 				task.setState(TaskState.END);
 				taskIterator.remove();

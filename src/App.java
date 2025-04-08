@@ -69,7 +69,7 @@ public class App extends Application {
 
 		// cell0.moveOccupantTo(cell1);
 
-		Task task0 = new Task();
+		Task task0 = new Task("AnimationUpdate");
 
 		// wait 5 seconds before running (does not count towards duration, but does
 		// count towards timeout)
