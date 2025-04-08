@@ -69,33 +69,27 @@ public class App extends Application {
 
 		// cell0.moveOccupantTo(cell1);
 
-		Task task0 = new Task("AnimationUpdate", (task) -> {
-			int count = (int) task.get("count");
+		// add on one line example
+		game.renderFrame.addTask(
+				new Task("AnimationUpdate", (task) -> {
+					int count = (int) task.get("count");
 
-			Console.println("Running count: " + count);
-			Console.println("delta: " + Time.nanoToSeconds(task.delta()));
-			Console.br();
+					Console.println("Running count: " + count);
+					Console.println("delta: " + Time.nanoToSeconds(task.delta()));
+					Console.br();
 
-			count++;
-			task.set("count", count);
+					count++;
+					task.set("count", count);
 
-			if (count % 61 == 0) {
-				task.suspend(2);
-			}
-		});
-
-		// wait 5 seconds before running (does not count towards duration, but does
-		// count towards timeout)
-		task0.suspend(5);
-
-		task0.set("position", new Vector2(0, 0));
-		task0.set("count", 0);
-		task0.setDuration(10); // try to run for 10 seconds
-		task0.setTimeout(8); // timeout after 8 seconds no matter what
-
-		// game.renderFrame.addTask(task);
-		// game.renderFrame.addTask(task0);
-		game.renderFrame.addTask(task0);
+					if (count % 61 == 0) {
+						task.suspend(2);
+					}
+				})
+						.suspend(5)
+						.set("position", new Vector2(0, 0))
+						.set("count", 0)
+						.setDuration(10)
+						.setTimeout(8));
 
 	}
 }
