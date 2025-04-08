@@ -719,6 +719,7 @@ public class CellGrid {
 				GridIntercept nextIntercept = getGridIntercept(thisIntercept.getPointOfIntersection(), to);
 				this.nextGridIntercept = nextIntercept;
 
+				// edge case when line intersects both X and Y grid lines
 				if (nextIntercept.hasXY()) {
 					Vector2 direction = nextIntercept.getDirection();
 					Cell sideCell = direction.getX() < 0

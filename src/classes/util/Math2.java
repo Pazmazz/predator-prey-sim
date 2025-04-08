@@ -18,7 +18,7 @@ public class Math2 {
 	 * @param b final value
 	 * @return the interpolation between {@code a} and {@code b} using t
 	 */
-	public static double lerp(double t, double a, double b) {
+	public static double lerp(double a, double b, double t) {
 		return a + t * (b - a);
 	}
 
@@ -30,9 +30,9 @@ public class Math2 {
 	 * @return the signed multiplicative identity of {@code n}
 	 */
 	public static double toSign(double n) {
-		if (n == 0) {
+		if (n == 0)
 			return n;
-		}
+
 		return Math.abs(n) / n;
 	}
 }

@@ -5,6 +5,7 @@ package classes.entity;
 
 import classes.abstracts.Application;
 import classes.abstracts.FrameProcessor;
+import classes.abstracts.FrameProcessor.Task;
 import classes.settings.GameSettings;
 import classes.settings.GameSettings.SimulationType;
 import classes.simulation.MovementFrame;
@@ -66,6 +67,27 @@ public class Game extends Application implements Runnable {
 				renderFrame,
 				simulatedLagFrame
 		};
+
+		renderFrame.addTask(
+				new Task("AnimationUpdate", (task) -> {
+					int count = (int) task.get("count");
+
+					Console.println("Running count: " + count);
+					Console.println("delta: " + Time.nanoToSeconds(task.delta()));
+					Console.br();
+
+					count++;
+					task.set("count", count);
+
+					if (count % 61 == 0) {
+						task.suspend(2);
+					}
+				})
+						.suspend(5)
+						.set("position", new Vector2(0, 0))
+						.set("count", 0)
+						.setDuration(10)
+						.setTimeout(8));
 
 		this.state = GameState.LOADED;
 	}

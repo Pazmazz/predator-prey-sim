@@ -70,26 +70,26 @@ public class App extends Application {
 		// cell0.moveOccupantTo(cell1);
 
 		// add on one line example
-		game.renderFrame.addTask(
-				new Task("AnimationUpdate", (task) -> {
-					int count = (int) task.get("count");
+		// game.renderFrame.addTask(
+		// new Task("AnimationUpdate", (task) -> {
+		// int count = (int) task.get("count");
 
-					Console.println("Running count: " + count);
-					Console.println("delta: " + Time.nanoToSeconds(task.delta()));
-					Console.br();
+		// Console.println("Running count: " + count);
+		// Console.println("delta: " + Time.nanoToSeconds(task.delta()));
+		// Console.br();
 
-					count++;
-					task.set("count", count);
+		// count++;
+		// task.set("count", count);
 
-					if (count % 61 == 0) {
-						task.suspend(2);
-					}
-				})
-						.suspend(5)
-						.set("position", new Vector2(0, 0))
-						.set("count", 0)
-						.setDuration(10)
-						.setTimeout(8));
+		// if (count % 61 == 0) {
+		// task.suspend(2);
+		// }
+		// })
+		// .suspend(5)
+		// .set("position", new Vector2(0, 0))
+		// .set("count", 0)
+		// .setDuration(10)
+		// .setTimeout(8));
 
 	}
 }
