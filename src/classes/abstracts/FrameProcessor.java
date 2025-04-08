@@ -37,7 +37,7 @@ public abstract class FrameProcessor extends Application {
 	}
 
 	protected FrameProcessor(Game game, SimulationType simulationType) {
-		settings = game.getSettings()
+		this.settings = game.getSettings()
 				.getSimulation()
 				.getSettings(simulationType);
 
@@ -161,9 +161,12 @@ public abstract class FrameProcessor extends Application {
 
 			// task exceeded runtime duration
 			if (task.duration() != -1 && task.elapsedRuntime() > task.duration()) {
-				taskIterator.remove();
+				Console.debugPrint(
+						DebugPriority.HIGH,
+						String.format("%s fulfilled its duration"));
+
 				task.setState(TaskState.END);
-				Console.println("Timeout termination");
+				taskIterator.remove();
 				continue;
 			}
 
@@ -324,7 +327,9 @@ public abstract class FrameProcessor extends Application {
 
 		@Override
 		public String toString() {
-			return String.format("$text-cyan Task$text-reset <%s>", this.name);
+			return String.format(
+					"$text-cyan Task$text-reset <$text-yellow %s$text-reset >",
+					this.name);
 		}
 	}
 

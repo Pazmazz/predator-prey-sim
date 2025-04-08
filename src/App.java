@@ -70,11 +70,15 @@ public class App extends Application {
 		// cell0.moveOccupantTo(cell1);
 
 		Task task0 = new Task();
+
+		// wait 5 seconds before running (does not count towards duration, but does
+		// count towards timeout)
 		task0.suspend(5);
+
 		task0.set("position", new Vector2(0, 0));
 		task0.set("count", 0);
-		task0.setDuration(10);
-		task0.setTimeout(5);
+		task0.setDuration(10); // try to run for 10 seconds
+		task0.setTimeout(8); // timeout after 8 seconds no matter what
 
 		task0.setCallback(() -> {
 			int count = (int) task0.get("count");
