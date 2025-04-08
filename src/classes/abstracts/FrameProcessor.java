@@ -97,26 +97,36 @@ public abstract class FrameProcessor extends Application {
 				settings.getDebugInfo().getPrimaryColor(),
 				Time.nanoToSeconds(deltaTime)));
 
+		Console.debugPrint("-".repeat(50));
 		return simulationTime;
 	}
 
+	/**
+	 * Gets the most recent delta time between the last simulation interval
+	 * 
+	 * @return the time between the last simulation interval in seconds
+	 * @see #getDeltaTimeSeconds()
+	 */
 	public double getDeltaTimeSeconds() {
 		return Time.nanoToSeconds(this.deltaTime);
 	}
 
 	/**
-	 * <b>DO NOT USE</b>
-	 * <p>
-	 * Currently a testing method
+	 * Adds a task to the simulation frame's task scheduler
+	 * 
+	 * @param task the {@code Task} object to be added to the task scheduler
+	 * @see #addTask(Task)
 	 */
 	public void addTask(Task task) {
 		this.tasks.add(task);
 	}
 
 	/**
-	 * <b>DO NOT USE</b>
+	 * Executes all queued tasks in the simulation frame's task pipeline.
+	 * 
 	 * <p>
-	 * Currently a testing method
+	 * This method should ideally be called inside a simulation frame's {@code step}
+	 * method, but it may be used outside of this context as well.
 	 */
 	public void executeTasks() {
 		Iterator<Task> taskIterator = tasks.iterator();
@@ -172,6 +182,11 @@ public abstract class FrameProcessor extends Application {
 		}
 	}
 
+	/**
+	 * The Task class creates a new {@code Task} object which contains metadata
+	 * regarding the given task to give the scheduler. It also holds the callback
+	 * lambda function for the body of the task.
+	 */
 	public static class Task {
 
 		final private String name;
@@ -197,13 +212,18 @@ public abstract class FrameProcessor extends Application {
 			this("Anonymous Task");
 		}
 
+		public Task(String name, TaskCallback taskCaller) {
+			this(name);
+			setCallback(taskCaller);
+		}
+
 		public Task setCallback(TaskCallback taskCaller) {
 			this.taskCaller = taskCaller;
 			return this;
 		}
 
 		public void execute() {
-			this.taskCaller.call();
+			this.taskCaller.call(this);
 		}
 
 		public Task set(String key, Object value) {
@@ -215,12 +235,12 @@ public abstract class FrameProcessor extends Application {
 			return env.get(key);
 		}
 
-		public Task setElapsedLifetime(long elapsed) {
+		protected Task setElapsedLifetime(long elapsed) {
 			this.elapsedLifetime = elapsed;
 			return this;
 		}
 
-		public Task setDeltaTime(long lastDelta) {
+		protected Task setDeltaTime(long lastDelta) {
 			this.deltaTime = lastDelta;
 			this.elapsedRuntime += lastDelta;
 			return this;
@@ -253,7 +273,7 @@ public abstract class FrameProcessor extends Application {
 			return this;
 		}
 
-		public Task setSuspendedUntil(long suspendedUntil) {
+		protected Task setSuspendedUntil(long suspendedUntil) {
 			this.suspendedUntil = suspendedUntil;
 			return this;
 		}

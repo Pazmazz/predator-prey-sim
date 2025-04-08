@@ -69,7 +69,20 @@ public class App extends Application {
 
 		// cell0.moveOccupantTo(cell1);
 
-		Task task0 = new Task("AnimationUpdate");
+		Task task0 = new Task("AnimationUpdate", (task) -> {
+			int count = (int) task.get("count");
+
+			Console.println("Running count: " + count);
+			Console.println("delta: " + Time.nanoToSeconds(task.delta()));
+			Console.br();
+
+			count++;
+			task.set("count", count);
+
+			if (count % 61 == 0) {
+				task.suspend(2);
+			}
+		});
 
 		// wait 5 seconds before running (does not count towards duration, but does
 		// count towards timeout)
@@ -79,21 +92,6 @@ public class App extends Application {
 		task0.set("count", 0);
 		task0.setDuration(10); // try to run for 10 seconds
 		task0.setTimeout(8); // timeout after 8 seconds no matter what
-
-		task0.setCallback(() -> {
-			int count = (int) task0.get("count");
-
-			Console.println("Running count: " + count);
-			Console.println("delta: " + Time.nanoToSeconds(task0.delta()));
-			Console.br();
-
-			count++;
-			task0.set("count", count);
-
-			if (count % 61 == 0) {
-				task0.suspend(2);
-			}
-		});
 
 		// game.renderFrame.addTask(task);
 		// game.renderFrame.addTask(task0);
