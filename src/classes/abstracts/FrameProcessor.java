@@ -12,6 +12,7 @@ import classes.settings.GameSettings.SimulationSettings;
 import classes.settings.GameSettings.SimulationType;
 import classes.util.Console;
 import classes.util.Time;
+import classes.util.Console.DebugPriority;
 import interfaces.TaskCallback;
 
 /**
@@ -85,7 +86,7 @@ public abstract class FrameProcessor extends Application {
 
 		// run implemented step
 		step(Time.nanoToSeconds(deltaTime));
-
+		//
 		this.afterStep = tick();
 		long simulationTime = this.afterStep - preSimulationTime;
 
@@ -127,54 +128,73 @@ public abstract class FrameProcessor extends Application {
 		while (taskIterator.hasNext()) {
 			Task task = taskIterator.next();
 
-			if (task.started() == null) {
+			if (task.started() == null)
 				task.setStart(currentTime);
-			}
-
-			if (task.suspended() > 0) {
-
-			}
 
 			task.setElapsedLifetime(currentTime - task.started());
+			if (task.timeout() != -1 && task.elapsedLifetime() > task.timeout()) {
+				Console.debugPrint(
+						DebugPriority.HIGH,
+						String.format("%s timed out", task));
 
-			// pass props from FrameProcessor to Task
-			task.setDeltaTime(this.deltaTime);
+				taskIterator.remove();
+			}
 
-			// execute task callback
-			task.execute();
+			if (task.isSuspended()) {
+				if (task.suspendedUntil() == -1)
+					task.setSuspendedUntil(currentTime + task.suspended());
+				if (currentTime < task.suspendedUntil())
+					continue;
+				else
+					task.resume();
+			}
 
 			// task was killed
 			if (task.isDead()) {
+				Console.debugPrint(
+						DebugPriority.HIGH,
+						String.format("%s", task));
+
 				taskIterator.remove();
-				Console.println("Manual termination");
+				continue;
 			}
 
 			// task exceeded runtime duration
-			if (Time.nanoToSeconds(task.elapsedRuntime()) > task.duration()) {
+			if (task.duration() != -1 && task.elapsedRuntime() > task.duration()) {
 				taskIterator.remove();
 				task.setState(TaskState.END);
 				Console.println("Timeout termination");
+				continue;
 			}
+
+			task.setDeltaTime(this.deltaTime);
+			task.execute();
 		}
 	}
 
 	public static class Task {
 
+		final private String name;
 		final private HashMap<String, Object> env = new HashMap<>();
-
 		private TaskCallback taskCaller;
-
+		private TaskState state;
 		private Long started;
+
 		private long elapsedRuntime = 0;
 		private long elapsedLifetime = 0;
 		private long deltaTime = 0;
-		private double suspended = 0;
-		private double duration = Double.POSITIVE_INFINITY;
+		private long timeout = -1;
+		private long suspended = -1;
+		private long duration = -1;
+		private long suspendedUntil = -1;
 
-		private TaskState state;
+		public Task(String name) {
+			this.state = TaskState.SUSPENDED;
+			this.name = name;
+		}
 
 		public Task() {
-			this.state = TaskState.SUSPENDED;
+			this("Anonymous Task");
 		}
 
 		public Task setCallback(TaskCallback taskCaller) {
@@ -206,21 +226,25 @@ public abstract class FrameProcessor extends Application {
 			return this;
 		}
 
-		public Task suspend(double seconds) {
-			if (seconds < 0) {
-				throw new Error("Task suspension cannot be less than zero");
-			}
+		public Task setTimeout(double seconds) {
+			this.timeout = Time.secondsToNano(seconds);
+			return this;
+		}
 
-			this.suspended = seconds;
+		public Task suspend(double seconds) {
+			if (seconds < 0)
+				throw new Error("Task suspension cannot be less than zero");
+
+			this.suspended = Time.secondsToNano(seconds);
+			this.state = TaskState.SUSPENDED;
 			return this;
 		}
 
 		public Task setDuration(double duration) {
-			if (duration < 0) {
+			if (duration < 0)
 				throw new Error("Task duration cannot be less than zero");
-			}
 
-			this.duration = duration;
+			this.duration = Time.secondsToNano(duration);
 			return this;
 		}
 
@@ -229,9 +253,20 @@ public abstract class FrameProcessor extends Application {
 			return this;
 		}
 
+		public Task setSuspendedUntil(long suspendedUntil) {
+			this.suspendedUntil = suspendedUntil;
+			return this;
+		}
+
 		protected Task setState(TaskState state) {
 			this.state = state;
 			return this;
+		}
+
+		public void resume() {
+			this.state = TaskState.RUNNING;
+			this.suspended = -1;
+			this.suspendedUntil = -1;
 		}
 
 		public Long started() {
@@ -250,12 +285,24 @@ public abstract class FrameProcessor extends Application {
 			return this.deltaTime;
 		}
 
-		public double duration() {
+		public long duration() {
 			return this.duration;
 		}
 
-		public double suspended() {
+		public long suspended() {
 			return this.suspended;
+		}
+
+		public long suspendedUntil() {
+			return this.suspendedUntil;
+		}
+
+		public long timeout() {
+			return this.timeout;
+		}
+
+		public String name() {
+			return this.name;
 		}
 
 		public void kill() {
@@ -267,11 +314,17 @@ public abstract class FrameProcessor extends Application {
 		}
 
 		public boolean isSuspended() {
-			return this.state == TaskState.SUSPENDED;
+			return this.state == TaskState.SUSPENDED
+					&& this.suspended != -1;
 		}
 
 		public boolean isDead() {
 			return this.state == TaskState.END;
+		}
+
+		@Override
+		public String toString() {
+			return String.format("$text-cyan Task$text-reset <%s>", this.name);
 		}
 	}
 

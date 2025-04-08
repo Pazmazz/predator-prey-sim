@@ -70,11 +70,25 @@ public class App extends Application {
 		// cell0.moveOccupantTo(cell1);
 
 		Task task0 = new Task();
-		task0.setTimeout(5);
+		task0.suspend(5);
 		task0.set("position", new Vector2(0, 0));
+		task0.set("count", 0);
+		task0.setDuration(10);
+		task0.setTimeout(5);
 
 		task0.setCallback(() -> {
-			Console.println("Running");
+			int count = (int) task0.get("count");
+
+			Console.println("Running count: " + count);
+			Console.println("delta: " + Time.nanoToSeconds(task0.delta()));
+			Console.br();
+
+			count++;
+			task0.set("count", count);
+
+			if (count % 61 == 0) {
+				task0.suspend(2);
+			}
 		});
 
 		// game.renderFrame.addTask(task);
