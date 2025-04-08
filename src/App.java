@@ -36,6 +36,7 @@ public class App extends Application {
 	public static void main(String[] args) {
 		Console.setDebugModeEnabled(true);
 		Console.hideDebugPriority(DebugPriority.LOW);
+		Console.hideDebugPriority(DebugPriority.MEDIUM);
 		Console.setConsoleColorsEnabled(true);
 
 		Game game = new Game();
@@ -46,7 +47,8 @@ public class App extends Application {
 		// Vector2 start = new Vector2(-2, 4);
 		// Vector2 end = new Vector2(7, -2);
 
-		// CellGrid grid = new CellGrid(new Unit2(10, 10));
+		CellGrid grid = new CellGrid(new Unit2(10, 10));
+		Console.println(new Vector2(3, 6).lerp(new Vector2(10, 12), 0.5));
 		// ArrayList<Cell> cells = grid.getCellPath(start, end);
 
 		// for (Cell cell : cells) {
@@ -68,28 +70,6 @@ public class App extends Application {
 		// Console.println(cell0.getVacancy());
 
 		// cell0.moveOccupantTo(cell1);
-
-		// add on one line example
-		// game.renderFrame.addTask(
-		// new Task("AnimationUpdate", (task) -> {
-		// int count = (int) task.get("count");
-
-		// Console.println("Running count: " + count);
-		// Console.println("delta: " + Time.nanoToSeconds(task.delta()));
-		// Console.br();
-
-		// count++;
-		// task.set("count", count);
-
-		// if (count % 61 == 0) {
-		// task.suspend(2);
-		// }
-		// })
-		// .suspend(5)
-		// .set("position", new Vector2(0, 0))
-		// .set("count", 0)
-		// .setDuration(10)
-		// .setTimeout(8));
 
 	}
 }

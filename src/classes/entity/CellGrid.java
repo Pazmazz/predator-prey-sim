@@ -112,9 +112,8 @@ public class CellGrid {
 	 * @see #getGridIntercept(Vector2, Vector2)
 	 */
 	public GridIntercept getGridIntercept(Vector2 start, Vector2 end) {
-		if (start.equals(end)) {
+		if (start.equals(end))
 			return new GridIntercept().setAxisOfIntersection(CellGridAxis.ENDPOINT);
-		}
 
 		Vector2 signedUnit = end.subtract(start).signedUnit();
 		GridIntercept interceptResult = new GridIntercept();
@@ -136,13 +135,11 @@ public class CellGrid {
 				? Math.ceil(startY)
 				: Math.floor(startY);
 
-		if (startX == limitX) {
+		if (startX == limitX)
 			limitX += signedUnit.getX();
-		}
 
-		if (startY == limitY) {
+		if (startY == limitY)
 			limitY += signedUnit.getY();
-		}
 
 		double ty = (limitY - startY) / (endY - startY);
 		double tx = (limitX - startX) / (endX - startX);
@@ -201,6 +198,9 @@ public class CellGrid {
 	 *
 	 * @return {@code Cell} object containing metadata about the cell
 	 * 
+	 * @throws NoCellFoundException if getting a cell at {@code (0, 0)} - no such
+	 *                              cell exists on the grid
+	 * 
 	 * @see #getCell()
 	 * @see #getCell(Unit2)
 	 * @see #getCell(Vector2)
@@ -208,15 +208,18 @@ public class CellGrid {
 	 */
 	public Cell getCell(Unit2 unit) {
 		Cell cell = this.virtualGrid.get(unit.toString());
-		if (cell != null) {
+		if (cell != null)
 			return cell;
-		}
+
+		if (unit.getX() == 0 || unit.getY() == 0)
+			throw new NoCellFoundException();
 
 		cell = new Cell(unit);
 		this.virtualGrid.put(unit.toString(), cell);
-		if (outOfBounds(unit)) {
+
+		if (outOfBounds(unit))
 			cell.setType(CellType.OUT_OF_BOUNDS);
-		}
+
 		return cell;
 	}
 
@@ -361,9 +364,8 @@ public class CellGrid {
 	public Cell collectCell(Unit2 unit) {
 		Cell cell = this.virtualGrid.get(unit.toString());
 
-		if (cell == null) {
+		if (cell == null)
 			throw new NoCellFoundException();
-		}
 
 		if (cell.isCollectable()) {
 			this.virtualGrid.remove(unit.toString());
@@ -609,9 +611,8 @@ public class CellGrid {
 	public void printCellsAdjacentTo(Unit2 unit) {
 		Cell[] adjCells = getCellsAdjacentTo(unit);
 
-		for (Cell adjCell : adjCells) {
+		for (Cell adjCell : adjCells)
 			adjCell.printInfo();
-		}
 	}
 
 	/**
@@ -640,9 +641,8 @@ public class CellGrid {
 		CellPathCollection path = new CellPathCollection(from, to);
 		Iterator<Cell> pathIterator = path.iterator();
 
-		while (pathIterator.hasNext()) {
+		while (pathIterator.hasNext())
 			pathIterator.next();
-		}
 
 		return path.getCellPath();
 	}
@@ -707,13 +707,11 @@ public class CellGrid {
 
 			@Override
 			public Cell next() {
-				if (!hasNext()) {
+				if (!hasNext())
 					throw new NoSuchElementException("Dead Cell path");
-				}
 
-				if (cellQueue.size() > 0) {
+				if (cellQueue.size() > 0)
 					return cellQueue.remove(0);
-				}
 
 				GridIntercept thisIntercept = this.nextGridIntercept;
 				GridIntercept nextIntercept = getGridIntercept(thisIntercept.getPointOfIntersection(), to);

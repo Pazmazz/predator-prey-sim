@@ -121,15 +121,14 @@ public class Cell {
 	 *                                  another cell
 	 */
 	protected void setOccupant(CellOccupant cellOccupant, boolean occupantAggregatesCell) {
-		if (hasOccupant() && this.cellOccupant != cellOccupant) {
+		if (hasOccupant() && this.cellOccupant != cellOccupant)
 			throw new CellIsOccupiedException();
-		}
-		if (cellOccupant.hasCell() && cellOccupant.getCell() != this) {
+
+		if (cellOccupant.hasCell() && cellOccupant.getCell() != this)
 			throw new OccupantHasCellException();
-		}
-		if (occupantAggregatesCell) {
+
+		if (occupantAggregatesCell)
 			cellOccupant.assignCell(this, false);
-		}
 
 		this.cellOccupant = cellOccupant;
 		setVacancy(CellVacancy.OCCUPIED);
@@ -207,9 +206,8 @@ public class Cell {
 	 *                                  no occupant
 	 */
 	public CellOccupant removeOccupant() {
-		if (!hasOccupant()) {
+		if (!hasOccupant())
 			throw new NoOccupantFoundException();
-		}
 
 		CellOccupant _cellOccupant = this.cellOccupant;
 		this.cellOccupant = null;
@@ -389,9 +387,8 @@ public class Cell {
 		printInfoItem("Type", getType().toString());
 		printInfoItem("Vacancy", getVacancy().toString());
 
-		if (hasOccupant()) {
+		if (hasOccupant())
 			printInfoItem("Occupant", getOccupant().toString());
-		}
 	}
 
 	/**

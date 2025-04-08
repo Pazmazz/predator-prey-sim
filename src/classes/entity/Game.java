@@ -30,6 +30,8 @@ public class Game extends Application implements Runnable {
 
 	private GameState state = GameState.INITIAL;
 
+	private long simulationFPS;
+
 	//
 	// Update frames
 	//
@@ -61,33 +63,13 @@ public class Game extends Application implements Runnable {
 		this.movementFrame = new MovementFrame(this, SimulationType.MOVEMENT);
 		this.renderFrame = new RenderFrame(this, SimulationType.RENDER);
 		this.simulatedLagFrame = new SimulatedLagFrame(this, SimulationType.SIMULATED_LAG);
+		this.simulationFPS = Time.secondsToNano(settings.getSimulation().getFPS());
 
 		this.frameProcesses = new FrameProcessor[] {
 				movementFrame,
 				renderFrame,
 				simulatedLagFrame
 		};
-
-		renderFrame.addTask(
-				new Task("AnimationUpdate", (task) -> {
-					int count = (int) task.get("count");
-
-					Console.println("Running count: " + count);
-					Console.println("delta: " + Time.nanoToSeconds(task.delta()));
-					Console.br();
-
-					count++;
-					task.set("count", count);
-
-					if (count % 61 == 0) {
-						task.suspend(2);
-					}
-				})
-						.suspend(5)
-						.set("position", new Vector2(0, 0))
-						.set("count", 0)
-						.setDuration(10)
-						.setTimeout(8));
 
 		this.state = GameState.LOADED;
 	}
@@ -112,6 +94,7 @@ public class Game extends Application implements Runnable {
 	 */
 	public void terminate() {
 		this.setState(GameState.TERMINATED);
+		Console.println("TERMINATED APPLICATION");
 	}
 
 	/**
@@ -130,21 +113,19 @@ public class Game extends Application implements Runnable {
 
 			for (FrameProcessor frame : this.frameProcesses) {
 				long frameDelta = frame.pulse();
-				if (frameDelta != -1) {
+				if (frameDelta != -1)
 					simulationDelta += frameDelta;
-				}
 			}
 
-			long threadYieldTime = Time.secondsToNano(settings.getSimulation().getFPS()) - simulationDelta;
-
-			if (threadYieldTime > 0) {
+			long threadYieldTime = this.simulationFPS - simulationDelta;
+			if (threadYieldTime > 0)
 				wait(Time.nanoToMillisecond(threadYieldTime));
-			}
 		}
 	}
 
 	//
 	// Public getters
+	// TODO: Add documentation
 	//
 	public GameScreen getScreen() {
 		return this.screen;

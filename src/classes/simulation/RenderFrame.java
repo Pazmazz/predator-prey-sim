@@ -20,6 +20,5 @@ public class RenderFrame extends FrameProcessor {
 
 	@Override
 	public void step(double deltaTimeSeconds) {
-		executeTasks();
 	}
 }

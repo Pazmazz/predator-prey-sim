@@ -102,12 +102,12 @@ public class GameSettings {
 
 			// Movement
 			SimulationSettings movement = new SimulationSettings()
-					.setFPS(1.0)
+					.setFPS(1.0 / 60)
 					.setProcessName("Movement");
 
 			// SimulatedLag
 			SimulationSettings simulatedLag = new SimulationSettings()
-					.setFPS(5)
+					.setFPS(1.0 / 30)
 					.setProcessName("SimulatedLag");
 
 			render.getDebugInfo().setPrimaryColor("red");

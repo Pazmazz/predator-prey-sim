@@ -23,6 +23,7 @@ import interfaces.TaskCallback;
 public abstract class FrameProcessor extends Application {
 
 	public Game game;
+	public long FPS;
 	public long lastPulseTick;
 	public long deltaTime = 0;
 	public long beforeStep;
@@ -42,6 +43,7 @@ public abstract class FrameProcessor extends Application {
 				.getSettings(simulationType);
 
 		this.game = game;
+		this.FPS = Time.secondsToNano(settings.getFPS());
 		this.lastPulseTick = -Time.secondsToNano(settings.getFPS());
 	}
 
@@ -55,7 +57,7 @@ public abstract class FrameProcessor extends Application {
 	 */
 	public long pulse() {
 		long preSimulationTime = tick();
-		long dt = preSimulationTime - lastPulseTick;
+		long dt = preSimulationTime - this.lastPulseTick;
 
 		/**
 		 * Until we find a better solution to account for unpredictable sleeping
@@ -66,11 +68,10 @@ public abstract class FrameProcessor extends Application {
 		 * If the delta time (time between last frame simulation step) is less than
 		 * the frame FPS, then return -1 (skip this request to run another simulation)
 		 */
-		if (dt + 1_000_000 < Time.secondsToNano(settings.getFPS())) {
+		if (dt + 1_000_000 < this.FPS)
 			return -1;
-		} else if (this.lastPulseTick < 0) {
+		else if (this.lastPulseTick < 0)
 			dt = 0;
-		}
 
 		Console.debugPrint(String.format(
 				"$text-%s [%s FRAME] $text-reset",
@@ -83,6 +84,12 @@ public abstract class FrameProcessor extends Application {
 
 		// run the implemented step
 		step(Time.nanoToSeconds(deltaTime));
+
+		/*
+		 * If we need more control over when to execute custom tasks, we can call this
+		 * method inside the `step` functions and remove it here
+		 */
+		executeTasks();
 
 		this.afterStep = tick();
 		long simulationTime = this.afterStep - preSimulationTime;

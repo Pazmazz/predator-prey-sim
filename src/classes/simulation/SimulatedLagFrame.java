@@ -22,6 +22,5 @@ public class SimulatedLagFrame extends FrameProcessor {
 	public void step(double deltaTimeSeconds) {
 		// wait(Math.random()*100);
 		game.getGameGrid().collectCells();
-		executeTasks();
 	}
 }

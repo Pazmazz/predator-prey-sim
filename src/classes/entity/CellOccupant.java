@@ -50,15 +50,14 @@ public class CellOccupant {
 	 *                                 occupant
 	 */
 	protected void assignCell(Cell targetCell, boolean cellAggregatesOccupant) {
-		if (targetCell.hasOccupant() && targetCell.getOccupant() != this) {
+		if (targetCell.hasOccupant() && targetCell.getOccupant() != this)
 			throw new CellIsOccupiedException();
-		}
-		if (hasCell()) {
+
+		if (hasCell())
 			removeCell();
-		}
-		if (cellAggregatesOccupant) {
+
+		if (cellAggregatesOccupant)
 			targetCell.setOccupant(this, false);
-		}
 
 		this.currentCell = targetCell;
 	}
@@ -93,9 +92,9 @@ public class CellOccupant {
 	 *                              has no cell
 	 */
 	public void removeCell() {
-		if (!hasCell()) {
+		if (!hasCell())
 			throw new NoCellFoundException();
-		}
+
 		this.currentCell.removeOccupant();
 		this.currentCell = null;
 	}
