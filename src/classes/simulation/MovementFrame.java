@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import classes.abstracts.Bug;
 import classes.abstracts.FrameProcessor;
@@ -15,9 +16,12 @@ import classes.entity.CellGrid;
 import classes.entity.CellOccupant;
 import classes.entity.Game;
 import classes.entity.Properties;
+import classes.entity.TweenData;
+import classes.entity.Properties.Property;
 import classes.entity.Unit2;
 import classes.settings.GameSettings.SimulationType;
 import classes.util.Console;
+import classes.util.Math2;
 
 /**
  * This implements the {@code step} method for FrameProcessor. All code that
@@ -30,34 +34,52 @@ import classes.util.Console;
 public class MovementFrame extends FrameProcessor {
 
 	private CellGrid grid = game.getGameGrid();
-	private HashMap<CellOccupant, String> propertyBuffer = new HashMap<>();
+	private HashMap<CellOccupant, HashMap<Property, TweenData>> propertyBuffer = new HashMap<>();
 
 	public MovementFrame(Game game, SimulationType simulationFrame) {
 		super(game, simulationFrame);
 	}
 
-	public void send(Properties currentProperties, Properties newProperties) {
+	public void bufferProperties(CellOccupant entity, Properties newProperties) {
 
 	}
 
 	@Override
 	public void step(double deltaTimeSeconds) {
-		if (propertyBuffer.size() > 0)
+		if (propertyBuffer.isEmpty())
 			return;
 
-		Iterator<Map.Entry<String, Cell>> gridIterator = grid
-				.getGrid()
+		Iterator<Entry<CellOccupant, HashMap<Property, TweenData>>> bufferIterator = propertyBuffer
 				.entrySet()
 				.iterator();
 
-		while (gridIterator.hasNext()) {
-			Map.Entry<String, Cell> entry = gridIterator.next();
-			Cell cell = entry.getValue();
+		while (bufferIterator.hasNext()) {
+			Entry<CellOccupant, HashMap<Property, TweenData>> bufferEntry = bufferIterator.next();
+			CellOccupant entity = bufferEntry.getKey();
+			Properties entityProperties = entity.getProperties();
+			HashMap<Property, TweenData> tweeningProperties = bufferEntry.getValue();
 
-			if (cell.isEmpty())
-				continue;
+			Iterator<Entry<Property, TweenData>> tweenIterator = tweeningProperties
+					.entrySet()
+					.iterator();
 
-			CellOccupant occupant = cell.getOccupant();
+			while (tweenIterator.hasNext()) {
+				Entry<Property, TweenData> tweenEntry = tweenIterator.next();
+				TweenData tweenData = tweenEntry.getValue();
+				Property property = tweenEntry.getKey();
+
+				if (tweenData.getStartTime() == -1)
+					tweenData.setStartTime(timeBeforeStep());
+
+				long elapsedTime = timeBeforeStep() - tweenData.getStartTime();
+				double alpha = elapsedTime / tweenData.getDuration();
+
+				if (tweenData.getStartValue() instanceof Number) {
+					entityProperties.set(
+							property,
+							Math2.lerp((double) tweenData.getStartValue(), (double) tweenData.getEndValue(), alpha));
+				}
+			}
 		}
 	}
 }

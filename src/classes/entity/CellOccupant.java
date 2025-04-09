@@ -29,6 +29,8 @@ public class CellOccupant {
 
 		// default properties
 		properties.set(Property.POSITION, new Vector2());
+		properties.set(Property.ROTATION, 0);
+		properties.set(Property.MOVEMENT_SPEED, 5);
 	}
 
 	public void setEatable(boolean eatable) {
@@ -73,7 +75,6 @@ public class CellOccupant {
 			targetCell.setOccupant(this, false);
 
 		this.currentCell = targetCell;
-		this.properties.set(Property.POSITION, targetCell.getPosition());
 	}
 
 	/**

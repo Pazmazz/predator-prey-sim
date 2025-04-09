@@ -30,10 +30,9 @@ public class Ant extends Bug {
 			this.breed();
 		}
 
-		game.movementFrame.send(
-				getProperties(),
-				new Properties()
-						.set(Property.POSITION, new Vector2(5, 5)));
+		game.movementFrame.bufferProperties(
+				this,
+				new Properties().set(Property.POSITION, new Vector2(5, 5)));
 	}
 
 	@Override
