@@ -23,12 +23,12 @@ import interfaces.TaskCallback;
 public abstract class FrameProcessor extends Application {
 
 	public Game game;
-	public long FPS;
-	public long lastPulseTick;
-	public long deltaTime = 0;
-	public long beforeStep;
-	public long afterStep;
-	public SimulationSettings settings;
+	private long FPS;
+	private long lastPulseTick;
+	private long deltaTime = 0;
+	private long beforeStep;
+	private long afterStep;
+	private SimulationSettings settings;
 	private ArrayList<Task> tasks = new ArrayList<>();
 
 	public enum TaskState {

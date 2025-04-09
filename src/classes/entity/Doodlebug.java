@@ -6,37 +6,25 @@ public class Doodlebug extends Bug {
 
 	int starvationTracker = 0;
 
-	public Doodlebug() {
+	public Doodlebug(Game game) {
+		super(game);
 		idNum = (int) (Math.random() * 1000);
 	}
 
 	@Override
-	public void move(Cell currentCell, CellGrid grid) {
-		Cell[] adjCells = grid.getCellsAdjacentTo(currentCell);
+	public void move() {
+		Cell[] adjCells = game
+				.getGameGrid()
+				.getCellsAdjacentTo(getCell());
 
 		for (Cell adjCell : adjCells) {
-			if (adjCell.isOccupantEatable(currentCell)) {
-
-				//
-				// Accounting for removal of 'moveOccupantTo' method,
-				// this does the same thing.
-				//
+			if (adjCell.isOccupantEatable(getCell())) {
 				adjCell.removeOccupant();
 				assignCell(adjCell);
-
-				//
-				// currentCell.removeOccupant();
-				// currentCell.moveOccupantTo(adjCell);
-				// this.currentCell = adjCell;
-				//
 				starvationTracker = 0;
 				break;
 			} else if (adjCell.isInBounds() && adjCell.isEmpty()) {
 				assignCell(adjCell);
-				//
-				// currentCell.moveOccupantTo(adjCell);
-				// this.currentCell = adjCell;
-				//
 				starvationTracker++;
 				break;
 			}
@@ -44,23 +32,25 @@ public class Doodlebug extends Bug {
 		movementCounter++;
 
 		if (starvationTracker == 3) {
-			currentCell.removeOccupant();
+			// getCell().removeOccupant();
+			removeFromCell();
 		}
 
 		if (movementCounter == 8) {
 			movementCounter = 0;
-			this.breed(adjCells);
+			this.breed();
 		}
 	}
 
 	@Override
-	public void breed(Cell[] adjCells) {
+	public void breed() {
+		Cell[] adjCells = game
+				.getGameGrid()
+				.getCellsAdjacentTo(getCell());
+
 		for (Cell adjCell : adjCells) {
 			if (adjCell.isInBounds() && adjCell.isEmpty()) {
-				adjCell.setOccupant(new Doodlebug());
-				//
-				// currentCell.setOccupant(new Doodlebug());
-				//
+				adjCell.setOccupant(new Doodlebug(game));
 				break;
 			}
 		}

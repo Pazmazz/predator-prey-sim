@@ -104,30 +104,30 @@ public class Cell {
 	 * does not already have an occupant.
 	 * 
 	 * <p>
-	 * An optional argument {@code occupantAggregatesCell} is provided which
+	 * An optional argument {@code withAggregation} is provided which
 	 * dictates whether or not the occupant should incorporate the cell
 	 * object
 	 * into itself. Used for preventing a callback loop between the cell's
 	 * {@code setOccupant} method and the occupant's {@code setCell} method,
 	 * since they both call each other.
 	 *
-	 * @param cellOccupant           the aggregated occupant to nest within the cell
-	 * @param occupantAggregatesCell whether the occupant should aggregate the cell
-	 *                               object
+	 * @param cellOccupant    the aggregated occupant to nest within the cell
+	 * @param withAggregation whether the occupant should aggregate the cell
+	 *                        object
 	 *
 	 * @throws CellIsOccupiedException  if the current cell already has an
 	 *                                  occupant
 	 * @throws OccupantHasCellException if the cellOccupant already belongs to
 	 *                                  another cell
 	 */
-	protected void setOccupant(CellOccupant cellOccupant, boolean occupantAggregatesCell) {
+	protected void setOccupant(CellOccupant cellOccupant, boolean withAggregation) {
 		if (hasOccupant() && this.cellOccupant != cellOccupant)
 			throw new CellIsOccupiedException();
 
 		if (cellOccupant.hasCell() && cellOccupant.getCell() != this)
 			throw new OccupantHasCellException();
 
-		if (occupantAggregatesCell)
+		if (withAggregation)
 			cellOccupant.assignCell(this, false);
 
 		this.cellOccupant = cellOccupant;
@@ -205,14 +205,22 @@ public class Cell {
 	 * @throws NoOccupantFoundException if calling this method when the cell has
 	 *                                  no occupant
 	 */
-	public CellOccupant removeOccupant() {
+	protected CellOccupant removeOccupant(boolean withAggregation) {
 		if (!hasOccupant())
 			throw new NoOccupantFoundException();
 
-		CellOccupant _cellOccupant = this.cellOccupant;
+		CellOccupant occupant = this.cellOccupant;
 		this.cellOccupant = null;
 		setVacancy(CellVacancy.EMPTY);
-		return _cellOccupant;
+
+		if (withAggregation)
+			occupant.removeFromCell(false);
+
+		return occupant;
+	}
+
+	public CellOccupant removeOccupant() {
+		return removeOccupant(true);
 	}
 
 	/**

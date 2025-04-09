@@ -107,7 +107,7 @@ public class GameSettings {
 
 			// SimulatedLag
 			SimulationSettings simulatedLag = new SimulationSettings()
-					.setFPS(1.0 / 30)
+					.setFPS(3.0)
 					.setProcessName("SimulatedLag");
 
 			render.getDebugInfo().setPrimaryColor("red");

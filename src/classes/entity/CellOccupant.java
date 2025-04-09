@@ -17,11 +17,17 @@ import exceptions.NoCellFoundException;
 public class CellOccupant {
 
 	private boolean isEatable = false;
+
+	public Game game;
 	private Cell currentCell;
+	private Vector2 position;
+	private Vector2 targetPosition;
 
 	// Unused constructor for now
-	// public CellOccupant() {
-	// }
+	public CellOccupant(Game game) {
+		this.game = game;
+	}
+
 	public void setEatable(boolean eatable) {
 		this.isEatable = eatable;
 	}
@@ -42,21 +48,25 @@ public class CellOccupant {
 	 * before assigning the occupant to the new cell, if the new cell is not
 	 * already occupied.
 	 *
-	 * @param targetCell             the cell to assign the occupant
-	 * @param cellAggregatesOccupant whether the assigned cell aggregates the
-	 *                               occupant
+	 * @param targetCell      the cell to assign the occupant
+	 * @param withAggregation whether the assigned cell aggregates the
+	 *                        occupant
 	 *
 	 * @throws CellIsOccupiedException if the assigned cell already has an
 	 *                                 occupant
+	 * @throws NoCellFoundException    if the {@code targetCell} is null
 	 */
-	protected void assignCell(Cell targetCell, boolean cellAggregatesOccupant) {
+	protected void assignCell(Cell targetCell, boolean withAggregation) {
+		if (targetCell == null)
+			throw new NoCellFoundException();
+
 		if (targetCell.hasOccupant() && targetCell.getOccupant() != this)
 			throw new CellIsOccupiedException();
 
 		if (hasCell())
-			removeCell();
+			removeFromCell();
 
-		if (cellAggregatesOccupant)
+		if (withAggregation)
 			targetCell.setOccupant(this, false);
 
 		this.currentCell = targetCell;
@@ -65,7 +75,7 @@ public class CellOccupant {
 	/**
 	 * Overload: {@code assignCell}
 	 *
-	 * Calls the root method while passing {@code cellAggregatesOccupant = true}
+	 * Calls the root method while passing {@code withAggregation = true}
 	 * as default
 	 *
 	 * @param targetCell the cell to assign the occupant
@@ -82,6 +92,16 @@ public class CellOccupant {
 		return this.currentCell != null;
 	}
 
+	protected void removeFromCell(boolean withAggregation) {
+		if (!hasCell())
+			throw new NoCellFoundException();
+
+		if (withAggregation)
+			this.currentCell.removeOccupant(false);
+
+		this.currentCell = null;
+	}
+
 	/**
 	 * Removes the occupant's cell from the occupant, and removes the occupant
 	 * from the current cell. Does not check if a current cell already exists;
@@ -91,11 +111,23 @@ public class CellOccupant {
 	 * @throws NoCellFoundException if the calling this method when the occupant
 	 *                              has no cell
 	 */
-	public void removeCell() {
-		if (!hasCell())
-			throw new NoCellFoundException();
+	public void removeFromCell() {
+		removeFromCell(true);
+	}
 
-		this.currentCell.removeOccupant();
-		this.currentCell = null;
+	public void setPosition(Vector2 position) {
+		this.position = position;
+	}
+
+	public void setTargetPosition(Vector2 targetPosition) {
+		this.targetPosition = targetPosition;
+	}
+
+	public Vector2 getPosition() {
+		return this.position;
+	}
+
+	public Vector2 getTargetPosition() {
+		return this.targetPosition;
 	}
 }

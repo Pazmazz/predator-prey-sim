@@ -5,7 +5,9 @@ package classes.simulation;
 
 import classes.abstracts.FrameProcessor;
 import classes.entity.Game;
+import classes.entity.Unit2;
 import classes.settings.GameSettings.SimulationType;
+import classes.util.Console;
 
 /**
  * This implements the {@code step} method for FrameProcessor. All code that
@@ -21,6 +23,6 @@ public class SimulatedLagFrame extends FrameProcessor {
 	@Override
 	public void step(double deltaTimeSeconds) {
 		// wait(Math.random()*100);
-		game.getGameGrid().collectCells();
+		// game.getGameGrid().collectCells();
 	}
 }

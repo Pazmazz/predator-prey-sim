@@ -10,10 +10,10 @@ import classes.util.Console.DebugPriority;
 import exceptions.NoCellFoundException;
 import classes.util.Math2;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * The primary API for interacting with the virtual game grid. Implements a
@@ -23,7 +23,12 @@ import java.util.NoSuchElementException;
 public class CellGrid {
 
 	final private Unit2 size;
-	final private HashMap<String, Cell> virtualGrid = new HashMap<>();
+
+	/*
+	 * Thread-safe hashmap is required here, since multiple threads may access the
+	 * cell grid and/or make changes to it
+	 */
+	final private Map<String, Cell> virtualGrid = new ConcurrentHashMap<>();
 
 	public enum CellGridAxis {
 		X,
@@ -220,6 +225,7 @@ public class CellGrid {
 		if (outOfBounds(unit))
 			cell.setType(CellType.OUT_OF_BOUNDS);
 
+		Console.println("$text-yellow Added$text-reset  " + cell);
 		return cell;
 	}
 
@@ -405,9 +411,13 @@ public class CellGrid {
 
 		while (gridIterator.hasNext()) {
 			Map.Entry<String, Cell> cellEntry = gridIterator.next();
-			if (cellEntry.getValue().isCollectable()) {
-				gridIterator.remove();
+			Cell cell = cellEntry.getValue();
+
+			if (cell.isCollectable()) {
 				count++;
+				gridIterator.remove();
+				cell.setType(CellType.GARBAGE_COLLECTED);
+				Console.println("$text-cyan Collected:$text-reset  " + cell);
 			}
 		}
 
@@ -599,6 +609,14 @@ public class CellGrid {
 	 */
 	public Unit2 getSize() {
 		return size;
+	}
+
+	public int getCellCount() {
+		return virtualGrid.size();
+	}
+
+	public Map<String, Cell> getGrid() {
+		return this.virtualGrid;
 	}
 
 	/**
