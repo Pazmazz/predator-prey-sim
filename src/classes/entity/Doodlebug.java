@@ -20,6 +20,7 @@ public class Doodlebug extends Bug {
             if (currentCell.isOccupantEatable(currentCell)){
                 currentCell.removeOccupant();
                 currentCell.moveOccupantTo(adjCell);
+                turn.setKillCount();
                 
                 this.currentCell = adjCell;
                 starvationTracker = 0;
@@ -51,6 +52,7 @@ public class Doodlebug extends Bug {
             if (adjCell.isInBounds() && adjCell.isEmpty()) {
                 currentCell.setOccupant(new Doodlebug());
                 numOfDoodlebugBreeds++;
+                turn.setDoodlebugBreedCount();
                 break;
             }
         }

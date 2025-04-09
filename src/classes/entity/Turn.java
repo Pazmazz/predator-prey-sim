@@ -18,7 +18,7 @@ public class Turn {
     }
 
     //Setters and Getters
-    public void setTurnKillCount(){
+    public void setKillCount(){
         killCount++;
     }
     
@@ -68,5 +68,13 @@ public class Turn {
 
     public String getTurnKillCount(){
         return "Doodlebug killed " + killCount + " ants";
+    }
+
+    public int getAntBreedCount(){
+        return this.antBreedCount;
+    }
+
+    public int getDoodlebugBreedCount(){
+        return this.doodlebugBreedCount;
     }
 }

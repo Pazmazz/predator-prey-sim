@@ -1,7 +1,6 @@
 package classes.entity;
 
 import classes.abstracts.Bug;
-import classes.entity.Turn;
 
 public class Ant extends Bug {
     public static int antCount = 0;
@@ -42,6 +41,7 @@ public class Ant extends Bug {
             if (adjCell.isInBounds() && adjCell.isEmpty()) {
                 currentCell.setOccupant(new Ant());
                 numOfAntBreeds++;
+                turn.setAntBreedCount();
                 break;
             }
         }
