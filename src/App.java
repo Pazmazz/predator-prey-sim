@@ -16,8 +16,6 @@
 import classes.abstracts.Application;
 import classes.abstracts.Bug;
 import classes.abstracts.FrameProcessor;
-import classes.abstracts.FrameProcessor.Task;
-import classes.abstracts.FrameProcessor.TaskState;
 import classes.entity.Ant;
 import classes.entity.Cell;
 import classes.entity.CellGrid;
@@ -31,6 +29,7 @@ import classes.util.Console.DebugPriority;
 
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Properties;
 
 /**
  * The entry-point file for the application
@@ -39,7 +38,7 @@ public class App extends Application {
 
 	public static void main(String[] args) {
 		Console.setDebugModeEnabled(true);
-		Console.hideDebugPriority(DebugPriority.LOW);
+		// Console.hideDebugPriority(DebugPriority.LOW);
 		// Console.hideDebugPriority(DebugPriority.MEDIUM);
 		Console.setConsoleColorsEnabled(true);
 
@@ -51,12 +50,6 @@ public class App extends Application {
 		 * | TEST CODE: |
 		 * --------------
 		 */
-
-		CellGrid grid = game.getGameGrid();
-
-		for (int i = 1; i <= 9; i++) {
-			grid.getCell(new Unit2(i, i));
-		}
 
 	}
 }

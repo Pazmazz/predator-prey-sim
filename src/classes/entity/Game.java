@@ -5,7 +5,6 @@ package classes.entity;
 
 import classes.abstracts.Application;
 import classes.abstracts.FrameProcessor;
-import classes.abstracts.FrameProcessor.Task;
 import classes.settings.GameSettings;
 import classes.settings.GameSettings.SimulationType;
 import classes.simulation.MovementFrame;
@@ -111,11 +110,18 @@ public class Game extends Application implements Runnable {
 		while (isThreadRunning()) {
 			long simulationDelta = 0;
 
+			// simulationDelta += preSimulationHeartbeat()
+
 			for (FrameProcessor frame : this.frameProcesses) {
+				if (frame.isSuspended())
+					continue;
+
 				long frameDelta = frame.pulse();
 				if (frameDelta != -1)
 					simulationDelta += frameDelta;
 			}
+
+			// simulationDelta += postSimulationHeartbeat()
 
 			long threadYieldTime = this.simulationFPS - simulationDelta;
 			if (threadYieldTime > 0)

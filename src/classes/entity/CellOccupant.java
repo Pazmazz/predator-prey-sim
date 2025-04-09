@@ -3,6 +3,7 @@
  */
 package classes.entity;
 
+import classes.entity.Properties.Property;
 import exceptions.CellIsOccupiedException;
 import exceptions.NoCellFoundException;
 
@@ -18,14 +19,16 @@ public class CellOccupant {
 
 	private boolean isEatable = false;
 
+	private Properties properties = new Properties();
 	public Game game;
 	private Cell currentCell;
-	private Vector2 position;
-	private Vector2 targetPosition;
 
 	// Unused constructor for now
 	public CellOccupant(Game game) {
 		this.game = game;
+
+		// default properties
+		properties.set(Property.POSITION, new Vector2());
 	}
 
 	public void setEatable(boolean eatable) {
@@ -70,6 +73,7 @@ public class CellOccupant {
 			targetCell.setOccupant(this, false);
 
 		this.currentCell = targetCell;
+		this.properties.set(Property.POSITION, targetCell.getPosition());
 	}
 
 	/**
@@ -90,6 +94,10 @@ public class CellOccupant {
 
 	public boolean hasCell() {
 		return this.currentCell != null;
+	}
+
+	public Properties getProperties() {
+		return this.properties;
 	}
 
 	protected void removeFromCell(boolean withAggregation) {
@@ -113,21 +121,5 @@ public class CellOccupant {
 	 */
 	public void removeFromCell() {
 		removeFromCell(true);
-	}
-
-	public void setPosition(Vector2 position) {
-		this.position = position;
-	}
-
-	public void setTargetPosition(Vector2 targetPosition) {
-		this.targetPosition = targetPosition;
-	}
-
-	public Vector2 getPosition() {
-		return this.position;
-	}
-
-	public Vector2 getTargetPosition() {
-		return this.targetPosition;
 	}
 }

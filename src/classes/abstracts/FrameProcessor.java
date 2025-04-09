@@ -3,17 +3,11 @@
  */
 package classes.abstracts;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-
 import classes.entity.Game;
 import classes.settings.GameSettings.SimulationSettings;
 import classes.settings.GameSettings.SimulationType;
 import classes.util.Console;
 import classes.util.Time;
-import classes.util.Console.DebugPriority;
-import interfaces.TaskCallback;
 
 /**
  * An abstract class that provides a {@code pulse} method for updating frame
@@ -22,19 +16,19 @@ import interfaces.TaskCallback;
  */
 public abstract class FrameProcessor extends Application {
 
-	public Game game;
 	private long FPS;
 	private long lastPulseTick;
 	private long deltaTime = 0;
-	private long beforeStep;
-	private long afterStep;
-	private SimulationSettings settings;
-	private ArrayList<Task> tasks = new ArrayList<>();
+	private long timeBeforeStep;
+	private long timeAfterStep;
 
-	public enum TaskState {
-		END,
-		SUSPENDED,
+	public Game game;
+	private SimulationSettings settings;
+	private FrameState state = FrameState.RUNNING;
+
+	public enum FrameState {
 		RUNNING,
+		SUSPENDED,
 	}
 
 	protected FrameProcessor(Game game, SimulationType simulationType) {
@@ -80,19 +74,15 @@ public abstract class FrameProcessor extends Application {
 
 		this.lastPulseTick = preSimulationTime;
 		this.deltaTime = dt;
-		this.beforeStep = preSimulationTime;
+		this.timeBeforeStep = preSimulationTime;
 
 		// run the implemented step
+		// pre-simulation task binds go here (executePreSimulationTasks())
 		step(Time.nanoToSeconds(deltaTime));
+		// post-simulation task binds go here (executePostSimulationTasks())
 
-		/*
-		 * If we need more control over when to execute custom tasks, we can call this
-		 * method inside the `step` functions and remove it here
-		 */
-		executeTasks();
-
-		this.afterStep = tick();
-		long simulationTime = this.afterStep - preSimulationTime;
+		this.timeAfterStep = tick();
+		long simulationTime = this.timeAfterStep - preSimulationTime;
 
 		Console.debugPrint(String.format(
 				"completed in: $text-%s %s $text-reset seconds",
@@ -118,243 +108,28 @@ public abstract class FrameProcessor extends Application {
 		return Time.nanoToSeconds(this.deltaTime);
 	}
 
-	/**
-	 * Adds a task to the simulation frame's task scheduler
-	 * 
-	 * @param task the {@code Task} object to be added to the task scheduler
-	 * @see #addTask(Task)
-	 */
-	public void addTask(Task task) {
-		this.tasks.add(task);
+	public long timeBeforeStep() {
+		return this.timeBeforeStep;
 	}
 
-	/**
-	 * Executes all queued tasks in the simulation frame's task pipeline.
-	 * 
-	 * <p>
-	 * This method should ideally be called inside a simulation frame's {@code step}
-	 * method, but it may be used outside of this context as well.
-	 */
-	public void executeTasks() {
-		Iterator<Task> taskIterator = tasks.iterator();
-		long currentTime = tick();
-
-		while (taskIterator.hasNext()) {
-			Task task = taskIterator.next();
-
-			if (task.started() == null)
-				task.setStart(currentTime);
-
-			task.setElapsedLifetime(currentTime - task.started());
-			if (task.timeout() != -1 && task.elapsedLifetime() > task.timeout()) {
-				Console.debugPrint(
-						DebugPriority.HIGH,
-						String.format("%s timed out", task));
-
-				taskIterator.remove();
-			}
-
-			if (task.isSuspended()) {
-				if (task.suspendedUntil() == -1)
-					task.setSuspendedUntil(currentTime + task.suspended());
-				if (currentTime < task.suspendedUntil())
-					continue;
-				else
-					task.resume();
-			}
-
-			// task was killed
-			if (task.isDead()) {
-				Console.debugPrint(
-						DebugPriority.HIGH,
-						String.format("%s was manually terminated", task));
-
-				taskIterator.remove();
-				continue;
-			}
-
-			// task exceeded runtime duration
-			if (task.duration() != -1 && task.elapsedRuntime() > task.duration()) {
-				Console.debugPrint(
-						DebugPriority.HIGH,
-						String.format("%s fulfilled its runtime duration"));
-
-				task.setState(TaskState.END);
-				taskIterator.remove();
-				continue;
-			}
-
-			task.setDeltaTime(this.deltaTime);
-			task.execute();
-		}
+	public long timeAfterStep() {
+		return this.timeAfterStep;
 	}
 
-	/**
-	 * The Task class creates a new {@code Task} object which contains metadata
-	 * regarding the given task to give the scheduler. It also holds the callback
-	 * lambda function for the body of the task.
-	 */
-	public static class Task {
+	public void suspend() {
+		this.state = FrameState.SUSPENDED;
+	}
 
-		final private String name;
-		final private HashMap<String, Object> env = new HashMap<>();
-		private TaskCallback taskCaller;
-		private TaskState state;
-		private Long started;
+	public void resume() {
+		this.state = FrameState.RUNNING;
+	}
 
-		private long elapsedRuntime = 0;
-		private long elapsedLifetime = 0;
-		private long deltaTime = 0;
-		private long timeout = -1;
-		private long suspended = -1;
-		private long duration = -1;
-		private long suspendedUntil = -1;
+	public boolean isSuspended() {
+		return this.state == FrameState.SUSPENDED;
+	}
 
-		public Task(String name) {
-			this.state = TaskState.SUSPENDED;
-			this.name = name;
-		}
-
-		public Task() {
-			this("Anonymous Task");
-		}
-
-		public Task(String name, TaskCallback taskCaller) {
-			this(name);
-			setCallback(taskCaller);
-		}
-
-		public Task setCallback(TaskCallback taskCaller) {
-			this.taskCaller = taskCaller;
-			return this;
-		}
-
-		public void execute() {
-			this.taskCaller.call(this);
-		}
-
-		public Task set(String key, Object value) {
-			env.put(key, value);
-			return this;
-		}
-
-		public Object get(String key) {
-			return env.get(key);
-		}
-
-		protected Task setElapsedLifetime(long elapsed) {
-			this.elapsedLifetime = elapsed;
-			return this;
-		}
-
-		protected Task setDeltaTime(long lastDelta) {
-			this.deltaTime = lastDelta;
-			this.elapsedRuntime += lastDelta;
-			return this;
-		}
-
-		public Task setTimeout(double seconds) {
-			this.timeout = Time.secondsToNano(seconds);
-			return this;
-		}
-
-		public Task suspend(double seconds) {
-			if (seconds < 0)
-				throw new Error("Task suspension cannot be less than zero");
-
-			this.suspended = Time.secondsToNano(seconds);
-			this.state = TaskState.SUSPENDED;
-			return this;
-		}
-
-		public Task setDuration(double duration) {
-			if (duration < 0)
-				throw new Error("Task duration cannot be less than zero");
-
-			this.duration = Time.secondsToNano(duration);
-			return this;
-		}
-
-		protected Task setStart(Long started) {
-			this.started = started;
-			return this;
-		}
-
-		protected Task setSuspendedUntil(long suspendedUntil) {
-			this.suspendedUntil = suspendedUntil;
-			return this;
-		}
-
-		protected Task setState(TaskState state) {
-			this.state = state;
-			return this;
-		}
-
-		public void resume() {
-			this.state = TaskState.RUNNING;
-			this.suspended = -1;
-			this.suspendedUntil = -1;
-		}
-
-		public Long started() {
-			return this.started;
-		}
-
-		public long elapsedRuntime() {
-			return this.elapsedRuntime;
-		}
-
-		public long elapsedLifetime() {
-			return this.elapsedLifetime;
-		}
-
-		public long delta() {
-			return this.deltaTime;
-		}
-
-		public long duration() {
-			return this.duration;
-		}
-
-		public long suspended() {
-			return this.suspended;
-		}
-
-		public long suspendedUntil() {
-			return this.suspendedUntil;
-		}
-
-		public long timeout() {
-			return this.timeout;
-		}
-
-		public String name() {
-			return this.name;
-		}
-
-		public void kill() {
-			this.state = TaskState.END;
-		}
-
-		public boolean isRunning() {
-			return this.state == TaskState.RUNNING;
-		}
-
-		public boolean isSuspended() {
-			return this.state == TaskState.SUSPENDED
-					&& this.suspended != -1;
-		}
-
-		public boolean isDead() {
-			return this.state == TaskState.END;
-		}
-
-		@Override
-		public String toString() {
-			return String.format(
-					"$text-cyan Task$text-reset <$text-yellow %s$text-reset >",
-					this.name);
-		}
+	public boolean isRunning() {
+		return this.state == FrameState.RUNNING;
 	}
 
 	protected abstract void step(double deltaTimeSeconds);

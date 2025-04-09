@@ -4,6 +4,7 @@
 package classes.simulation;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -13,6 +14,7 @@ import classes.entity.Cell;
 import classes.entity.CellGrid;
 import classes.entity.CellOccupant;
 import classes.entity.Game;
+import classes.entity.Properties;
 import classes.entity.Unit2;
 import classes.settings.GameSettings.SimulationType;
 import classes.util.Console;
@@ -28,15 +30,19 @@ import classes.util.Console;
 public class MovementFrame extends FrameProcessor {
 
 	private CellGrid grid = game.getGameGrid();
-	private ArrayList<CellOccupant> processingQueue = new ArrayList<>();
+	private HashMap<CellOccupant, String> propertyBuffer = new HashMap<>();
 
 	public MovementFrame(Game game, SimulationType simulationFrame) {
 		super(game, simulationFrame);
 	}
 
+	public void send(Properties currentProperties, Properties newProperties) {
+
+	}
+
 	@Override
 	public void step(double deltaTimeSeconds) {
-		if (processingQueue.size() > 0)
+		if (propertyBuffer.size() > 0)
 			return;
 
 		Iterator<Map.Entry<String, Cell>> gridIterator = grid
@@ -52,11 +58,6 @@ public class MovementFrame extends FrameProcessor {
 				continue;
 
 			CellOccupant occupant = cell.getOccupant();
-
-			if (occupant instanceof Bug) {
-				Bug bug = (Bug) occupant;
-				bug.move();
-			}
 		}
 	}
 }

@@ -1,6 +1,7 @@
 package classes.entity;
 
 import classes.abstracts.Bug;
+import classes.entity.Properties.Property;
 
 public class Ant extends Bug {
 
@@ -28,6 +29,11 @@ public class Ant extends Bug {
 			movementCounter = 0;
 			this.breed();
 		}
+
+		game.movementFrame.send(
+				getProperties(),
+				new Properties()
+						.set(Property.POSITION, new Vector2(5, 5)));
 	}
 
 	@Override
