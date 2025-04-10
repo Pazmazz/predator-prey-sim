@@ -3,6 +3,7 @@
  */
 package classes.abstracts;
 
+import classes.util.Console;
 import classes.util.Formatter;
 import classes.util.Math2;
 import exceptions.VectorMismatchException;
@@ -268,8 +269,8 @@ public abstract class BaseVector<T extends BaseVector<T>> {
 
 	@Override
 	public String toString() {
-		return this.getClass()
+		return Console.withConsoleColors(this.getClass()
 				.getSimpleName()
-				+ "<" + Formatter.concatArray(componentsArray()) + ">";
+				+ "<" + Formatter.concatArray(componentsArray()) + ">");
 	}
 }

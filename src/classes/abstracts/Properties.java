@@ -13,12 +13,12 @@ public abstract class Properties {
 	public <T> T getProperty(Property property, Class<T> classType) {
 		Object result = properties.get(property);
 
-		if (classType.isInstance(result))
+		if (classType.isInstance(result) || result == null)
 			return (T) result;
 
 		throw new Error(String.format(
-				"Cannot cast %s to %s",
-				result.getClass(),
+				"Bad call to getProperty(): Cannot cast %s to %s",
+				result,
 				classType));
 	}
 

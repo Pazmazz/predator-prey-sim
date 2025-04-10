@@ -25,10 +25,13 @@ public class Formatter extends Application {
 		String out = "";
 
 		for (int index = 0; index < array.length; index++) {
-			out += array[index].toString();
-			if (index < array.length - 1) {
+			if (array[index] == null)
+				out += "null";
+			else
+				out += array[index].toString();
+
+			if (index < array.length - 1)
 				out += separator;
-			}
 		}
 
 		return out;

@@ -121,20 +121,25 @@ public class Cell {
 	 *                                  occupant
 	 * @throws OccupantHasCellException if the cellOccupant already belongs to
 	 *                                  another cell
+	 * @throws NoOccupantFoundException if {@code cellOccupant} is null
 	 */
 	public void setOccupant(Entity cellOccupant, boolean withAggregation) {
+		if (cellOccupant == null)
+			throw new NoOccupantFoundException();
+
 		if (hasOccupant() && this.cellOccupant != cellOccupant)
-			throw new CellIsOccupiedException();
+			throw new CellIsOccupiedException(this, cellOccupant);
 
 		Cell occupantCell = cellOccupant.getProperty(
 				Property.ASSIGNED_CELL,
 				Cell.class);
 
-		if (cellOccupant.hasCell() && occupantCell != this)
-			throw new OccupantHasCellException();
+		if (withAggregation) {
+			if (cellOccupant.hasCell() && occupantCell != this)
+				throw new OccupantHasCellException();
 
-		if (withAggregation)
 			cellOccupant.assignCell(this, false);
+		}
 
 		this.cellOccupant = cellOccupant;
 		setVacancy(CellVacancy.OCCUPIED);
@@ -418,6 +423,9 @@ public class Cell {
 
 	@Override
 	public String toString() {
-		return String.format("$text-green Cell$text-reset <%s, %s>", unit.getX(), unit.getY());
+		return String.format(
+				Console.withConsoleColors("$text-green Cell$text-reset <%s, %s>"),
+				unit.getX(),
+				unit.getY());
 	}
 }

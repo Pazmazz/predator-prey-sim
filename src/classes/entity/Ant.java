@@ -1,6 +1,7 @@
 package classes.entity;
 
 import classes.abstracts.Bug;
+import classes.util.Console;
 
 public class Ant extends Bug {
 
@@ -56,7 +57,8 @@ public class Ant extends Bug {
 
 	@Override
 	public String toString() {
-		return String.format(
-				"$text-green Ant$text-reset #%s", idNum);
+		return String.format(Console.withConsoleColors(
+				"$text-green Ant$text-reset #%s"),
+				idNum);
 	}
 }

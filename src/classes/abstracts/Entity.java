@@ -52,16 +52,13 @@ public abstract class Entity extends Properties {
 		if (targetCell == null)
 			throw new NoCellFoundException();
 
-		if (targetCell.hasOccupant() && targetCell.getOccupant() != this)
-			throw new CellIsOccupiedException();
+		if (withAggregation) {
+			if (hasCell())
+				removeFromCell();
 
-		if (hasCell())
-			removeFromCell();
-
-		if (withAggregation)
 			targetCell.setOccupant(this, false);
+		}
 
-		// this.currentCell = targetCell;
 		setProperty(Property.ASSIGNED_CELL, targetCell);
 	}
 

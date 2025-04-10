@@ -3,6 +3,8 @@
  */
 package classes.abstracts;
 
+import classes.util.Console;
+import classes.util.Formatter;
 import classes.util.Math2;
 
 /**

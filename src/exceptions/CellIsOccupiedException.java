@@ -1,8 +1,15 @@
 package exceptions;
 
+import classes.abstracts.Entity;
+import classes.entity.Cell;
+
 public class CellIsOccupiedException extends RuntimeException {
 
-	public CellIsOccupiedException() {
-		super("Cell is already occupied - cannot assign cell");
+	public CellIsOccupiedException(Cell thisCell, Entity targetOccupant) {
+		super(String.format(
+				"CELL %s ALREADY OCCUPIED - Cannot assign Entity \"%s\" to cell because \"%s\" is currently occupying it",
+				thisCell,
+				targetOccupant,
+				thisCell.getOccupant()));
 	}
 }

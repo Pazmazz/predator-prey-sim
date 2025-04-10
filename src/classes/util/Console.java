@@ -87,6 +87,13 @@ public class Console extends Application {
 			{ "bright_white", "\u001B[107m" }
 	};
 
+	public static String withConsoleColors(Object... contents) {
+		if (consoleColorsEnabled)
+			return substituteColors(Formatter.concatArray(contents));
+		else
+			return replaceColorTags(Formatter.concatArray(contents));
+	}
+
 	/**
 	 * Internally calls {@code System.out.println} but applies conditional
 	 * console colors.
@@ -94,11 +101,7 @@ public class Console extends Application {
 	 * @param contents the collection of objects to print
 	 */
 	public static void println(Object... contents) {
-		if (consoleColorsEnabled) {
-			System.out.println(substituteColors(Formatter.concatArray(contents)));
-		} else {
-			System.out.println(replaceColorTags(Formatter.concatArray(contents)));
-		}
+		System.out.println(withConsoleColors(contents));
 	}
 
 	/**
@@ -108,11 +111,7 @@ public class Console extends Application {
 	 * @param message the message to inline print
 	 */
 	public static void print(String message) {
-		if (consoleColorsEnabled) {
-			System.out.print(substituteColors(message));
-		} else {
-			System.out.print(replaceColorTags(message));
-		}
+		System.out.print(withConsoleColors(message));
 	}
 
 	/**
@@ -252,6 +251,10 @@ public class Console extends Application {
 		consoleColorsEnabled = enabled;
 	}
 
+	public static boolean isConsoleColorsEnabled() {
+		return consoleColorsEnabled;
+	}
+
 	//
 	// Console colors parsing
 	//
@@ -337,7 +340,7 @@ public class Console extends Application {
 		return str.replaceAll("\0esc", "\\$");
 	}
 
-	private static String replaceColorTags(Object message) {
+	public static String replaceColorTags(Object message) {
 		String text = "" + message;
 		return text.replaceAll(COLOR_TAG_PATTERN + " ", "");
 	}
