@@ -16,6 +16,7 @@
 import java.util.HashMap;
 
 import classes.abstracts.Application;
+import classes.abstracts.Entity;
 import classes.abstracts.Properties.Property;
 import classes.entity.Ant;
 import classes.entity.Cell;
@@ -58,10 +59,7 @@ public class App extends Application {
 		Ant ant1 = new Ant(game);
 		ant1.assignCell(cell1);
 
-		Ant ant3 = ant1.clone();
-
-		Console.println(ant3, ant1);
-		Console.println(ant3.getProperties() == ant1.getProperties());
+		Entity<Ant> ant2 = new Ant(game);
 
 		// Thread thread0 = new Thread(() -> {
 		// Console.println("Test thread");

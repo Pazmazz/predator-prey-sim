@@ -12,6 +12,8 @@ import classes.simulation.RenderFrame;
 import classes.simulation.SimulatedLagFrame;
 import classes.util.Console;
 import classes.util.Time;
+
+import java.util.ArrayList;
 import java.util.UUID;
 
 /**
@@ -26,6 +28,7 @@ public class Game extends Application implements Runnable {
 	final private String sessionId;
 	final private GameSettings settings;
 	final private CellGrid gameGrid;
+	final private ArrayList<Snapshot> snapshots = new ArrayList<>();
 
 	private GameState state = GameState.INITIAL;
 
@@ -75,6 +78,12 @@ public class Game extends Application implements Runnable {
 
 	// void saveSnapshot();
 	// void loadSnapshot();
+
+	public void saveSnapshot() {
+		Snapshot snapshot = new Snapshot();
+
+		this.snapshots.add(snapshot);
+	}
 
 	/**
 	 * Begins running the game loop and sets the game state from {@code LOADED}

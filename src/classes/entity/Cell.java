@@ -26,7 +26,7 @@ public class Cell {
 	final private Vector2 position;
 	private CellType cellType;
 	private CellVacancy cellVacancy;
-	private Entity cellOccupant;
+	private Entity<?> cellOccupant;
 
 	public enum CellType {
 		OUT_OF_BOUNDS,
@@ -123,7 +123,7 @@ public class Cell {
 	 *                                  another cell
 	 * @throws NoOccupantFoundException if {@code cellOccupant} is null
 	 */
-	public void setOccupant(Entity cellOccupant, boolean withAggregation) {
+	public void setOccupant(Entity<?> cellOccupant, boolean withAggregation) {
 		if (cellOccupant == null)
 			throw new NoOccupantFoundException();
 
@@ -153,7 +153,7 @@ public class Cell {
 	 * @param cellOccupant the occupant to assign to the cell
 	 * @see #setOccupant(Entity, boolean)
 	 */
-	public void setOccupant(Entity cellOccupant) {
+	public void setOccupant(Entity<?> cellOccupant) {
 		setOccupant(cellOccupant, true);
 	}
 
@@ -166,7 +166,7 @@ public class Cell {
 	 * @return true if the occupant is eatable
 	 */
 	public boolean isOccupantEatable(Cell cell) {
-		Entity _cellOccupant = cell.getOccupant();
+		Entity<?> _cellOccupant = cell.getOccupant();
 		return _cellOccupant.getProperty(Property.IS_EATABLE, Boolean.class);
 	}
 
@@ -203,7 +203,7 @@ public class Cell {
 	 *
 	 * @return the current cell's occupant
 	 */
-	public Entity getOccupant() {
+	public Entity<?> getOccupant() {
 		return this.cellOccupant;
 	}
 
@@ -216,11 +216,11 @@ public class Cell {
 	 * @throws NoOccupantFoundException if calling this method when the cell has
 	 *                                  no occupant
 	 */
-	public Entity removeOccupant(boolean withAggregation) {
+	public Entity<?> removeOccupant(boolean withAggregation) {
 		if (!hasOccupant())
 			throw new NoOccupantFoundException();
 
-		Entity occupant = this.cellOccupant;
+		Entity<?> occupant = this.cellOccupant;
 		this.cellOccupant = null;
 		setVacancy(CellVacancy.EMPTY);
 
@@ -230,7 +230,7 @@ public class Cell {
 		return occupant;
 	}
 
-	public Entity removeOccupant() {
+	public Entity<?> removeOccupant() {
 		return removeOccupant(true);
 	}
 

@@ -20,7 +20,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * HashMap for mapping all cell coordinates to their corresponding cell objects
  * instead of using a 2D array for scalability and ease-of-access.
  */
-public class CellGrid implements Cloneable {
+public class CellGrid {
 
 	final private Unit2 size;
 
@@ -613,15 +613,6 @@ public class CellGrid implements Cloneable {
 
 	public Map<String, Cell> getGrid() {
 		return this.virtualGrid;
-	}
-
-	@Override
-	public CellGrid clone() {
-		try {
-			return (CellGrid) super.clone();
-		} catch (CloneNotSupportedException e) {
-			throw new Error("Could not clone object: " + e);
-		}
 	}
 
 	/**

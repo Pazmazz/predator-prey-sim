@@ -17,7 +17,7 @@ import exceptions.NoCellFoundException;
  * Any subclass that extends {@code Entity} is eligible to be set as an
  * occupant in a cell using {@code cell.setOccupant}.
  */
-public abstract class Entity<T> extends Properties implements Cloneable {
+public abstract class Entity<T> extends Properties {
 
 	public Game game;
 
@@ -104,17 +104,5 @@ public abstract class Entity<T> extends Properties implements Cloneable {
 	 */
 	public void removeFromCell() {
 		removeFromCell(true);
-	}
-
-	@Override
-	@SuppressWarnings("unchecked")
-	public T clone() {
-		try {
-			T cloned = (T) super.clone();
-
-			return cloned;
-		} catch (CloneNotSupportedException e) {
-			throw new Error(e);
-		}
 	}
 }
