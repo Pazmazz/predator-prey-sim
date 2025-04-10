@@ -6,7 +6,7 @@ import classes.entity.Null;
 import classes.entity.Vector2;
 import classes.util.Console;
 
-public abstract class Bug extends Entity {
+public abstract class Bug<T> extends Entity<T> {
 	public int idNum;
 	Cell cell;
 

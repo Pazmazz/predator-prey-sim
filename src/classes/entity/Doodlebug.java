@@ -3,7 +3,7 @@ package classes.entity;
 import classes.abstracts.Bug;
 import classes.util.Console;
 
-public class Doodlebug extends Bug {
+public class Doodlebug extends Bug<Doodlebug> {
 
 	int starvationTracker = 0;
 

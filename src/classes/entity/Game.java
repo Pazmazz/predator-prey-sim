@@ -73,6 +73,9 @@ public class Game extends Application implements Runnable {
 		this.state = GameState.LOADED;
 	}
 
+	// void saveSnapshot();
+	// void loadSnapshot();
+
 	/**
 	 * Begins running the game loop and sets the game state from {@code LOADED}
 	 * to {@code RUNNING}

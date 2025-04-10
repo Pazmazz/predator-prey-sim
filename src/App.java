@@ -13,6 +13,8 @@
  * - Make a custom event signal class
  */
 
+import java.util.HashMap;
+
 import classes.abstracts.Application;
 import classes.abstracts.Properties.Property;
 import classes.entity.Ant;
@@ -23,6 +25,7 @@ import classes.entity.Unit2;
 import classes.util.Console;
 import classes.util.Console.DebugPriority;
 import interfaces.Callback;
+import classes.entity.Doodlebug;
 
 /**
  * The entry-point file for the application
@@ -31,7 +34,7 @@ public class App extends Application {
 
 	public static void main(String[] args) {
 		Console.setDebugModeEnabled(true);
-		// Console.hideDebugPriority(DebugPriority.LOW);
+		Console.hideDebugPriority(DebugPriority.LOW);
 		// Console.hideDebugPriority(DebugPriority.MEDIUM);
 		Console.setConsoleColorsEnabled(false);
 
@@ -45,6 +48,26 @@ public class App extends Application {
 		 */
 
 		CellGrid grid = game.getGameGrid();
+
+		Cell cell0 = grid.getCell(new Unit2(1, 1));
+		Cell cell1 = grid.getCell(new Unit2(2, 2));
+
+		Ant ant0 = new Ant(game);
+		ant0.assignCell(cell0);
+
+		Ant ant1 = new Ant(game);
+		ant1.assignCell(cell1);
+
+		Ant ant3 = ant1.clone();
+
+		Console.println(ant3, ant1);
+		Console.println(ant3.getProperties() == ant1.getProperties());
+
+		// Thread thread0 = new Thread(() -> {
+		// Console.println("Test thread");
+		// });
+
+		// thread0.start();
 
 	}
 }

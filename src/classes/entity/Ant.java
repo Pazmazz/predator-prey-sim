@@ -3,7 +3,7 @@ package classes.entity;
 import classes.abstracts.Bug;
 import classes.util.Console;
 
-public class Ant extends Bug {
+public class Ant extends Bug<Ant> {
 
 	public Ant(Game game) {
 		super(game);

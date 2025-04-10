@@ -20,7 +20,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * HashMap for mapping all cell coordinates to their corresponding cell objects
  * instead of using a 2D array for scalability and ease-of-access.
  */
-public class CellGrid {
+public class CellGrid implements Cloneable {
 
 	final private Unit2 size;
 
@@ -28,8 +28,7 @@ public class CellGrid {
 	 * Thread-safe hashmap is required here, since multiple threads may access the
 	 * cell grid and/or make changes to it
 	 */
-	final private Map<Unit2, Cell> virtualGrid = new ConcurrentHashMap<>();
-	final private ArrayList<Map<Unit2, Cell>> virtualGridSnapshots = new ArrayList<>();
+	final private Map<String, Cell> virtualGrid = new ConcurrentHashMap<>();
 
 	public enum CellGridAxis {
 		X,
@@ -213,7 +212,7 @@ public class CellGrid {
 	 * @see #getCell(Vector2, Vector2)
 	 */
 	public Cell getCell(Unit2 unit) {
-		Cell cell = this.virtualGrid.get(unit);
+		Cell cell = this.virtualGrid.get(unit.toString());
 		if (cell != null)
 			return cell;
 
@@ -221,7 +220,7 @@ public class CellGrid {
 			throw new NoCellFoundException();
 
 		cell = new Cell(unit);
-		this.virtualGrid.put(unit, cell);
+		this.virtualGrid.put(unit.toString(), cell);
 
 		if (outOfBounds(unit))
 			cell.setType(CellType.OUT_OF_BOUNDS);
@@ -369,13 +368,13 @@ public class CellGrid {
 	 * @see #collectCell(Unit2)
 	 */
 	public Cell collectCell(Unit2 unit) {
-		Cell cell = this.virtualGrid.get(unit);
+		Cell cell = this.virtualGrid.get(unit.toString());
 
 		if (cell == null)
 			throw new NoCellFoundException();
 
 		if (cell.isCollectable()) {
-			this.virtualGrid.remove(unit);
+			this.virtualGrid.remove(unit.toString());
 			cell.setType(CellType.GARBAGE_COLLECTED);
 		}
 
@@ -407,11 +406,11 @@ public class CellGrid {
 	 * @see #collectCells()
 	 */
 	public void collectCells() {
-		Iterator<Map.Entry<Unit2, Cell>> gridIterator = this.virtualGrid.entrySet().iterator();
+		Iterator<Map.Entry<String, Cell>> gridIterator = this.virtualGrid.entrySet().iterator();
 		int count = 0;
 
 		while (gridIterator.hasNext()) {
-			Map.Entry<Unit2, Cell> cellEntry = gridIterator.next();
+			Map.Entry<String, Cell> cellEntry = gridIterator.next();
 			Cell cell = cellEntry.getValue();
 
 			if (cell.isCollectable()) {
@@ -612,12 +611,17 @@ public class CellGrid {
 		return virtualGrid.size();
 	}
 
-	public Map<Unit2, Cell> getGrid() {
+	public Map<String, Cell> getGrid() {
 		return this.virtualGrid;
 	}
 
-	public void snapshot() {
-
+	@Override
+	public CellGrid clone() {
+		try {
+			return (CellGrid) super.clone();
+		} catch (CloneNotSupportedException e) {
+			throw new Error("Could not clone object: " + e);
+		}
 	}
 
 	/**
