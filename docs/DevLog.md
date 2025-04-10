@@ -42,3 +42,20 @@ Major changes.
 * **Removed** `TaskScheduler` class until it is needed.
 
 	* **Reason:** It just resulted in more bloated code, and it is a feature we don't need right now.
+
+* **Changed** children of [`Bug`](../src/classes/abstracts/Bug.java) class to now require a `game` parameter to be passed to the constructor. This means stuff like this is no longer valid:
+
+	```java 
+	Ant ant0 = new Ant();
+	```
+
+	Instead, the `game` object *must* be passed as the first parameter, like this:
+
+	```java
+	Ant ant0 = new Ant(game);
+	```
+
+	This is because these classes need to reference the game's cell grid, and they can't do so without access to the `game` object. This also gives them the freedom of interacting with the rest of the game state if they need to.
+
+
+	
