@@ -13,12 +13,16 @@ public class Doodlebug extends Bug {
 
 	@Override
 	public void move() {
+		Cell currentCell = getProperty(
+				Property.ASSIGNED_CELL,
+				Cell.class);
+
 		Cell[] adjCells = game
 				.getGameGrid()
-				.getCellsAdjacentTo(getCell());
+				.getCellsAdjacentTo(currentCell);
 
 		for (Cell adjCell : adjCells) {
-			if (adjCell.isOccupantEatable(getCell())) {
+			if (adjCell.isOccupantEatable(currentCell)) {
 				adjCell.removeOccupant();
 				assignCell(adjCell);
 				starvationTracker = 0;
@@ -32,7 +36,6 @@ public class Doodlebug extends Bug {
 		movementCounter++;
 
 		if (starvationTracker == 3) {
-			// getCell().removeOccupant();
 			removeFromCell();
 		}
 
@@ -44,9 +47,13 @@ public class Doodlebug extends Bug {
 
 	@Override
 	public void breed() {
+		Cell currentCell = getProperty(
+				Property.ASSIGNED_CELL,
+				Cell.class);
+
 		Cell[] adjCells = game
 				.getGameGrid()
-				.getCellsAdjacentTo(getCell());
+				.getCellsAdjacentTo(currentCell);
 
 		for (Cell adjCell : adjCells) {
 			if (adjCell.isInBounds() && adjCell.isEmpty()) {

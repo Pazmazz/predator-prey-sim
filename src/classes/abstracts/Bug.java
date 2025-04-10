@@ -1,11 +1,10 @@
 package classes.abstracts;
 
 import classes.entity.Cell;
-import classes.entity.CellOccupant;
 import classes.entity.Game;
-import classes.entity.Properties.Property;
+import classes.entity.Vector2;
 
-public abstract class Bug extends CellOccupant {
+public abstract class Bug extends Entity {
 	public int idNum;
 	Cell cell;
 
@@ -13,6 +12,17 @@ public abstract class Bug extends CellOccupant {
 
 	protected Bug(Game game) {
 		super(game);
+
+		// properties
+		setProperty(Property.POSITION, new Vector2());
+		setProperty(Property.ROTATION, 0);
+		setProperty(Property.MOVEMENT_SPEED, 5);
+		setProperty(Property.IS_EATABLE, false);
+		setProperty(Property.ASSIGNED_CELL, null);
+	}
+
+	public boolean isEatable() {
+		return getProperty(Property.IS_EATABLE, Boolean.class);
 	}
 
 	public abstract void move();

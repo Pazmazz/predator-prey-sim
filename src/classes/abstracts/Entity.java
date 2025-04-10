@@ -1,9 +1,10 @@
 /*
  * @written 4/2/2025
  */
-package classes.entity;
+package classes.abstracts;
 
-import classes.entity.Properties.Property;
+import classes.entity.Cell;
+import classes.entity.Game;
 import exceptions.CellIsOccupiedException;
 import exceptions.NoCellFoundException;
 
@@ -12,33 +13,19 @@ import exceptions.NoCellFoundException;
  * considered an occupant in a {@code Cell} object.
  *
  * <p>
- * Any subclass that extends {@code CellOccupant} is elligable to be set as an
+ * Any subclass that extends {@code Entity} is elligable to be set as an
  * occupant in a cell using {@code cell.setOccupant}.
  */
-public class CellOccupant {
+public abstract class Entity extends Properties {
 
-	private boolean isEatable = false;
-
-	private Properties properties = new Properties();
 	public Game game;
-	private Cell currentCell;
 
 	// Unused constructor for now
-	public CellOccupant(Game game) {
+	public Entity(Game game) {
 		this.game = game;
 
 		// default properties
-		properties.set(Property.POSITION, new Vector2());
-		properties.set(Property.ROTATION, 0);
-		properties.set(Property.MOVEMENT_SPEED, 5);
-	}
-
-	public void setEatable(boolean eatable) {
-		this.isEatable = eatable;
-	}
-
-	public boolean isEatable() {
-		return this.isEatable;
+		// ...
 	}
 
 	/**
@@ -61,7 +48,7 @@ public class CellOccupant {
 	 *                                 occupant
 	 * @throws NoCellFoundException    if the {@code targetCell} is null
 	 */
-	protected void assignCell(Cell targetCell, boolean withAggregation) {
+	public void assignCell(Cell targetCell, boolean withAggregation) {
 		if (targetCell == null)
 			throw new NoCellFoundException();
 
@@ -74,7 +61,8 @@ public class CellOccupant {
 		if (withAggregation)
 			targetCell.setOccupant(this, false);
 
-		this.currentCell = targetCell;
+		// this.currentCell = targetCell;
+		setProperty(Property.ASSIGNED_CELL, targetCell);
 	}
 
 	/**
@@ -89,26 +77,19 @@ public class CellOccupant {
 		assignCell(targetCell, true);
 	}
 
-	public Cell getCell() {
-		return this.currentCell;
-	}
-
 	public boolean hasCell() {
-		return this.currentCell != null;
+		return getProperty(Property.ASSIGNED_CELL, Cell.class) != null;
 	}
 
-	public Properties getProperties() {
-		return this.properties;
-	}
-
-	protected void removeFromCell(boolean withAggregation) {
+	public void removeFromCell(boolean withAggregation) {
 		if (!hasCell())
 			throw new NoCellFoundException();
 
 		if (withAggregation)
-			this.currentCell.removeOccupant(false);
+			getProperty(Property.ASSIGNED_CELL, Cell.class)
+					.removeOccupant(false);
 
-		this.currentCell = null;
+		setProperty(Property.ASSIGNED_CELL, null);
 	}
 
 	/**

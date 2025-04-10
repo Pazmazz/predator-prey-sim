@@ -3,6 +3,8 @@
  */
 package classes.entity;
 
+import classes.abstracts.Entity;
+import classes.abstracts.Properties.Property;
 import classes.util.Console;
 import exceptions.CellIsOccupiedException;
 import exceptions.NoOccupantFoundException;
@@ -24,7 +26,7 @@ public class Cell {
 	final private Vector2 position;
 	private CellType cellType;
 	private CellVacancy cellVacancy;
-	private CellOccupant cellOccupant;
+	private Entity cellOccupant;
 
 	public enum CellType {
 		OUT_OF_BOUNDS,
@@ -94,9 +96,9 @@ public class Cell {
 	}
 
 	/**
-	 * <h4>This method should not be used outside of the {@code CellOccupant}
+	 * <h4>This method should not be used outside of the {@code Entity}
 	 * class.</h4>
-	 * Use {@link #setOccupant(CellOccupant)} instead.
+	 * Use {@link #setOccupant(Entity)} instead.
 	 * <p>
 	 * 
 	 * Aggregates {@code cellOccupant} to this cell as long as the current
@@ -120,11 +122,15 @@ public class Cell {
 	 * @throws OccupantHasCellException if the cellOccupant already belongs to
 	 *                                  another cell
 	 */
-	protected void setOccupant(CellOccupant cellOccupant, boolean withAggregation) {
+	public void setOccupant(Entity cellOccupant, boolean withAggregation) {
 		if (hasOccupant() && this.cellOccupant != cellOccupant)
 			throw new CellIsOccupiedException();
 
-		if (cellOccupant.hasCell() && cellOccupant.getCell() != this)
+		Cell occupantCell = cellOccupant.getProperty(
+				Property.ASSIGNED_CELL,
+				Cell.class);
+
+		if (cellOccupant.hasCell() && occupantCell != this)
 			throw new OccupantHasCellException();
 
 		if (withAggregation)
@@ -135,14 +141,14 @@ public class Cell {
 	}
 
 	/**
-	 * Sets a {@code CellOccupant} to this cell, and the {@code CellOccupant}
+	 * Sets a {@code Entity} to this cell, and the {@code Entity}
 	 * aggregates this cell into itself so they are both mutually connected to each
 	 * other.
 	 * 
 	 * @param cellOccupant the occupant to assign to the cell
-	 * @see #setOccupant(CellOccupant, boolean)
+	 * @see #setOccupant(Entity, boolean)
 	 */
-	public void setOccupant(CellOccupant cellOccupant) {
+	public void setOccupant(Entity cellOccupant) {
 		setOccupant(cellOccupant, true);
 	}
 
@@ -155,8 +161,8 @@ public class Cell {
 	 * @return true if the occupant is eatable
 	 */
 	public boolean isOccupantEatable(Cell cell) {
-		CellOccupant _cellOccupant = cell.getOccupant();
-		return _cellOccupant.isEatable();
+		Entity _cellOccupant = cell.getOccupant();
+		return _cellOccupant.getProperty(Property.IS_EATABLE, Boolean.class);
 	}
 
 	/**
@@ -179,7 +185,7 @@ public class Cell {
 	 * 
 	 * @param the target {@code Cell} object to move this cell's occupant to
 	 *
-	 * @deprecated use {@link classes.entity.CellOccupant#assignCell(Cell)} now
+	 * @deprecated use {@link classes.abstracts.Entity#assignCell(Cell)} now
 	 *             instead.
 	 */
 	@Deprecated
@@ -192,7 +198,7 @@ public class Cell {
 	 *
 	 * @return the current cell's occupant
 	 */
-	public CellOccupant getOccupant() {
+	public Entity getOccupant() {
 		return this.cellOccupant;
 	}
 
@@ -205,11 +211,11 @@ public class Cell {
 	 * @throws NoOccupantFoundException if calling this method when the cell has
 	 *                                  no occupant
 	 */
-	protected CellOccupant removeOccupant(boolean withAggregation) {
+	public Entity removeOccupant(boolean withAggregation) {
 		if (!hasOccupant())
 			throw new NoOccupantFoundException();
 
-		CellOccupant occupant = this.cellOccupant;
+		Entity occupant = this.cellOccupant;
 		this.cellOccupant = null;
 		setVacancy(CellVacancy.EMPTY);
 
@@ -219,7 +225,7 @@ public class Cell {
 		return occupant;
 	}
 
-	public CellOccupant removeOccupant() {
+	public Entity removeOccupant() {
 		return removeOccupant(true);
 	}
 

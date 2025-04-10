@@ -14,22 +14,8 @@
  */
 
 import classes.abstracts.Application;
-import classes.abstracts.Bug;
-import classes.abstracts.FrameProcessor;
-import classes.entity.Ant;
-import classes.entity.Cell;
-import classes.entity.CellGrid;
 import classes.entity.Game;
-import classes.entity.Unit2;
-import classes.entity.Vector2;
 import classes.util.Console;
-import classes.util.Formatter;
-import classes.util.Time;
-import classes.util.Console.DebugPriority;
-
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Properties;
 
 /**
  * The entry-point file for the application
