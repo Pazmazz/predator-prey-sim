@@ -29,6 +29,7 @@ public class CellGrid {
 	 * cell grid and/or make changes to it
 	 */
 	final private Map<Unit2, Cell> virtualGrid = new ConcurrentHashMap<>();
+	final private ArrayList<Map<Unit2, Cell>> virtualGridSnapshots = new ArrayList<>();
 
 	public enum CellGridAxis {
 		X,
@@ -613,6 +614,10 @@ public class CellGrid {
 
 	public Map<Unit2, Cell> getGrid() {
 		return this.virtualGrid;
+	}
+
+	public void snapshot() {
+
 	}
 
 	/**

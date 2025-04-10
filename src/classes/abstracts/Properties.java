@@ -1,9 +1,12 @@
 package classes.abstracts;
 
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import classes.entity.Null;
+
 public abstract class Properties {
-	private ConcurrentHashMap<Property, Object> properties = new ConcurrentHashMap<>();
+	private Map<Property, Object> properties = new ConcurrentHashMap<>();
 
 	public Object getProperty(Property property) {
 		return properties.get(property);
@@ -13,7 +16,10 @@ public abstract class Properties {
 	public <T> T getProperty(Property property, Class<T> classType) {
 		Object result = properties.get(property);
 
-		if (classType.isInstance(result) || result == null)
+		if (result instanceof Null)
+			return null;
+
+		if (classType.isInstance(result))
 			return (T) result;
 
 		throw new Error(String.format(
@@ -27,7 +33,7 @@ public abstract class Properties {
 		return this;
 	}
 
-	public ConcurrentHashMap<Property, Object> getProperties() {
+	public Map<Property, Object> getProperties() {
 		return this.properties;
 	}
 

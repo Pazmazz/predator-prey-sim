@@ -2,6 +2,31 @@
 
 Updates shared between developers of this project
 
+## Version 0.3.3
+##### [William J. Horn](https://github.com/william-horn) - *4/10/2025*
+
+Minor changes.
+
+* **Added** snapshot feature to the `CellGrid` class.
+
+	* Allows us to go back in time during the simulation to earlier game phases. After each game movement, a "snapshot" of the game grid is taken, saving it in history up until a certain threshold.
+
+* **Added** [`Null`](../src/classes/entity/Null.java) class.
+
+	* Used as a `null` property value, since `ConcurrentHashMap` can not store `null` keys or values.
+
+		Ex, we can't do this:
+
+		```java
+		setProperty(Property.POSITION, null); // -> throws an error
+		```
+
+		But we can now do this:
+
+		```java
+		setProperty(Property.POSITION, new Null()); // -> returns null
+		```
+
 ## Version 0.3.2
 ##### [William J. Horn](https://github.com/william-horn) - *4/10/2025*
 

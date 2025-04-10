@@ -68,7 +68,7 @@ public abstract class FrameProcessor extends Application {
 			dt = 0;
 
 		Console.debugPrint(String.format(
-				"$text-%s [%s FRAME] $text-reset",
+				"$text-%s [%s FRAME] $text-reset ",
 				settings.getDebugInfo().getPrimaryColor(),
 				settings.getProcessName().toUpperCase()));
 

@@ -5,6 +5,7 @@ package classes.abstracts;
 
 import classes.entity.Cell;
 import classes.entity.Game;
+import classes.entity.Null;
 import exceptions.CellIsOccupiedException;
 import exceptions.NoCellFoundException;
 
@@ -13,7 +14,7 @@ import exceptions.NoCellFoundException;
  * considered an occupant in a {@code Cell} object.
  *
  * <p>
- * Any subclass that extends {@code Entity} is elligable to be set as an
+ * Any subclass that extends {@code Entity} is eligible to be set as an
  * occupant in a cell using {@code cell.setOccupant}.
  */
 public abstract class Entity extends Properties {
@@ -89,7 +90,7 @@ public abstract class Entity extends Properties {
 		if (withAggregation)
 			getCell().removeOccupant(false);
 
-		setProperty(Property.ASSIGNED_CELL, null);
+		setProperty(Property.ASSIGNED_CELL, new Null());
 	}
 
 	/**
