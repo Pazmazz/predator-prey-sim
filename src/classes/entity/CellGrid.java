@@ -28,7 +28,7 @@ public class CellGrid {
 	 * Thread-safe hashmap is required here, since multiple threads may access the
 	 * cell grid and/or make changes to it
 	 */
-	final private Map<String, Cell> virtualGrid = new ConcurrentHashMap<>();
+	final private Map<Unit2, Cell> virtualGrid = new ConcurrentHashMap<>();
 
 	public enum CellGridAxis {
 		X,
@@ -212,7 +212,7 @@ public class CellGrid {
 	 * @see #getCell(Vector2, Vector2)
 	 */
 	public Cell getCell(Unit2 unit) {
-		Cell cell = this.virtualGrid.get(unit.toString());
+		Cell cell = this.virtualGrid.get(unit);
 		if (cell != null)
 			return cell;
 
@@ -220,7 +220,7 @@ public class CellGrid {
 			throw new NoCellFoundException();
 
 		cell = new Cell(unit);
-		this.virtualGrid.put(unit.toString(), cell);
+		this.virtualGrid.put(unit, cell);
 
 		if (outOfBounds(unit))
 			cell.setType(CellType.OUT_OF_BOUNDS);
@@ -323,7 +323,7 @@ public class CellGrid {
 
 	/**
 	 * Checks if the given {@code Vector2} <i>coordinate point</i> is out of the
-	 * grid bounrary.
+	 * grid boundary.
 	 *
 	 * @param position position vector to check for being out out of bounds
 	 * @return true if the {@code position} is out of bounds
@@ -360,7 +360,7 @@ public class CellGrid {
 	 * cell will be eligible for GC.
 	 *
 	 * @param unit the cell at the specified {@code unit} to collect
-	 * @return the collected {@code Cell} object if one prevously existed
+	 * @return the collected {@code Cell} object if one previously existed
 	 * @throws NoCellFoundException if no cell was found at the given unit
 	 * 
 	 * @see classes.entity.Cell#isCollectable
@@ -368,13 +368,13 @@ public class CellGrid {
 	 * @see #collectCell(Unit2)
 	 */
 	public Cell collectCell(Unit2 unit) {
-		Cell cell = this.virtualGrid.get(unit.toString());
+		Cell cell = this.virtualGrid.get(unit);
 
 		if (cell == null)
 			throw new NoCellFoundException();
 
 		if (cell.isCollectable()) {
-			this.virtualGrid.remove(unit.toString());
+			this.virtualGrid.remove(unit);
 			cell.setType(CellType.GARBAGE_COLLECTED);
 		}
 
@@ -406,11 +406,11 @@ public class CellGrid {
 	 * @see #collectCells()
 	 */
 	public void collectCells() {
-		Iterator<Map.Entry<String, Cell>> gridIterator = this.virtualGrid.entrySet().iterator();
+		Iterator<Map.Entry<Unit2, Cell>> gridIterator = this.virtualGrid.entrySet().iterator();
 		int count = 0;
 
 		while (gridIterator.hasNext()) {
-			Map.Entry<String, Cell> cellEntry = gridIterator.next();
+			Map.Entry<Unit2, Cell> cellEntry = gridIterator.next();
 			Cell cell = cellEntry.getValue();
 
 			if (cell.isCollectable()) {
@@ -435,8 +435,7 @@ public class CellGrid {
 	 * @see #getCellTopOf(Unit2)
 	 */
 	public Cell getCellTopOf(Unit2 unit) {
-		int y = unit.getY() == -1 ? 2 : 1;
-		return getCell(unit.add(new Unit2(0, y)));
+		return getCell(unit.add(new Unit2(0, unit.getY() == -1 ? 2 : 1)));
 	}
 
 	/**
@@ -448,8 +447,7 @@ public class CellGrid {
 	 * @see #getCellBottomOf(Unit2)
 	 */
 	public Cell getCellBottomOf(Unit2 unit) {
-		int y = unit.getY() == 1 ? -2 : -1;
-		return getCell(unit.add(new Unit2(0, y)));
+		return getCell(unit.add(new Unit2(0, unit.getY() == 1 ? -2 : -1)));
 	}
 
 	/**
@@ -461,8 +459,7 @@ public class CellGrid {
 	 * @see #getCellLeftOf(Unit2)
 	 */
 	public Cell getCellLeftOf(Unit2 unit) {
-		int x = unit.getX() == 1 ? -2 : -1;
-		return getCell(unit.add(new Unit2(x, 0)));
+		return getCell(unit.add(new Unit2(unit.getX() == 1 ? -2 : -1, 0)));
 	}
 
 	/**
@@ -474,8 +471,7 @@ public class CellGrid {
 	 * @see #getCellRightOf(Unit2)
 	 */
 	public Cell getCellRightOf(Unit2 unit) {
-		int x = unit.getX() == -1 ? 2 : 1;
-		return getCell(unit.add(new Unit2(x, 0)));
+		return getCell(unit.add(new Unit2(unit.getX() == -1 ? 2 : 1, 0)));
 	}
 
 	/**
@@ -615,7 +611,7 @@ public class CellGrid {
 		return virtualGrid.size();
 	}
 
-	public Map<String, Cell> getGrid() {
+	public Map<Unit2, Cell> getGrid() {
 		return this.virtualGrid;
 	}
 
@@ -720,7 +716,7 @@ public class CellGrid {
 
 			@Override
 			public boolean hasNext() {
-				return this.nextGridIntercept.exists();
+				return cellQueue.size() > 0 || this.nextGridIntercept.exists();
 			}
 
 			@Override
@@ -822,10 +818,10 @@ public class CellGrid {
 
 		@Override
 		public String toString() {
-			return String.format(
+			return Console.withConsoleColors(String.format(
 					"$text-yellow GridIntercept$text-reset <Axis: $text-purple %s$text-reset , Point: %s>",
 					this.axisOfIntersection,
-					this.pointOfIntersection);
+					this.pointOfIntersection));
 		}
 	}
 }

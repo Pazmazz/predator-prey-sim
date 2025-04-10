@@ -38,7 +38,7 @@ public class App extends Application {
 		game.start();
 
 		/*
-		 * ---------------
+		 * --------------
 		 * | TEST CODE: |
 		 * --------------
 		 */

@@ -194,7 +194,7 @@ public class Console extends Application {
 	 * Sets a {@code DebugPriority} to be exclusively shown, disabling all the
 	 * other priority levels.
 	 *
-	 * @param priority the {@code DebugPriority} to exlusively show
+	 * @param priority the {@code DebugPriority} to exclusively show
 	 */
 	public static void setDebugPriority(DebugPriority priority) {
 		for (DebugPriority key : listeningDebugPriorities.keySet()) {

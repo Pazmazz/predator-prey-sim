@@ -1,9 +1,9 @@
 package classes.abstracts;
 
-import java.util.HashMap;
+import java.util.concurrent.ConcurrentHashMap;
 
 public abstract class Properties {
-	private HashMap<Property, Object> properties = new HashMap<>();
+	private ConcurrentHashMap<Property, Object> properties = new ConcurrentHashMap<>();
 
 	public Object getProperty(Property property) {
 		return properties.get(property);
@@ -27,7 +27,7 @@ public abstract class Properties {
 		return this;
 	}
 
-	public HashMap<Property, Object> getProperties() {
+	public ConcurrentHashMap<Property, Object> getProperties() {
 		return this.properties;
 	}
 

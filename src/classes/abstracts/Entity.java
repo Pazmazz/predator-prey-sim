@@ -74,8 +74,12 @@ public abstract class Entity extends Properties {
 		assignCell(targetCell, true);
 	}
 
+	public Cell getCell() {
+		return getProperty(Property.ASSIGNED_CELL, Cell.class);
+	}
+
 	public boolean hasCell() {
-		return getProperty(Property.ASSIGNED_CELL, Cell.class) != null;
+		return getCell() != null;
 	}
 
 	public void removeFromCell(boolean withAggregation) {
@@ -83,8 +87,7 @@ public abstract class Entity extends Properties {
 			throw new NoCellFoundException();
 
 		if (withAggregation)
-			getProperty(Property.ASSIGNED_CELL, Cell.class)
-					.removeOccupant(false);
+			getCell().removeOccupant(false);
 
 		setProperty(Property.ASSIGNED_CELL, null);
 	}

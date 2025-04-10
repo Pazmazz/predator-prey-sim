@@ -10,18 +10,14 @@ public class Ant extends Bug {
 		idNum = (int) (Math.random() * 1000);
 
 		// properties
-		setProperty(Property.IS_EATABLE, false);
+		setProperty(Property.IS_EATABLE, true);
 	}
 
 	@Override
 	public void move() {
-		Cell currentCell = getProperty(
-				Property.ASSIGNED_CELL,
-				Cell.class);
-
 		Cell[] adjCells = game
 				.getGameGrid()
-				.getCellsAdjacentTo(currentCell);
+				.getCellsAdjacentTo(getCell());
 
 		for (Cell adjCell : adjCells) {
 			if (adjCell.isInBounds() && adjCell.isEmpty()) {
@@ -39,13 +35,9 @@ public class Ant extends Bug {
 
 	@Override
 	public void breed() {
-		Cell currentCell = getProperty(
-				Property.ASSIGNED_CELL,
-				Cell.class);
-
 		Cell[] adjCells = game
 				.getGameGrid()
-				.getCellsAdjacentTo(currentCell);
+				.getCellsAdjacentTo(getCell());
 
 		for (Cell adjCell : adjCells) {
 			if (adjCell.isInBounds() && adjCell.isEmpty()) {

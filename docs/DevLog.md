@@ -57,5 +57,7 @@ Major changes.
 
 	This is because these classes need to reference the game's cell grid, and they can't do so without access to the `game` object. This also gives them the freedom of interacting with the rest of the game state if they need to.
 
+* **Deprecated** `Entity.removeCell()` method now in favor of `Entity.removeFromCell()`. 
 
+	* This just makes more linguistic sense, since the entity inside the cell is just removing itself *from* the cell, it's not removing the cell itself.
 	
