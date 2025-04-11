@@ -117,7 +117,7 @@ Given two points, find and return the next point that intersects the grid lines 
 
 ***Figure 1.***
 
-<img src="./assets/grid-intercept-example.png" width="450">
+<img src="./assets/grid-intercept-example.png" width="510">
 
 Considering this graph, `getGridIntercept` will return the first grid line intercept between `Point 1` and `Point 2`. The graph above written in code would look like this:
 
