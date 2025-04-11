@@ -5,7 +5,7 @@ Updates shared between developers of this project
 ## Version 0.3.4
 ##### [William J. Horn](https://github.com/william-horn) - *4/11/2025*
 
-Minor changes.
+Major changes.
 
 * **Added** [`Task`](../src/classes/abstracts/FrameProcessor.java) class back, along with the task scheduler integrated into the [`FrameProcessor`](../src/classes/abstracts/FrameProcessor.java)
 
@@ -42,7 +42,7 @@ Minor changes.
 
 	* [`grid.getAvailableCellsFrom(ArrayList<Cell>)`](https://github.com/Pazmazz/predator-prey-sim/blob/main/src/classes/entity/CellGrid.java#L620)
 		- *returns all available (non-occupied and in-bounds) cells from a provided array list of `Cell` objects.*
-		
+
 	* [`grid.getRandomAvailableCellsFrom(ArrayList<Cell>, amount)`](https://github.com/Pazmazz/predator-prey-sim/blob/main/src/classes/entity/CellGrid.java#L719)
 		- *returns an `ArrayList<Cell>` of random available (non-occupied and in-bounds) `Cell` objects within a provided `ArrayList<Cell>`, quantified by the `amount` parameter*
 	
