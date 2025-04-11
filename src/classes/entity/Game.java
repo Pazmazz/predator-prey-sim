@@ -26,12 +26,12 @@ import java.util.UUID;
 public class Game implements Runnable {
 
 	final private Thread mainThread;
-	private GameScreen screen;
 	final private String sessionId;
 	final private GameSettings settings;
 	final private CellGrid gameGrid;
 	final private ArrayList<Snapshot> snapshots = new ArrayList<>();
 
+	private GameScreen screen;
 	private GameState state = GameState.INITIAL;
 
 	private long simulationFPS;
@@ -61,7 +61,7 @@ public class Game implements Runnable {
 
 		this.sessionId = UUID.randomUUID().toString();
 		this.mainThread = new Thread(this);
-		this.gameGrid = new CellGrid(settings.getGridSize()).populate();
+		this.gameGrid = new CellGrid(settings.getGridSize());
 
 		this.movementFrame = new MovementFrame(this, SimulationType.MOVEMENT);
 		this.renderFrame = new RenderFrame(this, SimulationType.RENDER);
@@ -158,6 +158,8 @@ public class Game implements Runnable {
 
 	// TODO: Implement game grid initializer
 	public void initializeGameGrid() {
+		this.gameGrid.populate();
+
 		ArrayList<Cell> antCells = this.gameGrid
 				.getRandomAvailableCells(this.settings.getInitialAnts());
 

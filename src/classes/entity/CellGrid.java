@@ -9,8 +9,8 @@ import classes.abstracts.Properties.Property;
 import classes.util.Console;
 import classes.util.Console.DebugPriority;
 import exceptions.CellIsOccupiedException;
-import exceptions.NoCellFoundException;
 import exceptions.NoOccupantFoundException;
+import exceptions.NoCellFoundException;
 import exceptions.OccupantHasCellException;
 import classes.util.Math2;
 import java.util.ArrayList;
@@ -884,6 +884,7 @@ public class CellGrid {
 		printCellsAdjacentTo(cell.getUnit2());
 	}
 
+	// TODO: Add documentation
 	public CellGrid populate() {
 		for (int row = 1; row <= getSize().getX(); row++) {
 			for (int col = 1; col <= getSize().getY(); col++) {

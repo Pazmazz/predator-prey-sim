@@ -43,14 +43,13 @@ public class App {
 		Console.setDebugModeEnabled(true);
 		// Console.hideDebugPriority(DebugPriority.LOW);
 		// Console.hideDebugPriority(DebugPriority.MEDIUM);
-		Console.setConsoleColorsEnabled(true);
+		Console.setConsoleColorsEnabled(false);
 
 		Game game = new Game();
 		CellGrid grid = game.getGameGrid();
 		// game.initializeGameScreen();
 
 		Console.benchmark("Game grid initializer", game::initializeGameGrid);
-		Console.println(grid.getCell(new Unit2(14, 7)).getOccupant());
 		// Console.benchmark("Game screen", game::initializeGameScreen);
 
 		/*

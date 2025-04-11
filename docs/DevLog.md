@@ -2,6 +2,23 @@
 
 Updates shared between developers of this project
 
+## Version 0.4.4
+##### [William J. Horn](https://github.com/william-horn) - *4/11/2025*
+
+Major changes.
+
+* **Removed** `Cell.java` file and moved the code for the class into `CellGrid.java`.
+
+	- This was done for accessability and code architecture. For example, `Cell` objects do not exist independent of a `CellGrid`, therefore should not be it's own standalone class.
+
+	- `Cell` objects previously had no access to any settings defined about the `CellGrid`.
+
+* **Added** `game.initializeGameBoard()` method for setting up the initial state of `100` ants and `5` doodlebugs
+
+* **Disabled** the game screen loading automatically in the `Game` constructor. The game screen now needs to be initialize by calling `game.initializeGameScreen()`
+	- This kind of modular code allows for easier performance benchmarking, and selective enabling/disabling of certain feature which is crucial during testing. 
+
+
 ## Version 0.3.4
 ##### [William J. Horn](https://github.com/william-horn) - *4/11/2025*
 
