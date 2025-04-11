@@ -47,12 +47,12 @@ public class App {
 
 		CellGrid grid = new CellGrid(new Unit2(10, 10));
 
-		Vector2 p0 = new Vector2(0.5, 3.5);
-		Vector2 p1 = new Vector2(6.5, 2.5);
+		Vector2 p0 = new Vector2(1.5, 1.5);
+		Vector2 p1 = new Vector2(5.5, 3.5);
 
-		GridIntercept inter = grid.getGridIntercept(p0, p1);
+		ArrayList<Cell> cellPath = grid.getCellPath(p0, p1);
 
-		Console.println(inter);
+		Console.println(cellPath);
 		/*
 		 * --------------
 		 * | TEST CODE: |

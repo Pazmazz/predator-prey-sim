@@ -17,25 +17,34 @@ Minor changes.
 
 * **Added** more grid-querying methods for getting random cells, available cells, or both. Such methods include:
 	* [`grid.getCells()`](https://github.com/Pazmazz/predator-prey-sim/blob/main/src/classes/entity/CellGrid.java#L607)
+
 		- *returns all `Cell` objects on the grid as an `ArrayList<Cell>` object*
 	* [`grid.getAvailableCells()`](https://github.com/Pazmazz/predator-prey-sim/blob/main/src/classes/entity/CellGrid.java#L749)
-		- *returns all available (non-occupied) cells on the virtual grid.*
+
+		- *returns all available (non-occupied and in-bounds) cells on the virtual grid.*
 	* [`grid.getRandomCell()`](https://github.com/Pazmazz/predator-prey-sim/blob/main/src/classes/entity/CellGrid.java#L759)
 		- *returns a random `Cell` object on the virtual grid (does not check if it's available)*
+
 	* [`grid.getRandomCells()`](https://github.com/Pazmazz/predator-prey-sim/blob/main/src/classes/entity/CellGrid.java#L782)
 		- *returns all `Cell` objects on the grid in random order as an `ArrayList<Cell>` object*
+
 	* [`grid.getRandomAvailableCell()`](https://github.com/Pazmazz/predator-prey-sim/blob/main/src/classes/entity/CellGrid.java#L770)
-		- *returns a random available `Cell` object on the virtual grid only if it is available (non-occupied)*
+		- *returns a random available `Cell` object on the virtual grid only if it is available (non-occupied and in-bounds)*
+
 	* [`grid.getRandomCells(amount)`](https://github.com/Pazmazz/predator-prey-sim/blob/main/src/classes/entity/CellGrid.java#L795)
 		- *returns an `ArrayList<Cell>` of random `Cell` objects on the grid, quantified by the `amount` parameter.*
+
 	* [`grid.getRandomCellsFrom(ArrayList<Cell>, amount)`](https://github.com/Pazmazz/predator-prey-sim/blob/main/src/classes/entity/CellGrid.java#L697)
 		- *returns an `ArrayList<Cell>` of random `Cell` objects from a provided `ArrayList<Cell>` of `Cell` objects.*
+
 	* [`grid.getRandomCellFrom(ArrayList<Cell>)`](https://github.com/Pazmazz/predator-prey-sim/blob/main/src/classes/entity/CellGrid.java#L640)
 		- *returns a random cell from a provided array list of `Cell` objects (does not check it's available)*
+
 	* [`grid.getAvailableCellsFrom(ArrayList<Cell>)`](https://github.com/Pazmazz/predator-prey-sim/blob/main/src/classes/entity/CellGrid.java#L620)
-		- *returns all available (non-occupied) cells from a provided array list of `Cell` objects.*
+		- *returns all available (non-occupied and in-bounds) cells from a provided array list of `Cell` objects.*
+
 	* [`grid.getRandomAvailableCellsFrom(ArrayList<Cell>, amount)`](https://github.com/Pazmazz/predator-prey-sim/blob/main/src/classes/entity/CellGrid.java#L719)
-		- *returns an `ArrayList<Cell>` of random available (non-occupied) `Cell` objects within a provided `ArrayList<Cell>`, quantified by the `amount` parameter*
+		- *returns an `ArrayList<Cell>` of random available (non-occupied and in-bounds) `Cell` objects within a provided `ArrayList<Cell>`, quantified by the `amount` parameter*
 	
 
 * **Changed** method `grid.getAdjacentCells()` to return `ArrayList<Cell>` instead of `Cell[]`.
