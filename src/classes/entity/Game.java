@@ -157,7 +157,7 @@ public class Game implements Runnable {
 	}
 
 	// TODO: Implement game grid initializer
-	public void initializeGameGrid() {
+	public Object initializeGameGrid() {
 		this.gameGrid.populate();
 
 		ArrayList<Cell> antCells = this.gameGrid
@@ -171,6 +171,8 @@ public class Game implements Runnable {
 
 		for (Cell cell : doodlebugCells)
 			cell.setOccupant(new Doodlebug(this));
+
+		return null;
 	}
 
 	// TODO: Add documentation

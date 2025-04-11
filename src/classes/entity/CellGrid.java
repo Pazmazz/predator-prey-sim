@@ -939,20 +939,21 @@ public class CellGrid {
 		String out = "";
 
 		for (int row = 1; row < getSize().getX(); row++) {
+			out += row + ")\t";
 			for (int col = 1; col < getSize().getY(); col++) {
 				Cell cell = getCell(new Unit2(row, col));
 				if (cell.isEmpty()) {
-					out += "_";
+					out += "[_]";
 				} else if (cell.getOccupant() instanceof Ant) {
-					out += "A";
+					out += "$text-green [A]";
 				} else if (cell.getOccupant() instanceof Doodlebug) {
-					out += "D";
+					out += "$text-red [D]";
 				}
 			}
 			out += "\n";
 		}
 
-		return out;
+		return out.trim();
 	}
 
 	/**

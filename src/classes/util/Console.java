@@ -303,11 +303,22 @@ public class Console {
 
 	public static void benchmark(String message, Benchmark benchmark) {
 		long pre = Time.tick();
-		benchmark.run();
+		Object result = benchmark.run();
+		long aft = Time.tick() - pre;
+
 		println(String.format(
-				"$text-bright_purple Benchmark:$text-reset  \"$text-green %s$text-reset \" completed in: $text-yellow %s$text-reset  seconds",
+				"---- $text-yellow Benchmark Analytics:$text-reset  \"%s\" %s\n",
 				message,
-				Time.nanoToSeconds(Time.tick() - pre)));
+				"-".repeat(Math.max(50 - message.length(), 5))));
+
+		println(String.format(
+				"> $text-bright_black Output:$text-reset \n\n%s\n",
+				result));
+
+		println(String.format(
+				"> $text-bright_purple Completion:$text-reset  $text-yellow %s$text-reset  seconds\n",
+				Time.nanoToSeconds(aft)));
+
 	}
 
 	//
