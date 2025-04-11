@@ -1,73 +1,71 @@
 package classes.entity;
 
+import java.util.ArrayList;
+
 import classes.abstracts.Bug;
+import classes.util.Console;
+import classes.entity.CellGrid.Cell;
 
-public class Doodlebug extends Bug {
+public class Doodlebug extends Bug<Doodlebug> {
 
-    int starvationTracker = 0;
+	int starvationTracker = 0;
 
-    public Doodlebug() {
-        idNum = (int) (Math.random() * 1000);
-    }
+	public Doodlebug(Game game) {
+		super(game);
+		idNum = (int) (Math.random() * 1000);
 
-    @Override
-    public void move(Cell currentCell, CellGrid grid) {
-        Cell[] adjCells = grid.getCellsAdjacentTo(currentCell);
+		// properties
+		setProperty(Property.IS_EATABLE, false);
+	}
 
-        for (Cell adjCell : adjCells) {
-            if (adjCell.isOccupantEatable(currentCell)) {
+	@Override
+	public void move() {
+		ArrayList<Cell> adjCells = game
+				.getGameGrid()
+				.getCellsAdjacentTo(getCell());
 
-                //
-                // Accounting for removal of 'moveOccupantTo' method,
-                // this does the same thing.
-                //
-                adjCell.removeOccupant();
-                assignCell(adjCell);
+		for (Cell adjCell : adjCells) {
+			if (adjCell.isOccupantEatable(getCell())) {
+				adjCell.removeOccupant();
+				assignCell(adjCell);
+				starvationTracker = 0;
+				break;
+			} else if (adjCell.isInBounds() && adjCell.isEmpty()) {
+				assignCell(adjCell);
+				starvationTracker++;
+				break;
+			}
+		}
+		movementCounter++;
 
-                //
-                // currentCell.removeOccupant();
-                // currentCell.moveOccupantTo(adjCell);
-                // this.currentCell = adjCell;
-                //
-                starvationTracker = 0;
-                break;
-            } else if (adjCell.isInBounds() && adjCell.isEmpty()) {
-                assignCell(adjCell);
-                //
-                // currentCell.moveOccupantTo(adjCell);
-                // this.currentCell = adjCell;
-                //
-                starvationTracker++;
-                break;
-            }
-        }
-        movementCounter++;
+		if (starvationTracker == 3) {
+			removeFromCell();
+		}
 
-        if (starvationTracker == 3) {
-            currentCell.removeOccupant();
-        }
+		if (movementCounter == 8) {
+			movementCounter = 0;
+			this.breed();
+		}
+	}
 
-        if (movementCounter == 8) {
-            movementCounter = 0;
-            this.breed(adjCells);
-        }
-    }
+	@Override
+	public void breed() {
+		ArrayList<Cell> adjCells = game
+				.getGameGrid()
+				.getCellsAdjacentTo(getCell());
 
-    @Override
-    public void breed(Cell[] adjCells) {
-        for (Cell adjCell : adjCells) {
-            if (adjCell.isInBounds() && adjCell.isEmpty()) {
-                adjCell.setOccupant(new Doodlebug());
-                //
-                // currentCell.setOccupant(new Doodlebug());
-                //
-                break;
-            }
-        }
-    }
+		for (Cell adjCell : adjCells) {
+			if (adjCell.isInBounds() && adjCell.isEmpty()) {
+				adjCell.setOccupant(new Doodlebug(game));
+				break;
+			}
+		}
+	}
 
-    @Override
-    public String toString() {
-        return "Doodlebug";
-    }
+	@Override
+	public String toString() {
+		return String.format(Console.withConsoleColors(
+				"$text-green Doodlebug$text-reset #%s"),
+				idNum);
+	}
 }

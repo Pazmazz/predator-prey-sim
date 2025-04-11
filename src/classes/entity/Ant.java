@@ -1,46 +1,59 @@
 package classes.entity;
 
+import java.util.ArrayList;
+
 import classes.abstracts.Bug;
+import classes.util.Console;
+import classes.entity.CellGrid.Cell;
 
-public class Ant extends Bug {
+public class Ant extends Bug<Ant> {
 
-    public Ant() {
-        idNum = (int) (Math.random() * 1000);
-        this.setEatable(isEatable());
-    }
+	public Ant(Game game) {
+		super(game);
+		idNum = (int) (Math.random() * 1000);
 
-    @Override
-    public void move(Cell currentCell, CellGrid grid) {
-        Cell[] adjCells = grid.getCellsAdjacentTo(currentCell);
+		// properties
+		setProperty(Property.IS_EATABLE, true);
+	}
 
-        for (Cell adjCell : adjCells) {
-            if (adjCell.isInBounds() && adjCell.isEmpty()) {
-                // currentCell.moveOccupantTo(adjCell);
-                // this.currentCell = adjCell;
-                assignCell(adjCell);
-                break;
-            }
-        }
-        movementCounter++;
+	@Override
+	public void move() {
+		ArrayList<Cell> adjCells = game
+				.getGameGrid()
+				.getCellsAdjacentTo(getCell());
 
-        if (movementCounter == 3) {
-            movementCounter = 0;
-            this.breed(adjCells);
-        }
-    }
+		for (Cell adjCell : adjCells) {
+			if (adjCell.isInBounds() && adjCell.isEmpty()) {
+				assignCell(adjCell);
+				break;
+			}
+		}
+		movementCounter++;
 
-    @Override
-    public void breed(Cell[] adjCells) {
-        for (Cell adjCell : adjCells) {
-            if (adjCell.isInBounds() && adjCell.isEmpty()) {
-                adjCell.setOccupant(new Ant());
-                break;
-            }
-        }
-    }
+		if (movementCounter == 3) {
+			movementCounter = 0;
+			this.breed();
+		}
+	}
 
-    @Override
-    public String toString() {
-        return "Ant";
-    }
+	@Override
+	public void breed() {
+		ArrayList<Cell> adjCells = game
+				.getGameGrid()
+				.getCellsAdjacentTo(getCell());
+
+		for (Cell adjCell : adjCells) {
+			if (adjCell.isInBounds() && adjCell.isEmpty()) {
+				adjCell.setOccupant(new Ant(game));
+				break;
+			}
+		}
+	}
+
+	@Override
+	public String toString() {
+		return String.format(Console.withConsoleColors(
+				"$text-green Ant$text-reset #%s"),
+				idNum);
+	}
 }

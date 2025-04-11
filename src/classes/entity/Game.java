@@ -3,8 +3,9 @@
  */
 package classes.entity;
 
-import classes.abstracts.Application;
 import classes.abstracts.FrameProcessor;
+import classes.abstracts.FrameProcessor.FrameState;
+import classes.abstracts.FrameProcessor.Task;
 import classes.settings.GameSettings;
 import classes.settings.GameSettings.SimulationType;
 import classes.simulation.MovementFrame;
@@ -12,6 +13,9 @@ import classes.simulation.RenderFrame;
 import classes.simulation.SimulatedLagFrame;
 import classes.util.Console;
 import classes.util.Time;
+import classes.entity.CellGrid.Cell;
+
+import java.util.ArrayList;
 import java.util.UUID;
 
 /**
@@ -19,162 +23,210 @@ import java.util.UUID;
  * with the game and all game state is managed through the instance of this
  * class.
  */
-public class Game extends Application implements Runnable {
+public class Game implements Runnable {
 
-    final private Thread mainThread;
-    final private GameScreen screen;
-    final private String sessionId;
-    final private GameSettings settings;
-    final private CellGrid gameGrid;
+	final private Thread mainThread;
+	private GameScreen screen;
+	final private String sessionId;
+	final private GameSettings settings;
+	final private CellGrid gameGrid;
+	final private ArrayList<Snapshot> snapshots = new ArrayList<>();
 
-    private GameState state = GameState.INITIAL;
+	private GameState state = GameState.INITIAL;
 
-    //
-    // Update frames
-    //
-    public MovementFrame movementFrame;
-    public RenderFrame renderFrame;
-    public SimulatedLagFrame simulatedLagFrame;
-    public FrameProcessor[] frameProcesses;
+	private long simulationFPS;
 
-    //
-    // Internal states
-    //
-    public static enum GameState {
-        INITIAL,
-        LOADED,
-        RUNNING,
-        PAUSED,
-        TERMINATED,
-    }
+	//
+	// Update frames
+	//
+	public MovementFrame movementFrame;
+	public RenderFrame renderFrame;
+	public SimulatedLagFrame simulatedLagFrame;
+	public FrameProcessor[] frameProcesses;
 
-    public Game() {
-        // IMPORTANT: settings must be defined first, since other classes reference it
-        settings = new GameSettings();
+	//
+	// Internal states
+	//
+	public static enum GameState {
+		INITIAL,
+		LOADED,
+		RUNNING,
+		PAUSED,
+		TERMINATED,
+	}
 
-        sessionId = UUID.randomUUID().toString();
-        screen = new GameScreen(this);
-        mainThread = new Thread(this);
-        gameGrid = new CellGrid(settings.getGridSize());
+	public Game() {
+		// IMPORTANT: settings must be defined first, since other classes reference it
+		this.settings = new GameSettings();
 
-        movementFrame = new MovementFrame(this, SimulationType.MOVEMENT);
-        renderFrame = new RenderFrame(this, SimulationType.RENDER);
-        simulatedLagFrame = new SimulatedLagFrame(this, SimulationType.SIMULATED_LAG);
+		this.sessionId = UUID.randomUUID().toString();
+		this.mainThread = new Thread(this);
+		this.gameGrid = new CellGrid(settings.getGridSize()).populate();
 
-        frameProcesses = new FrameProcessor[]{
-            movementFrame,
-            renderFrame,
-            simulatedLagFrame
-        };
+		this.movementFrame = new MovementFrame(this, SimulationType.MOVEMENT);
+		this.renderFrame = new RenderFrame(this, SimulationType.RENDER);
+		this.simulatedLagFrame = new SimulatedLagFrame(this, SimulationType.SIMULATED_LAG);
+		this.simulationFPS = Time.secondsToNano(settings.getSimulation().getFPS());
 
-        state = GameState.LOADED;
-    }
+		this.frameProcesses = new FrameProcessor[] {
+				movementFrame,
+				renderFrame,
+				simulatedLagFrame
+		};
 
-    /**
-     * Begins running the game loop and sets the game state from {@code LOADED}
-     * to {@code RUNNING}
-     *
-     * @throws Error if this method is called more than once
-     */
-    public void start() {
-        if (isLoaded()) {
-            this.setState(GameState.RUNNING);
-            mainThread.start();
-        } else {
-            Console.error("start() can only be called once per game instance");
-        }
-    }
+		this.state = GameState.LOADED;
+	}
 
-    /**
-     * Terminates the game loop by setting the game state to {@code TERMINATED}
-     */
-    public void terminate() {
-        setState(GameState.TERMINATED);
-    }
+	public void initializeGameScreen() {
+		this.screen = new GameScreen(this);
+	}
 
-    /**
-     * A required method override from the {@code Runnable} interface which is
-     * called once the {@code start} method is called.
-     *
-     * <p>
-     * This method serves as the main game loop, which is responsible for
-     * updating game steps, rendering frames, and handling all other incremental
-     * game logic.
-     */
-    @Override
-    public void run() {
-        while (isThreadRunning()) {
-            long simulationDelta = 0;
+	// TODO: Implement snapshot saving/loading
+	public void saveSnapshot() {
+		Snapshot snapshot = new Snapshot();
 
-            for (FrameProcessor frame : frameProcesses) {
-                long frameDelta = frame.pulse();
-                if (frameDelta > -1) {
-                    simulationDelta += frameDelta;
-                }
-            }
+		this.snapshots.add(snapshot);
+	}
 
-            long threadYieldTime = Time.secondsToNano(settings.getSimulation().getFPS()) - simulationDelta;
+	public void loadSnapshot() {
 
-            if (threadYieldTime > 0) {
-                wait(Time.nanoToMillisecond(threadYieldTime));
-            }
-        }
-    }
+	}
 
-    //
-    // Public getters
-    //
-    public GameScreen getScreen() {
-        return screen;
-    }
+	/**
+	 * Begins running the game loop and sets the game state from {@code LOADED}
+	 * to {@code RUNNING}
+	 *
+	 * @throws Error if this method is called more than once
+	 */
+	public void start() {
+		if (isLoaded()) {
+			this.setState(GameState.RUNNING);
+			mainThread.start();
+		} else {
+			throw new Error("start() can only be called once per game instance");
+		}
+	}
 
-    public GameState getState() {
-        return state;
-    }
+	/**
+	 * Terminates the game loop by setting the game state to {@code TERMINATED}
+	 */
+	public void terminate() {
+		this.setState(GameState.TERMINATED);
+		Console.println("TERMINATED APPLICATION");
+	}
 
-    public String getSessionId() {
-        return sessionId;
-    }
+	/**
+	 * A required method override from the {@code Runnable} interface which is
+	 * called once the {@code start} method is called.
+	 *
+	 * <p>
+	 * This method serves as the main game loop, which is responsible for
+	 * updating game steps, rendering frames, and handling all other incremental
+	 * game logic.
+	 */
+	@Override
+	public void run() {
+		while (isThreadRunning()) {
+			if (FrameProcessor.isAllSuspended())
+				continue;
 
-    public GameSettings getSettings() {
-        return settings;
-    }
+			long simulationDelta = 0;
 
-    public CellGrid getGameGrid() {
-        return gameGrid;
-    }
+			for (FrameProcessor frame : this.frameProcesses) {
+				if (frame.isSuspended())
+					continue;
 
-    //
-    // Public logic checks
-    //
-    public boolean isRunning() {
-        return state == GameState.RUNNING;
-    }
+				long frameDelta = frame.pulse();
+				if (frameDelta != -1)
+					simulationDelta += frameDelta;
+			}
 
-    public boolean isThreadRunning() {
-        return isRunning() || isPaused();
-    }
+			long threadYieldTime = this.simulationFPS - simulationDelta;
+			if (threadYieldTime > 0)
+				wait(Time.nanoToMillisecond(threadYieldTime));
+		}
+	}
 
-    public boolean isInitial() {
-        return state == GameState.INITIAL;
-    }
+	// TODO: Add documentation
+	public void wait(double milliseconds) {
+		try {
+			Thread.sleep((long) milliseconds);
+		} catch (InterruptedException e) {
+			throw new Error(e);
+		}
+	}
 
-    public boolean isLoaded() {
-        return state == GameState.LOADED;
-    }
+	// TODO: Implement game grid initializer
+	public void initializeGameGrid() {
+		ArrayList<Cell> antCells = this.gameGrid
+				.getRandomAvailableCells(this.settings.getInitialAnts());
 
-    public boolean isPaused() {
-        return state == GameState.PAUSED;
-    }
+		for (Cell cell : antCells)
+			cell.setOccupant(new Ant(this));
 
-    public boolean isTerminated() {
-        return state == GameState.TERMINATED;
-    }
+		ArrayList<Cell> doodlebugCells = this.gameGrid
+				.getRandomAvailableCells(this.settings.getInitialDoodlebugs());
 
-    //
-    // Public setters
-    //
-    public void setState(GameState newState) {
-        state = newState;
-    }
+		for (Cell cell : doodlebugCells)
+			cell.setOccupant(new Doodlebug(this));
+	}
+
+	// TODO: Add documentation
+	//
+	// Public getters
+	//
+	public GameScreen getScreen() {
+		return this.screen;
+	}
+
+	public GameState getState() {
+		return this.state;
+	}
+
+	public String getSessionId() {
+		return this.sessionId;
+	}
+
+	public GameSettings getSettings() {
+		return this.settings;
+	}
+
+	public CellGrid getGameGrid() {
+		return this.gameGrid;
+	}
+
+	// TODO: Add documentation
+	//
+	// Public logic checks
+	//
+	public boolean isRunning() {
+		return this.state == GameState.RUNNING;
+	}
+
+	public boolean isThreadRunning() {
+		return isRunning() || isPaused();
+	}
+
+	public boolean isInitial() {
+		return this.state == GameState.INITIAL;
+	}
+
+	public boolean isLoaded() {
+		return this.state == GameState.LOADED;
+	}
+
+	public boolean isPaused() {
+		return this.state == GameState.PAUSED;
+	}
+
+	public boolean isTerminated() {
+		return this.state == GameState.TERMINATED;
+	}
+
+	//
+	// Public setters
+	//
+	public void setState(GameState newState) {
+		this.state = newState;
+	}
 }

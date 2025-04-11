@@ -16,40 +16,38 @@ import javax.swing.JPanel;
  */
 public class GameScreen extends JFrame {
 
-    final private JPanel masterFrame;
+	final private JPanel masterFrame;
 
-    public GameScreen(Game game) {
-        // Default game screen settings
-        this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        this.setResizable(false);
-        this.setTitle(game.getSettings().getTitle());
+	public GameScreen(Game game) {
+		// Default game screen settings
+		this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		this.setResizable(false);
+		this.setTitle(game.getSettings().getTitle());
 
-        // Build UI components
-        masterFrame = new JPanel();
-        masterFrame.setDoubleBuffered(true);
-        masterFrame.setPreferredSize(
-                new Dimension(
-                        game.getSettings().getScreenWidth(),
-                        game.getSettings().getScreenHeight()
-                )
-        );
-        this.add(masterFrame);
+		// Build UI components
+		masterFrame = new JPanel();
+		masterFrame.setDoubleBuffered(true);
+		masterFrame.setPreferredSize(
+				new Dimension(
+						game.getSettings().getScreenWidth(),
+						game.getSettings().getScreenHeight()));
+		this.add(masterFrame);
 
-        // Finalize game screen
-        this.pack();
-        this.setLocationRelativeTo(null);
-        this.setVisible(true);
+		// Finalize game screen
+		this.pack();
+		this.setLocationRelativeTo(null);
+		this.setVisible(true);
 
-        // Handle game window closing event
-        this.addWindowListener(new WindowAdapter() {
-            @Override
-            public void windowClosed(WindowEvent e) {
-                game.terminate();
-            }
-        });
-    }
+		// Handle game window closing event
+		this.addWindowListener(new WindowAdapter() {
+			@Override
+			public void windowClosed(WindowEvent e) {
+				game.terminate();
+			}
+		});
+	}
 
-    public JPanel getMasterFrame() {
-        return masterFrame;
-    }
+	public JPanel getMasterFrame() {
+		return this.masterFrame;
+	}
 }
