@@ -35,6 +35,7 @@ import classes.entity.Vector2;
 
 /**
  * The entry-point file for the application
+ * 
  */
 public class App {
 
