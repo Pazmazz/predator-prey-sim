@@ -43,5 +43,6 @@ public abstract class Properties {
 		MOVEMENT_SPEED,
 		IS_EATABLE,
 		ASSIGNED_CELL,
+		MOVEMENT_COOLDOWN,
 	}
 }

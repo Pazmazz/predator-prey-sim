@@ -10,6 +10,12 @@
  * Project code formatter:
  * - Language Support for Java(TM) by Red Hat
  * 
+ * Useful git commands:
+ * - "git ls-files | xargs wc -l" - for counting collective lines of code in the 
+ * 									project so far
+ * 
+ * "git ls-files | grep "\.java$" | xargs wc -l" -  for counting all lines of .java files
+ * 													in the project so far
  * TODO:
  * - Make a custom event signal class
  */
@@ -41,15 +47,17 @@ public class App {
 
 	public static void main(String[] args) {
 		Console.setDebugModeEnabled(true);
-		// Console.hideDebugPriority(DebugPriority.LOW);
+		Console.hideDebugPriority(DebugPriority.LOW);
 		// Console.hideDebugPriority(DebugPriority.MEDIUM);
 		Console.setConsoleColorsEnabled(false);
 
 		Game game = new Game();
 		CellGrid grid = game.getGameGrid();
 		// game.initializeGameScreen();
+		// game.start();
 
 		Console.benchmark("Game grid initializer", game::initializeGameGrid);
+		Console.println(grid.toASCII());
 		// Console.benchmark("Game screen", game::initializeGameScreen);
 
 		/*

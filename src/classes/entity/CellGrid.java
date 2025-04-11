@@ -934,6 +934,27 @@ public class CellGrid {
 		return new CellPathCollection(from, to).iterator();
 	}
 
+	// TODO: Add documentation
+	public String toASCII() {
+		String out = "";
+
+		for (int row = 1; row < getSize().getX(); row++) {
+			for (int col = 1; col < getSize().getY(); col++) {
+				Cell cell = getCell(new Unit2(row, col));
+				if (cell.isEmpty()) {
+					out += "_";
+				} else if (cell.getOccupant() instanceof Ant) {
+					out += "A";
+				} else if (cell.getOccupant() instanceof Doodlebug) {
+					out += "D";
+				}
+			}
+			out += "\n";
+		}
+
+		return out;
+	}
+
 	/**
 	 * Inner-class for creating a new collection of {@code Cell} objects that
 	 * make up a cell path. Contains the ArrayList which stores the generated

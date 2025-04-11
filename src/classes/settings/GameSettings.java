@@ -98,14 +98,16 @@ public class GameSettings {
 			FPS = 1.0 / 60;
 			settings = new HashMap<>();
 
+			// (vv) Note: Set FPS to 0 if you want it to match the game FPS (vv) //
+
 			// Render
 			SimulationSettings render = new SimulationSettings()
-					.setFPS(1.0 / 60)
+					.setFPS(0)
 					.setProcessName("Render");
 
 			// Movement
 			SimulationSettings movement = new SimulationSettings()
-					.setFPS(1.0)
+					.setFPS(0)
 					.setProcessName("Movement");
 
 			// SimulatedLag
