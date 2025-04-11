@@ -95,6 +95,91 @@ CellGrid grid = new CellGrid(new Unit2(10, 10));
 
 By default, the virtual grid is empty and does not contain any points or `Cell` objects. `Cell` objects are only created when you query the virtual grid using `CellGrid.getCell()`
 
+### `CellGrid.getCellGridIntercept()` *(new)*
+
+- **Parameters:**
+
+  - `<Vector2 from>` - _The starting point of the line_
+  - `<Vector2 to>` - _The ending point of the line_
+
+- **Returns:** `<GridIntercept metadata>`
+
+Given two points, find and return the next point that intersects the grid lines between those two points, along with metadata about that intersection (such as which `Cell` it collided with)
+
+***Figure 1.***
+
+<img src="./assets/grid-intercept-example.png" width="450">
+
+Considering this graph, `getGridIntercept` will return the first grid line intercept between `Point 1` and `Point 2`. The graph above written in code would look like this:
+
+#### Example:
+
+```java
+CellGrid grid = new CellGrid(new Unit2(10, 10));
+
+Vector2 p1 = new Vector2(0.5, 3.5);
+Vector2 p2 = new Vector2(6.5, 2.5);
+
+GridIntercept inter = grid.getGridIntercept(p0, p1);
+
+Console.println(inter);
+Console.println(inter.getCell());
+```
+
+#### Output:
+
+<blockquote>
+GridIntercept&lt;Axis: X_GRID, Point: Vector2&lt;1.0, 3.4166666666666665&gt;&gt;
+<br/>
+Cell&lt;1, 4&gt;
+</blockquote>
+
+<br/>
+
+As we can see in ***Figure 1***, the line does indeed pass through the point `<1.0, 3.4166...>`
+
+### `CellGrid.getCellPath()` *(new)*
+
+- **Parameters:**
+
+  - `<Vector2 from>` - *The starting point of the line*
+  - `<Vector2 to>` - *The end point of the line*
+
+- **Returns:** `<ArrayList<Cell> cellPath>`
+
+Given two points, iteratively use the `CellGrid.getGridIntercept` method to compute *all* the grid cells that intersect the line starting at `from` and ending at `to`, and return them as an `ArrayList<Cell>` object. 
+
+Consider the following:
+
+***Figure 1.***
+
+<img src="./assets/path-cells.png" width="400" >
+
+<br/>
+
+To compute this cell path in this graphic, we can use the code below:
+
+#### Example:
+
+```java
+CellGrid grid = new CellGrid(new Unit2(10, 10));
+Cell c0 = grid.getCell(new Unit2(2, 2));
+Cell c1 = grid.getCell(new Unit2(6, 4));
+
+ArrayList<Cell> cells = grid.getCellPath(c0, c1);
+
+Console.println(cells);
+```
+
+#### Output:
+<blockquote>
+[Cell<2, 2>, Cell<3, 2>, Cell<3, 3>, Cell<4, 3>, Cell<5, 3>, Cell<5, 4>, Cell<6, 4>]
+</blockquote>
+
+<br/>
+
+As you can see, the output indeed shows all `Cell` objects from the starting cell to the ending cell.
+
 ### `CellGrid.getCell()`
 
 - **Parameters:**
@@ -430,77 +515,3 @@ Cell<1, 0>
 <br/>
 OUT_OF_BOUNDS
 </blockquote>
-
-### `CellGrid.getCellGridIntercept()`
-
-- **Parameters:**
-
-  - `<Vector2 from>` - _The starting point of the line_
-  - `<Vector2 to>` - _The ending point of the line_
-
-- **Returns:** `<GridIntercept metadata>`
-
-Given two points, find and return the next point that intersects the grid lines between those two points, along with metadata about that intersection (such as which `Cell` it collided with)
-
-***Figure 1.***
-
-<img src="./assets/grid-intercept-example.png" width="450">
-
-Considering this graph, `getGridIntercept` will return the first grid line intercept between `Point 1` and `Point 2`. The graph above written in code would look like this:
-
-#### Example:
-
-```java
-CellGrid grid = new CellGrid(new Unit2(10, 10));
-
-Vector2 p1 = new Vector2(0.5, 3.5);
-Vector2 p2 = new Vector2(6.5, 2.5);
-
-GridIntercept inter = grid.getGridIntercept(p0, p1);
-
-Console.println(inter);
-Console.println(inter.getCell());
-```
-
-#### Output:
-
-<blockquote>
-GridIntercept&lt;Axis: X_GRID, Point: Vector2&lt;1.0, 3.4166666666666665&gt;&gt;
-<br/>
-Cell&lt;1, 4&gt;
-</blockquote>
-
-<br/>
-
-As we can see in ***Figure 1***, the line does indeed pass through the point `<1.0, 3.4166...>`
-
-### `CellGrid.getCellPath()`
-
-- **Parameters:**
-
-  - `<Vector2 from>` - *The starting point of the line*
-  - `<Vector2 to>` - *The end point of the line*
-
-- **Returns:** `<ArrayList<Cell> cellPath>`
-
-Given two points, iteratively use the `CellGrid.getGridIntercept` method to compute *all* the grid cells that intersect the line starting at `from` and ending at `to`, and return them as an `ArrayList<Cell>` object. 
-
-Consider the following scenario:
-
-<img src="./assets/path-cells.png" width="400" >
-
-<br/>
-
-To compute this cell path, we can use the code below:
-
-#### Example:
-
-```java
-CellGrid grid = new CellGrid(new Unit2(10, 10));
-Cell p0 = grid.getCell(new Unit2(1, 1));
-Cell p1 = grid.getCell(new Unit2(3, 8));
-
-ArrayList<Cell> cells = grid.getCellPath(p0, p1);
-
-Console.println(cells);
-```
