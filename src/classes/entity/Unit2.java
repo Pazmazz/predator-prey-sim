@@ -4,6 +4,7 @@
 package classes.entity;
 
 import classes.abstracts.BaseVector;
+import classes.util.Console;
 
 /**
  * A class similar to Vector2, however it's components must be initialized as
@@ -21,6 +22,7 @@ public class Unit2 extends BaseVector<Unit2> {
 		this.components.add((double) y);
 	}
 
+	// TODO: Add documentation
 	//
 	// Public getters
 	//
@@ -45,6 +47,9 @@ public class Unit2 extends BaseVector<Unit2> {
 
 	@Override
 	public String toString() {
-		return String.format("Unit2<%s, %s>", getX(), getY());
+		return Console.withConsoleColors(String.format(
+				"Unit2<%s, %s>",
+				getX(),
+				getY()));
 	}
 }

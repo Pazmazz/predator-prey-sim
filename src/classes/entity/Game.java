@@ -3,8 +3,9 @@
  */
 package classes.entity;
 
-import classes.abstracts.Application;
 import classes.abstracts.FrameProcessor;
+import classes.abstracts.FrameProcessor.FrameState;
+import classes.abstracts.FrameProcessor.Task;
 import classes.settings.GameSettings;
 import classes.settings.GameSettings.SimulationType;
 import classes.simulation.MovementFrame;
@@ -12,6 +13,9 @@ import classes.simulation.RenderFrame;
 import classes.simulation.SimulatedLagFrame;
 import classes.util.Console;
 import classes.util.Time;
+import classes.entity.CellGrid.Cell;
+
+import java.util.ArrayList;
 import java.util.UUID;
 
 /**
@@ -19,15 +23,18 @@ import java.util.UUID;
  * with the game and all game state is managed through the instance of this
  * class.
  */
-public class Game extends Application implements Runnable {
+public class Game implements Runnable {
 
 	final private Thread mainThread;
-	final private GameScreen screen;
+	private GameScreen screen;
 	final private String sessionId;
 	final private GameSettings settings;
 	final private CellGrid gameGrid;
+	final private ArrayList<Snapshot> snapshots = new ArrayList<>();
 
 	private GameState state = GameState.INITIAL;
+
+	private long simulationFPS;
 
 	//
 	// Update frames
@@ -53,13 +60,13 @@ public class Game extends Application implements Runnable {
 		this.settings = new GameSettings();
 
 		this.sessionId = UUID.randomUUID().toString();
-		this.screen = new GameScreen(this);
 		this.mainThread = new Thread(this);
-		this.gameGrid = new CellGrid(settings.getGridSize());
+		this.gameGrid = new CellGrid(settings.getGridSize()).populate();
 
 		this.movementFrame = new MovementFrame(this, SimulationType.MOVEMENT);
 		this.renderFrame = new RenderFrame(this, SimulationType.RENDER);
 		this.simulatedLagFrame = new SimulatedLagFrame(this, SimulationType.SIMULATED_LAG);
+		this.simulationFPS = Time.secondsToNano(settings.getSimulation().getFPS());
 
 		this.frameProcesses = new FrameProcessor[] {
 				movementFrame,
@@ -68,6 +75,21 @@ public class Game extends Application implements Runnable {
 		};
 
 		this.state = GameState.LOADED;
+	}
+
+	public void initializeGameScreen() {
+		this.screen = new GameScreen(this);
+	}
+
+	// TODO: Implement snapshot saving/loading
+	public void saveSnapshot() {
+		Snapshot snapshot = new Snapshot();
+
+		this.snapshots.add(snapshot);
+	}
+
+	public void loadSnapshot() {
+
 	}
 
 	/**
@@ -81,7 +103,7 @@ public class Game extends Application implements Runnable {
 			this.setState(GameState.RUNNING);
 			mainThread.start();
 		} else {
-			Console.error("start() can only be called once per game instance");
+			throw new Error("start() can only be called once per game instance");
 		}
 	}
 
@@ -90,6 +112,7 @@ public class Game extends Application implements Runnable {
 	 */
 	public void terminate() {
 		this.setState(GameState.TERMINATED);
+		Console.println("TERMINATED APPLICATION");
 	}
 
 	/**
@@ -104,23 +127,51 @@ public class Game extends Application implements Runnable {
 	@Override
 	public void run() {
 		while (isThreadRunning()) {
+			if (FrameProcessor.isAllSuspended())
+				continue;
+
 			long simulationDelta = 0;
 
 			for (FrameProcessor frame : this.frameProcesses) {
+				if (frame.isSuspended())
+					continue;
+
 				long frameDelta = frame.pulse();
-				if (frameDelta > -1) {
+				if (frameDelta != -1)
 					simulationDelta += frameDelta;
-				}
 			}
 
-			long threadYieldTime = Time.secondsToNano(settings.getSimulation().getFPS()) - simulationDelta;
-
-			if (threadYieldTime > 0) {
+			long threadYieldTime = this.simulationFPS - simulationDelta;
+			if (threadYieldTime > 0)
 				wait(Time.nanoToMillisecond(threadYieldTime));
-			}
 		}
 	}
 
+	// TODO: Add documentation
+	public void wait(double milliseconds) {
+		try {
+			Thread.sleep((long) milliseconds);
+		} catch (InterruptedException e) {
+			throw new Error(e);
+		}
+	}
+
+	// TODO: Implement game grid initializer
+	public void initializeGameGrid() {
+		ArrayList<Cell> antCells = this.gameGrid
+				.getRandomAvailableCells(this.settings.getInitialAnts());
+
+		for (Cell cell : antCells)
+			cell.setOccupant(new Ant(this));
+
+		ArrayList<Cell> doodlebugCells = this.gameGrid
+				.getRandomAvailableCells(this.settings.getInitialDoodlebugs());
+
+		for (Cell cell : doodlebugCells)
+			cell.setOccupant(new Doodlebug(this));
+	}
+
+	// TODO: Add documentation
 	//
 	// Public getters
 	//
@@ -144,6 +195,7 @@ public class Game extends Application implements Runnable {
 		return this.gameGrid;
 	}
 
+	// TODO: Add documentation
 	//
 	// Public logic checks
 	//

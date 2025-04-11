@@ -9,67 +9,54 @@
  * 
  * Project code formatter:
  * - Language Support for Java(TM) by Red Hat
+ * 
+ * TODO:
+ * - Make a custom event signal class
  */
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
-import classes.abstracts.Application;
+import classes.abstracts.Entity;
+import classes.abstracts.FrameProcessor;
+import classes.abstracts.Properties.Property;
 import classes.entity.Ant;
-import classes.entity.Cell;
+import classes.entity.CellGrid.Cell;
 import classes.entity.CellGrid;
+import classes.entity.CellGrid.GridIntercept;
+import classes.entity.Game;
 import classes.entity.Unit2;
-import classes.entity.Vector2;
 import classes.util.Console;
-import java.util.Iterator;
+import classes.util.Console.DebugPriority;
+import classes.util.Time;
+import interfaces.Callback;
+import classes.entity.Doodlebug;
+import classes.entity.Vector2;
 
 /**
  * The entry-point file for the application
  */
-public class App extends Application {
+public class App {
 
 	public static void main(String[] args) {
 		Console.setDebugModeEnabled(true);
 		// Console.hideDebugPriority(DebugPriority.LOW);
+		// Console.hideDebugPriority(DebugPriority.MEDIUM);
 		Console.setConsoleColorsEnabled(true);
 
-		// Game game = new Game();
-		// game.start();
-		//
-		// TEST CODE:
-		//
-		Vector2 start = new Vector2(-2, 4);
-		Vector2 end = new Vector2(7, -2);
+		Game game = new Game();
+		CellGrid grid = game.getGameGrid();
+		// game.initializeGameScreen();
 
-		CellGrid grid = new CellGrid(new Unit2(10, 10));
-		ArrayList<Cell> cells = grid.getCellPath(start, end);
+		Console.benchmark("Game grid initializer", game::initializeGameGrid);
+		Console.println(grid.getCell(new Unit2(14, 7)).getOccupant());
+		// Console.benchmark("Game screen", game::initializeGameScreen);
 
-		for (Cell cell : cells) {
-			Console.println(cell);
-		}
-
-		Console.br();
-
-		Iterator<Cell> itr = grid.getCellPathIterator(start, end);
-
-		Console.println(itr.next());
-		Console.println(itr.next());
-		Console.println(itr.next());
-
-		// Cell cell0 = grid.getCell(new Unit2(1, 1));
-		// Cell cell1 = grid.getCell(new Unit2(1, 2));
-
-		// Ant ant0 = new Ant();
-		// Ant ant1 = new Ant();
-
-		// cell0.setOccupant(ant0);
-		// ant0.assignCell(cell1);
-		// ant1.assignCell(cell0);
-
-		// Console.println(cell0.getVacancy());
-		// ant1.removeCell();
-		// Console.println(cell0.getVacancy());
-
-		// cell0.moveOccupantTo(cell1);
+		/*
+		 * --------------
+		 * | TEST CODE: |
+		 * --------------
+		 */
 
 	}
 }

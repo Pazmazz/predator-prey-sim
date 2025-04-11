@@ -1,22 +1,29 @@
 package classes.entity;
 
+import java.util.ArrayList;
+
 import classes.abstracts.Bug;
+import classes.util.Console;
+import classes.entity.CellGrid.Cell;
 
-public class Ant extends Bug {
+public class Ant extends Bug<Ant> {
 
-	public Ant() {
+	public Ant(Game game) {
+		super(game);
 		idNum = (int) (Math.random() * 1000);
-		this.setEatable(isEatable());
+
+		// properties
+		setProperty(Property.IS_EATABLE, true);
 	}
 
 	@Override
-	public void move(Cell currentCell, CellGrid grid) {
-		Cell[] adjCells = grid.getCellsAdjacentTo(currentCell);
+	public void move() {
+		ArrayList<Cell> adjCells = game
+				.getGameGrid()
+				.getCellsAdjacentTo(getCell());
 
 		for (Cell adjCell : adjCells) {
 			if (adjCell.isInBounds() && adjCell.isEmpty()) {
-				// currentCell.moveOccupantTo(adjCell);
-				// this.currentCell = adjCell;
 				assignCell(adjCell);
 				break;
 			}
@@ -25,15 +32,19 @@ public class Ant extends Bug {
 
 		if (movementCounter == 3) {
 			movementCounter = 0;
-			this.breed(adjCells);
+			this.breed();
 		}
 	}
 
 	@Override
-	public void breed(Cell[] adjCells) {
+	public void breed() {
+		ArrayList<Cell> adjCells = game
+				.getGameGrid()
+				.getCellsAdjacentTo(getCell());
+
 		for (Cell adjCell : adjCells) {
 			if (adjCell.isInBounds() && adjCell.isEmpty()) {
-				adjCell.setOccupant(new Ant());
+				adjCell.setOccupant(new Ant(game));
 				break;
 			}
 		}
@@ -41,6 +52,8 @@ public class Ant extends Bug {
 
 	@Override
 	public String toString() {
-		return "Ant";
+		return String.format(Console.withConsoleColors(
+				"$text-green Ant$text-reset #%s"),
+				idNum);
 	}
 }

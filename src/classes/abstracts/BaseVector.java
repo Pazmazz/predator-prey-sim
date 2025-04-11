@@ -3,6 +3,7 @@
  */
 package classes.abstracts;
 
+import classes.util.Console;
 import classes.util.Formatter;
 import classes.util.Math2;
 import exceptions.VectorMismatchException;
@@ -45,12 +46,12 @@ public abstract class BaseVector<T extends BaseVector<T>> {
 
 	/**
 	 * Computes the components of BaseVector<T>_0 and BaseVector<T>_1 by
-	 * processing their new values with a callback lamdba function. The
+	 * processing their new values with a callback lambda function. The
 	 * resulting values are stored in a double array.
 	 *
 	 * @param v
 	 * @param methodName the name of the calling method
-	 * @param callback   the lamdba function that processes components from both
+	 * @param callback   the lambda function that processes components from both
 	 *                   BaseVector<T> objects
 	 *
 	 * @return the double array containing the resulting components
@@ -99,7 +100,7 @@ public abstract class BaseVector<T extends BaseVector<T>> {
 	 * Gets the BaseVector<T> components and converts them to a fixed array of
 	 * doubles
 	 *
-	 * @return a Double array of the BaseVector<T> compnents
+	 * @return a Double array of the BaseVector<T> components
 	 */
 	public Double[] componentsArray() {
 		return this.components.toArray(new Double[size()]);
@@ -268,8 +269,8 @@ public abstract class BaseVector<T extends BaseVector<T>> {
 
 	@Override
 	public String toString() {
-		return this.getClass()
+		return Console.withConsoleColors(this.getClass()
 				.getSimpleName()
-				+ "<" + Formatter.concatArray(componentsArray()) + ">";
+				+ "<" + Formatter.concatArray(componentsArray()) + ">");
 	}
 }
