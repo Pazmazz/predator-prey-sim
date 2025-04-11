@@ -1,5 +1,7 @@
 package interfaces;
 
+import java.util.Optional;
+
 public interface Benchmark {
-	void run();
+	Object run();
 }
