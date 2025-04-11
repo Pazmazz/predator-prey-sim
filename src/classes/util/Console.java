@@ -70,6 +70,7 @@ public class Console {
 			{ "bright_white", "\u001B[97m" }, };
 
 	final private static String[][] BG_COLORS = {
+			{ "reset", "\u001B[0m" },
 			{ "black", "\u001B[40m" },
 			{ "red", "\u001B[41m" },
 			{ "green", "\u001B[42m" },
@@ -307,7 +308,7 @@ public class Console {
 		long aft = Time.tick() - pre;
 
 		println(String.format(
-				"---- $text-yellow Benchmark Analytics:$text-reset  \"$text-bright_purple %s$text-reset \" %s\n",
+				"---- $text-cyan Benchmark Analytics:$text-reset  \"$text-bright_green %s$text-reset \" %s\n",
 				message,
 				"-".repeat(Math.max(50 - message.length(), 5))));
 
@@ -316,7 +317,7 @@ public class Console {
 				result));
 
 		println(String.format(
-				"> $text-bright_purple Completion:$text-reset  $text-yellow %s$text-reset  seconds\n",
+				"$bg-green $text-black > Completion:$text-reset  $text-bright_green %s$text-reset  seconds\n",
 				Time.nanoToSeconds(aft)));
 
 	}

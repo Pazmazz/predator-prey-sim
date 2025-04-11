@@ -57,6 +57,7 @@ public class App {
 		// game.start();
 
 		Console.benchmark("Game grid initializer", game::initializeGameGrid);
+		// Console.benchmark("Game Grid", grid::toASCII);
 		// Console.benchmark("Game screen", game::initializeGameScreen);
 
 		/*

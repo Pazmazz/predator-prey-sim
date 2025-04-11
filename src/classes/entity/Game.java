@@ -172,6 +172,8 @@ public class Game implements Runnable {
 		for (Cell cell : doodlebugCells)
 			cell.setOccupant(new Doodlebug(this));
 
+		Console.println(this.gameGrid.getRandomAvailableCells(5));
+
 		return null;
 	}
 
