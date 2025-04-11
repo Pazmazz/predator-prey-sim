@@ -42,7 +42,7 @@ Minor changes.
 
 	* [`CellGrid.getAvailableCellsFrom(ArrayList<Cell>)`](https://github.com/Pazmazz/predator-prey-sim/blob/main/src/classes/entity/CellGrid.java#L620)
 		- *returns all available (non-occupied) cells from a provided array list of `Cell` objects.*
-		
+
 	* [`CellGrid.getRandomAvailableCellsFrom(ArrayList<Cell>, amount)`](https://github.com/Pazmazz/predator-prey-sim/blob/main/src/classes/entity/CellGrid.java#L719)
 		- *returns an `ArrayList<Cell>` of random available (non-occupied) `Cell` objects within a provided `ArrayList<Cell>`, quantified by the `amount` parameter*
 
@@ -265,7 +265,7 @@ Console.println(grid.getRandomCells());
 
 - **Parameters:**
 
-  - `<ArrayList<Cell> cells>` - *the `ArrayList<Cell>` to choose a random `Cell` object from
+  - `<ArrayList<Cell> cells>` - *the `ArrayList<Cell>` to choose a random `Cell` object from*
 
 - **Returns:** `<Cell cell>`
 
@@ -281,6 +281,50 @@ Cell cell = grid.getCell(new Unit2(1, 1));
 // (-1, 1), (1, 2), (2, 1), (1, -1)
 ArrayList<Cell> adjCells = grid.getCellsAdjacentTo(cell);
 
+Console.println(grid.getRandomCellFrom(adjCells));
+Console.println(grid.getRandomCellFrom(adjCells));
+Console.println(grid.getRandomCellFrom(adjCells));
+```
+
+#### Output:
+
+<blockquote>
+Cell<2, 1>
+<br>
+Cell<-1, 1>
+<br>
+Cell<1, -1>
+</blockquote>
+
+<br/>
+
+These are in random order.
+
+### `CellGrid.getRandomCellsFrom()` *Version 0.2.1+*
+
+- **Parameters:**
+
+	- **Overload 1:**
+
+  		- `<ArrayList<Cell> cells>` - *the `ArrayList<Cell>` to choose random `Cell` objects from*
+	
+	- **Overload 2:**
+
+		- `<ArrayList<Cell> cells>` - *same as Overload 1*
+		- `<int amount>` - *the quantity of random cells to select from the provided `cells` array list and include in the returned array list*
+
+- **Returns:** `<ArrayList<Cell> cells>` - *the random `Cell` objects chosen from the provided `ArrayList<Cell>`.*
+
+Randomly selects a subset of `Cell` objects from a provided `ArrayList<Cell>` of cells. This will not perform cell availability checks, much like `CellGrid.getRandomCell()` and `CellGrid.getRandomCells()`.
+
+#### Example:
+```java
+CellGrid grid = new CellGrid(new Unit2(10, 10));
+
+// get adjacent cells (ordered)
+Cell cell = grid.getCell(new Unit2(1, 1));
+ArrayList<Cell> adjCells = grid.getCellsAdjacentTo(cell);
+
 Console.println(grid.getRandomCellsFrom(adjCells));
 ```
 
@@ -290,15 +334,98 @@ Console.println(grid.getRandomCellsFrom(adjCells));
 [Cell<2, 1>, Cell<1, 2>, Cell<1, -1>, Cell<-1, 1>]
 </blockquote>
 
-<br/>
+<br>
 
-(in no particular order).
+These are in random order.
 
-### `CellGrid.getRandomCellsFrom()` *Version 0.2.1+*
+As an overload, you can pass an optional second argument `amount` to specify how many random cells you want to select out of the provided array list. Let's say we just want to get `2` random cells out of the `4` that `CellGrid.getCellsAdjacentTo()` returns:
+
+
+#### Example:
+```java
+CellGrid grid = new CellGrid(new Unit2(10, 10));
+
+// get adjacent cells (ordered)
+Cell cell = grid.getCell(new Unit2(1, 1));
+ArrayList<Cell> adjCells = grid.getCellsAdjacentTo(cell);
+
+Console.println(grid.getRandomCellsFrom(adjCells, 2));
+Console.println(grid.getRandomCellsFrom(adjCells, 2));
+Console.println(grid.getRandomCellsFrom(adjCells, 2));
+```
+
+#### Output:
+
+<blockquote>
+[Cell<1, 2>, Cell<-1, 1>]
+<br>
+[Cell<-1, 1>, Cell<1, -1>]
+<br>
+[Cell<2, 1>, Cell<1, -1>]
+</blockquote>
+
+<br>
+
+These are in random order.
 
 ### `CellGrid.getAvailableCells()` *Version 0.2.1+*
 
+- **Returns:** `<ArrayList<Cell> cells>` - *all available (non-occupied and in-bounds) `Cell` objects in the virtual grid*
+
+#### Example:
+```java
+CellGrid grid = new CellGrid(new Unit2(10, 10));
+
+grid.getCell(new Unit2(1, 1));
+grid.getCell(new Unit2(-1, -1)); // out of bounds
+grid.getCell(new Unit2(2, 2)).setOccupant(new Ant(game)); // has an occupant
+
+ArrayList<Cell> availableCells = grid.getAvailableCells();
+
+Console.println(availableCells);
+```
+
+#### Output:
+
+<blockquote>
+[Cell<1, 1>]
+</blockquote>
+
+<br>
+
+`Cell<-1, -1>` is out of bounds, and therefore not included. `Cell<2, 2>` is in-bounds, however it contains an occupant and is therefore not available.
+
 ### `CellGrid.getAvailableCellsFrom()` *Version 0.2.1+*
+
+- **Returns:** `<ArrayList<Cell> cells>` - *an `ArrayList<Cell>` of available (non-occupied) `Cell` objects in the provided array list*
+
+Returns all available (non-occupied and in-bounds) `Cell` objects within the provided `ArrayList<Cell>`
+
+#### Example:
+```java
+CellGrid grid = new CellGrid(new Unit2(10, 10));
+
+Cell cell = grid.getCell(new Unit2(1, 1));
+
+ArrayList<Cell> adjCells = grid.getCellsAdjacentTo(cell);
+ArrayList<Cell> availableCells = grid.getAvailableCellsFrom(adjCells);
+
+Console.println(availableCells);
+```
+
+#### Output:
+
+<blockquote>
+[Cell<1, 2>, Cell<2, 1>]
+</blockquote>
+
+<br>
+
+Since `Cell<1, 1>` is a corner cell, two of it's adjacent cells will be out of bounds, and therefore not included in the returned available cells array. (See ***figure 1.*** below)
+
+***Figure 1.***
+
+<img src="./assets/available-cells-ex.png" width="250">
 
 ### `CellGrid.getRandomAvailableCell()` *Version 0.2.1+*
 
