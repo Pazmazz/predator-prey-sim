@@ -5,7 +5,7 @@ Updates shared between developers of this project
 ## Version 0.3.4
 ##### [William J. Horn](https://github.com/william-horn) - *4/11/2025*
 
-Major changes.
+Minor changes.
 
 * **Added** [`Task`](../src/classes/abstracts/FrameProcessor.java) class back, along with the task scheduler integrated into the [`FrameProcessor`](../src/classes/abstracts/FrameProcessor.java)
 

@@ -13,7 +13,7 @@ This choice was made for two reasons:
 ## Version 0.2.1
 ##### [William J. Horn](https://github.com/william-horn) - *4/11/2025*
 
-Minor changes.
+Major changes.
 
 * **Added** more grid-querying methods for getting random cells, available cells, or both. Such methods include:
 	* [`CellGrid.getCells()`](https://github.com/Pazmazz/predator-prey-sim/blob/main/src/classes/entity/CellGrid.java#L607)
