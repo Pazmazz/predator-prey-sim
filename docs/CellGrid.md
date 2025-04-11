@@ -277,7 +277,7 @@ Console.println(grid.getRandomCells());
 
 - **Returns:** `<Cell cell>`
 
-This method will return *any* random cell within a provided `ArrayList<Cell>`. It will not check for availability of the cell, it will will just choose any cell at random, similar to `CellGrid.getRandomCell()`
+This method will return *any* random cell within a provided `ArrayList<Cell>`. It will not check for availability of the cell, it will just choose any cell at random similar to `CellGrid.getRandomCell()`
 
 #### Example:
 ```java
@@ -378,7 +378,7 @@ Console.println(grid.getRandomCellsFrom(adjCells, 2));
 
 ### `CellGrid.getAvailableCells()` *Version 0.2.1+*
 
-- **Returns:** `<ArrayList<Cell> cells>` - *all available (non-occupied and in-bounds and in-bounds) `Cell` objects in the virtual grid*
+- **Returns:** `<ArrayList<Cell> cells>` - *all available (non-occupied and in-bounds) `Cell` objects in the virtual grid*
 
 #### Example:
 ```java
@@ -454,9 +454,9 @@ Since `Cell<1, 1>` is a corner cell, two of it's adjacent cells will be out of b
 CellGrid grid = new CellGrid(new Unit2(10, 10));
 
 grid.getCell(new Unit2(1, 1));
-grid.getCell(new Unit2(1, 2)).setOccupant(new Ant(game));
+grid.getCell(new Unit2(1, 2)).setOccupant(new Ant(game)); // not available
 grid.getCell(new Unit2(1, 3));
-grid.getCell(new Unit2(1, 4)).setOccupant(new Ant(game));
+grid.getCell(new Unit2(1, 4)).setOccupant(new Ant(game)); // not available
 
 Console.println(grid.getRandomAvailableCell());
 Console.println(grid.getRandomAvailableCell());
