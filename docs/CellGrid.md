@@ -10,11 +10,54 @@ This choice was made for two reasons:
 
 2. It's more convenient to use the `HashMap` API to query the grid for a given cell than constantly indexing a 2D array.
 
-## Version 0.0.2
+## Version 0.2.1
+##### [William J. Horn](https://github.com/william-horn) - *4/11/2025*
 
+Minor changes.
 
+* **Added** more grid-querying methods for getting random cells, available cells, or both. Such methods include:
+	* [`CellGrid.getCells()`](https://github.com/Pazmazz/predator-prey-sim/blob/main/src/classes/entity/CellGrid.java#L607)
+		- *returns all `Cell` objects on the grid as an `ArrayList<Cell>` object*
+	* [`CellGrid.getAvailableCells()`](https://github.com/Pazmazz/predator-prey-sim/blob/main/src/classes/entity/CellGrid.java#L749)
+		- *returns all available (non-occupied) cells on the virtual grid.*
+	* [`CellGrid.getRandomCell()`](https://github.com/Pazmazz/predator-prey-sim/blob/main/src/classes/entity/CellGrid.java#L759)
+		- *returns a random `Cell` object on the virtual grid (does not check if it's available)*
+	* [`CellGrid.getRandomCells()`](https://github.com/Pazmazz/predator-prey-sim/blob/main/src/classes/entity/CellGrid.java#L782)
+		- *returns all `Cell` objects on the grid in random order as an `ArrayList<Cell>` object*
+	* [`CellGrid.getRandomAvailableCell()`](https://github.com/Pazmazz/predator-prey-sim/blob/main/src/classes/entity/CellGrid.java#L770)
+		- *returns a random available `Cell` object on the virtual grid only if it is available (non-occupied)*
+	* [`CellGrid.getRandomCells(amount)`](https://github.com/Pazmazz/predator-prey-sim/blob/main/src/classes/entity/CellGrid.java#L795)
+		- *returns an `ArrayList<Cell>` of random `Cell` objects on the grid, quantified by the `amount` parameter.*
+	* [`CellGrid.getRandomCellsFrom(ArrayList<Cell>, amount)`](https://github.com/Pazmazz/predator-prey-sim/blob/main/src/classes/entity/CellGrid.java#L697)
+		- *returns an `ArrayList<Cell>` of random `Cell` objects from a provided `ArrayList<Cell>` of `Cell` objects.*
+	* [`CellGrid.getRandomCellFrom(ArrayList<Cell>)`](https://github.com/Pazmazz/predator-prey-sim/blob/main/src/classes/entity/CellGrid.java#L640)
+		- *returns a random cell from a provided array list of `Cell` objects (does not check it's available)*
+	* [`CellGrid.getAvailableCellsFrom(ArrayList<Cell>)`](https://github.com/Pazmazz/predator-prey-sim/blob/main/src/classes/entity/CellGrid.java#L620)
+		- *returns all available (non-occupied) cells from a provided array list of `Cell` objects.*
+	* [`CellGrid.getRandomAvailableCellsFrom(ArrayList<Cell>, amount)`](https://github.com/Pazmazz/predator-prey-sim/blob/main/src/classes/entity/CellGrid.java#L719)
+		- *returns an `ArrayList<Cell>` of random available (non-occupied) `Cell` objects within a provided `ArrayList<Cell>`, quantified by the `amount` parameter*
 
-## Version 0.0.1
+* **Added** special query methods for computing path cells intersecting with a line. Methods include:
+	- [`CellGrid.getCellPathIterator(Vector2 from, Vector2 to)`](https://github.com/Pazmazz/predator-prey-sim/blob/main/src/classes/entity/CellGrid.java#L885)
+		- *returns an `Iterator<Cell>` iterator which will incrementally compute the next grid cell on the line starting at `from` and ending at `to` on every `CellPathIterator.next()` call.*
+
+	- [`CellGrid.getCellPath(Vector2 from, Vector2 to)`](https://github.com/Pazmazz/predator-prey-sim/blob/main/src/classes/entity/CellGrid.java#L861)
+		- *returns an `ArrayList<Cell>` of cell objects intersecting with the line starting at `from` and ending at `to`, all at once*
+
+	- [`CellGrid.getGridIntercept(Vector2 from, Vector2 to)`](https://github.com/Pazmazz/predator-prey-sim/blob/main/src/classes/entity/CellGrid.java)
+		- *returns a `GridIntercept` object with metadata about the first grid cell that the line between `from` and `to` intersects with*
+
+* **Added** other notable utility methods:
+	* [`CellGrid.getCellCount()`](https://github.com/Pazmazz/predator-prey-sim/blob/main/src/classes/entity/CellGrid.java)
+		- *returns the integer number of `Cell` objects that currently exist on the cell grid*
+
+	* [`CellGrid.getGrid()`](https://github.com/Pazmazz/predator-prey-sim/blob/main/src/classes/entity/CellGrid.java)
+		- *returns the object reference to the internal `CellGrid` hashmap*
+
+## Version 0.1.1
+##### [William J. Horn](https://github.com/william-horn) - *4/08/2025*
+
+Major changes.
 
 - **Changed** starting unit on the grid from `(0, 0)` to `(1, 1)`.
 
@@ -33,6 +76,7 @@ This choice was made for two reasons:
 
 - `GridCell.getCell()` now additionally accepts `Vector2` arguments which will return the cell on the screen at that given point.
 
+<br/>
 
 # Getting Started
 
@@ -391,24 +435,29 @@ OUT_OF_BOUNDS
 
 - **Parameters:**
 
-  - `<Vector2 from, Vector2 to>` - _The two points required to find the next grid intercept_
+  - `<Vector2 from>` - _The starting point of the line_
+  - `<Vector2 to>` - _The ending point of the line_
 
 - **Returns:** `<GridIntercept metadata>`
 
-Given two points, find and return the next point that intersects the grid lines between those two points.
+Given two points, find and return the next point that intersects the grid lines between those two points, along with metadata about that intersection (such as which `Cell` it collided with)
+
+***Figure 1.***
+<img src="./assets/grid-intercept-example.png">
+
+Considering this graph, `getGridIntercept` will return the first grid line intercept between `Point 1` and `Point 2`. The graph above written in code would look like this:
 
 #### Example:
 
 ```java
 CellGrid grid = new CellGrid(new Unit2(10, 10));
 
-Cell p0 = grid.getCell(new Unit2(3, 3));
-Cell p1 = grid.getCell(new Unit2(5, 7));
+Vector2 p1 = new Vector2(0.5, 3.5);
+Vector2 p2 = new Vector2(6.5, 2.5);
 
 GridIntercept inter = grid.getGridIntercept(p0, p1);
 
-Console.println(inter.hasX());
-Console.println(inter.hasY());
+Console.println(inter);
 ```
 
 ### `CellGrid.getCellPath()`

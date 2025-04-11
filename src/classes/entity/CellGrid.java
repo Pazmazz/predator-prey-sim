@@ -10,7 +10,6 @@ import classes.util.Console.DebugPriority;
 import exceptions.NoCellFoundException;
 import classes.util.Math2;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.Map;
@@ -164,13 +163,13 @@ public class CellGrid {
 			axisOfIntersection = CellGridAxis.X_GRID;
 			pointOfIntersection = new Vector2(
 					limitX,
-					Math2.lerp(tx, startY, endY));
+					Math2.lerp(startY, endY, tx));
 
 			// Y-intercept
 		} else if (ty < tx) {
 			axisOfIntersection = CellGridAxis.Y_GRID;
 			pointOfIntersection = new Vector2(
-					Math2.lerp(ty, startX, endX),
+					Math2.lerp(startX, endX, ty),
 					limitY);
 
 			// X- and Y-intercept
