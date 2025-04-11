@@ -3,7 +3,6 @@
  */
 package classes.util;
 
-import classes.abstracts.Application;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -13,7 +12,7 @@ import java.util.regex.Pattern;
  * Used for interacting with and styling the console. Much of this code was
  * reused from the final project from the previous semester in CS-190.
  */
-public class Console extends Application {
+public class Console {
 
 	//
 	// Debug info (immutable at runtime)

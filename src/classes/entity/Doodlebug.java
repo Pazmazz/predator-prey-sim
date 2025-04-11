@@ -1,5 +1,7 @@
 package classes.entity;
 
+import java.util.ArrayList;
+
 import classes.abstracts.Bug;
 import classes.util.Console;
 
@@ -17,7 +19,7 @@ public class Doodlebug extends Bug<Doodlebug> {
 
 	@Override
 	public void move() {
-		Cell[] adjCells = game
+		ArrayList<Cell> adjCells = game
 				.getGameGrid()
 				.getCellsAdjacentTo(getCell());
 
@@ -47,7 +49,7 @@ public class Doodlebug extends Bug<Doodlebug> {
 
 	@Override
 	public void breed() {
-		Cell[] adjCells = game
+		ArrayList<Cell> adjCells = game
 				.getGameGrid()
 				.getCellsAdjacentTo(getCell());
 

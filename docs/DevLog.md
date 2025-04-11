@@ -2,49 +2,55 @@
 
 Updates shared between developers of this project
 
-## Version 0.3.3
-##### [William J. Horn](https://github.com/william-horn) - *4/10/2025*
+## Version 0.3.4
+##### [William J. Horn](https://github.com/william-horn) - *4/11/2025*
 
 Minor changes.
 
-* **Added** snapshot feature to the `CellGrid` class.
+* **Added** [`Task`](../src/classes/abstracts/FrameProcessor.java) class back, along with the task scheduler integrated into the [`FrameProcessor`](../src/classes/abstracts/FrameProcessor.java)
 
-	* Allows us to go back in time during the simulation to earlier game phases. After each game movement, a "snapshot" of the game grid is taken, saving it in history up until a certain threshold.
+	* It was added back due to it now being useful for utilizing the game loop to increment move steps.
 
-* **Added** [`Null`](../src/classes/entity/Null.java) class.
+* **Removed** the `Application` class.
 
-	* Used as a `null` property value, since `ConcurrentHashMap` can not store `null` keys or values.
+	* It was not being used.
 
-		Ex, we can't do this:
+* **Added** more grid-querying methods for getting random cells, available cells, or both. Such methods include:
+	* [`grid.getCells()`](../src/classes/entity/CellGrid.java)
+		- *returns all `Cell` objects on the grid as an `ArrayList<Cell>` object*
+	* [`grid.getAvailableCells()`](../src/classes/entity/CellGrid.java)
+		- *returns all available (non-occupied) cells on the virtual grid.*
+	* [`grid.getRandomCell()`](../src/classes/entity/CellGrid.java)
+		- *returns a random `Cell` object on the virtual grid (does not check if it's available)*
+	* [`grid.getRandomAvailableCell()`](../src/classes/entity/CellGrid.java)
+		- *returns a random available `Cell` object on the virtual grid only if it is available (non-occupied)*
+	* [`grid.getRandomCells(amount)`](../src/classes/entity/CellGrid.java)
+		- *returns an `ArrayList<Cell>` of random `Cell` objects on the grid, quantified by the `amount` parameter.*
+	* [`grid.getRandomCellsFrom(ArrayList<Cell>, amount)`](../src/classes/entity/CellGrid.java)
+		- *returns an `ArrayList<Cell>` of random `Cell` objects from a provided `ArrayList<Cell>` of `Cell` objects.*
+	* [`grid.getRandomCellFrom(ArrayList<Cell>)`](../src/classes/entity/CellGrid.java)
+		- *returns a random cell from a provided array list of `Cell` objects (does not check it's available)*
+	* [`grid.getAvailableCellsFrom(ArrayList<Cell>)`](../src/classes/entity/CellGrid.java)
+		- *returns all available (non-occupied) cells from a provided array list of `Cell` objects.*
+	* [`grid.getRandomAvailableCellsFrom(ArrayList<Cell>, amount)`](../src/classes/entity/CellGrid.java)
+		- *returns an `ArrayList<Cell>` of random available (non-occupied) `Cell` objects within a provided `ArrayList<Cell>`, quantified by the `amount` parameter*
+	
 
-		```java
-		setProperty(Property.POSITION, null); // -> throws an error
-		```
+* **Changed** method `grid.getAdjacentCells()` to return `ArrayList<Cell>` instead of `Cell[]`.
 
-		But we can now do this:
+	* This was so we can utilize the dynamic functionality of the `List` API for slightly more control over generating or iterating over cell lists.
 
-		```java
-		setProperty(Property.POSITION, new Null()); // -> returns null
-		```
+	* This change also applies to derivatives of `getAdjacentCells()`, such as:
+		- [`grid.getAvailableCells()`](../src/classes/entity/CellGrid.java)
+		- [`grid.getAvailableCellsFrom()`](../src/classes/entity/CellGrid.java)
 
-## Version 0.3.2
-##### [William J. Horn](https://github.com/william-horn) - *4/10/2025*
 
-Minor changes. 
-
-* **Removed** issue where `$text-color` tags still showed up in text printed to the console even if `consoleColorsEnabled` was set to `false`.
-
-	* **Solution:** Passed text through a new static `Console` method called `withConsoleColors`, which will remove stray text color tags if `consoleColorsEnabled` is `false`.
-
-* **Fixed** issue with `Console.println` throwing an error when printing a `null` value.
-	* **Solution:** The issue was actually with the `Formatter.concatArray` method not checking for null entries inside of the `Object[]` parameter when iterating over it. This has now been accounted for.
-
-## Version 0.2.2
+## Version 0.3.3
 ##### [William J. Horn](https://github.com/william-horn) - *4/10/2025*
 
 Major changes.
 
-* **Changed** `CellOccupant` class name to [`Entity`](../src/classes/abstracts/Entity.java), and converted it to an `abstract` class. 
+* **Changed** `CellOccupant` class name to [`Entity`](../src/classes/abstracts/Entity.java), and converted it back to an `abstract` class. 
 
 	* This is because `Entity` is a more general term, and it implies that we can extend this class to create many other different types of game objects instead of just something that occupies a cell.
 
@@ -86,3 +92,40 @@ Major changes.
 
 	* This just makes more linguistic sense, since the entity inside the cell is just removing itself *from* the cell, it's not removing the cell itself.
 	
+
+## Version 0.2.3
+##### [William J. Horn](https://github.com/william-horn) - *4/10/2025*
+
+Minor changes.
+
+* **Added** snapshot feature to the `CellGrid` class.
+
+	* Allows us to go back in time during the simulation to earlier game phases. After each game movement, a "snapshot" of the game grid is taken, saving it in history up until a certain threshold.
+
+* **Added** [`Null`](../src/classes/entity/Null.java) class.
+
+	* Used as a `null` property value, since `ConcurrentHashMap` can not store `null` keys or values.
+
+		Ex, we can't do this:
+
+		```java
+		setProperty(Property.POSITION, null); // -> throws an error
+		```
+
+		But we can now do this:
+
+		```java
+		setProperty(Property.POSITION, new Null()); // -> returns null
+		```
+
+## Version 0.2.2
+##### [William J. Horn](https://github.com/william-horn) - *4/10/2025*
+
+Minor changes. 
+
+* **Removed** issue where `$text-color` tags still showed up in text printed to the console even if `consoleColorsEnabled` was set to `false`.
+
+	* **Solution:** Passed text through a new static `Console` method called `withConsoleColors`, which will remove stray text color tags if `consoleColorsEnabled` is `false`.
+
+* **Fixed** issue with `Console.println` throwing an error when printing a `null` value.
+	* **Solution:** The issue was actually with the `Formatter.concatArray` method not checking for null entries inside of the `Object[]` parameter when iterating over it. This has now been accounted for.

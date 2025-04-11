@@ -1,5 +1,7 @@
 package classes.entity;
 
+import java.util.ArrayList;
+
 import classes.abstracts.Bug;
 import classes.util.Console;
 
@@ -15,7 +17,7 @@ public class Ant extends Bug<Ant> {
 
 	@Override
 	public void move() {
-		Cell[] adjCells = game
+		ArrayList<Cell> adjCells = game
 				.getGameGrid()
 				.getCellsAdjacentTo(getCell());
 
@@ -35,7 +37,7 @@ public class Ant extends Bug<Ant> {
 
 	@Override
 	public void breed() {
-		Cell[] adjCells = game
+		ArrayList<Cell> adjCells = game
 				.getGameGrid()
 				.getCellsAdjacentTo(getCell());
 

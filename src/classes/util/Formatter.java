@@ -3,13 +3,11 @@
  */
 package classes.util;
 
-import classes.abstracts.Application;
-
 /**
  * Provides a library of format methods for handling general string format
  * needs, or converting complex data into a formatted string
  */
-public class Formatter extends Application {
+public class Formatter {
 
 	/**
 	 * Takes any array and returns a string separating the array contents by

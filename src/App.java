@@ -15,7 +15,6 @@
 
 import java.util.HashMap;
 
-import classes.abstracts.Application;
 import classes.abstracts.Entity;
 import classes.abstracts.Properties.Property;
 import classes.entity.Ant;
@@ -31,7 +30,7 @@ import classes.entity.Doodlebug;
 /**
  * The entry-point file for the application
  */
-public class App extends Application {
+public class App {
 
 	public static void main(String[] args) {
 		Console.setDebugModeEnabled(true);
@@ -47,23 +46,6 @@ public class App extends Application {
 		 * | TEST CODE: |
 		 * --------------
 		 */
-
-		CellGrid grid = game.getGameGrid();
-
-		Cell cell0 = grid.getCell(new Unit2(1, 1));
-		Cell cell1 = grid.getCell(new Unit2(2, 2));
-
-		Ant ant0 = new Ant(game);
-		ant0.assignCell(cell0);
-
-		Ant ant1 = new Ant(game);
-		ant1.assignCell(cell1);
-
-		Entity<Ant> ant2 = new Ant(game);
-
-		// Thread thread0 = new Thread(() -> {
-		// Console.println("Test thread");
-		// });
 
 		// thread0.start();
 

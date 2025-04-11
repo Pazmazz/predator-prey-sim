@@ -3,8 +3,8 @@
  */
 package classes.entity;
 
-import classes.abstracts.Application;
 import classes.abstracts.FrameProcessor;
+import classes.abstracts.FrameProcessor.Task;
 import classes.settings.GameSettings;
 import classes.settings.GameSettings.SimulationType;
 import classes.simulation.MovementFrame;
@@ -21,7 +21,7 @@ import java.util.UUID;
  * with the game and all game state is managed through the instance of this
  * class.
  */
-public class Game extends Application implements Runnable {
+public class Game implements Runnable {
 
 	final private Thread mainThread;
 	final private GameScreen screen;
@@ -76,13 +76,15 @@ public class Game extends Application implements Runnable {
 		this.state = GameState.LOADED;
 	}
 
-	// void saveSnapshot();
-	// void loadSnapshot();
-
+	// TODO: Implement snapshot saving/loading
 	public void saveSnapshot() {
 		Snapshot snapshot = new Snapshot();
 
 		this.snapshots.add(snapshot);
+	}
+
+	public void loadSnapshot() {
+
 	}
 
 	/**
@@ -96,7 +98,7 @@ public class Game extends Application implements Runnable {
 			this.setState(GameState.RUNNING);
 			mainThread.start();
 		} else {
-			Console.error("start() can only be called once per game instance");
+			throw new Error("start() can only be called once per game instance");
 		}
 	}
 
@@ -122,8 +124,6 @@ public class Game extends Application implements Runnable {
 		while (isThreadRunning()) {
 			long simulationDelta = 0;
 
-			// simulationDelta += preSimulationHeartbeat()
-
 			for (FrameProcessor frame : this.frameProcesses) {
 				if (frame.isSuspended())
 					continue;
@@ -133,12 +133,23 @@ public class Game extends Application implements Runnable {
 					simulationDelta += frameDelta;
 			}
 
-			// simulationDelta += postSimulationHeartbeat()
-
 			long threadYieldTime = this.simulationFPS - simulationDelta;
 			if (threadYieldTime > 0)
 				wait(Time.nanoToMillisecond(threadYieldTime));
 		}
+	}
+
+	// TODO: Add documentation
+	public void wait(double milliseconds) {
+		try {
+			Thread.sleep((long) milliseconds);
+		} catch (InterruptedException e) {
+			throw new Error(e);
+		}
+	}
+
+	public void initializeGameGrid() {
+
 	}
 
 	//

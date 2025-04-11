@@ -35,4 +35,8 @@ public class Math2 {
 
 		return Math.abs(n) / n;
 	}
+
+	public static int randInt(int range) {
+		return (int) (Math.random() * range);
+	}
 }

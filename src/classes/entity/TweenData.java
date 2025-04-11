@@ -2,25 +2,25 @@ package classes.entity;
 
 import java.util.HashMap;
 
-import classes.abstracts.Application;
 import classes.abstracts.Entity;
 import classes.abstracts.Properties;
 import classes.abstracts.Properties.Property;
+import classes.util.Time;
 
-public class TweenData extends Application {
+public class TweenData {
 	private Object startValue;
 	private Object endValue;
 	private double duration = 1;
 	private boolean isCritical = false;
 	private long startTime = -1;
-	private Entity entity;
+	private Entity<?> entity;
 
 	// TweenInfo positionTween = new TweenData(this, Property.POSITION, new
 	// Vector2(100, 100), 5, true));
 	// positionTween.start();
 	// positionTween.stop();
 	// positionTween.terminate();
-	public TweenData(Entity entity, Property property, Object endValue, double duration) {
+	public TweenData(Entity<?> entity, Property property, Object endValue, double duration) {
 		this.duration = duration;
 		this.endValue = endValue;
 		this.entity = entity;
@@ -39,7 +39,7 @@ public class TweenData extends Application {
 	}
 
 	public void setStartTime() {
-		this.startTime = tick();
+		this.startTime = Time.tick();
 	}
 
 	public void setStartTime(long startTime) {

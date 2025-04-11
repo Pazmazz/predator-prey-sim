@@ -8,6 +8,10 @@ package classes.util;
  */
 public class Time {
 
+	public static long tick() {
+		return System.nanoTime();
+	}
+
 	public static long secondsToNano(double seconds) {
 		return (long) (seconds * 1_000_000_000L);
 	}

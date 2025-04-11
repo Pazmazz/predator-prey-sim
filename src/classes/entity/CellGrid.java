@@ -10,6 +10,7 @@ import classes.util.Console.DebugPriority;
 import exceptions.NoCellFoundException;
 import classes.util.Math2;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -570,17 +571,17 @@ public class CellGrid {
 	 *
 	 * @param unit the unit of the cell to get the adjacent cells of
 	 *
-	 * @return fixed array of all four adjacent cells
+	 * @return an {@code ArrayList<Cell>} array of adjacent cell objects
 	 * 
 	 * @see #getCellsAdjacentTo(Cell)
 	 * @see #getCellsAdjacentTo(Unit2)
 	 */
-	public Cell[] getCellsAdjacentTo(Unit2 unit) {
-		Cell[] cells = new Cell[4];
-		cells[0] = getCellTopOf(unit);
-		cells[1] = getCellBottomOf(unit);
-		cells[2] = getCellLeftOf(unit);
-		cells[3] = getCellRightOf(unit);
+	public ArrayList<Cell> getCellsAdjacentTo(Unit2 unit) {
+		ArrayList<Cell> cells = new ArrayList<>();
+		cells.add(getCellTopOf(unit));
+		cells.add(getCellBottomOf(unit));
+		cells.add(getCellLeftOf(unit));
+		cells.add(getCellRightOf(unit));
 		return cells;
 	}
 
@@ -588,13 +589,201 @@ public class CellGrid {
 	 * Get the cells adjacent to a given {@code Cell} object.
 	 * 
 	 * @param cell the cell to find the adjacent cells to
-	 * @return an array of {@code Cell} objects representing the cells adjacent to
-	 *         {@code cell}
+	 * 
+	 * @return an {@code ArrayList<Cell>} of {@code Cell} objects representing the
+	 *         cells adjacent to {@code cell}
+	 * 
 	 * @see #getCellsAdjacentTo(Unit2)
 	 * @see #getCellsAdjacentTo(Cell)
 	 */
-	public Cell[] getCellsAdjacentTo(Cell cell) {
+	public ArrayList<Cell> getCellsAdjacentTo(Cell cell) {
 		return getCellsAdjacentTo(cell.getUnit2());
+	}
+
+	/**
+	 * Get all instantiated {@code Cell} objects that currently exist on the virtual
+	 * grid.
+	 * 
+	 * @return an {@code ArrayList<Cell>} of all currently existing cells
+	 * @see #getCells
+	 */
+	public ArrayList<Cell> getCells() {
+		return (ArrayList<Cell>) this.virtualGrid.values();
+	}
+
+	/**
+	 * Get all available (non-occupied) cells from a provided list of {@code Cell}
+	 * objects.
+	 * 
+	 * @param cells the {@code ArrayList<Cell>} of {@code Cell} objects to find the
+	 *              available cells in
+	 * @return an {@code ArrayList<Cell>} of all currently existing cells
+	 * @see #getAvailableCellsFrom
+	 */
+	public ArrayList<Cell> getAvailableCellsFrom(ArrayList<Cell> cells) {
+		ArrayList<Cell> availableCells = new ArrayList<>();
+
+		for (Cell cell : cells)
+			if (!cell.isEmpty())
+				availableCells.add(cell);
+
+		return availableCells;
+	}
+
+	/**
+	 * Get a random cell from a provided {@code ArrayList<Cell>} of cells.
+	 * 
+	 * @param cells the provided {@code ArrayList<Cell>} of {@code Cell} objects.
+	 * @return the random {@code Cell} object in {@code cells}
+	 * 
+	 * @see #getRandomCellFrom(ArrayList)
+	 * @see #getRandomCellsFrom(ArrayList)
+	 * @see #getRandomCellsFrom(ArrayList, int)
+	 */
+	public Cell getRandomCellFrom(ArrayList<Cell> cells) {
+		return cells.get(Math2.randInt(cells.size()));
+	}
+
+	/**
+	 * Gets a random available (non-occupied) cell from a provided
+	 * {@code ArrayList<Cell>} of {@code Cell} objects.
+	 * 
+	 * @param cells the provided {@code ArrayList<Cell>} of {@code Cell} objects.
+	 * @return the random {@code Cell} object in {@code cells}
+	 * 
+	 * @see #getRandomCellsFrom(ArrayList)
+	 * @see #getRandomCellFrom(ArrayList)
+	 * @see #getAvailableCellsFrom(ArrayList)
+	 * @see #getRandomCellsFrom(ArrayList, int)
+	 * @see #getRandomAvailableCellsFrom(ArrayList)
+	 * @see #getRandomAvailableCellsFrom(ArrayList, int)
+	 * @see #getRandomAvailableCellFrom(ArrayList)
+	 */
+	public Cell getRandomAvailableCellFrom(ArrayList<Cell> cells) {
+		return getRandomCellFrom(getAvailableCellsFrom(cells));
+	}
+
+	/**
+	 * Get one or more random cells from a provided {@code ArrayList<Cell>} of
+	 * {@code Cell} objects.
+	 * 
+	 * @param cells  the provided {@code ArrayList<Cell>} of {@code Cell} objects.
+	 * @param amount the integer amount of random cells to retrieve
+	 * @return an {@code ArrayList<Cell>} of random {@code Cell} objects from
+	 *         {@code cells}
+	 * 
+	 * @see #getRandomCellsFrom(ArrayList, int)
+	 * @see #getRandomCellFrom(ArrayList)
+	 * @see #getRandomCells()
+	 */
+	public ArrayList<Cell> getRandomCellsFrom(ArrayList<Cell> cells, int amount) {
+		if (amount > cells.size())
+			throw new Error("Random selection size exceeds limit");
+
+		ArrayList<Cell> randCells = new ArrayList<>(cells);
+		Collections.shuffle(randCells);
+		ArrayList<Cell> subList = new ArrayList<>(
+				randCells.subList(0, amount));
+
+		return subList;
+	}
+
+	/**
+	 * An overload for {@link #getRandomCellsFrom(ArrayList, int)} which defaults
+	 * the {@code amount} parameter to the size of the provided
+	 * {@code cells} array list.
+	 * 
+	 * @param cells the provided {@code ArrayList<Cell>} of {@code Cell} objects.
+	 * @return an {@code ArrayList<Cell>} of random {@code Cell} objects from
+	 *         {@code cells}
+	 */
+	public ArrayList<Cell> getRandomCellsFrom(ArrayList<Cell> cells) {
+		return getRandomCellsFrom(cells, cells.size());
+	}
+
+	/**
+	 * Get an {@code ArrayList<Cell>} of available (non-occupied) cells from a
+	 * provided {@code ArrayList<Cell>} of {@code Cell} objects.
+	 * 
+	 * @param cells  the provided {@code ArrayList<Cell>} of {@code Cell} objects
+	 * @param amount the integer amount of random available cells to retrieve
+	 * 
+	 * @return an {@code ArrayList<Cell>} of random available {@code Cell} objects
+	 *         from {@code cells}
+	 * 
+	 * @see #getRandomCellsFrom(ArrayList)
+	 * @see #getRandomCellFrom(ArrayList)
+	 * @see #getAvailableCellsFrom(ArrayList)
+	 * @see #getRandomCellsFrom(ArrayList, int)
+	 * @see #getRandomAvailableCellsFrom(ArrayList)
+	 * @see #getRandomAvailableCellsFrom(ArrayList, int)
+	 * @see #getRandomAvailableCellFrom(ArrayList)
+	 */
+	public ArrayList<Cell> getRandomAvailableCellsFrom(ArrayList<Cell> cells, int amount) {
+		return getRandomCellsFrom(getAvailableCellsFrom(cells), amount);
+	}
+
+	/**
+	 * An overload of {@link #getRandomAvailableCellsFrom(ArrayList, int) which
+	 * defaults the {@code amount} parameter to the size of the provided
+	 * {@code cells} array list.
+	 * 
+	 * @param cells the provided {@code ArrayList<Cell>} of {@code Cell} objects
+	 * @return an {@code ArrayList<Cell>} of random available {@code Cell} objects
+	 *         from {@code cells}
+	 * 
+	 * @see #getRandomAvailableCellsFrom(ArrayList, int)
+	 * @see #getRandomAvailableCellsFrom(ArrayList)
+	 */
+	public ArrayList<Cell> getRandomAvailableCellsFrom(ArrayList<Cell> cells) {
+		ArrayList<Cell> availableCells = getAvailableCellsFrom(cells);
+		return getRandomCellsFrom(availableCells, availableCells.size());
+	}
+
+	/**
+	 * Get all available (non-occupied) {@code Cell} objects that currently exist on
+	 * the virtual grid.
+	 * 
+	 * @return an {@code ArrayList<Cell>} of all available {@code Cell} objects that
+	 *         exist on the virtual grid
+	 * 
+	 * @see #getAvailableCells()
+	 */
+	public ArrayList<Cell> getAvailableCells() {
+		return getAvailableCellsFrom(getCells());
+	}
+
+	/**
+	 * Get a random {@code Cell} object that exists on the virtual grid.
+	 * 
+	 * @return a random {@code Cell} object
+	 * @see #getRandomCell()
+	 */
+	public Cell getRandomCell() {
+		return getRandomCellFrom(getCells());
+	}
+
+	/**
+	 * Get a random available (non-occupied) {@code Cell} object on the virtual
+	 * grid.
+	 * 
+	 * @return a random available {@code Cell} object
+	 * @see #getRandomAvailableCell()
+	 */
+	public Cell getRandomAvailableCell() {
+		return getRandomCellFrom(getAvailableCells());
+	}
+
+	/**
+	 * Get an {@code ArrayList<Cell>} of random cells that currently exist on the
+	 * virtual grid.
+	 * 
+	 * @return the random {@code ArrayList<Cell>} of cells that exist on the virtual
+	 *         grid
+	 * @see #getRandomCells()
+	 */
+	public ArrayList<Cell> getRandomCells() {
+		return getRandomCellsFrom(getCells());
 	}
 
 	/**
@@ -607,10 +796,19 @@ public class CellGrid {
 		return size;
 	}
 
+	/**
+	 * Returns the amount of currently existing {@code Cell} objects on the virtual
+	 * grid
+	 * 
+	 * @return the integer number of existing {@code Cell} objects on the grid
+	 */
 	public int getCellCount() {
 		return virtualGrid.size();
 	}
 
+	/*
+	 * Return the virtual grid's object reference
+	 */
 	public Map<String, Cell> getGrid() {
 		return this.virtualGrid;
 	}
@@ -623,7 +821,7 @@ public class CellGrid {
 	 * @see #printCellsAdjacentTo(Unit2)
 	 */
 	public void printCellsAdjacentTo(Unit2 unit) {
-		Cell[] adjCells = getCellsAdjacentTo(unit);
+		ArrayList<Cell> adjCells = getCellsAdjacentTo(unit);
 
 		for (Cell adjCell : adjCells)
 			adjCell.printInfo();
