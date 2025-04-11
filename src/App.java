@@ -40,7 +40,7 @@ public class App {
 		Console.setDebugModeEnabled(true);
 		// Console.hideDebugPriority(DebugPriority.LOW);
 		// Console.hideDebugPriority(DebugPriority.MEDIUM);
-		Console.setConsoleColorsEnabled(false);
+		Console.setConsoleColorsEnabled(true);
 
 		Game game = new Game();
 		// game.start();
