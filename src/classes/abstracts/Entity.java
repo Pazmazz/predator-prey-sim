@@ -3,7 +3,7 @@
  */
 package classes.abstracts;
 
-import classes.entity.Cell;
+import classes.entity.CellGrid.Cell;
 import classes.entity.Game;
 import classes.entity.Null;
 import exceptions.CellIsOccupiedException;

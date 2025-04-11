@@ -20,13 +20,14 @@ import classes.abstracts.Entity;
 import classes.abstracts.FrameProcessor;
 import classes.abstracts.Properties.Property;
 import classes.entity.Ant;
-import classes.entity.Cell;
+import classes.entity.CellGrid.Cell;
 import classes.entity.CellGrid;
 import classes.entity.CellGrid.GridIntercept;
 import classes.entity.Game;
 import classes.entity.Unit2;
 import classes.util.Console;
 import classes.util.Console.DebugPriority;
+import classes.util.Time;
 import interfaces.Callback;
 import classes.entity.Doodlebug;
 import classes.entity.Vector2;
@@ -43,23 +44,18 @@ public class App {
 		Console.setConsoleColorsEnabled(true);
 
 		Game game = new Game();
-		// game.start();
+		CellGrid grid = game.getGameGrid();
+		// game.initializeGameScreen();
 
-		CellGrid grid = new CellGrid(new Unit2(10, 10));
+		Console.benchmark("Game grid initializer", game::initializeGameGrid);
+		Console.println(grid.getCell(new Unit2(14, 7)).getOccupant());
+		// Console.benchmark("Game screen", game::initializeGameScreen);
 
-		Vector2 p0 = new Vector2(1.5, 1.5);
-		Vector2 p1 = new Vector2(5.5, 3.5);
-
-		ArrayList<Cell> cellPath = grid.getCellPath(p0, p1);
-
-		Console.println(cellPath);
 		/*
 		 * --------------
 		 * | TEST CODE: |
 		 * --------------
 		 */
-
-		// thread0.start();
 
 	}
 }

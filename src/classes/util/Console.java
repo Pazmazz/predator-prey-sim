@@ -8,6 +8,8 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import interfaces.Benchmark;
+
 /**
  * Used for interacting with and styling the console. Much of this code was
  * reused from the final project from the previous semester in CS-190.
@@ -297,6 +299,15 @@ public class Console {
 	 */
 	public static boolean isConsoleColorsEnabled() {
 		return consoleColorsEnabled;
+	}
+
+	public static void benchmark(String message, Benchmark benchmark) {
+		long pre = Time.tick();
+		benchmark.run();
+		println(String.format(
+				"$text-bright_purple Benchmark:$text-reset  \"$text-green %s$text-reset \" completed in: $text-yellow %s$text-reset  seconds",
+				message,
+				Time.nanoToSeconds(Time.tick() - pre)));
 	}
 
 	//

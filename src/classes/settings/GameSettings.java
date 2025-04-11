@@ -13,10 +13,11 @@ public class GameSettings {
 
 	final private int cellSize;
 	final private Unit2 gridSize;
+	final private int initialAnts;
+	final private int initialDoodlebugs;
 
 	final private int screenWidth;
 	final private int screenHeight;
-
 	final private SimulationInfo simulationInfo;
 
 	public GameSettings() {
@@ -28,6 +29,8 @@ public class GameSettings {
 
 		this.cellSize = 36; // Pixels
 		this.gridSize = new Unit2(20, 20); // Cell units
+		this.initialAnts = 100;
+		this.initialDoodlebugs = 5;
 
 		//
 		// Non-Editable
@@ -102,7 +105,7 @@ public class GameSettings {
 
 			// Movement
 			SimulationSettings movement = new SimulationSettings()
-					.setFPS(1.0 / 60)
+					.setFPS(1.0)
 					.setProcessName("Movement");
 
 			// SimulatedLag
@@ -198,5 +201,13 @@ public class GameSettings {
 
 	public Unit2 getGridSize() {
 		return this.gridSize;
+	}
+
+	public int getInitialAnts() {
+		return this.initialAnts;
+	}
+
+	public int getInitialDoodlebugs() {
+		return this.initialDoodlebugs;
 	}
 }

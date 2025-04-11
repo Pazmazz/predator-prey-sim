@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import classes.abstracts.Bug;
 import classes.util.Console;
+import classes.entity.CellGrid.Cell;
 
 public class Doodlebug extends Bug<Doodlebug> {
 
