@@ -524,7 +524,6 @@ public class CellGrid {
 	}
 
 	/**
-	 * @param position
 	 * @see #getCellTopOf(Unit2)
 	 * @see #getCellTopOf(Vector2)
 	 */
@@ -533,7 +532,6 @@ public class CellGrid {
 	}
 
 	/**
-	 * @param position
 	 * @see #getCellBottomOf(Unit2)
 	 * @see #getCellBottomOf(Vector2)
 	 */
@@ -542,7 +540,6 @@ public class CellGrid {
 	}
 
 	/**
-	 * @param position
 	 * @see #getCellLeftOf(Unit2)
 	 * @see #getCellLeftOf(Vector2)
 	 */
@@ -551,7 +548,6 @@ public class CellGrid {
 	}
 
 	/**
-	 * @param position
 	 * @see #getCellRightOf(Unit2)
 	 * @see #getCellRightOf(Vector2)
 	 */
@@ -959,6 +955,7 @@ public class CellGrid {
 		private Vector2 direction;
 		private Cell cell;
 
+		// TODO: Add documentation
 		//
 		// Public setters and getters
 		//

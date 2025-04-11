@@ -26,21 +26,11 @@ public class MovementFrame extends FrameProcessor {
 
 	private CellGrid grid = game.getGameGrid();
 
-	private HashMap<Entity<?>, Integer> activeEntities = new HashMap<>();
-	private ArrayList<TweenData> activeTweens = new ArrayList<>();
-
 	public MovementFrame(Game game, SimulationType simulationFrame) {
 		super(game, simulationFrame);
 	}
 
-	public void bufferProperties(Entity<?> entity, Properties newProperties) {
-
-	}
-
 	@Override
 	public void step(double deltaTimeSeconds) {
-		if (activeTweens.isEmpty())
-			return;
-
 	}
 }

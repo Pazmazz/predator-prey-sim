@@ -4,6 +4,7 @@
 package classes.entity;
 
 import classes.abstracts.FrameProcessor;
+import classes.abstracts.FrameProcessor.FrameState;
 import classes.abstracts.FrameProcessor.Task;
 import classes.settings.GameSettings;
 import classes.settings.GameSettings.SimulationType;
@@ -122,6 +123,9 @@ public class Game implements Runnable {
 	@Override
 	public void run() {
 		while (isThreadRunning()) {
+			if (FrameProcessor.isAllSuspended())
+				continue;
+
 			long simulationDelta = 0;
 
 			for (FrameProcessor frame : this.frameProcesses) {
@@ -148,13 +152,14 @@ public class Game implements Runnable {
 		}
 	}
 
+	// TODO: Implement game grid initializer
 	public void initializeGameGrid() {
 
 	}
 
+	// TODO: Add documentation
 	//
 	// Public getters
-	// TODO: Add documentation
 	//
 	public GameScreen getScreen() {
 		return this.screen;
@@ -176,6 +181,7 @@ public class Game implements Runnable {
 		return this.gameGrid;
 	}
 
+	// TODO: Add documentation
 	//
 	// Public logic checks
 	//

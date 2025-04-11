@@ -16,7 +16,10 @@ public class Math2 {
 	 * @param t parameterized variable for {@code a} and {@code b}
 	 * @param a initial value
 	 * @param b final value
+	 * 
 	 * @return the interpolation between {@code a} and {@code b} using t
+	 * 
+	 * @see #lerp(double, double, double)
 	 */
 	public static double lerp(double a, double b, double t) {
 		return a + t * (b - a);
@@ -28,6 +31,7 @@ public class Math2 {
 	 * 
 	 * @param n
 	 * @return the signed multiplicative identity of {@code n}
+	 * @see #toSign(double)
 	 */
 	public static double toSign(double n) {
 		if (n == 0)
@@ -36,7 +40,14 @@ public class Math2 {
 		return Math.abs(n) / n;
 	}
 
-	public static int randInt(int range) {
-		return (int) (Math.random() * range);
+	/**
+	 * Get a random integer from {@code 0} to a specified {@code upperBound}
+	 * 
+	 * @param upperBound the specified {@code upperBound}
+	 * @return a random integer from {@code 0} to the specified {@code upperBound}
+	 * @see #randInt(int)
+	 */
+	public static int randInt(int upperBound) {
+		return (int) (Math.random() * upperBound);
 	}
 }

@@ -86,6 +86,23 @@ public class Console {
 			{ "bright_white", "\u001B[107m" }
 	};
 
+	/**
+	 * Takes a given list of {@code Object} values, converts them into strings
+	 * using {@code toString()} (if possible), and applies the console color tag
+	 * parser to scan the strings for tokens like {@code $text-color},
+	 * {@code $bg-color}, etc.
+	 * 
+	 * <p>
+	 * If {@code Console.consoleColorsEnabled} is set to {@code false}, then this
+	 * method will remove all console tags like {@code $text-color} and
+	 * {@code $bg-color} from any processed string values.
+	 * 
+	 * @param contents the list of {@code Object} values to toString
+	 * @return a cleaned String that either consumes the console color tokens, or
+	 *         removes them, based on {@code Console.consoleColorsEnabled}
+	 * 
+	 * @see #withConsoleColors(Object...)
+	 */
 	public static String withConsoleColors(Object... contents) {
 		if (consoleColorsEnabled)
 			return substituteColors(Formatter.concatArray(contents));
@@ -98,6 +115,7 @@ public class Console {
 	 * console colors.
 	 *
 	 * @param contents the collection of objects to print
+	 * @see #println(Object...)
 	 */
 	public static void println(Object... contents) {
 		System.out.println(withConsoleColors(contents));
@@ -108,6 +126,7 @@ public class Console {
 	 * colors
 	 *
 	 * @param message the message to inline print
+	 * @see #print(String)
 	 */
 	public static void print(String message) {
 		System.out.print(withConsoleColors(message));
@@ -117,7 +136,14 @@ public class Console {
 	 * Throws a generic unchecked error
 	 *
 	 * @param contents the objects to include in the error
+	 * @see #error(Object...)
+	 * 
+	 * @deprecated This isn't really much use for this. Just use
+	 *             {@code throw new Error()}.
+	 * 
+	 * @see #error(Object...)
 	 */
+	@Deprecated
 	public static void error(Object... contents) {
 		throw new Error(Formatter.concatArray(contents));
 	}
@@ -126,6 +152,8 @@ public class Console {
 	 * Prints an ASCII line to the console of a specified length
 	 *
 	 * @param repeat
+	 * @see #br()
+	 * @see #br(int)
 	 */
 	public static void br(int repeat) {
 		println("-".repeat(repeat));
@@ -135,6 +163,8 @@ public class Console {
 	 * Override: {@code br}
 	 *
 	 * Calls the root method but passes a default length value of {@code 50}
+	 * 
+	 * @see #br()
 	 */
 	public static void br() {
 		br(50);
@@ -144,6 +174,7 @@ public class Console {
 	 * Checks if the console is currently in debug mode
 	 *
 	 * @return true if the console is in debug mode
+	 * @see #isDebugMode()
 	 */
 	public static boolean isDebugMode() {
 		return debugModeEnabled;
@@ -153,6 +184,7 @@ public class Console {
 	 * Sets the console's debug mode to either enabled or disabled
 	 *
 	 * @param enabled whether debug mode is enabled or disabled (true = enabled)
+	 * @see #setDebugModeEnabled(boolean)
 	 */
 	public static void setDebugModeEnabled(boolean enabled) {
 		debugModeEnabled = enabled;
@@ -163,6 +195,7 @@ public class Console {
 	 * the output window.
 	 *
 	 * @param priority the {@code DebugPriority} level to hide
+	 * @see #hideDebugPriority(DebugPriority)
 	 */
 	public static void hideDebugPriority(DebugPriority priority) {
 		listeningDebugPriorities.put(priority, Boolean.FALSE);
@@ -173,6 +206,7 @@ public class Console {
 	 * output window.
 	 *
 	 * @param priority the {@code DebugPriority} level to show
+	 * @see #showDebugPriority(DebugPriority)
 	 */
 	public static void showDebugPriority(DebugPriority priority) {
 		listeningDebugPriorities.put(priority, Boolean.TRUE);
@@ -184,6 +218,7 @@ public class Console {
 	 * @param priority the {@code DebugPriority} to check for
 	 * @return true if the console has the specified {@code DebugPriority}
 	 *         enabled
+	 * @see #isShowingDebugPriority(DebugPriority)
 	 */
 	public static boolean isShowingDebugPriority(DebugPriority priority) {
 		return listeningDebugPriorities.get(priority);
@@ -194,6 +229,7 @@ public class Console {
 	 * other priority levels.
 	 *
 	 * @param priority the {@code DebugPriority} to exclusively show
+	 * @see #setDebugPriority(DebugPriority)
 	 */
 	public static void setDebugPriority(DebugPriority priority) {
 		for (DebugPriority key : listeningDebugPriorities.keySet()) {
@@ -213,6 +249,7 @@ public class Console {
 	 * @param priority the {@code DebugPriority} level to set the print message
 	 *                 to
 	 * @param messages the object messages to be printed
+	 * @see #debugPrint(DebugPriority, Object...)
 	 */
 	public static void debugPrint(DebugPriority priority, Object... messages) {
 		if (isDebugMode() && isShowingDebugPriority(priority)) {
@@ -231,6 +268,7 @@ public class Console {
 	 * @param priority the {@code DebugPriority} level to set the print message
 	 *                 to
 	 * @param messages the object messages to be printed
+	 * @see #debugPrint(Object...)
 	 */
 	public static void debugPrint(Object... messages) {
 		debugPrint(DebugPriority.LOW, messages);
@@ -245,11 +283,18 @@ public class Console {
 	 *
 	 * @param enabled whether console colors are enabled or disabled (true =
 	 *                enabled)
+	 * @see #setConsoleColorsEnabled(boolean)
 	 */
 	public static void setConsoleColorsEnabled(boolean enabled) {
 		consoleColorsEnabled = enabled;
 	}
 
+	/**
+	 * Determine if console colors are currently enabled
+	 * 
+	 * @return {@code true} if console colors are enabled, {@code false} otherwise
+	 * @see #isConsoleColorsEnabled()
+	 */
 	public static boolean isConsoleColorsEnabled() {
 		return consoleColorsEnabled;
 	}

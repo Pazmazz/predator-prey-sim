@@ -18,6 +18,8 @@ public class Formatter {
 	 *                  returned string
 	 *
 	 * @return the returned string of the concatenated array
+	 * 
+	 * @see #concatArray(Object[], String)
 	 */
 	public static String concatArray(Object[] array, String separator) {
 		String out = "";
@@ -36,12 +38,13 @@ public class Formatter {
 	}
 
 	/**
-	 * @Overload: {@code concatArray}
+	 * An overload of {@link #concatArray(Object[], String)} which defaults the
+	 * {@code separator} parameter to {@code ", "}
 	 *
-	 *            Calls the root method but uses {@code ", "} as a default delimiter
-	 *
-	 * @param array ...
-	 * @return ...
+	 * @param array the array to concat
+	 * @return the returned string of the concatenated array
+	 * 
+	 * @see #concatArray(Object[])
 	 */
 	public static String concatArray(Object[] array) {
 		return concatArray(array, ", ");

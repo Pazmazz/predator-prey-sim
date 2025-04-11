@@ -22,6 +22,7 @@ public class Unit2 extends BaseVector<Unit2> {
 		this.components.add((double) y);
 	}
 
+	// TODO: Add documentation
 	//
 	// Public getters
 	//

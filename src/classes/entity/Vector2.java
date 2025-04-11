@@ -20,6 +20,7 @@ public class Vector2 extends Vector<Vector2> {
 		this.components.add(y);
 	}
 
+	// TODO: Add documentation
 	//
 	// Public getters
 	//

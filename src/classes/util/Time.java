@@ -8,6 +8,7 @@ package classes.util;
  */
 public class Time {
 
+	// TODO: Add documentation
 	public static long tick() {
 		return System.nanoTime();
 	}

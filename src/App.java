@@ -16,6 +16,7 @@
 import java.util.HashMap;
 
 import classes.abstracts.Entity;
+import classes.abstracts.FrameProcessor;
 import classes.abstracts.Properties.Property;
 import classes.entity.Ant;
 import classes.entity.Cell;
@@ -34,12 +35,15 @@ public class App {
 
 	public static void main(String[] args) {
 		Console.setDebugModeEnabled(true);
-		Console.hideDebugPriority(DebugPriority.LOW);
+		// Console.hideDebugPriority(DebugPriority.LOW);
 		// Console.hideDebugPriority(DebugPriority.MEDIUM);
 		Console.setConsoleColorsEnabled(false);
 
 		Game game = new Game();
 		game.start();
+
+		CellGrid grid = game.getGameGrid();
+		// FrameProcessor.suspendAll();
 
 		/*
 		 * --------------

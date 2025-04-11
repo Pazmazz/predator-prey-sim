@@ -34,6 +34,8 @@ public abstract class FrameProcessor {
 	private ArrayList<Task> preSimulationTasks = new ArrayList<>();
 	private ArrayList<Task> postSimulationTasks = new ArrayList<>();
 
+	public static FrameState masterState = FrameState.RUNNING;
+
 	public enum FrameState {
 		RUNNING,
 		SUSPENDED,
@@ -118,6 +120,7 @@ public abstract class FrameProcessor {
 		return Time.nanoToSeconds(this.deltaTime);
 	}
 
+	// TODO: Add documentation
 	public long timeBeforeStep() {
 		return this.timeBeforeStep;
 	}
@@ -152,6 +155,22 @@ public abstract class FrameProcessor {
 		Task task = new Task(taskCaller);
 		this.postSimulationTasks.add(task);
 		return task;
+	}
+
+	public static void suspendAll() {
+		masterState = FrameState.SUSPENDED;
+	}
+
+	public static void resumeAll() {
+		masterState = FrameState.RUNNING;
+	}
+
+	public static boolean isAllSuspended() {
+		return masterState == FrameState.SUSPENDED;
+	}
+
+	public static boolean isAllRunning() {
+		return masterState == FrameState.RUNNING;
 	}
 
 	/**
@@ -239,6 +258,7 @@ public abstract class FrameProcessor {
 		private long duration = -1;
 		private long suspendedUntil = -1;
 
+		// TODO: Add documentation
 		public Task(String name) {
 			this.state = TaskState.SUSPENDED;
 			this.name = name;
