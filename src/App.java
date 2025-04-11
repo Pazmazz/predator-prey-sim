@@ -40,10 +40,9 @@ public class App {
 		Console.setConsoleColorsEnabled(false);
 
 		Game game = new Game();
-		game.start();
+		// game.start();
 
 		CellGrid grid = game.getGameGrid();
-		// FrameProcessor.suspendAll();
 
 		/*
 		 * --------------

@@ -2,7 +2,19 @@ _**@Author:** [William J. Horn](https://github.com/william-horn)_
 
 # _class_ `CellGrid`
 
-### What's new:
+The `CellGrid` class creates a virtual 2D grid, bounded by a given `<x, y>` dimension. Instead of implementing a 2D array, this grid uses a `HashMap` and maps `Unit2` points to their corresponding `Cell` objects.
+
+This choice was made for two reasons:
+
+1. This allows `CellGrid` to store cell data in points that are off the grid, in cases where we may want cell data to exist outside of rendered or functional view. Such cells are marked with a special `CellType` called `OUT_OF_BOUNDS` that can be checked for.
+
+2. It's more convenient to use the `HashMap` API to query the grid for a given cell than constantly indexing a 2D array.
+
+## Version 0.0.2
+
+
+
+## Version 0.0.1
 
 - **Changed** starting unit on the grid from `(0, 0)` to `(1, 1)`.
 
@@ -17,21 +29,12 @@ _**@Author:** [William J. Horn](https://github.com/william-horn)_
 
 - `Cell.getPosition()` now returns a `Vector2` object representing the cell's actual position on the screen.
 
-- `Cell.getUnit()` now returns a `Unit2` object, which represents the integer location of the cell on the grid (i.e, `(1, 1)`, `(5, 5)`, etc)
+- `Cell.getUnit2()` now returns a `Unit2` object, which represents the integer location of the cell on the grid (i.e, `(1, 1)`, `(5, 5)`, etc)
 
 - `GridCell.getCell()` now additionally accepts `Vector2` arguments which will return the cell on the screen at that given point.
 
----
 
-The `CellGrid` class creates a virtual 2D grid, bounded by a given `<x, y>` dimension. Instead of implementing a 2D array, this grid uses a `HashMap` and maps `Unit2` points to their corresponding `Cell` objects.
-
-This choice was made for two reasons:
-
-1. This allows `CellGrid` to store cell data in points that are off the grid, in cases where we may want cell data to exist outside of rendered or functional view. Such cells are marked with a special `CellType` called `OUT_OF_BOUNDS` that can be checked for.
-
-2. It's more convenient to use the `HashMap` API to query the grid for a given cell than constantly indexing a 2D array.
-
-## Getting Started
+# Getting Started
 
 First, the following imports are needed to utilize this class:
 

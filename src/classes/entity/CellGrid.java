@@ -10,6 +10,7 @@ import classes.util.Console.DebugPriority;
 import exceptions.NoCellFoundException;
 import classes.util.Math2;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.Map;
@@ -604,7 +605,7 @@ public class CellGrid {
 	 * @see #getCells
 	 */
 	public ArrayList<Cell> getCells() {
-		return (ArrayList<Cell>) this.virtualGrid.values();
+		return new ArrayList<>(this.virtualGrid.values());
 	}
 
 	/**
@@ -620,7 +621,7 @@ public class CellGrid {
 		ArrayList<Cell> availableCells = new ArrayList<>();
 
 		for (Cell cell : cells)
-			if (!cell.isEmpty())
+			if (cell.isEmpty() && isInBounds(cell))
 				availableCells.add(cell);
 
 		return availableCells;
@@ -780,6 +781,19 @@ public class CellGrid {
 	 */
 	public ArrayList<Cell> getRandomCells() {
 		return getRandomCellsFrom(getCells());
+	}
+
+	/**
+	 * Get an {@code ArrayList<Cell>} of random cells that currently exist on the
+	 * virtual grid, quantified by the {@code amount} parameter.
+	 * 
+	 * @param amount the quantity of random cells to include
+	 * @return the random {@code ArrayList<Cell>} of cells that exist on the virtual
+	 *         grid
+	 * @see #getRandomCells(int)
+	 */
+	public ArrayList<Cell> getRandomCells(int amount) {
+		return getRandomCellsFrom(getCells(), amount);
 	}
 
 	/**
