@@ -608,7 +608,8 @@ public class CellGrid {
 	}
 
 	/**
-	 * Get all available (non-occupied) cells from a provided list of {@code Cell}
+	 * Get all available (non-occupied and in-bounds) cells from a provided list of
+	 * {@code Cell}
 	 * objects.
 	 * 
 	 * @param cells the {@code ArrayList<Cell>} of {@code Cell} objects to find the
@@ -641,7 +642,7 @@ public class CellGrid {
 	}
 
 	/**
-	 * Gets a random available (non-occupied) cell from a provided
+	 * Gets a random available (non-occupied and in-bounds) cell from a provided
 	 * {@code ArrayList<Cell>} of {@code Cell} objects.
 	 * 
 	 * @param cells the provided {@code ArrayList<Cell>} of {@code Cell} objects.
@@ -698,7 +699,8 @@ public class CellGrid {
 	}
 
 	/**
-	 * Get an {@code ArrayList<Cell>} of available (non-occupied) cells from a
+	 * Get an {@code ArrayList<Cell>} of available (non-occupied and in-bounds)
+	 * cells from a
 	 * provided {@code ArrayList<Cell>} of {@code Cell} objects.
 	 * 
 	 * @param cells  the provided {@code ArrayList<Cell>} of {@code Cell} objects
@@ -737,7 +739,8 @@ public class CellGrid {
 	}
 
 	/**
-	 * Get all available (non-occupied) {@code Cell} objects that currently exist on
+	 * Get all available (non-occupied and in-bounds) {@code Cell} objects that
+	 * currently exist on
 	 * the virtual grid.
 	 * 
 	 * @return an {@code ArrayList<Cell>} of all available {@code Cell} objects that
@@ -760,7 +763,8 @@ public class CellGrid {
 	}
 
 	/**
-	 * Get a random available (non-occupied) {@code Cell} object on the virtual
+	 * Get a random available (non-occupied and in-bounds) {@code Cell} object on
+	 * the virtual
 	 * grid.
 	 * 
 	 * @return a random available {@code Cell} object
