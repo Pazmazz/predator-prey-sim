@@ -95,7 +95,7 @@ CellGrid grid = new CellGrid(new Unit2(10, 10));
 
 By default, the virtual grid is empty and does not contain any points or `Cell` objects. `Cell` objects are only created when you query the virtual grid using `CellGrid.getCell()`
 
-### `CellGrid.getCellGridIntercept()` *(new)*
+### `CellGrid.getCellGridIntercept()` *Version 0.2.1+*
 
 - **Parameters:**
 
@@ -138,7 +138,7 @@ Cell&lt;1, 4&gt;
 
 As we can see in ***Figure 1***, the line does indeed pass through the point `<1.0, 3.4166...>`
 
-### `CellGrid.getCellPath()` *(new)*
+### `CellGrid.getCellPath()` *Version 0.2.1+*
 
 - **Parameters:**
 
@@ -180,7 +180,124 @@ Console.println(cells);
 
 As you can see, the output indeed shows all `Cell` objects from the starting cell to the ending cell.
 
-### `CellGrid.getCell()`
+### `CellGrid.getCells()` *Version 0.2.1+*
+* **Returns:** `<ArrayList<Cell> cells>` - *all the currently existing cells in the virtual grid*
+
+#### Example:
+```java
+CellGrid grid = new CellGrid(new Unit2(10, 10));
+
+grid.getCell(new Unit2(1, 1));
+grid.getCell(new Unit2(2, 2));
+
+Console.println(grid.getCells());
+```
+
+#### Output:
+
+<blockquote>
+[Cell<1, 1>, Cell<2, 2>]
+</blockquote>
+
+### `CellGrid.getRandomCell()` *Version 0.2.1+*
+
+* **Returns:** `<Cell cell>` - *A random `Cell` object that exists within the virtual grid*
+
+This returns any random cell that exists within the virtual grid. It will not perform any availability checks, so using this method you will need to check for `OUT_OF_BOUNDS` and `IS_OCCUPIED` cases.
+
+#### Example:
+```java
+CellGrid grid = new CellGrid(new Unit2(10, 10));
+
+grid.getCell(new Unit2(1, 1));
+grid.getCell(new Unit2(2, 2));
+grid.getCell(new Unit2(3, 3));
+
+Console.println(grid.getRandomCell());
+Console.println(grid.getRandomCell());
+Console.println(grid.getRandomCell());
+```
+
+#### Output:
+
+<blockquote>
+Cell<2, 2>
+<br/>
+Cell<1, 1>
+<br/>
+Cell<3, 3>
+</blockquote>
+
+### `CellGrid.getRandomCells()` *Version 0.2.1+*
+
+* **Returns:** `<ArrayList<Cell> cells>` - *a random assortment of all currently existing `Cell` objects in the virtual grid.*
+
+
+This will return an `ArrayList<Cell>` which contains all currently existing `Cell` objects in the virtual grid, in random order.
+
+#### Example:
+```java
+CellGrid grid = new CellGrid(new Unit2(10, 10));
+
+grid.getCell(new Unit2(1, 1));
+grid.getCell(new Unit2(2, 2));
+grid.getCell(new Unit2(3, 3));
+
+Console.println(grid.getRandomCells());
+```
+
+#### Output:
+
+<blockquote>
+[Cell<3, 3>, Cell<1, 1>, Cell<2, 2>]
+</blockquote>
+
+### `CellGrid.getRandomCellFrom()` *Version 0.2.1+*
+
+- **Parameters:**
+
+  - `<ArrayList<Cell> cells>` - *the `ArrayList<Cell>` to choose a random `Cell` object from
+
+- **Returns:** `<Cell cell>`
+
+This method will return *any* random cell within a provided `ArrayList<Cell>`. It will not check for availability of the cell, it will will just choose any cell at random, similar to `CellGrid.getRandomCell()`
+
+#### Example:
+```java
+CellGrid grid = new CellGrid(new Unit2(10, 10));
+
+Cell cell = grid.getCell(new Unit2(1, 1));
+
+// get all cells adjacent to cell (1, 1), which includes:
+// (-1, 1), (1, 2), (2, 1), (1, -1)
+ArrayList<Cell> adjCells = grid.getCellsAdjacentTo(cell);
+
+Console.println(grid.getRandomCellsFrom(adjCells));
+```
+
+#### Output:
+
+<blockquote>
+[Cell<2, 1>, Cell<1, 2>, Cell<1, -1>, Cell<-1, 1>]
+</blockquote>
+
+<br/>
+
+(in no particular order).
+
+### `CellGrid.getRandomCellsFrom()` *Version 0.2.1+*
+
+### `CellGrid.getAvailableCells()` *Version 0.2.1+*
+
+### `CellGrid.getAvailableCellsFrom()` *Version 0.2.1+*
+
+### `CellGrid.getRandomAvailableCell()` *Version 0.2.1+*
+
+### `CellGrid.getRandomAvailableCellFrom()` *Version 0.2.1+*
+
+### `CellGrid.getRandomAvailableCellsFrom()` *Version 0.2.1+*
+
+### `CellGrid.getCell()` *Version 0.1.1+*
 
 - **Parameters:**
 
@@ -244,7 +361,7 @@ Cell<1, 2>
 
 Both cases return a `Cell` object even though `cell0` is out-of-bounds. To check for out-of-bounds cells, just use `Cell.isOutOfBounds()` or `Cell.getType()`. In cases where you want to check if the position is out of bounds before creating a `Cell` object, you can use `CellGrid.isInBounds(Cell)` or `Cell.isInBounds()`.
 
-### `CellGrid.collectCell()`
+### `CellGrid.collectCell()` *Version 0.1.1+*
 
 - **Parameters:**
 
@@ -289,7 +406,7 @@ Console.println(cell == grid.getCell(new Unit2(1, 1)) // => true
 
 Now that an `occupant` was set, the cell will not be garbage collected. If you want to collect _all_ collectable cells, you can use `CellGrid.collectCells()`
 
-### `CellGrid.collectCells()`
+### `CellGrid.collectCells()` *Version 0.1.1+*
 
 - **Parameters:** _None_
 
@@ -307,7 +424,7 @@ cell0.setOccupant(new Ant());
 grid.collectCells(); // Frees all cells except for cell0
 ```
 
-### `CellGrid.isInBounds()`
+### `CellGrid.isInBounds()` *Version 0.1.1+*
 
 - **Parameters:**
 
@@ -356,7 +473,7 @@ false
 true
 </blockquote>
 
-### `CellGrid.outOfBounds()`
+### `CellGrid.outOfBounds()` *Version 0.1.1+*
 
 - **Parameters:**
 
@@ -386,7 +503,7 @@ false
 true
 </blockquote>
 
-### `CellGrid.getCellTopOf()`
+### `CellGrid.getCellTopOf()` *Version 0.1.1+*
 
 - **Parameters:**
 
@@ -407,7 +524,7 @@ Cell cell1 = grid.getCell(new Unit2(5, 4));
 Console.println(grid.getCellTopOf(cell1)); // => Cell<5, 5>
 ```
 
-### `CellGrid.getCellBottomOf()`
+### `CellGrid.getCellBottomOf()` *Version 0.1.1+*
 
 - **Parameters:**
 
@@ -428,7 +545,7 @@ Cell cell1 = grid.getCell(new Unit2(3, 7));
 Console.println(grid.getCellBottomOf(cell0)); // => Cell<3, 7>
 ```
 
-### `CellGrid.getCellLeftOf()`
+### `CellGrid.getCellLeftOf()` *Version 0.1.1+*
 
 - **Parameters:**
 
@@ -449,7 +566,7 @@ Cell cell1 = grid.getCell(new Unit2(1, 2));
 Console.println(grid.getCellLeftOf(cell0)); // => Cell<1, 2>
 ```
 
-### `CellGrid.getCellRightOf()`
+### `CellGrid.getCellRightOf()` *Version 0.1.1+*
 
 - **Parameters:**
 
@@ -470,7 +587,7 @@ Cell cell1 = grid.getCell(new Unit2(9, 5));
 Console.println(grid.getCellLeftOf(cell0)); // => Cell<9, 5>
 ```
 
-### `CellGrid.getCellsAdjacentTo()`
+### `CellGrid.getCellsAdjacentTo()` *Version 0.1.1+*
 
 - **Parameters:**
 
