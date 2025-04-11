@@ -1,11 +1,11 @@
 /*
- * @Author(s): Alex, Grier, Jaylen, Will
- * @Written: 3/28/2025
+ * @written 3/28/2025
  */
 package classes.entity;
 
-import classes.abstracts.Application;
 import classes.abstracts.FrameProcessor;
+import classes.abstracts.FrameProcessor.FrameState;
+import classes.abstracts.FrameProcessor.Task;
 import classes.settings.GameSettings;
 import classes.settings.GameSettings.SimulationType;
 import classes.simulation.MovementFrame;
@@ -13,24 +13,39 @@ import classes.simulation.RenderFrame;
 import classes.simulation.SimulatedLagFrame;
 import classes.util.Console;
 import classes.util.Time;
+
+import java.util.ArrayList;
 import java.util.UUID;
 
-public class Game extends Application implements Runnable {
+/**
+ * This class instantiates the entire game context. All methods for interacting
+ * with the game and all game state is managed through the instance of this
+ * class.
+ */
+public class Game implements Runnable {
+
 	final private Thread mainThread;
 	final private GameScreen screen;
 	final private String sessionId;
 	final private GameSettings settings;
 	final private CellGrid gameGrid;
+	final private ArrayList<Snapshot> snapshots = new ArrayList<>();
 
 	private GameState state = GameState.INITIAL;
-	
+
+	private long simulationFPS;
+
+	//
 	// Update frames
+	//
 	public MovementFrame movementFrame;
 	public RenderFrame renderFrame;
 	public SimulatedLagFrame simulatedLagFrame;
 	public FrameProcessor[] frameProcesses;
 
+	//
 	// Internal states
+	//
 	public static enum GameState {
 		INITIAL,
 		LOADED,
@@ -39,114 +54,139 @@ public class Game extends Application implements Runnable {
 		TERMINATED,
 	}
 
-	/*
-	 * Game():
-	 * 
-	 * A constructor method for the main Game class to initialize 
-	 * prerequisite conditions for the game such as UI components
-	 * and the game loop thread.
-	 */
 	public Game() {
-		// IMPORTANT: `settings` must be defined first, since other classes reference it
-		settings = new GameSettings();
-		sessionId = UUID.randomUUID().toString();
-		screen = new GameScreen(this);
-		mainThread = new Thread(this);
+		// IMPORTANT: settings must be defined first, since other classes reference it
+		this.settings = new GameSettings();
 
-		gameGrid = new CellGrid(settings.getGridSize());
+		this.sessionId = UUID.randomUUID().toString();
+		this.screen = new GameScreen(this);
+		this.mainThread = new Thread(this);
+		this.gameGrid = new CellGrid(settings.getGridSize());
 
-		movementFrame = new MovementFrame(this, SimulationType.MOVEMENT);
-		renderFrame = new RenderFrame(this, SimulationType.RENDER);
-		simulatedLagFrame = new SimulatedLagFrame(this, SimulationType.SIMULATED_LAG);
+		this.movementFrame = new MovementFrame(this, SimulationType.MOVEMENT);
+		this.renderFrame = new RenderFrame(this, SimulationType.RENDER);
+		this.simulatedLagFrame = new SimulatedLagFrame(this, SimulationType.SIMULATED_LAG);
+		this.simulationFPS = Time.secondsToNano(settings.getSimulation().getFPS());
 
-		frameProcesses = new FrameProcessor[] {
-			movementFrame,
-			renderFrame,
-			simulatedLagFrame
+		this.frameProcesses = new FrameProcessor[] {
+				movementFrame,
+				renderFrame,
+				simulatedLagFrame
 		};
 
-		state = GameState.LOADED;
+		this.state = GameState.LOADED;
 	}
 
-	/*
-	 * start():
-	 * 
-	 * A method for running the main game loop thread.
+	// TODO: Implement snapshot saving/loading
+	public void saveSnapshot() {
+		Snapshot snapshot = new Snapshot();
+
+		this.snapshots.add(snapshot);
+	}
+
+	public void loadSnapshot() {
+
+	}
+
+	/**
+	 * Begins running the game loop and sets the game state from {@code LOADED}
+	 * to {@code RUNNING}
+	 *
+	 * @throws Error if this method is called more than once
 	 */
 	public void start() {
 		if (isLoaded()) {
 			this.setState(GameState.RUNNING);
 			mainThread.start();
 		} else {
-			Console.error("start() can only be called once per game instance");
+			throw new Error("start() can only be called once per game instance");
 		}
 	}
 
-	/*
-	 * terminate():
-	 * 
-	 * A method for terminating the game loop in the current game thread.
+	/**
+	 * Terminates the game loop by setting the game state to {@code TERMINATED}
 	 */
 	public void terminate() {
-		setState(GameState.TERMINATED);
+		this.setState(GameState.TERMINATED);
+		Console.println("TERMINATED APPLICATION");
 	}
 
-	/*
-	 * run():
-	 * 
-	 * A required method override from the `Runnable` interface which
-	 * is called once the `gameThread.start()` method is called. 
-	 * 
-	 * This method serves as the main game loop, which is responsible
-	 * for updating game steps, rendering frames, and handling all other
-	 * incremental game logic.
+	/**
+	 * A required method override from the {@code Runnable} interface which is
+	 * called once the {@code start} method is called.
+	 *
+	 * <p>
+	 * This method serves as the main game loop, which is responsible for
+	 * updating game steps, rendering frames, and handling all other incremental
+	 * game logic.
 	 */
 	@Override
 	public void run() {
 		while (isThreadRunning()) {
+			if (FrameProcessor.isAllSuspended())
+				continue;
+
 			long simulationDelta = 0;
 
-			for (FrameProcessor frame : frameProcesses) {
+			for (FrameProcessor frame : this.frameProcesses) {
+				if (frame.isSuspended())
+					continue;
+
 				long frameDelta = frame.pulse();
-				if (frameDelta > -1) simulationDelta += frameDelta;
+				if (frameDelta != -1)
+					simulationDelta += frameDelta;
 			}
 
-			long threadYieldTime = Time.secondsToNano(settings.getSimulation().getFPS()) - simulationDelta;
-
-			if (threadYieldTime > 0) {
+			long threadYieldTime = this.simulationFPS - simulationDelta;
+			if (threadYieldTime > 0)
 				wait(Time.nanoToMillisecond(threadYieldTime));
-			}
 		}
 	}
 
-	/* -------------- */
-	/* Getter methods */
-	/* -------------- */
+	// TODO: Add documentation
+	public void wait(double milliseconds) {
+		try {
+			Thread.sleep((long) milliseconds);
+		} catch (InterruptedException e) {
+			throw new Error(e);
+		}
+	}
+
+	// TODO: Implement game grid initializer
+	public void initializeGameGrid() {
+
+	}
+
+	// TODO: Add documentation
+	//
+	// Public getters
+	//
 	public GameScreen getScreen() {
-		return screen;
+		return this.screen;
 	}
 
 	public GameState getState() {
-		return state;
+		return this.state;
 	}
 
 	public String getSessionId() {
-		return sessionId;
+		return this.sessionId;
 	}
 
 	public GameSettings getSettings() {
-		return settings;
+		return this.settings;
 	}
 
 	public CellGrid getGameGrid() {
-		return gameGrid;
+		return this.gameGrid;
 	}
 
-	/* ------------------------- */
-	/* Boolean condition methods */
-	/* ------------------------- */
+	// TODO: Add documentation
+	//
+	// Public logic checks
+	//
 	public boolean isRunning() {
-		return state == GameState.RUNNING;
+		return this.state == GameState.RUNNING;
 	}
 
 	public boolean isThreadRunning() {
@@ -154,25 +194,25 @@ public class Game extends Application implements Runnable {
 	}
 
 	public boolean isInitial() {
-		return state == GameState.INITIAL;
+		return this.state == GameState.INITIAL;
 	}
 
 	public boolean isLoaded() {
-		return state == GameState.LOADED;
+		return this.state == GameState.LOADED;
 	}
 
 	public boolean isPaused() {
-		return state == GameState.PAUSED;
+		return this.state == GameState.PAUSED;
 	}
 
 	public boolean isTerminated() {
-		return state == GameState.TERMINATED;
+		return this.state == GameState.TERMINATED;
 	}
 
-	/* -------------- */
-	/* Setter methods */
-	/* -------------- */
+	//
+	// Public setters
+	//
 	public void setState(GameState newState) {
-		state = newState;
+		this.state = newState;
 	}
 }

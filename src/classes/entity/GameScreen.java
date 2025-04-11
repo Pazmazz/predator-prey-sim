@@ -1,11 +1,5 @@
 /*
- * @Written: 3/28/2025
- * 
- * class GameScreen:
- * 
- * An extension of the JFrame class, providing only default settings specific for
- * game with few additional methods and functionality. This class is responsible
- * for rendering the top-level system screen window for the game.
+ * @written 3/28/2025
  */
 package classes.entity;
 
@@ -15,7 +9,13 @@ import java.awt.event.WindowEvent;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
+/**
+ * An extension of the JFrame class, providing only default settings specific
+ * for game with few additional methods and functionality. This class is
+ * responsible for rendering the top-level system screen window for the game.
+ */
 public class GameScreen extends JFrame {
+
 	final private JPanel masterFrame;
 
 	public GameScreen(Game game) {
@@ -28,17 +28,15 @@ public class GameScreen extends JFrame {
 		masterFrame = new JPanel();
 		masterFrame.setDoubleBuffered(true);
 		masterFrame.setPreferredSize(
-			new Dimension(
-				game.getSettings().getScreenWidth(),
-				game.getSettings().getScreenHeight()
-			)
-		);
+				new Dimension(
+						game.getSettings().getScreenWidth(),
+						game.getSettings().getScreenHeight()));
 		this.add(masterFrame);
 
 		// Finalize game screen
 		this.pack();
 		this.setLocationRelativeTo(null);
-		this.setVisible(true);
+		this.setVisible(false);
 
 		// Handle game window closing event
 		this.addWindowListener(new WindowAdapter() {
@@ -50,6 +48,6 @@ public class GameScreen extends JFrame {
 	}
 
 	public JPanel getMasterFrame() {
-		return masterFrame;
+		return this.masterFrame;
 	}
 }

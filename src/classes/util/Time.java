@@ -1,6 +1,18 @@
+/*
+ * @written 3/29/2025
+ */
 package classes.util;
 
+/**
+ * A public static library for converting between units of time.
+ */
 public class Time {
+
+	// TODO: Add documentation
+	public static long tick() {
+		return System.nanoTime();
+	}
+
 	public static long secondsToNano(double seconds) {
 		return (long) (seconds * 1_000_000_000L);
 	}

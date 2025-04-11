@@ -1,19 +1,16 @@
 /*
- * @Written: 3/30/2025
- * 
- * class Vector2:
- * 
- * A custom implementation of a Vector class for
- * dealing with math in higher dimensional space
- * 
- * TODO: 
- * - Create an abstract superclass for general vectors [DONE]
+ * @written 3/30/2025
  */
 package classes.entity;
 
 import classes.abstracts.Vector;
 
+/**
+ * A custom implementation of the Vector class for dealing with math in 2D
+ * space.
+ */
 public class Vector2 extends Vector<Vector2> {
+
 	public Vector2() {
 		this(0, 0);
 	}
@@ -23,6 +20,10 @@ public class Vector2 extends Vector<Vector2> {
 		this.components.add(y);
 	}
 
+	// TODO: Add documentation
+	//
+	// Public getters
+	//
 	public double getX() {
 		return get(0);
 	}
@@ -39,61 +40,72 @@ public class Vector2 extends Vector<Vector2> {
 		return Math.atan2(-getY(), getX());
 	}
 
-	/*
-	 * evaluateLinearFunctionWithRespectToN()
-	 * 
-	 * Evaluate the general linear function of the line passing through
-	 * this Vector2 (x0, y0) and a target Vector2 (x1, y1), with
-	 * respect to `n` (x or y)
+	/**
+	 * Evaluate the general linear function of the line passing through this
+	 * Vector2 (x0, y0) and a target Vector2 (x1, y1), with respect to {@code x}
+	 *
+	 * @param x0        point1.x value
+	 * @param x1        point2.x value
+	 * @param y0        point1.y value
+	 * @param y1        point2.y value
+	 * @param x         input value to the function
+	 * @param useDomain whether or not to check for the domain set by the two
+	 *                  points
+	 * @return
 	 */
-	private Double evaluateLinearFunctionWithRespectToN(
-		double x0, 
-		double x1, 
-		double y0, 
-		double y1, 
-		double n,
-		boolean useDomain
-	) {
+	private Double evaluateLinearFunctionWithRespectTo(
+			double x0,
+			double x1,
+			double y0,
+			double y1,
+			double x,
+			boolean useDomain) {
 		double dx = x1 - x0;
 		double dy = y1 - y0;
 
-		/*
-		 * Check domain
-		 */
-		if (useDomain && n < Math.min(x0, x1) || n > Math.max(x0, x1)) {
+		// check domain
+		if (useDomain && x < Math.min(x0, x1) || x > Math.max(x0, x1)) {
 			return null;
 		}
 
+		// not a function
 		if (dx == 0) {
 			return null;
 		}
 
 		Double m = dy / dx;
-		Double y = m * (n - x0) + y0;
-		
+		Double y = m * (x - x0) + y0;
 		return y;
 	}
 
-	/*
-	 * Evaluate with respect to X, solving for Y
+	/**
+	 * Evaluate the equation of a line passing through this Vector2 and another
+	 * Vector2 with respect to {@code x}
+	 *
+	 * @param p2 the second point
+	 * @param x  the input to the function
+	 * @return f(x)
 	 */
 	public Double evaluateY(Vector2 p2, double x) {
-		return evaluateLinearFunctionWithRespectToN(
-			getX(), p2.getX(),
-			getY(), p2.getY(),
-			x, true
-		);
+		return evaluateLinearFunctionWithRespectTo(
+				getX(), p2.getX(),
+				getY(), p2.getY(),
+				x, true);
 	}
 
-	/*
-	 * Evaluate with respect to X, solving for X
+	/**
+	 * Evaluate the equation of a line passing through this Vector2 and another
+	 * Vector2 with respect to {@code y}
+	 *
+	 * @param p2 the second point
+	 * @param y  the input to the function
+	 * @return x(y)
 	 */
 	public Double evaluateX(Vector2 p2, double y) {
-		return evaluateLinearFunctionWithRespectToN(
-			getY(), p2.getY(),
-			getX(), p2.getX(),
-			y, true
-		);
+		return evaluateLinearFunctionWithRespectTo(
+				getY(), p2.getY(),
+				getX(), p2.getX(),
+				y, true);
 	}
 
 	@Override

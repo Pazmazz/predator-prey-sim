@@ -17,11 +17,13 @@ cell.setOccupant(new Ant());
 CellGrid grid = new CellGrid(new Unit2(10, 10));
 Cell cell = grid.getCell(new Unit2(4, 4));
 
-cell.setOccupant(new Ant());
+// Assign an ant to a cell
+Ant ant0 = new Ant();
+ant0.assignCell(grid.getCell(1, 1));
 
 while (true) {
 	// Get adjacent cells to the current ant cell
-	Cell[] adjCells = cell.getCellsAdjacentTo(cell);
+	Cell[] adjCells = grid.getCellsAdjacentTo(ant0.getCell());
 
 	// Add some code here to randomly shuffle the elements in the adjacent cell array
 	// ...
@@ -32,8 +34,18 @@ while (true) {
 	 */
 	for (Cell adjCell : adjCells) {
 		if (adjCell.isInBounds() && adjCell.isEmpty()) {
-			cell.moveOccupantTo(adjCell);
-			cell = adjCell;
+			// Deprecated method:
+			// cell.moveOccupantTo(adjCell);
+			// cell = adjCell;
+
+			// Do this instead now:
+			ant0.assignCell(adjCell);
+
+			// This is also valid
+			ant0.removeFromCell();
+			adjCell.setOccupant(ant0);
+
+			// Exit the loop once the cell is assigned
 			break;
 		}
 	}
