@@ -945,9 +945,9 @@ public class CellGrid {
 				if (cell.isEmpty()) {
 					out += "[_]";
 				} else if (cell.getOccupant() instanceof Ant) {
-					out += "$text-green [A]";
+					out += "$text-green [A]$text-reset ";
 				} else if (cell.getOccupant() instanceof Doodlebug) {
-					out += "$text-red [D]";
+					out += "$text-red [D]$text-reset ";
 				}
 			}
 			out += "\n";

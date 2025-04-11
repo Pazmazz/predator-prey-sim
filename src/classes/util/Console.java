@@ -307,12 +307,12 @@ public class Console {
 		long aft = Time.tick() - pre;
 
 		println(String.format(
-				"---- $text-yellow Benchmark Analytics:$text-reset  \"%s\" %s\n",
+				"---- $text-yellow Benchmark Analytics:$text-reset  \"$text-bright_purple %s$text-reset \" %s\n",
 				message,
 				"-".repeat(Math.max(50 - message.length(), 5))));
 
 		println(String.format(
-				"> $text-bright_black Output:$text-reset \n\n%s\n",
+				"$text-bright_black > Output:$text-reset \n\n%s\n",
 				result));
 
 		println(String.format(
