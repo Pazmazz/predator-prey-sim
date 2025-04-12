@@ -637,8 +637,8 @@ public class CellGrid {
 	}
 
 	/*
-	 * TODO: Improve efficiency for grid-querying methods. As of now, many lists are
-	 * created just to shuffle, truncate, or filter through elements that meet a
+	 * TODO: Improve efficiency for grid-querying methods. As of now, many lists...
+	 * are created just to shuffle, truncate, or filter through elements that meet a
 	 * certain criteria. These operations should be as inexpensive as possible,
 	 * given that they will be called upon quite frequently.
 	 */
@@ -926,6 +926,11 @@ public class CellGrid {
 		return path.getCellPath();
 	}
 
+	// TODO: Add documentation
+	public ArrayList<Cell> getCellPath(Cell c0, Cell c1) {
+		return getCellPath(c0.getUnit2Center(), c1.getUnit2Center());
+	}
+
 	/**
 	 * Create an iterator for a generated cell path between some {@code Vector2}
 	 * point {@code from} and {@code to}. Each call to the iterator will
@@ -942,6 +947,13 @@ public class CellGrid {
 	 */
 	public Iterator<Cell> getCellPathIterator(Vector2 from, Vector2 to) {
 		return new CellPathCollection(from, to).iterator();
+	}
+
+	// TODO: Add documentation
+	public Iterator<Cell> getCellPathIterator(Cell c0, Cell c1) {
+		return new CellPathCollection(
+				c0.getUnit2Center(),
+				c1.getUnit2Center()).iterator();
 	}
 
 	// TODO: Add documentation
@@ -1136,7 +1148,7 @@ public class CellGrid {
 	public class Cell {
 
 		final private Unit2 unit;
-		final private Vector2 position;
+		final private Vector2 unit2Center;
 		private CellType cellType;
 		private CellVacancy cellVacancy;
 		private Entity<?> cellOccupant;
@@ -1168,7 +1180,7 @@ public class CellGrid {
 		 */
 		public Cell(Unit2 unit) {
 			this.unit = unit;
-			this.position = new Vector2(
+			this.unit2Center = new Vector2(
 					unit.getX() - unit.signedUnit().getX() * 0.5,
 					unit.getY() - unit.signedUnit().getY() * 0.5);
 
@@ -1345,7 +1357,7 @@ public class CellGrid {
 		 * <pre>
 		 * <code>
 		 * Cell cell = new Cell(new Unit2(5, 5));
-		 * Console.println(cell.getCenterUnit2()); 
+		 * Console.println(cell.getUnit2Center()); 
 		 * </code>
 		 * </pre>
 		 * 
@@ -1353,8 +1365,8 @@ public class CellGrid {
 		 * 
 		 * @return the centered coordinate point of the cell as a {@code Vector2}
 		 */
-		public Vector2 getCenterUnit2() {
-			return this.position;
+		public Vector2 getUnit2Center() {
+			return this.unit2Center;
 		}
 
 		/**

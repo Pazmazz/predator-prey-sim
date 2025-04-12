@@ -34,6 +34,8 @@ public class MovementFrame extends RunService {
 
 	@Override
 	public void step(double deltaTimeSeconds) {
-		Console.println("running movement");
+		CellGrid grid = game.getGameGrid();
+		grid.collectCells();
+
 	}
 }

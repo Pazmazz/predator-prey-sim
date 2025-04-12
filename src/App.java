@@ -47,14 +47,27 @@ public class App {
 
 	public static void main(String[] args) {
 		Game game = Game.getInstance();
-		Console.benchmark("Game config", game::initConfig); // Avg: ~0.004s
-		Console.benchmark("Creating game grid", game::createGameGrid); // Avg: ~0.001s
-		Console.benchmark("Initializing game grid", game::initGameGrid); // Avg: ~0.02s
-		Console.benchmark("Initializing RunService", game::initRunService); // Avg: ~0.005s
+
+		// Avg: ~0.004s
+		Console.benchmark("Game config", game::initConfig);
+
+		// Avg: ~0.001s
+		Console.benchmark("Creating game grid", game::createGameGrid);
+
+		// Avg: ~0.02s
+		Console.benchmark("Initializing game grid", game::initGameGrid);
+
+		// Avg: ~0.005s
+		Console.benchmark("Initializing RunService", game::initRunService);
+
+		// Avg: ~0.3s
+		// Console.benchmark("Initializing game screen", game::initGameScreen);
 
 		CellGrid grid = game.getGameGrid();
 
 		Console.benchmark("Render game grid", grid::toASCII); // Avg: ~0.01s
-		game.start();
+		// game.start();
+
+		// Console.println(new Vector2(6, 4).serialize());
 	}
 }

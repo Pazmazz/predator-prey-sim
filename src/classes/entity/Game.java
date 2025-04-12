@@ -38,6 +38,7 @@ public class Game implements Runnable {
 	private GameState state = GameState.INITIAL;
 
 	private long simulationFPS;
+	private long upTime;
 
 	//
 	// Update frames
@@ -60,6 +61,7 @@ public class Game implements Runnable {
 
 	private Game() {
 		this.sessionId = UUID.randomUUID().toString();
+		this.upTime = Time.tick();
 		this.mainThread = new Thread(this);
 		this.state = GameState.LOADED;
 	}
@@ -71,13 +73,13 @@ public class Game implements Runnable {
 		Console.setDebugModeEnabled(true);
 		Console.setConsoleColorsEnabled(true);
 		Console.hideDebugPriority(DebugPriority.LOW);
-		Console.hideDebugPriority(DebugPriority.MEDIUM);
+		// Console.hideDebugPriority(DebugPriority.MEDIUM);
 
 		return "Game config benchmark";
 	}
 
 	public String createGameGrid() {
-		this.gameGrid = new CellGrid(settings.getGridSize());
+		this.gameGrid = new CellGrid(this.settings.getGridSize());
 		return "Game grid benchmark";
 	}
 
@@ -219,6 +221,10 @@ public class Game implements Runnable {
 
 	public CellGrid getGameGrid() {
 		return this.gameGrid;
+	}
+
+	public long getUpTime() {
+		return this.upTime;
 	}
 
 	public MovementFrame getMovementFrame() {

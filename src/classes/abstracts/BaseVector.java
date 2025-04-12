@@ -28,15 +28,13 @@ public abstract class BaseVector<T extends BaseVector<T>> implements Serializabl
 
 	protected abstract T newVector(Double[] components);
 
-	protected abstract String getSerializedClassName();
-
 	protected ArrayList<Double> components = new ArrayList<>();
 	private T inverted;
 
 	// TODO: Add documentation
 	public String serialize() {
-		StringBuilder out = new StringBuilder(getSerializedClassName())
-				.append("<");
+		StringBuilder out = new StringBuilder(
+				getClass().getSimpleName()).append("{");
 
 		for (int i = 0; i < components.size(); i++) {
 			out.append(components.get(i));
@@ -44,7 +42,7 @@ public abstract class BaseVector<T extends BaseVector<T>> implements Serializabl
 				out.append(", ");
 		}
 
-		out.append(">");
+		out.append("}");
 		return out.toString();
 	}
 

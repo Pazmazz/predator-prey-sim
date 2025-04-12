@@ -52,9 +52,4 @@ public class Unit2 extends BaseVector<Unit2> {
 				getX(),
 				getY()));
 	}
-
-	@Override
-	protected String getSerializedClassName() {
-		return getClass().getSimpleName();
-	}
 }

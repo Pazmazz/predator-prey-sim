@@ -4,8 +4,10 @@
 package classes.simulation;
 
 import classes.abstracts.RunService;
+import classes.entity.CellGrid;
 import classes.entity.Game;
 import classes.settings.GameSettings.SimulationType;
+import classes.util.Console;
 
 /**
  * This implements the {@code step} method for FrameProcessor. All code that
@@ -23,5 +25,7 @@ public class RenderFrame extends RunService {
 
 	@Override
 	public void step(double deltaTimeSeconds) {
+		CellGrid grid = game.getGameGrid();
+		Console.println(grid.toASCII());
 	}
 }

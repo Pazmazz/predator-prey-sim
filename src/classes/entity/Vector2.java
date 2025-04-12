@@ -112,9 +112,4 @@ public class Vector2 extends Vector<Vector2> {
 	protected Vector2 newVector(Double[] components) {
 		return new Vector2(components[0], components[1]);
 	}
-
-	@Override
-	protected String getSerializedClassName() {
-		return getClass().getSimpleName();
-	}
 }
