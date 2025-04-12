@@ -3,7 +3,7 @@
  */
 package classes.simulation;
 
-import classes.abstracts.FrameProcessor;
+import classes.abstracts.RunService;
 import classes.entity.Game;
 import classes.settings.GameSettings.SimulationType;
 
@@ -12,10 +12,13 @@ import classes.settings.GameSettings.SimulationType;
  * handles what should happen on every Render step in the simulation should be
  * written in this class's step method.
  */
-public class RenderFrame extends FrameProcessor {
+public class RenderFrame extends RunService {
 
-	public RenderFrame(Game game, SimulationType simulationFrame) {
-		super(game, simulationFrame);
+	@SuppressWarnings("unused")
+	private Game game = Game.getInstance();
+
+	public RenderFrame(SimulationType simulationFrame) {
+		super(simulationFrame);
 	}
 
 	@Override

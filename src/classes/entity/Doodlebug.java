@@ -8,10 +8,11 @@ import classes.entity.CellGrid.Cell;
 
 public class Doodlebug extends Bug<Doodlebug> {
 
+	private Game game = Game.getInstance();
+
 	int starvationTracker = 0;
 
-	public Doodlebug(Game game) {
-		super(game);
+	public Doodlebug() {
 		idNum = (int) (Math.random() * 1000);
 
 		// properties
@@ -56,7 +57,7 @@ public class Doodlebug extends Bug<Doodlebug> {
 
 		for (Cell adjCell : adjCells) {
 			if (adjCell.isInBounds() && adjCell.isEmpty()) {
-				adjCell.setOccupant(new Doodlebug(game));
+				adjCell.setOccupant(new Doodlebug());
 				break;
 			}
 		}

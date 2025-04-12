@@ -8,8 +8,9 @@ import classes.entity.CellGrid.Cell;
 
 public class Ant extends Bug<Ant> {
 
-	public Ant(Game game) {
-		super(game);
+	private Game game = Game.getInstance();
+
+	public Ant() {
 		idNum = (int) (Math.random() * 1000);
 
 		// properties
@@ -44,7 +45,7 @@ public class Ant extends Bug<Ant> {
 
 		for (Cell adjCell : adjCells) {
 			if (adjCell.isInBounds() && adjCell.isEmpty()) {
-				adjCell.setOccupant(new Ant(game));
+				adjCell.setOccupant(new Ant());
 				break;
 			}
 		}

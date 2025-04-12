@@ -27,6 +27,8 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class CellGrid {
 
+	private Game game = Game.getInstance();
+
 	final private Unit2 size;
 	final private int cellSize;
 
@@ -235,7 +237,8 @@ public class CellGrid {
 	 * @see #getCell(Vector2, Vector2)
 	 */
 	public Cell getCell(Unit2 unit) {
-		Cell cell = this.virtualGrid.get(unit.toString());
+		String cellStream = unit.serialize();
+		Cell cell = this.virtualGrid.get(cellStream);
 		if (cell != null)
 			return cell;
 
@@ -243,13 +246,18 @@ public class CellGrid {
 			throw new NoCellFoundException();
 
 		cell = new Cell(unit);
-		this.virtualGrid.put(unit.toString(), cell);
+		this.virtualGrid.put(cellStream, cell);
 
 		if (outOfBounds(unit))
 			cell.setType(CellType.OUT_OF_BOUNDS);
 
 		// Console.println("$text-yellow Added$text-reset " + cell);
 		return cell;
+	}
+
+	// TODO: Add documentation
+	public boolean hasCell(Unit2 unit) {
+		return this.virtualGrid.get(unit.serialize()) != null;
 	}
 
 	/**
@@ -391,13 +399,14 @@ public class CellGrid {
 	 * @see #collectCell(Unit2)
 	 */
 	public Cell collectCell(Unit2 unit) {
-		Cell cell = this.virtualGrid.get(unit.toString());
+		String cellStream = unit.serialize();
+		Cell cell = this.virtualGrid.get(cellStream);
 
 		if (cell == null)
 			throw new NoCellFoundException();
 
 		if (cell.isCollectable()) {
-			this.virtualGrid.remove(unit.toString());
+			this.virtualGrid.remove(cellStream);
 			cell.setType(CellType.GARBAGE_COLLECTED);
 		}
 
@@ -936,6 +945,30 @@ public class CellGrid {
 
 	// TODO: Add documentation
 	public String toASCII() {
+		String out = "\t";
+		for (int col = 1; col <= getSize().getY(); col++)
+			out += (col > 9)
+					? col + " "
+					: " " + col + " ";
+
+		out += "\n\n";
+		for (int row = 1; row <= getSize().getX(); row++) {
+			out += "[" + row + "]\t";
+			for (int col = 1; col <= getSize().getY(); col++) {
+				Cell cell = getCell(new Unit2(row, col));
+				if (cell.isEmpty())
+					out += "$bg-white $text-black [_]$text-reset ";
+				else if (cell.getOccupant() instanceof Ant)
+					out += "$bg-black $text-bright_blue [$text-bright_cyan A$text-bright_blue ]$text-reset ";
+				else if (cell.getOccupant() instanceof Doodlebug)
+					out += "$bg-black $text-yellow [$text-bright_yellow D$text-yellow ]$text-reset ";
+			}
+			out += "\n";
+		}
+		return out;
+	}
+
+	public String toASCIIBuilder() {
 		String out = "\t";
 		for (int col = 1; col <= getSize().getY(); col++)
 			out += (col > 9)

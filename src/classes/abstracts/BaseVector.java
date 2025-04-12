@@ -3,11 +3,14 @@
  */
 package classes.abstracts;
 
+import classes.entity.Vector2;
 import classes.util.Console;
 import classes.util.Formatter;
 import classes.util.Math2;
 import exceptions.VectorMismatchException;
 import interfaces.Callback;
+import interfaces.Serializable;
+
 import java.util.ArrayList;
 
 /**
@@ -21,12 +24,29 @@ import java.util.ArrayList;
  * it's components to int types, it can extend this class and guarantee that all
  * inherited methods will not generate a non-int value as a result.
  */
-public abstract class BaseVector<T extends BaseVector<T>> {
+public abstract class BaseVector<T extends BaseVector<T>> implements Serializable {
 
 	protected abstract T newVector(Double[] components);
 
+	protected abstract String getSerializedClassName();
+
 	protected ArrayList<Double> components = new ArrayList<>();
 	private T inverted;
+
+	// TODO: Add documentation
+	public String serialize() {
+		StringBuilder out = new StringBuilder(getSerializedClassName())
+				.append("<");
+
+		for (int i = 0; i < components.size(); i++) {
+			out.append(components.get(i));
+			if (i < components.size() - 1)
+				out.append(", ");
+		}
+
+		out.append(">");
+		return out.toString();
+	}
 
 	/**
 	 * Accepts a lambda function as the callback parameter to calculate what the

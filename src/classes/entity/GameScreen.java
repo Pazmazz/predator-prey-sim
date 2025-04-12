@@ -16,9 +16,11 @@ import javax.swing.JPanel;
  */
 public class GameScreen extends JFrame {
 
+	private Game game = Game.getInstance();
+
 	final private JPanel masterFrame;
 
-	public GameScreen(Game game) {
+	public GameScreen() {
 		// Default game screen settings
 		this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		this.setResizable(false);

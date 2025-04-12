@@ -3,15 +3,16 @@
  */
 package classes.entity;
 
-import classes.abstracts.FrameProcessor;
-import classes.abstracts.FrameProcessor.FrameState;
-import classes.abstracts.FrameProcessor.Task;
+import classes.abstracts.RunService;
+import classes.abstracts.RunService.FrameState;
+import classes.abstracts.RunService.Task;
 import classes.settings.GameSettings;
 import classes.settings.GameSettings.SimulationType;
 import classes.simulation.MovementFrame;
 import classes.simulation.RenderFrame;
 import classes.simulation.SimulatedLagFrame;
 import classes.util.Console;
+import classes.util.Console.DebugPriority;
 import classes.util.Time;
 import classes.entity.CellGrid.Cell;
 
@@ -24,6 +25,8 @@ import java.util.UUID;
  * class.
  */
 public class Game implements Runnable {
+
+	final private static Game game = new Game();
 
 	final private Thread mainThread;
 	final private String sessionId;
@@ -42,7 +45,7 @@ public class Game implements Runnable {
 	public MovementFrame movementFrame;
 	public RenderFrame renderFrame;
 	public SimulatedLagFrame simulatedLagFrame;
-	public FrameProcessor[] frameProcesses;
+	public RunService[] frameProcesses;
 
 	//
 	// Internal states
@@ -55,31 +58,68 @@ public class Game implements Runnable {
 		TERMINATED,
 	}
 
-	public Game() {
-		// IMPORTANT: settings must be defined first, since other classes reference it
+	private Game() {
+		/*
+		 * SETTINGS MUST BE DEFINED FIRST
+		 * 
+		 * In case other classes need to reference 'game.settings' within the
+		 * constructor
+		 */
 		this.settings = new GameSettings();
 
+		/*
+		 * GAME METADATA
+		 * 
+		 * Descriptive info about the game instance
+		 */
 		this.sessionId = UUID.randomUUID().toString();
 		this.mainThread = new Thread(this);
+		this.simulationFPS = Time.secondsToNano(settings.getSimulation().getFPS());
 		this.gameGrid = new CellGrid(settings.getGridSize());
 
-		this.movementFrame = new MovementFrame(this, SimulationType.MOVEMENT);
-		this.renderFrame = new RenderFrame(this, SimulationType.RENDER);
-		this.simulatedLagFrame = new SimulatedLagFrame(this, SimulationType.SIMULATED_LAG);
-		this.simulationFPS = Time.secondsToNano(settings.getSimulation().getFPS());
+		/*
+		 * RUN SERVICE
+		 * 
+		 * Instantiate the run service simulation frames, which is where all game loop
+		 * logic is processed and updated
+		 */
+		this.movementFrame = new MovementFrame(SimulationType.MOVEMENT);
+		this.renderFrame = new RenderFrame(SimulationType.RENDER);
+		this.simulatedLagFrame = new SimulatedLagFrame(SimulationType.SIMULATED_LAG);
 
-		this.frameProcesses = new FrameProcessor[] {
+		this.frameProcesses = new RunService[] {
 				movementFrame,
 				renderFrame,
 				simulatedLagFrame
 		};
 
+		/*
+		 * CONFIG
+		 * 
+		 * Configure initial settings in any classes that should update their settings
+		 * before the game starts
+		 */
+		Console.setDebugModeEnabled(true);
+		Console.setConsoleColorsEnabled(true);
+		Console.hideDebugPriority(DebugPriority.LOW);
+		Console.hideDebugPriority(DebugPriority.MEDIUM);
+
+		/*
+		 * FINAL
+		 * 
+		 * Perform any final actions that should occur at the end of the game's
+		 * instantiation
+		 */
+		Console.benchmark("Game grid initializer", this::initializeGameGrid);
+		Console.benchmark("Game grid ASCII", this.gameGrid::toASCII);
+		Console.benchmark("Game screen", this::initializeGameScreen);
+
 		this.state = GameState.LOADED;
 	}
 
-	public Object initializeGameScreen() {
-		this.screen = new GameScreen(this);
-		return null;
+	public String initializeGameScreen() {
+		this.screen = new GameScreen();
+		return "Game screen benchmark";
 	}
 
 	// TODO: Implement snapshot saving/loading
@@ -99,13 +139,14 @@ public class Game implements Runnable {
 	 *
 	 * @throws Error if this method is called more than once
 	 */
-	public void start() {
+	public String start() {
 		if (isLoaded()) {
 			this.setState(GameState.RUNNING);
 			mainThread.start();
 		} else {
 			throw new Error("start() can only be called once per game instance");
 		}
+		return "Start game thread benchmark";
 	}
 
 	/**
@@ -128,12 +169,12 @@ public class Game implements Runnable {
 	@Override
 	public void run() {
 		while (isThreadRunning()) {
-			if (FrameProcessor.isAllSuspended())
+			if (RunService.isAllSuspended())
 				continue;
 
 			long simulationDelta = 0;
 
-			for (FrameProcessor frame : this.frameProcesses) {
+			for (RunService frame : this.frameProcesses) {
 				if (frame.isSuspended())
 					continue;
 
@@ -149,7 +190,7 @@ public class Game implements Runnable {
 	}
 
 	// TODO: Add documentation
-	public void wait(double milliseconds) {
+	private void wait(double milliseconds) {
 		try {
 			Thread.sleep((long) milliseconds);
 		} catch (InterruptedException e) {
@@ -158,28 +199,32 @@ public class Game implements Runnable {
 	}
 
 	// TODO: Implement game grid initializer
-	public Object initializeGameGrid() {
+	public String initializeGameGrid() {
 		this.gameGrid.populate();
 
 		ArrayList<Cell> antCells = this.gameGrid
 				.getRandomAvailableCells(this.settings.getInitialAnts());
 
 		for (Cell cell : antCells)
-			cell.setOccupant(new Ant(this));
+			cell.setOccupant(new Ant());
 
 		ArrayList<Cell> doodlebugCells = this.gameGrid
 				.getRandomAvailableCells(this.settings.getInitialDoodlebugs());
 
 		for (Cell cell : doodlebugCells)
-			cell.setOccupant(new Doodlebug(this));
+			cell.setOccupant(new Doodlebug());
 
-		return null;
+		return "Initialize game grid benchmark";
 	}
 
 	// TODO: Add documentation
 	//
 	// Public getters
 	//
+	public static Game getInstance() {
+		return game;
+	}
+
 	public GameScreen getScreen() {
 		return this.screen;
 	}

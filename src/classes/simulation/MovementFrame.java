@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import classes.abstracts.Entity;
-import classes.abstracts.FrameProcessor;
+import classes.abstracts.RunService;
 import classes.abstracts.Properties;
 import classes.entity.CellGrid;
 import classes.entity.Game;
@@ -22,12 +22,13 @@ import classes.settings.GameSettings.SimulationType;
  * This frame can be thought of as a "game state update" process. It's goal is
  * to update all game state variables in the data model.
  */
-public class MovementFrame extends FrameProcessor {
+public class MovementFrame extends RunService {
 
-	private CellGrid grid = game.getGameGrid();
+	@SuppressWarnings("unused")
+	private Game game = Game.getInstance();
 
-	public MovementFrame(Game game, SimulationType simulationFrame) {
-		super(game, simulationFrame);
+	public MovementFrame(SimulationType simulationFrame) {
+		super(simulationFrame);
 	}
 
 	@Override

@@ -3,7 +3,7 @@
  */
 package classes.simulation;
 
-import classes.abstracts.FrameProcessor;
+import classes.abstracts.RunService;
 import classes.entity.Game;
 import classes.entity.Unit2;
 import classes.settings.GameSettings.SimulationType;
@@ -14,10 +14,13 @@ import classes.util.Console;
  * handles what should happen on every SimulatedLag step in the simulation
  * should be written in this class's step method.
  */
-public class SimulatedLagFrame extends FrameProcessor {
+public class SimulatedLagFrame extends RunService {
 
-	public SimulatedLagFrame(Game game, SimulationType simulationFrame) {
-		super(game, simulationFrame);
+	@SuppressWarnings("unused")
+	private Game game = Game.getInstance();
+
+	public SimulatedLagFrame(SimulationType simulationFrame) {
+		super(simulationFrame);
 	}
 
 	@Override

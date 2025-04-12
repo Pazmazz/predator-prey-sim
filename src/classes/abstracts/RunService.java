@@ -20,7 +20,9 @@ import interfaces.TaskCallback;
  * processes in a tight loop. A {@code step} method must be implemented in the
  * subclass which handles what action should occur on that frame.
  */
-public abstract class FrameProcessor {
+public abstract class RunService {
+
+	private Game game = Game.getInstance();
 
 	private long FPS;
 	private long lastPulseTick;
@@ -28,7 +30,6 @@ public abstract class FrameProcessor {
 	private long timeBeforeStep;
 	private long timeAfterStep;
 
-	public Game game;
 	private SimulationSettings settings;
 	private FrameState state = FrameState.RUNNING;
 	private ArrayList<Task> preSimulationTasks = new ArrayList<>();
@@ -41,12 +42,11 @@ public abstract class FrameProcessor {
 		SUSPENDED,
 	}
 
-	protected FrameProcessor(Game game, SimulationType simulationType) {
+	protected RunService(SimulationType simulationType) {
 		this.settings = game.getSettings()
 				.getSimulation()
 				.getSettings(simulationType);
 
-		this.game = game;
 		this.FPS = Time.secondsToNano(settings.getFPS());
 		this.lastPulseTick = -Time.secondsToNano(settings.getFPS());
 	}

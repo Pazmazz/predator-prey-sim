@@ -1,7 +1,6 @@
 package classes.abstracts;
 
 import classes.entity.CellGrid.Cell;
-import classes.entity.Game;
 import classes.entity.Null;
 import classes.entity.Vector2;
 import classes.util.Console;
@@ -12,9 +11,7 @@ public abstract class Bug<T> extends Entity<T> {
 
 	public int movementCounter = 0;
 
-	protected Bug(Game game) {
-		super(game);
-
+	protected Bug() {
 		// properties
 		setProperty(Property.POSITION, new Vector2());
 		setProperty(Property.ROTATION, 0);

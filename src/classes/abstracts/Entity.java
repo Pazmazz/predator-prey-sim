@@ -4,7 +4,6 @@
 package classes.abstracts;
 
 import classes.entity.CellGrid.Cell;
-import classes.entity.Game;
 import classes.entity.Null;
 import exceptions.CellIsOccupiedException;
 import exceptions.NoCellFoundException;
@@ -19,15 +18,10 @@ import exceptions.NoCellFoundException;
  */
 public abstract class Entity<T> extends Properties {
 
-	public Game game;
-
 	// Unused constructor for now
-	public Entity(Game game) {
-		this.game = game;
+	// public Entity() {
 
-		// default properties
-		// ...
-	}
+	// }
 
 	/**
 	 * Assigns the current occupant to a given cell. Each occupant can only be
