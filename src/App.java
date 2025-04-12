@@ -35,7 +35,6 @@ import classes.entity.CellGrid.GridIntercept;
 import classes.entity.Game;
 import classes.entity.Unit2;
 import classes.util.Console;
-import classes.util.FileManager;
 import classes.util.Console.DebugPriority;
 import classes.util.Time;
 import interfaces.Callback;
