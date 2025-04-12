@@ -15,7 +15,7 @@ Major changes.
 
 * **Added** `game.initializeGameBoard()` method for setting up the initial state of `100` ants and `5` doodlebugs
 
-* **Disabled** the game screen loading automatically in the `Game` constructor. The game screen now needs to be initialize by calling `game.initializeGameScreen()`
+* **Disabled** the game screen loading automatically in the `Game` constructor. The game screen now needs to be initialize by calling `game.initGameScreen()`
 	- This kind of modular code allows for easier performance benchmarking, and selective enabling/disabling of certain feature which is crucial during testing. 
 
 

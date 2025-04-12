@@ -46,8 +46,9 @@ import classes.entity.Vector2;
 public class App {
 
 	public static void main(String[] args) {
-		Vector2 v = new Vector2(5, 5);
-		Unit2 u = new Unit2(6, 6);
+		Game game = Game.getInstance();
+		Console.benchmark("Game config", game::initConfig);
+		Console.benchmark("Creating game grid", game::createGameGrid);
 
 		// Console.benchmark("toString()", App::tryToString);
 		// Console.benchmark("serialize()", App::trySerialize);

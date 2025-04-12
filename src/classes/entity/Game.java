@@ -26,12 +26,12 @@ import java.util.UUID;
  */
 public class Game implements Runnable {
 
-	final private static Game game = new Game();
+	private static Game game = new Game();
+	private GameSettings settings;
+	private CellGrid gameGrid;
 
 	final private Thread mainThread;
 	final private String sessionId;
-	final private GameSettings settings;
-	final private CellGrid gameGrid;
 	final private ArrayList<Snapshot> snapshots = new ArrayList<>();
 
 	private GameScreen screen;
@@ -42,10 +42,10 @@ public class Game implements Runnable {
 	//
 	// Update frames
 	//
-	public MovementFrame movementFrame;
-	public RenderFrame renderFrame;
-	public SimulatedLagFrame simulatedLagFrame;
-	public RunService[] frameProcesses;
+	private MovementFrame movementFrame;
+	private RenderFrame renderFrame;
+	private SimulatedLagFrame simulatedLagFrame;
+	private RunService[] frameProcesses;
 
 	//
 	// Internal states
@@ -59,30 +59,49 @@ public class Game implements Runnable {
 	}
 
 	private Game() {
-		/*
-		 * SETTINGS MUST BE DEFINED FIRST
-		 * 
-		 * In case other classes need to reference 'game.settings' within the
-		 * constructor
-		 */
-		this.settings = new GameSettings();
-
-		/*
-		 * GAME METADATA
-		 * 
-		 * Descriptive info about the game instance
-		 */
 		this.sessionId = UUID.randomUUID().toString();
 		this.mainThread = new Thread(this);
-		this.simulationFPS = Time.secondsToNano(settings.getSimulation().getFPS());
-		this.gameGrid = new CellGrid(settings.getGridSize());
+		this.state = GameState.LOADED;
+	}
 
-		/*
-		 * RUN SERVICE
-		 * 
-		 * Instantiate the run service simulation frames, which is where all game loop
-		 * logic is processed and updated
-		 */
+	// TODO: Add documentation
+	public String initConfig() {
+		this.settings = new GameSettings();
+
+		Console.setDebugModeEnabled(true);
+		Console.setConsoleColorsEnabled(true);
+		Console.hideDebugPriority(DebugPriority.LOW);
+		Console.hideDebugPriority(DebugPriority.MEDIUM);
+
+		return "Game config benchmark";
+	}
+
+	public String createGameGrid() {
+		this.gameGrid = new CellGrid(settings.getGridSize());
+		return "Game grid benchmark";
+	}
+
+	public String initGameGrid() {
+		this.gameGrid.populate();
+
+		ArrayList<Cell> antCells = this.gameGrid
+				.getRandomAvailableCells(this.settings.getInitialAnts());
+
+		for (Cell cell : antCells)
+			cell.setOccupant(new Ant());
+
+		ArrayList<Cell> doodlebugCells = this.gameGrid
+				.getRandomAvailableCells(this.settings.getInitialDoodlebugs());
+
+		for (Cell cell : doodlebugCells)
+			cell.setOccupant(new Doodlebug());
+
+		return "Initialize game grid benchmark";
+	}
+
+	public void initRunService() {
+		this.simulationFPS = Time.secondsToNano(settings.getSimulation().getFPS());
+
 		this.movementFrame = new MovementFrame(SimulationType.MOVEMENT);
 		this.renderFrame = new RenderFrame(SimulationType.RENDER);
 		this.simulatedLagFrame = new SimulatedLagFrame(SimulationType.SIMULATED_LAG);
@@ -92,45 +111,11 @@ public class Game implements Runnable {
 				renderFrame,
 				simulatedLagFrame
 		};
-
-		/*
-		 * CONFIG
-		 * 
-		 * Configure initial settings in any classes that should update their settings
-		 * before the game starts
-		 */
-		Console.setDebugModeEnabled(true);
-		Console.setConsoleColorsEnabled(true);
-		Console.hideDebugPriority(DebugPriority.LOW);
-		Console.hideDebugPriority(DebugPriority.MEDIUM);
-
-		/*
-		 * FINAL
-		 * 
-		 * Perform any final actions that should occur at the end of the game's
-		 * instantiation
-		 */
-		Console.benchmark("Game grid initializer", this::initializeGameGrid);
-		Console.benchmark("Game grid ASCII", this.gameGrid::toASCII);
-		Console.benchmark("Game screen", this::initializeGameScreen);
-
-		this.state = GameState.LOADED;
 	}
 
-	public String initializeGameScreen() {
+	public String initGameScreen() {
 		this.screen = new GameScreen();
 		return "Game screen benchmark";
-	}
-
-	// TODO: Implement snapshot saving/loading
-	public void saveSnapshot() {
-		Snapshot snapshot = new Snapshot();
-
-		this.snapshots.add(snapshot);
-	}
-
-	public void loadSnapshot() {
-
 	}
 
 	/**
@@ -147,6 +132,17 @@ public class Game implements Runnable {
 			throw new Error("start() can only be called once per game instance");
 		}
 		return "Start game thread benchmark";
+	}
+
+	// TODO: Implement snapshot saving/loading
+	public void saveSnapshot() {
+		Snapshot snapshot = new Snapshot();
+
+		this.snapshots.add(snapshot);
+	}
+
+	public void loadSnapshot() {
+
 	}
 
 	/**
@@ -184,37 +180,14 @@ public class Game implements Runnable {
 			}
 
 			long threadYieldTime = this.simulationFPS - simulationDelta;
-			if (threadYieldTime > 0)
-				wait(Time.nanoToMillisecond(threadYieldTime));
+			if (threadYieldTime > 0) {
+				try {
+					Thread.sleep((long) Time.nanoToMillisecond(threadYieldTime));
+				} catch (InterruptedException e) {
+					throw new Error(e);
+				}
+			}
 		}
-	}
-
-	// TODO: Add documentation
-	private void wait(double milliseconds) {
-		try {
-			Thread.sleep((long) milliseconds);
-		} catch (InterruptedException e) {
-			throw new Error(e);
-		}
-	}
-
-	// TODO: Implement game grid initializer
-	public String initializeGameGrid() {
-		this.gameGrid.populate();
-
-		ArrayList<Cell> antCells = this.gameGrid
-				.getRandomAvailableCells(this.settings.getInitialAnts());
-
-		for (Cell cell : antCells)
-			cell.setOccupant(new Ant());
-
-		ArrayList<Cell> doodlebugCells = this.gameGrid
-				.getRandomAvailableCells(this.settings.getInitialDoodlebugs());
-
-		for (Cell cell : doodlebugCells)
-			cell.setOccupant(new Doodlebug());
-
-		return "Initialize game grid benchmark";
 	}
 
 	// TODO: Add documentation
@@ -243,6 +216,14 @@ public class Game implements Runnable {
 
 	public CellGrid getGameGrid() {
 		return this.gameGrid;
+	}
+
+	public MovementFrame getMovementFrame() {
+		return this.movementFrame;
+	}
+
+	public RenderFrame getRenderFrame() {
+		return this.renderFrame;
 	}
 
 	// TODO: Add documentation
@@ -278,5 +259,10 @@ public class Game implements Runnable {
 	//
 	public void setState(GameState newState) {
 		this.state = newState;
+	}
+
+	@Override
+	public String toString() {
+		return "Game#" + this.sessionId;
 	}
 }

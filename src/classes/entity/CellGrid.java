@@ -969,27 +969,27 @@ public class CellGrid {
 	}
 
 	public String toASCIIBuilder() {
-		String out = "\t";
+		StringBuilder out = new StringBuilder("\t");
 		for (int col = 1; col <= getSize().getY(); col++)
-			out += (col > 9)
+			out.append((col > 9)
 					? col + " "
-					: " " + col + " ";
+					: " " + col + " ");
 
-		out += "\n\n";
+		out.append("\n\n");
 		for (int row = 1; row <= getSize().getX(); row++) {
-			out += "[" + row + "]\t";
+			out.append("[").append(row).append("]\t");
 			for (int col = 1; col <= getSize().getY(); col++) {
 				Cell cell = getCell(new Unit2(row, col));
 				if (cell.isEmpty())
-					out += "$bg-white $text-black [_]$text-reset ";
+					out.append("$bg-white $text-black [_]$text-reset ");
 				else if (cell.getOccupant() instanceof Ant)
-					out += "$bg-black $text-bright_blue [$text-bright_cyan A$text-bright_blue ]$text-reset ";
+					out.append("$bg-black $text-bright_blue [$text-bright_cyan A$text-bright_blue ]$text-reset ");
 				else if (cell.getOccupant() instanceof Doodlebug)
-					out += "$bg-black $text-yellow [$text-bright_yellow D$text-yellow ]$text-reset ";
+					out.append("$bg-black $text-yellow [$text-bright_yellow D$text-yellow ]$text-reset ");
 			}
-			out += "\n";
+			out.append("\n");
 		}
-		return out;
+		return out.toString();
 	}
 
 	/**
