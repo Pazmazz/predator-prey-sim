@@ -256,7 +256,12 @@ public class CellGrid {
 	}
 
 	// TODO: Add documentation
-	public boolean hasCell(Unit2 unit) {
+	public Cell getCellIfExists(Unit2 unit) {
+		return this.virtualGrid.get(unit.serialize());
+	}
+
+	// TODO: Add documentation
+	public boolean cellExists(Unit2 unit) {
 		return this.virtualGrid.get(unit.serialize()) != null;
 	}
 
@@ -945,47 +950,36 @@ public class CellGrid {
 
 	// TODO: Add documentation
 	public String toASCII() {
-		String out = "\t";
-		for (int col = 1; col <= getSize().getY(); col++)
-			out += (col > 9)
-					? col + " "
-					: " " + col + " ";
-
-		out += "\n\n";
-		for (int row = 1; row <= getSize().getX(); row++) {
-			out += "[" + row + "]\t";
-			for (int col = 1; col <= getSize().getY(); col++) {
-				Cell cell = getCell(new Unit2(row, col));
-				if (cell.isEmpty())
-					out += "$bg-white $text-black [_]$text-reset ";
-				else if (cell.getOccupant() instanceof Ant)
-					out += "$bg-black $text-bright_blue [$text-bright_cyan A$text-bright_blue ]$text-reset ";
-				else if (cell.getOccupant() instanceof Doodlebug)
-					out += "$bg-black $text-yellow [$text-bright_yellow D$text-yellow ]$text-reset ";
-			}
-			out += "\n";
-		}
-		return out;
-	}
-
-	public String toASCIIBuilder() {
 		StringBuilder out = new StringBuilder("\t");
+		String emptyCell = "$bg-white $text-black [_]$text-reset ";
+		String antCell = "$bg-black $text-bright_blue [$text-bright_cyan A$text-bright_blue ]$text-reset ";
+		String doodlebugCell = "$bg-black $text-yellow [$text-bright_yellow D$text-yellow ]$text-reset ";
+
+		int rowLength = getSize().getX();
+		int colLength = getSize().getY();
+
 		for (int col = 1; col <= getSize().getY(); col++)
 			out.append((col > 9)
 					? col + " "
 					: " " + col + " ");
 
 		out.append("\n\n");
-		for (int row = 1; row <= getSize().getX(); row++) {
+		for (int row = 1; row <= rowLength; row++) {
 			out.append("[").append(row).append("]\t");
-			for (int col = 1; col <= getSize().getY(); col++) {
-				Cell cell = getCell(new Unit2(row, col));
+			for (int col = 1; col <= colLength; col++) {
+				Unit2 cellUnit = new Unit2(row, col);
+				if (!cellExists(cellUnit)) {
+					out.append(emptyCell);
+					continue;
+				}
+
+				Cell cell = getCell(cellUnit);
 				if (cell.isEmpty())
-					out.append("$bg-white $text-black [_]$text-reset ");
+					out.append(emptyCell);
 				else if (cell.getOccupant() instanceof Ant)
-					out.append("$bg-black $text-bright_blue [$text-bright_cyan A$text-bright_blue ]$text-reset ");
+					out.append(antCell);
 				else if (cell.getOccupant() instanceof Doodlebug)
-					out.append("$bg-black $text-yellow [$text-bright_yellow D$text-yellow ]$text-reset ");
+					out.append(doodlebugCell);
 			}
 			out.append("\n");
 		}
