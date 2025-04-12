@@ -81,6 +81,7 @@ public class Game implements Runnable {
 		return "Game grid benchmark";
 	}
 
+	// TODO: Optimize
 	public String initGameGrid() {
 		this.gameGrid.populate();
 
@@ -99,7 +100,7 @@ public class Game implements Runnable {
 		return "Initialize game grid benchmark";
 	}
 
-	public void initRunService() {
+	public String initRunService() {
 		this.simulationFPS = Time.secondsToNano(settings.getSimulation().getFPS());
 
 		this.movementFrame = new MovementFrame(SimulationType.MOVEMENT);
@@ -111,6 +112,8 @@ public class Game implements Runnable {
 				renderFrame,
 				simulatedLagFrame
 		};
+
+		return "Runservice benchmark";
 	}
 
 	public String initGameScreen() {

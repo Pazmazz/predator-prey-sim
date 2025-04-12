@@ -13,6 +13,7 @@ import classes.entity.CellGrid;
 import classes.entity.Game;
 import classes.entity.TweenData;
 import classes.settings.GameSettings.SimulationType;
+import classes.util.Console;
 
 /**
  * This implements the {@code step} method for FrameProcessor. All code that
@@ -33,5 +34,6 @@ public class MovementFrame extends RunService {
 
 	@Override
 	public void step(double deltaTimeSeconds) {
+		Console.println("running movement");
 	}
 }

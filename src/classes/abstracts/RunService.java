@@ -88,9 +88,9 @@ public abstract class RunService {
 
 		// run the implemented step
 		// pre-simulation task binds go here (executePreSimulationTasks())
-		executeTasks(this.preSimulationTasks);
+		stepTasks(this.preSimulationTasks);
 		step(Time.nanoToSeconds(deltaTime));
-		executeTasks(this.postSimulationTasks);
+		stepTasks(this.postSimulationTasks);
 		// post-simulation task binds go here (executePostSimulationTasks())
 
 		this.timeAfterStep = Time.tick();
@@ -180,7 +180,7 @@ public abstract class RunService {
 	 * This method should ideally be called inside a simulation frame's {@code step}
 	 * method, but it may be used outside of this context as well.
 	 */
-	public void executeTasks(ArrayList<Task> tasks) {
+	public void stepTasks(ArrayList<Task> tasks) {
 		if (tasks.size() == 0)
 			return;
 
@@ -193,6 +193,7 @@ public abstract class RunService {
 			if (task.started() == null)
 				task.setStart(currentTime);
 
+			// task timeout check
 			task.setElapsedLifetime(currentTime - task.started());
 			if (task.timeout() != -1 && task.elapsedLifetime() > task.timeout()) {
 				Console.debugPrint(
@@ -202,6 +203,7 @@ public abstract class RunService {
 				taskIterator.remove();
 			}
 
+			// task is currently suspended
 			if (task.isSuspended()) {
 				if (task.suspendedUntil() == -1)
 					task.setSuspendedUntil(currentTime + task.suspended());

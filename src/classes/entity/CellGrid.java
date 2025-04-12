@@ -30,7 +30,6 @@ public class CellGrid {
 	private Game game = Game.getInstance();
 
 	final private Unit2 size;
-	final private int cellSize;
 
 	/*
 	 * Thread-safe hashmap is required here, since multiple threads may access the
@@ -67,14 +66,8 @@ public class CellGrid {
 		OCCUPIED,
 	}
 
-	public CellGrid(Unit2 size, int cellSize) {
-		this.size = size;
-		this.cellSize = cellSize;
-	}
-
-	// TODO: Pull from game settings to set a default cell size later
 	public CellGrid(Unit2 size) {
-		this(size, 1);
+		this.size = size;
 	}
 
 	/**
@@ -900,8 +893,11 @@ public class CellGrid {
 
 	// TODO: Add documentation
 	public CellGrid populate() {
-		for (int row = 1; row <= getSize().getX(); row++) {
-			for (int col = 1; col <= getSize().getY(); col++) {
+		int rowLength = getSize().getX();
+		int colLength = getSize().getY();
+
+		for (int row = 1; row <= rowLength; row++) {
+			for (int col = 1; col <= colLength; col++) {
 				getCell(new Unit2(row, col));
 			}
 		}
@@ -967,14 +963,8 @@ public class CellGrid {
 		for (int row = 1; row <= rowLength; row++) {
 			out.append("[").append(row).append("]\t");
 			for (int col = 1; col <= colLength; col++) {
-				Unit2 cellUnit = new Unit2(row, col);
-				if (!cellExists(cellUnit)) {
-					out.append(emptyCell);
-					continue;
-				}
-
-				Cell cell = getCell(cellUnit);
-				if (cell.isEmpty())
+				Cell cell = getCellIfExists(new Unit2(row, col));
+				if (cell == null || cell.isEmpty())
 					out.append(emptyCell);
 				else if (cell.getOccupant() instanceof Ant)
 					out.append(antCell);
@@ -1147,7 +1137,6 @@ public class CellGrid {
 
 		final private Unit2 unit;
 		final private Vector2 position;
-		final private int size = cellSize;
 		private CellType cellType;
 		private CellVacancy cellVacancy;
 		private Entity<?> cellOccupant;
@@ -1377,11 +1366,6 @@ public class CellGrid {
 		 */
 		public Unit2 getUnit2() {
 			return this.unit;
-		}
-
-		// TODO: Add documentation
-		public int getSize() {
-			return this.size;
 		}
 
 		/*
