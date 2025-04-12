@@ -440,7 +440,7 @@ public class CellGrid {
 				count++;
 				gridIterator.remove();
 				cell.setType(CellType.GARBAGE_COLLECTED);
-				Console.println("$text-cyan Collected:$text-reset  " + cell);
+				// Console.println("$text-cyan Collected:$text-reset " + cell);
 			}
 		}
 
@@ -936,20 +936,22 @@ public class CellGrid {
 
 	// TODO: Add documentation
 	public String toASCII() {
-		String out = "";
-		for (int row = 1; row < getSize().getX(); row++) {
+		String out = "\t";
+		for (int col = 1; col <= getSize().getY(); col++)
+			out += (col > 9)
+					? col + " "
+					: " " + col + " ";
+
+		out += "\n\n";
+		for (int row = 1; row <= getSize().getX(); row++) {
 			out += "[" + row + "]\t";
-			for (int col = 1; col < getSize().getY(); col++) {
+			for (int col = 1; col <= getSize().getY(); col++) {
 				Cell cell = getCell(new Unit2(row, col));
 				if (cell.isEmpty())
 					out += "$bg-white $text-black [_]$text-reset ";
 				else if (cell.getOccupant() instanceof Ant)
-					// out += "$bg-black $text-bright_cyan [$text-bright_blue A$text-bright_cyan
-					// ]$text-reset ";
 					out += "$bg-black $text-bright_blue [$text-bright_cyan A$text-bright_blue ]$text-reset ";
 				else if (cell.getOccupant() instanceof Doodlebug)
-					// out += "$bg-black $text-bright_yellow [$text-yellow D$text-bright_yellow
-					// ]$text-reset ";
 					out += "$bg-black $text-yellow [$text-bright_yellow D$text-yellow ]$text-reset ";
 			}
 			out += "\n";

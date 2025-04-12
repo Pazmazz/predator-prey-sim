@@ -77,8 +77,9 @@ public class Game implements Runnable {
 		this.state = GameState.LOADED;
 	}
 
-	public void initializeGameScreen() {
+	public Object initializeGameScreen() {
 		this.screen = new GameScreen(this);
+		return null;
 	}
 
 	// TODO: Implement snapshot saving/loading
@@ -171,8 +172,6 @@ public class Game implements Runnable {
 
 		for (Cell cell : doodlebugCells)
 			cell.setOccupant(new Doodlebug(this));
-
-		Console.println(this.gameGrid.getRandomAvailableCells(5));
 
 		return null;
 	}

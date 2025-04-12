@@ -29,7 +29,7 @@ public class GameSettings {
 
 		this.cellSize = 36; // Pixels
 		this.gridSize = new Unit2(20, 20); // Cell units
-		this.initialAnts = 100;
+		this.initialAnts = 5;
 		this.initialDoodlebugs = 5;
 
 		//
@@ -95,7 +95,7 @@ public class GameSettings {
 			//
 			// Editable
 			//
-			FPS = 1.0 / 60;
+			FPS = 1.0 / 2;
 			settings = new HashMap<>();
 
 			// (vv) Note: Set FPS to 0 if you want it to match the game FPS (vv) //
@@ -112,7 +112,7 @@ public class GameSettings {
 
 			// SimulatedLag
 			SimulationSettings simulatedLag = new SimulationSettings()
-					.setFPS(3.0)
+					.setFPS(0)
 					.setProcessName("SimulatedLag");
 
 			render.getDebugInfo().setPrimaryColor("red");

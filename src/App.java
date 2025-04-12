@@ -33,6 +33,7 @@ import classes.entity.CellGrid.GridIntercept;
 import classes.entity.Game;
 import classes.entity.Unit2;
 import classes.util.Console;
+import classes.util.FileManager;
 import classes.util.Console.DebugPriority;
 import classes.util.Time;
 import interfaces.Callback;
@@ -48,23 +49,78 @@ public class App {
 	public static void main(String[] args) {
 		Console.setDebugModeEnabled(true);
 		Console.hideDebugPriority(DebugPriority.LOW);
-		// Console.hideDebugPriority(DebugPriority.MEDIUM);
+		Console.hideDebugPriority(DebugPriority.MEDIUM);
 		Console.setConsoleColorsEnabled(true);
 
 		Game game = new Game();
 		CellGrid grid = game.getGameGrid();
 		// game.initializeGameScreen();
-		// game.start();
+		game.start();
 
-		Console.benchmark("Game grid initializer", game::initializeGameGrid);
-		// Console.benchmark("Game Grid", grid::toASCII);
+		// Console.benchmark("Game grid initializer", game::initializeGameGrid);
+		Console.benchmark("Game Grid", grid::toASCII);
 		// Console.benchmark("Game screen", game::initializeGameScreen);
+
+		Doodlebug predator = new Doodlebug(game);
+		Ant prey = new Ant(game);
+
+		predator.assignCell(grid.getCell(new Unit2(1, 1)));
+		prey.assignCell(grid.getCell(new Unit2(20, 20)));
+
+		game.movementFrame.onPreSimulation((task) -> {
+			@SuppressWarnings("unchecked")
+			ArrayList<Cell> path = (ArrayList<Cell>) ((Object) task.get("path"));
+			Vector2 pos = (Vector2) task.get("targetPos");
+
+			if (pos == null || !pos.equals(prey.getCell().getCenterUnit2())) {
+				path = grid.getCellPath(predator.getCell().getCenterUnit2(), prey.getCell().getCenterUnit2());
+				task.set("path", path);
+				task.set("pos", prey.getCell().getCenterUnit2());
+			}
+
+			if (path.size() > 1) {
+				predator.assignCell(path.remove(1));
+			} else {
+
+			}
+
+			ArrayList<Cell> adjCells = grid.getCellsAdjacentTo(prey.getCell());
+			Cell chosenCell = grid.getRandomAvailableCellFrom(adjCells);
+
+			if (chosenCell != null) {
+				prey.assignCell(chosenCell);
+			}
+		});
+
+		game.renderFrame.onPreSimulation((task) -> {
+			Console.benchmark("Game Grid", grid::toASCII);
+		});
+
+		// game.movementFrame.onPreSimulation((task) -> {
+		// for (Cell cell : grid.getCells()) {
+		// Entity<?> entity = cell.getOccupant();
+
+		// if (entity == null)
+		// continue;
+
+		// ArrayList<Cell> adjCells = grid.getCellsAdjacentTo(cell);
+		// Cell nextCell = grid.getRandomAvailableCellFrom(adjCells);
+
+		// if (nextCell != null) {
+		// entity.assignCell(nextCell);
+		// }
+		// }
+
+		// Console.println(grid.toASCII());
+		// });
 
 		/*
 		 * --------------
 		 * | TEST CODE: |
 		 * --------------
 		 */
+
+		// Console.println(FileManager.getOutputDir());
 
 	}
 }

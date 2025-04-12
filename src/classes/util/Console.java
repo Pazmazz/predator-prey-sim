@@ -317,7 +317,7 @@ public class Console {
 				result));
 
 		println(String.format(
-				"$bg-green $text-black > Completion:$text-reset  $text-bright_green %s$text-reset  seconds\n",
+				"$bg-green $text-bright_white > Completion:$text-reset  $text-bright_green %s$text-reset  seconds\n",
 				Time.nanoToSeconds(aft)));
 
 	}
