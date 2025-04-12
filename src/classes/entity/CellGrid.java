@@ -6,6 +6,7 @@ package classes.entity;
 
 import classes.abstracts.Entity;
 import classes.abstracts.Properties.Property;
+import classes.entity.CellGrid.CellType;
 import classes.util.Console;
 import classes.util.Console.DebugPriority;
 import exceptions.CellIsOccupiedException;
@@ -1541,6 +1542,20 @@ public class CellGrid {
 		 */
 		public void printInfoItem(String item, String content) {
 			Console.println("- $text-yellow %s: $text-reset %s".formatted(item, content));
+		}
+
+		public String serialize() {
+			StringBuilder out = new StringBuilder(
+					getClass().getSimpleName());
+
+			out.append("{");
+			out.append(getUnit2().serialize());
+			out.append(", ");
+			out.append(hasOccupant()
+					? getOccupant().getClass().getSimpleName()
+					: "null");
+			out.append("}");
+			return out.toString();
 		}
 
 		@Override

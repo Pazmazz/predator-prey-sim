@@ -20,6 +20,7 @@
  * - Make a custom event signal class
  */
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -28,6 +29,7 @@ import classes.abstracts.RunService;
 import classes.abstracts.Properties.Property;
 import classes.entity.Ant;
 import classes.entity.CellGrid.Cell;
+import classes.entity.CellGrid.CellType;
 import classes.entity.CellGrid;
 import classes.entity.CellGrid.GridIntercept;
 import classes.entity.Game;
@@ -68,6 +70,24 @@ public class App {
 		Console.benchmark("Render game grid", grid::toASCII); // Avg: ~0.01s
 		// game.start();
 
-		// Console.println(new Vector2(6, 4).serialize());
+		String serialized = grid.getCell(new Unit2(6, 6)).serialize();
+		Console.println(game.deserialize(serialized));
+		// Cell.deserialize(serialized);
+
+		// try {
+		// Constructor<?> constructor =
+		// Class.forName("classes.entity.Unit2").getDeclaredConstructor();
+		// Console.println(Class.forName("classes.entity.Unit2").getDeclaredConstructor().newInstance(new
+		// int[] {3, 4}));
+		// } catch (ClassNotFoundException e) {
+		// Console.println(e);
+		// } catch (NoSuchMethodException e) {
+		// } catch (InstantiationException e) {
+
+		// } catch (IllegalAccessException e) {
+
+		// } catch (InvocationTargetException e) {
+
+		// }
 	}
 }

@@ -71,7 +71,7 @@ public class Game implements Runnable {
 		this.settings = new GameSettings();
 
 		Console.setDebugModeEnabled(true);
-		Console.setConsoleColorsEnabled(true);
+		Console.setConsoleColorsEnabled(false);
 		Console.hideDebugPriority(DebugPriority.LOW);
 		// Console.hideDebugPriority(DebugPriority.MEDIUM);
 
@@ -193,6 +193,34 @@ public class Game implements Runnable {
 				}
 			}
 		}
+	}
+
+	// TODO: Add documentation
+	private Object newInstanceFromClass(String className, Object... args) {
+		Object obj;
+
+		switch (className) {
+			case "Cell" -> obj = this.gameGrid.getCell();
+			default -> obj = null;
+		}
+
+		return obj;
+	}
+
+	public static Object deserialize(String str) {
+		int objParameterOpen = str.indexOf("{");
+		boolean isObj = objParameterOpen > -1;
+		Object obj;
+
+		if (isObj) {
+			obj = str.substring(0, objParameterOpen);
+			String data = (String) deserialize(str.substring(objParameterOpen + 1, str.length() - 1));
+
+		} else {
+			obj = str;
+		}
+
+		return obj;
 	}
 
 	// TODO: Add documentation
