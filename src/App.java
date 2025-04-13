@@ -69,29 +69,18 @@ public class App {
 		Console.benchmark("Render game grid", grid::toASCII); // Avg: ~0.01s
 		// game.start();
 
-		String serialized = grid.getCell(new Unit2(6, 6)).serialize();
-		// Console.println(game.deserialize(serialized));
-		// Game.tokenize("asd{x, y{w, r, t}, z}");
-		Game.tokenize("g{1}");
-		// Console.println(Game.testTokens);
-		// Console.println("outer: " + Game.findLastClosing("hello {sese{}}", 6, '{',
-		// '}'));
-		// Cell.deserialize(serialized);
+		// Cell t = grid.getCell(new Unit2(6, 7));
+		// new Ant().assignCell(t);
 
-		// try {
-		// Constructor<?> constructor =
-		// Class.forName("classes.entity.Unit2").getDeclaredConstructor();
-		// Console.println(Class.forName("classes.entity.Unit2").getDeclaredConstructor().newInstance(new
-		// int[] {3, 4}));
-		// } catch (ClassNotFoundException e) {
-		// Console.println(e);
-		// } catch (NoSuchMethodException e) {
-		// } catch (InstantiationException e) {
+		// String serialized = t.serialize();
+		// Console.println("Serialized: " + serialized);
+		Cell t = (Cell) Game.deserialize("Cell{Unit2{60, 60}, Ant}").get(0);
 
-		// } catch (IllegalAccessException e) {
+		Console.println(t.getOccupant());
+		// Console.println("Deserialized:");
 
-		// } catch (InvocationTargetException e) {
+		// Unit2 thing = (Unit2) Game.deserialize(serialized).get(0);
+		// Console.println(thing);
 
-		// }
 	}
 }
