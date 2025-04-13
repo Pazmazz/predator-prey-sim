@@ -40,6 +40,7 @@ import classes.util.Time;
 import interfaces.Callback;
 import classes.entity.Doodlebug;
 import classes.entity.Vector2;
+import classes.util.ObjectStream;
 
 /**
  * The entry-point file for the application
@@ -66,21 +67,14 @@ public class App {
 
 		CellGrid grid = game.getGameGrid();
 
-		Console.benchmark("Render game grid", grid::toASCII); // Avg: ~0.01s
-		// game.start();
+		// Avg: ~0.01s
 
-		// Cell t = grid.getCell(new Unit2(6, 7));
-		// new Ant().assignCell(t);
+		grid.upload(
+				"Cell{Unit2{9, 1}, Ant{}}, Cell{Unit2{15, 3}, Ant{}}, Cell{Unit2{5, 8}, Ant{}}, Cell{Unit2{1, 19}, Doodlebug{}}, Cell{Unit2{7, 15}, Doodlebug{}}, Cell{Unit2{12, 3}, Ant{}}, Cell{Unit2{6, 1}, Doodlebug{}}, Cell{Unit2{3, 14}, Doodlebug{}}, Cell{Unit2{18, 6}, Ant{}}, Cell{Unit2{9, 18}, Doodlebug{}}");
 
-		// String serialized = t.serialize();
-		// Console.println("Serialized: " + serialized);
-		Cell t = (Cell) Game.deserialize("Cell{Unit2{60, 60}, Ant}").get(0);
+		Console.benchmark("Render game grid", grid::toASCII);
+		game.start();
 
-		Console.println(t.getOccupant());
-		// Console.println("Deserialized:");
-
-		// Unit2 thing = (Unit2) Game.deserialize(serialized).get(0);
-		// Console.println(thing);
-
+		// Console.println(grid.download());
 	}
 }

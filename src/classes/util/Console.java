@@ -313,7 +313,7 @@ public class Console {
 				"-".repeat(Math.max(50 - message.length(), 5))));
 
 		println(String.format(
-				"$text-bright_black > Output:$text-reset \n\n%s\n",
+				"$text-bright_black > Output:$text-reset \n%s\n",
 				result));
 
 		println(String.format(

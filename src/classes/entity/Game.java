@@ -118,7 +118,7 @@ public class Game implements Runnable {
 				simulatedLagFrame
 		};
 
-		return "Runservice benchmark";
+		return "RunService benchmark";
 	}
 
 	public String initGameScreen() {
@@ -196,95 +196,6 @@ public class Game implements Runnable {
 				}
 			}
 		}
-	}
-
-	// TODO: Add documentation
-	private static Object newInstanceFromClass(String className, ArrayList<Object> data) {
-		Object obj;
-
-		switch (className) {
-			case "Cell" -> {
-				Unit2 u = (Unit2) data.get(0);
-				Entity<?> e = (Entity<?>) (data.get(1).equals("Ant") ? new Ant() : new Doodlebug());
-				Cell c = (Cell) game.gameGrid.getCell(u);
-				e.assignCell(c);
-				obj = c;
-				// obj = game.gameGrid.getCell((Unit2) data.get(0));
-				// Entity<?> entity = (Entity<?>) data.get(1);
-				// entity.assignCell((Cell) obj);
-			}
-			case "Unit2" -> {
-				obj = new Unit2(
-						(int) Double.parseDouble((String) data.get(0)),
-						(int) Double.parseDouble((String) data.get(1)));
-			}
-			default -> obj = null;
-		}
-
-		return obj;
-	}
-
-	public static int findLastClosing(StringBuilder str, int start, char open, char close) {
-		int stack = -1;
-		int len = str.length();
-
-		for (int index = start; index < len; index++) {
-			char token = str.charAt(index);
-			if (token == open) {
-				if (stack == -1)
-					stack = 1;
-				else
-					stack++;
-			} else if (token == close && stack > 0) {
-				stack--;
-				if (stack == 0)
-					return index;
-			}
-		}
-		return stack > 0
-				? -1
-				: stack;
-	}
-
-	public static ArrayList<Object> deserialize(String data) {
-		int cursor = 0;
-		int len = data.length();
-		StringBuilder objBuffer = new StringBuilder();
-		StringBuilder dataBuffer = new StringBuilder(data);
-		ArrayList<Object> set = new ArrayList<>();
-
-		while (cursor < len) {
-			char token = dataBuffer.charAt(cursor);
-			switch (token) {
-				case '{' -> {
-					String obj = objBuffer.toString();
-					objBuffer.setLength(0);
-					int close = findLastClosing(dataBuffer, cursor, '{', '}');
-					if (close == -1)
-						throw new Error("Parsing error: No closing bracket found at " + cursor);
-
-					Object inst = newInstanceFromClass(
-							obj,
-							deserialize(dataBuffer.substring(cursor + 1, close)));
-					set.add(inst);
-					cursor = close + 1;
-				}
-				case ',' -> {
-					String obj = objBuffer.toString();
-					objBuffer.setLength(0);
-					set.add(obj);
-				}
-				default -> objBuffer.append(token);
-			}
-			cursor++;
-		}
-
-		if (objBuffer.length() > 0) {
-			String obj = objBuffer.toString();
-			objBuffer.setLength(0);
-			set.add(obj);
-		}
-		return set;
 	}
 
 	// TODO: Add documentation

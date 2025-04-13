@@ -57,4 +57,9 @@ public class Ant extends Bug<Ant> {
 				"$text-green Ant$text-reset #%s"),
 				idNum);
 	}
+
+	@Override
+	public String serialize() {
+		return "Ant{}";
+	}
 }

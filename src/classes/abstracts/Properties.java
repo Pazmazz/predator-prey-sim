@@ -4,8 +4,9 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import classes.entity.Null;
+import interfaces.Serializable;
 
-public abstract class Properties {
+public abstract class Properties implements Serializable {
 	private Map<Property, Object> properties = new ConcurrentHashMap<>();
 
 	public Object getProperty(Property property) {
@@ -44,5 +45,6 @@ public abstract class Properties {
 		IS_EATABLE,
 		ASSIGNED_CELL,
 		MOVEMENT_COOLDOWN,
+		NAME,
 	}
 }

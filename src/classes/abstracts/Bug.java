@@ -19,6 +19,7 @@ public abstract class Bug<T> extends Entity<T> {
 		setProperty(Property.IS_EATABLE, false);
 		setProperty(Property.ASSIGNED_CELL, new Null());
 		setProperty(Property.MOVEMENT_COOLDOWN, 1);
+		setProperty(Property.NAME, "Bug");
 	}
 
 	public boolean isEatable() {

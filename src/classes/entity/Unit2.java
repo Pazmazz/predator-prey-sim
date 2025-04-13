@@ -52,4 +52,14 @@ public class Unit2 extends BaseVector<Unit2> {
 				getX(),
 				getY()));
 	}
+
+	@Override
+	public String serialize() {
+		return new StringBuilder("Unit2{")
+				.append(getX())
+				.append(", ")
+				.append(getY())
+				.append("}")
+				.toString();
+	}
 }

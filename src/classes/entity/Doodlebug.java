@@ -69,4 +69,9 @@ public class Doodlebug extends Bug<Doodlebug> {
 				"$text-green Doodlebug$text-reset #%s"),
 				idNum);
 	}
+
+	@Override
+	public String serialize() {
+		return "Doodlebug{}";
+	}
 }

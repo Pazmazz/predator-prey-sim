@@ -7,6 +7,7 @@ import classes.entity.CellGrid.Cell;
 import classes.entity.Null;
 import exceptions.CellIsOccupiedException;
 import exceptions.NoCellFoundException;
+import interfaces.Serializable;
 
 /**
  * A superclass representing the most general entity that is allowed to be

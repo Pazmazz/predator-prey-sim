@@ -29,7 +29,7 @@ public class GameSettings {
 
 		this.cellSize = 36; // Pixels
 		this.gridSize = new Unit2(20, 20); // Cell units
-		this.initialAnts = 100;
+		this.initialAnts = 5;
 		this.initialDoodlebugs = 5;
 
 		//

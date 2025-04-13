@@ -10,10 +10,12 @@ import classes.abstracts.Entity;
 import classes.abstracts.RunService;
 import classes.abstracts.Properties;
 import classes.entity.CellGrid;
+import classes.entity.CellGrid.Cell;
 import classes.entity.Game;
 import classes.entity.TweenData;
 import classes.settings.GameSettings.SimulationType;
 import classes.util.Console;
+import classes.util.Math2;
 
 /**
  * This implements the {@code step} method for FrameProcessor. All code that
@@ -37,5 +39,14 @@ public class MovementFrame extends RunService {
 		CellGrid grid = game.getGameGrid();
 		grid.collectCells();
 
+		for (Cell cell : grid.getCells()) {
+			Entity<?> entity = cell.getOccupant();
+			ArrayList<Cell> adjCells = grid.getCellsAdjacentTo(cell);
+			Cell randCell = grid.getRandomAvailableCellFrom(adjCells);
+
+			if (randCell != null)
+				entity.assignCell(randCell);
+
+		}
 	}
 }

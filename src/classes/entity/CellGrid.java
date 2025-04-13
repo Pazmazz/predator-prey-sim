@@ -13,7 +13,10 @@ import exceptions.CellIsOccupiedException;
 import exceptions.NoOccupantFoundException;
 import exceptions.NoCellFoundException;
 import exceptions.OccupantHasCellException;
+import interfaces.Serializable;
 import classes.util.Math2;
+import classes.util.ObjectStream;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -218,7 +221,10 @@ public class CellGrid {
 	 * created but will contain the private field enum {@code cellType} which
 	 * will be set to {@code OUT_OF_BOUNDS}
 	 *
-	 * @param unit the cell label represented by its location on the grid
+	 * @param unit  the cell label represented by its location on the grid
+	 * @param cache whether or not the cell will be added the the game grid (true by
+	 *              default), {@code true} means it will be added to the grid,
+	 *              {@code false} means it will not.
 	 *
 	 * @return {@code Cell} object containing metadata about the cell
 	 * 
@@ -230,7 +236,7 @@ public class CellGrid {
 	 * @see #getCell(Vector2)
 	 * @see #getCell(Vector2, Vector2)
 	 */
-	public Cell getCell(Unit2 unit) {
+	public Cell getCell(Unit2 unit, boolean cache) {
 		String cellStream = unit.serialize();
 		Cell cell = this.virtualGrid.get(cellStream);
 		if (cell != null)
@@ -240,13 +246,18 @@ public class CellGrid {
 			throw new NoCellFoundException();
 
 		cell = new Cell(unit);
-		this.virtualGrid.put(cellStream, cell);
-
+		if (cache)
+			this.virtualGrid.put(cellStream, cell);
 		if (outOfBounds(unit))
 			cell.setType(CellType.OUT_OF_BOUNDS);
 
 		// Console.println("$text-yellow Added$text-reset " + cell);
 		return cell;
+	}
+
+	// TODO: Add documentation
+	public Cell getCell(Unit2 unit) {
+		return getCell(unit, true);
 	}
 
 	// TODO: Add documentation
@@ -658,7 +669,7 @@ public class CellGrid {
 		ArrayList<Cell> availableCells = new ArrayList<>();
 
 		for (Cell cell : cells)
-			if (cell.isEmpty() && isInBounds(cell))
+			if (cell.isAvailable())
 				availableCells.add(cell);
 
 		return availableCells;
@@ -675,6 +686,8 @@ public class CellGrid {
 	 * @see #getRandomCellsFrom(ArrayList, int)
 	 */
 	public Cell getRandomCellFrom(ArrayList<Cell> cells) {
+		if (cells.size() == 0)
+			return null;
 		return cells.get(Math2.randInt(cells.size()));
 	}
 
@@ -959,7 +972,7 @@ public class CellGrid {
 
 	// TODO: Add documentation
 	public String toASCII() {
-		StringBuilder out = new StringBuilder("\t");
+		StringBuilder out = new StringBuilder("\n\t");
 		String emptyCell = "$bg-white $text-black [_]$text-reset ";
 		String antCell = "$bg-black $text-bright_blue [$text-bright_cyan A$text-bright_blue ]$text-reset ";
 		String doodlebugCell = "$bg-black $text-yellow [$text-bright_yellow D$text-yellow ]$text-reset ";
@@ -987,6 +1000,32 @@ public class CellGrid {
 			out.append("\n");
 		}
 		return out.toString();
+	}
+
+	// TODO: Add documentation
+	// unlike collectCells(), which only clears unused cells, clearCells() clears
+	// all cells
+	public void clearCells() {
+		virtualGrid.clear();
+	}
+
+	// TODO: Add documentation
+	public ArrayList<String> download() {
+		ArrayList<String> serializedGridCells = new ArrayList<>();
+		for (Cell cell : this.virtualGrid.values())
+			if (cell.hasOccupant())
+				serializedGridCells.add(cell.serialize());
+
+		return serializedGridCells;
+	}
+
+	public void upload(String serializedString) {
+		clearCells();
+		ArrayList<Object> data = ObjectStream.deserialize(serializedString);
+		for (Object cellData : data) {
+			Cell cell = (Cell) cellData;
+			this.virtualGrid.put(cell.getUnit2().serialize(), cell);
+		}
 	}
 
 	/**
@@ -1146,7 +1185,7 @@ public class CellGrid {
 	 * occupying the cell, what type of cell it is ({@code CellType} enum), and
 	 * setters/getters/update methods for interacting with the cell.
 	 */
-	public class Cell {
+	public class Cell implements Serializable {
 
 		final private Unit2 unit;
 		final private Vector2 unit2Center;
@@ -1442,6 +1481,11 @@ public class CellGrid {
 			return this.cellVacancy == CellVacancy.OCCUPIED;
 		}
 
+		// TODO: Add documentation
+		public boolean isAvailable() {
+			return isEmpty() && isInBounds();
+		}
+
 		/**
 		 * Checks if this cell is out of the grid's boundaries.
 		 * <p>
@@ -1544,6 +1588,7 @@ public class CellGrid {
 			Console.println("- $text-yellow %s: $text-reset %s".formatted(item, content));
 		}
 
+		@Override
 		public String serialize() {
 			StringBuilder out = new StringBuilder(
 					getClass().getSimpleName());
@@ -1552,7 +1597,7 @@ public class CellGrid {
 			out.append(getUnit2().serialize());
 			out.append(", ");
 			out.append(hasOccupant()
-					? getOccupant().getClass().getSimpleName()
+					? getOccupant().serialize()
 					: "null");
 			out.append("}");
 			return out.toString();
