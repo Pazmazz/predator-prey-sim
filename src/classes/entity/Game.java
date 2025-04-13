@@ -74,9 +74,9 @@ public class Game implements Runnable {
 		this.settings = new GameSettings();
 
 		Console.setDebugModeEnabled(true);
-		Console.setConsoleColorsEnabled(false);
+		Console.setConsoleColorsEnabled(true);
 		Console.hideDebugPriority(DebugPriority.LOW);
-		// Console.hideDebugPriority(DebugPriority.MEDIUM);
+		Console.hideDebugPriority(DebugPriority.MEDIUM);
 
 		return "Game config benchmark";
 	}
@@ -136,6 +136,7 @@ public class Game implements Runnable {
 		if (isLoaded()) {
 			this.setState(GameState.RUNNING);
 			mainThread.start();
+			Console.close();
 		} else {
 			throw new Error("start() can only be called once per game instance");
 		}
@@ -159,6 +160,7 @@ public class Game implements Runnable {
 	public void terminate() {
 		this.setState(GameState.TERMINATED);
 		Console.println("TERMINATED APPLICATION");
+		Console.close();
 	}
 
 	/**
@@ -181,6 +183,8 @@ public class Game implements Runnable {
 			for (RunService frame : this.frameProcesses) {
 				if (frame.isSuspended())
 					continue;
+				else if (game.isTerminated())
+					break;
 
 				long frameDelta = frame.pulse();
 				if (frameDelta != -1)
@@ -271,6 +275,10 @@ public class Game implements Runnable {
 	//
 	public void setState(GameState newState) {
 		this.state = newState;
+	}
+
+	public void setFPS(double FPS) {
+		this.simulationFPS = Time.secondsToNano(FPS);
 	}
 
 	@Override

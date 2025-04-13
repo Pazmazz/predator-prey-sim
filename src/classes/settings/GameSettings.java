@@ -29,7 +29,7 @@ public class GameSettings {
 
 		this.cellSize = 36; // Pixels
 		this.gridSize = new Unit2(20, 20); // Cell units
-		this.initialAnts = 5;
+		this.initialAnts = 100;
 		this.initialDoodlebugs = 5;
 
 		//
@@ -88,14 +88,14 @@ public class GameSettings {
 	 */
 	public class SimulationInfo {
 
-		final private double FPS;
+		private double FPS;
 		final private HashMap<SimulationType, SimulationSettings> settings;
 
 		public SimulationInfo() {
 			//
 			// Editable
 			//
-			FPS = 1.0 / 2;
+			FPS = 1.0 / 10;
 			settings = new HashMap<>();
 
 			// (vv) Note: Set FPS to 0 if you want it to match the game FPS (vv) //
@@ -129,6 +129,10 @@ public class GameSettings {
 
 		public double getFPS() {
 			return FPS;
+		}
+
+		public void setFPS(double FPS) {
+			this.FPS = FPS;
 		}
 
 		public SimulationSettings getSettings(SimulationType simulationType) {

@@ -974,8 +974,8 @@ public class CellGrid {
 	public String toASCII() {
 		StringBuilder out = new StringBuilder("\n\t");
 		String emptyCell = "$bg-white $text-black [_]$text-reset ";
-		String antCell = "$bg-black $text-bright_blue [$text-bright_cyan A$text-bright_blue ]$text-reset ";
-		String doodlebugCell = "$bg-black $text-yellow [$text-bright_yellow D$text-yellow ]$text-reset ";
+		String antCell = "$bg-black $text-bright_blue [$text-bright_cyan X$text-bright_blue ]$text-reset ";
+		String doodlebugCell = "$bg-black $text-yellow [$text-bright_yellow O$text-yellow ]$text-reset ";
 
 		int rowLength = getSize().getX();
 		int colLength = getSize().getY();

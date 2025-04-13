@@ -5,6 +5,7 @@ package classes.util;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -15,6 +16,8 @@ import interfaces.Benchmark;
  * reused from the final project from the previous semester in CS-190.
  */
 public class Console {
+
+	final private static Scanner input = new Scanner(System.in);
 
 	//
 	// Debug info (immutable at runtime)
@@ -42,6 +45,11 @@ public class Console {
 		LOW,
 		MEDIUM,
 		HIGH
+	}
+
+	public static enum InputValidation {
+		VALID,
+		INVALID
 	}
 
 	final private static String COLOR_TAG_PATTERN = "\\$([a-zA-Z]+)\\-?([a-zA-Z_]*)";
@@ -89,6 +97,141 @@ public class Console {
 			{ "bright_white", "\u001B[107m" }
 	};
 
+	public static String promptMessage(String message, String def) {
+		print("> $text-green " + message);
+		String submission = input.nextLine();
+
+		// Handle default case
+		if (submission.equals("")) {
+			print("$text-purple default: $text-reset " + def + "\n\n");
+			return def;
+		}
+
+		return submission;
+	}
+
+	/*
+	 * promptMenu(<Scanner> input, <String> title, <String> promptMessage, String[]
+	 * choiceArray):
+	 * 
+	 * Prompt the user with a list of menu items to choose from.
+	 * 
+	 * @param <Scanner> input: The scanner object to prompt the user input
+	 * 
+	 * @param <String> title: The title of the menu list
+	 * 
+	 * @param <String> promptMessage: The message that comes before the input cursor
+	 * 
+	 * @param <String[]> choiceArray: An array of string values to be displayed as
+	 * menu items
+	 * 
+	 * @return <int> The menu item (starting at 1)
+	 */
+	public static int promptMenu(String title, String promptMessage, int def, String[] choices) {
+		// create padding in between | menuTitle |
+		int padding = title.length() + 4;
+		println("");
+
+		// display the menu title
+		println("$text-bright_black " + "-".repeat(padding));
+		printf("$text-bright_black | $text-white %s$text-bright_black  |\n", title);
+		println("$text-bright_black " + "-".repeat(padding) + "\n");
+
+		// display the menu options
+		for (int i = 1; i <= choices.length; i++)
+			printf("$text-yellow %s)$text-reset  %s\n", i, choices[i - 1]);
+
+		// collect user input
+		println("");
+		InputValidation menuChoiceValidation = InputValidation.INVALID;
+
+		if (def > choices.length || def < 1) {
+			error("Invalid menu default");
+			return -1;
+		}
+
+		int itemNumber = 0;
+		do {
+			// display the prompt message
+			print("> $text-green " + promptMessage);
+			String menuChoice = input.nextLine();
+
+			// Handle the default case
+			if (menuChoice.equals("")) {
+				return def;
+			}
+
+			// handle input validation for selecting the menu item
+			try {
+				// if this fails, go to catch
+				itemNumber = Integer.parseInt(menuChoice);
+
+				// if this fails, go to catch and give "out of bounds" error
+				if (itemNumber < 1 || itemNumber > choices.length)
+					throw new Exception("Out of bounds. Choice must be between 1 and " + choices.length
+							+ ", user entered: \"" + itemNumber + "\"");
+
+				// if validation passed, then update the menuChoiceValidation state to VALID
+				menuChoiceValidation = InputValidation.VALID;
+
+				// handle caught errors
+			} catch (Exception e) {
+				println("Invalid menu item. Try again.");
+			}
+		} while (menuChoiceValidation == InputValidation.INVALID);
+
+		return itemNumber;
+	}
+
+	/*
+	 * promptBoolean(<Scanner> input, <String> message):
+	 * 
+	 * Prompts the user for a binary choice (yes/no) selection
+	 * 
+	 * @param <Scanner> input: The scanner object
+	 * 
+	 * @param <String> message: The message to prompt for choice selection
+	 * 
+	 * @return <boolean> answer: A true or false value (true if input = "y", false
+	 * otherwise)
+	 */
+	public static boolean promptBoolean(String message, boolean def) {
+		InputValidation answerValidation = InputValidation.INVALID;
+
+		// begin looped validation checking
+		boolean answer = def;
+		do {
+			// prompt input
+			print("> $text-green " + message + " (y/n/Enter): ");
+			String submission = input.nextLine();
+
+			try {
+				// Update answer according to input
+				if (submission.equals("y")) {
+					answer = true;
+
+				} else if (submission.equals("n")) {
+					answer = false;
+
+				} else if (submission.equals("")) {
+					println("$text-purple default: $text-reset " + def);
+
+				} else {
+					throw new Exception("Choice must be \"y\" or \"n\", user entered: \"" + submission + "\"");
+				}
+
+				// no condition for "n" because `answer` is false by default
+				// at this point the validation passed
+
+				answerValidation = InputValidation.VALID;
+			} catch (Exception e) {
+				println("Invalid boolean input. Try again.");
+			}
+		} while (answerValidation == InputValidation.INVALID);
+
+		return answer;
+	}
+
 	/**
 	 * Takes a given list of {@code Object} values, converts them into strings
 	 * using {@code toString()} (if possible), and applies the console color tag
@@ -111,6 +254,13 @@ public class Console {
 			return substituteColors(Formatter.concatArray(contents));
 		else
 			return replaceColorTags(Formatter.concatArray(contents));
+	}
+
+	public static void printf(String template, Object... args) {
+		if (consoleColorsEnabled)
+			System.out.printf(substituteColors("" + template), args);
+		else
+			System.out.printf(replaceColorTags(template), args);
 	}
 
 	/**
@@ -302,6 +452,7 @@ public class Console {
 		return consoleColorsEnabled;
 	}
 
+	// TODO: Add documentation
 	public static void benchmark(String message, Benchmark benchmark) {
 		long pre = Time.tick();
 		Object result = benchmark.run();
@@ -429,5 +580,9 @@ public class Console {
 		}
 
 		return new String[] { "null", "", "" };
+	}
+
+	public static void close() {
+		input.close();
 	}
 }
