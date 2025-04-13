@@ -70,7 +70,12 @@ public class App {
 		// game.start();
 
 		String serialized = grid.getCell(new Unit2(6, 6)).serialize();
-		Console.println(game.deserialize(serialized));
+		// Console.println(game.deserialize(serialized));
+		// Game.tokenize("asd{x, y{w, r, t}, z}");
+		Game.tokenize("g{1}");
+		// Console.println(Game.testTokens);
+		// Console.println("outer: " + Game.findLastClosing("hello {sese{}}", 6, '{',
+		// '}'));
 		// Cell.deserialize(serialized);
 
 		// try {
