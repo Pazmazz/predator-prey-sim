@@ -6,6 +6,8 @@ package classes.util;
 /**
  * Provides additional math utility functions that are not natively part of the
  * Java Math library
+ * 
+ * test
  */
 public class Math2 {
 

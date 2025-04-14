@@ -118,7 +118,7 @@ public abstract class Vector<T extends Vector<T>> extends BaseVector<T> {
 		}
 
 		this.magnitude = 0.0;
-		this.components.forEach(cn -> this.magnitude += cn * cn);
+		this.components.forEach(cp -> this.magnitude += cp * cp);
 		this.magnitude = Math.sqrt(this.magnitude);
 
 		return this.magnitude;
@@ -134,7 +134,7 @@ public abstract class Vector<T extends Vector<T>> extends BaseVector<T> {
 		return newVector(computeComponents(
 				v,
 				"midpoint(Vector<T>)",
-				(args) -> (((double) args[0] + (double) args[1]) / 2)));
+				(args) -> (((double) args[0] + (double) args[1]) / args.length)));
 	}
 
 	/**

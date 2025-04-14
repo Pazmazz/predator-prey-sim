@@ -19,7 +19,6 @@ public abstract class Properties implements Serializable {
 
 		if (result instanceof Null)
 			return null;
-
 		if (classType.isInstance(result))
 			return (T) result;
 
@@ -48,5 +47,18 @@ public abstract class Properties implements Serializable {
 		NAME,
 		TYPE,
 		VARIANT,
+	}
+
+	public enum EntityProperty {
+		NAME,
+		POSITION,
+		ROTATION,
+		VARIANT,
+		ASSIGNED_CELL,
+	}
+
+	public enum BugProperty {
+		MOVEMENT_SPEED,
+		MOVEMENT_COOLDOWN,
 	}
 }

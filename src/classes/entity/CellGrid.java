@@ -5,6 +5,7 @@
 package classes.entity;
 
 import classes.abstracts.Entity;
+import classes.abstracts.Properties;
 import classes.abstracts.Properties.Property;
 import classes.entity.CellGrid.Cell;
 import classes.entity.CellGrid.CellType;
@@ -228,6 +229,47 @@ public class CellGrid {
 				.setAxisOfIntersection(axisOfIntersection);
 	}
 
+	// TODO: Make getGridIntercept better
+
+	// public GridIntercept getGridIntercept2(Vector2 start, Vector2 end) {
+	// if (start.equals(end))
+	// return new GridIntercept()
+	// .setAxisOfIntersection(CellGridAxis.ENDPOINT);
+
+	// Vector2 signedUnit = end.subtract(start).signedUnit();
+	// GridIntercept result = new GridIntercept();
+	// result.setDirection(signedUnit);
+
+	// double startX = start.getX();
+	// double startY = start.getY();
+	// double endX = end.getX();
+	// double endY = end.getY();
+
+	// boolean posX = signedUnit.getX() > 0;
+	// boolean posY = signedUnit.getY() >= 0;
+
+	// double limitX = posX
+	// ? Math.ceil(startX)
+	// : Math.floor(startX);
+	// double limitY = posY
+	// ? Math.ceil(startY)
+	// : Math.floor(startY);
+
+	// if (startX == limitX)
+	// limitX += signedUnit.getX();
+	// if (startY == limitY)
+	// limitY += signedUnit.getY();
+
+	// double dx = endX - startX;
+	// double dy = endY - startY;
+	// double tx = dx == 0
+	// ? 0
+	// : (limitX - startX) / dx;
+	// double ty = (limitY - startY) / dy;
+
+	// return result;
+	// }
+
 	/**
 	 * The primary root method for retrieving a cell object from the virtual
 	 * grid. All other overloaded methods of {@code getCell} internally call
@@ -305,7 +347,7 @@ public class CellGrid {
 	 * @see #getCell(Vector2, Vector2)
 	 */
 	public Cell getCell(Vector2 position) {
-		Vector2 quadrant = position.signedUnit();
+		// Vector2 quadrant = position.signedUnit();
 		Vector2 snapPos = position.floor();
 
 		int snapX = (int) snapPos.getX();
@@ -313,27 +355,28 @@ public class CellGrid {
 
 		int x, y;
 
-		boolean posX = quadrant.getX() > 0;
-		boolean negX = quadrant.getX() < 0;
-		boolean posY = quadrant.getY() >= 0;
-		boolean negY = quadrant.getY() <= 0;
+		// boolean posX = quadrant.getX() > 0;
+		// boolean negX = quadrant.getX() < 0;
+		// boolean posY = quadrant.getY() > 0;
+		// boolean negY = quadrant.getY() < 0;
 
-		if (posX && posY) {
-			y = snapY + 1;
-			x = snapX + 1;
+		// We can ignore these other cases since they don't apply here
+		// if (posX && posY) {
+		y = snapY + 1;
+		x = snapX + 1;
+		// }
+		// else if (negX && posY) {
+		// y = snapY + 1;
+		// x = snapX;
 
-		} else if (negX && posY) {
-			y = snapY + 1;
-			x = snapX;
+		// } else if (negX && negY) {
+		// y = snapY;
+		// x = snapX;
 
-		} else if (negX && negY) {
-			y = snapY;
-			x = snapX;
-
-		} else {
-			y = snapY;
-			x = snapX + 1;
-		}
+		// } else {
+		// y = snapY;
+		// x = snapX + 1;
+		// }
 
 		return getCell(new Unit2(x, y));
 	}
@@ -1247,10 +1290,11 @@ public class CellGrid {
 	 * occupying the cell, what type of cell it is ({@code CellType} enum), and
 	 * setters/getters/update methods for interacting with the cell.
 	 */
-	public class Cell implements Serializable {
+	public class Cell extends Properties {
 
 		final private Unit2 unit;
 		final private Vector2 unit2Center;
+
 		private CellType cellType;
 		private CellVacancy cellVacancy;
 		private Entity<?> cellOccupant;
@@ -1284,8 +1328,13 @@ public class CellGrid {
 		public Cell(Unit2 unit) {
 			this.unit = unit;
 			this.unit2Center = new Vector2(
-					unit.getX() - unit.signedUnit().getX() * 0.5,
-					unit.getY() - unit.signedUnit().getY() * 0.5);
+					unit.getX() - 0.5,
+					unit.getY() - 0.5);
+
+			// In general:
+			// this.unit2Center = new Vector2(
+			// unit.getX() - unit.signedUnit().getX() * 0.5,
+			// unit.getY() - unit.signedUnit().getY() * 0.5);
 
 			this.cellType = CellType.NORMAL;
 			this.cellVacancy = CellVacancy.EMPTY;
