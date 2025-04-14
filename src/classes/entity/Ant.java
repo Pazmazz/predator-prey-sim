@@ -23,7 +23,7 @@ public class Ant extends Bug<Ant> {
     }
 
 	@Override
-	public void move() {
+	public void move(Turn turn) {
 		ArrayList<Cell> adjCells = game
 				.getGameGrid()
 				.getCellsAdjacentTo(getCell());
@@ -38,12 +38,12 @@ public class Ant extends Bug<Ant> {
 
 		if (movementCounter == 3) {
 			movementCounter = 0;
-			this.breed();
+			this.breed(turn);
 		}
 	}
 
 	@Override
-	public void breed() {
+	public void breed(Turn turn) {
 		ArrayList<Cell> adjCells = game
 				.getGameGrid()
 				.getCellsAdjacentTo(getCell());
@@ -55,7 +55,7 @@ public class Ant extends Bug<Ant> {
 			}
 		}
         numOfAntBreeds++;
-        game.setAntBreedCount();
+        turn.setAntBreedCount();
 	}
 
 	@Override

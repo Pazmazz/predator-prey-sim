@@ -1,7 +1,7 @@
 package classes.entity;
 
 public class Turn {
-    public static int turnTracker = 0;
+    public static int turnNum = 0;
     int killCount = 0;
 
     int beginningAntCount;
@@ -14,7 +14,7 @@ public class Turn {
     int doodlebugBreedCount;
     
     Turn(){
-        turnTracker++;
+        turnNum++;
     }
 
     //Setters and Getters

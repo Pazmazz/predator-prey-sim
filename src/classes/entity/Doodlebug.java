@@ -20,7 +20,7 @@ public class Doodlebug extends Bug<Doodlebug> {
 	}
 
 	@Override
-	public void move() {
+	public void move(Turn turn) {
 		ArrayList<Cell> adjCells = game
 				.getGameGrid()
 				.getCellsAdjacentTo(getCell());
@@ -30,7 +30,7 @@ public class Doodlebug extends Bug<Doodlebug> {
 				adjCell.removeOccupant();
 				assignCell(adjCell);
 				starvationTracker = 0;
-                game.setKillCount();
+                turn.setKillCount();
                 killCount++;
 				break;
 			} else if (adjCell.isInBounds() && adjCell.isEmpty()) {
@@ -47,12 +47,12 @@ public class Doodlebug extends Bug<Doodlebug> {
 
 		if (movementCounter == 8) {
 			movementCounter = 0;
-			this.breed();
+			this.breed(turn);
 		}
 	}
 
 	@Override
-	public void breed() {
+	public void breed(Turn turn) {
 		ArrayList<Cell> adjCells = game
 				.getGameGrid()
 				.getCellsAdjacentTo(getCell());
@@ -61,7 +61,7 @@ public class Doodlebug extends Bug<Doodlebug> {
 			if (adjCell.isInBounds() && adjCell.isEmpty()) {
 				adjCell.setOccupant(new Doodlebug(game));
                 numOfDoodlebugBreeds++;
-                game.setDoodlebugBreedCount();
+                turn.setDoodlebugBreedCount();
 				break;
 			}
 		}

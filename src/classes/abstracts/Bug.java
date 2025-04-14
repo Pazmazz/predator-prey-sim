@@ -3,6 +3,7 @@ package classes.abstracts;
 import classes.entity.Cell;
 import classes.entity.Game;
 import classes.entity.Null;
+import classes.entity.Turn;
 import classes.entity.Vector2;
 import classes.util.Console;
 
@@ -27,7 +28,7 @@ public abstract class Bug<T> extends Entity<T> {
 		return getProperty(Property.IS_EATABLE, Boolean.class);
 	}
 
-	public abstract void move();
+	public abstract void move(Turn turn);
 
-	public abstract void breed();
+	public abstract void breed(Turn turn);
 }
