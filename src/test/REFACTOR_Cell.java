@@ -31,6 +31,7 @@ public class REFACTOR_Cell {
 
 	// properties
 	private String color;
+	private String ascii;
 	private boolean visable;
 	private int occupantWeightLimit; // based on sum of occupant weights
 	private int occupantLimit;

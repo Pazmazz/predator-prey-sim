@@ -21,46 +21,20 @@ import interfaces.Serializable;
  * occupant in a cell using {@code cell.setOccupant}.
  */
 public abstract class REFACTOR_Entity<T> {
+	// cells the entity is taking up
+	final private HashMap<Cell, Boolean> cells = new HashMap<>();
 
-	final private HashMap<
+	// cells the entity is taking up, but this is a critical cell (part of the core
+	// entity) if all cell nodes are destroyed, the entity is destroyed.
+	final private HashMap<Cell, Boolean> cellNodes = new HashMap<>();
 
 	public void assignCell(Cell targetCell, boolean withAggregation) {
 		if (targetCell == null)
 			throw new NoCellFoundException();
-
-		if (withAggregation) {
-			if (hasCell())
-				removeFromCell();
-
-			targetCell.setOccupant(this, false);
-		}
-
-		setProperty(Property.ASSIGNED_CELL, targetCell);
 	}
 
 	public void assignCell(Cell targetCell) {
 		assignCell(targetCell, true);
 	}
 
-	public Cell getCell() {
-		return getProperty(Property.ASSIGNED_CELL, Cell.class);
-	}
-
-	public boolean hasCell() {
-		return getCell() != null;
-	}
-
-	public void removeFromCell(boolean withAggregation) {
-		if (!hasCell())
-			throw new NoCellFoundException();
-
-		if (withAggregation)
-			getCell().removeOccupant(false);
-
-		setProperty(Property.ASSIGNED_CELL, new Null());
-	}
-
-	public void removeFromCell() {
-		removeFromCell(true);
-	}
 }
