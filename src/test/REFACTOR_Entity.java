@@ -5,9 +5,11 @@ package classes.abstracts;
 
 import classes.entity.CellGrid.Cell;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import classes.entity.Null;
+import classes.entity.Vector2;
 import exceptions.CellIsOccupiedException;
 import exceptions.NoCellFoundException;
 import interfaces.Serializable;
@@ -28,6 +30,14 @@ public abstract class REFACTOR_Entity<T> {
 	// entity) if all cell nodes are destroyed, the entity is destroyed.
 	final private HashMap<Cell, Boolean> cellNodes = new HashMap<>();
 
+	final private ArrayList<String> avatar = new ArrayList<>();
+
+	public REFACTOR_Entity() {
+		avatar.add("Cell{Unit2{1, 1}}");
+		avatar.add("Cell{Unit2{1, 2}}");
+		avatar.add("Cell{Unit2{2, 1}}");
+	}
+
 	public void assignCell(Cell targetCell, boolean withAggregation) {
 		if (targetCell == null)
 			throw new NoCellFoundException();
@@ -35,6 +45,10 @@ public abstract class REFACTOR_Entity<T> {
 
 	public void assignCell(Cell targetCell) {
 		assignCell(targetCell, true);
+	}
+
+	public Vector2[] getBoundingBox() {
+
 	}
 
 }
