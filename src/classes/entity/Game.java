@@ -106,7 +106,7 @@ public class Game implements Runnable {
 	}
 
 	public String initRunService() {
-		this.simulationFPS = Time.secondsToNano(settings.getSimulation().getFPS());
+		// this.simulationFPS = Time.secondsToNano(settings.getSimulation().getFPS());
 
 		this.movementFrame = new MovementFrame(SimulationType.MOVEMENT);
 		this.renderFrame = new RenderFrame(SimulationType.RENDER);

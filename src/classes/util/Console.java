@@ -158,6 +158,7 @@ public class Console {
 
 			// Handle the default case
 			if (menuChoice.equals("")) {
+				print("$text-purple default: $text-reset " + choices[def - 1] + "\n\n");
 				return def;
 			}
 

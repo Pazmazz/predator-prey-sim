@@ -6,6 +6,7 @@ package classes.entity;
 
 import classes.abstracts.Entity;
 import classes.abstracts.Properties.Property;
+import classes.entity.CellGrid.Cell;
 import classes.entity.CellGrid.CellType;
 import classes.util.Console;
 import classes.util.Console.DebugPriority;
@@ -20,6 +21,7 @@ import classes.util.ObjectStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.concurrent.ConcurrentHashMap;
@@ -40,6 +42,9 @@ public class CellGrid {
 	 * cell grid and/or make changes to it
 	 */
 	final private Map<String, Cell> virtualGrid = new ConcurrentHashMap<>();
+	// final private List<Entity<?>> virtualEntities =
+	// Collections.synchronizedList(new ArrayList<>());
+	final private ArrayList<Entity<?>> virtualEntites = new ArrayList<>();
 
 	public enum CellGridAxis {
 		X,
@@ -140,7 +145,9 @@ public class CellGrid {
 	 */
 	public GridIntercept getGridIntercept(Vector2 start, Vector2 end) {
 		if (start.equals(end))
-			return new GridIntercept().setAxisOfIntersection(CellGridAxis.ENDPOINT);
+			return new GridIntercept()
+					.setAxisOfIntersection(CellGridAxis.ENDPOINT)
+					.setPointOfIntersection(start);
 
 		Vector2 signedUnit = end.subtract(start).signedUnit();
 		GridIntercept interceptResult = new GridIntercept();
@@ -169,18 +176,29 @@ public class CellGrid {
 			limitY += signedUnit.getY();
 
 		double ty = (limitY - startY) / (endY - startY);
-		double tx = (limitX - startX) / (endX - startX);
+		double tx;
+		double txd = (endX - startX);
+		if (txd == 0)
+			tx = 0;
+		else
+			tx = (limitX - startX) / txd;
+
+		// Console.println("start pos: ", start, " end pos: ", end);
+		// Console.println("limits: ", limitX, limitY);
+		// Console.println("t values: ", tx, ty);
 
 		Vector2 pointOfIntersection;
 		CellGridAxis axisOfIntersection;
 
 		// No intercepts
 		if (tx >= 1 && ty >= 1) {
+			// Console.println("NO COLLISION (endpoint)");
 			pointOfIntersection = end;
 			axisOfIntersection = CellGridAxis.NONE;
 
 			// X-intercept
 		} else if (tx < ty) {
+			// Console.println("X COLLISION");
 			axisOfIntersection = CellGridAxis.X_GRID;
 			pointOfIntersection = new Vector2(
 					limitX,
@@ -188,6 +206,7 @@ public class CellGrid {
 
 			// Y-intercept
 		} else if (ty < tx) {
+			// Console.println("Y COLLISION");
 			axisOfIntersection = CellGridAxis.Y_GRID;
 			pointOfIntersection = new Vector2(
 					Math2.lerp(startX, endX, ty),
@@ -195,12 +214,14 @@ public class CellGrid {
 
 			// X- and Y-intercept
 		} else {
+			// Console.println("XY COLLISION");
 			axisOfIntersection = CellGridAxis.XY_GRID;
 			pointOfIntersection = new Vector2(
 					limitX,
 					limitY);
 		}
 
+		// Console.println("POINT OF INTERSECTION: ", pointOfIntersection);
 		return interceptResult
 				.setPointOfIntersection(pointOfIntersection)
 				.setCell(getCell(start, pointOfIntersection))
@@ -242,8 +263,9 @@ public class CellGrid {
 		if (cell != null)
 			return cell;
 
-		if (unit.getX() == 0 || unit.getY() == 0)
+		if (unit.getX() == 0 || unit.getY() == 0) {
 			throw new NoCellFoundException();
+		}
 
 		cell = new Cell(unit);
 		if (cache)
@@ -331,6 +353,8 @@ public class CellGrid {
 	 * @see #getCell(Vector2, Vector2)
 	 */
 	public Cell getCell(Vector2 p0, Vector2 p1) {
+		// Console.println("vector segment: ", p0, p1);
+		// Console.println("vector midpoint: ", p0.midpoint(p1));
 		return getCell(p0.midpoint(p1));
 	}
 
@@ -934,8 +958,10 @@ public class CellGrid {
 		CellPathCollection path = new CellPathCollection(from, to);
 		Iterator<Cell> pathIterator = path.iterator();
 
-		while (pathIterator.hasNext())
-			pathIterator.next();
+		while (pathIterator.hasNext()) {
+			Cell cell = pathIterator.next();
+			cell.setPathCell();
+		}
 
 		return path.getCellPath();
 	}
@@ -976,6 +1002,8 @@ public class CellGrid {
 		String emptyCell = "$bg-white $text-black [_]$text-reset ";
 		String antCell = "$bg-black $text-bright_blue [$text-bright_cyan X$text-bright_blue ]$text-reset ";
 		String doodlebugCell = "$bg-black $text-yellow [$text-bright_yellow O$text-yellow ]$text-reset ";
+		String titalCell = "$bg-black $text-red [$text-bright_red T$text-red ]$text-reset ";
+		String pathCell = "$bg-red $text-red [$bg-bright_red  $text-red ]$text-reset ";
 
 		int rowLength = getSize().getX();
 		int colLength = getSize().getY();
@@ -989,13 +1017,18 @@ public class CellGrid {
 		for (int row = 1; row <= rowLength; row++) {
 			out.append("[").append(row).append("]\t");
 			for (int col = 1; col <= colLength; col++) {
-				Cell cell = getCellIfExists(new Unit2(row, col));
-				if (cell == null || cell.isEmpty())
-					out.append(emptyCell);
-				else if (cell.getOccupant() instanceof Ant)
+				Cell cell = getCellIfExists(new Unit2(col, row));
+				if (cell == null || cell.isEmpty()) {
+					if (cell != null && cell.isPathCell())
+						out.append(pathCell);
+					else
+						out.append(emptyCell);
+				} else if (cell.getOccupant() instanceof Ant)
 					out.append(antCell);
 				else if (cell.getOccupant() instanceof Doodlebug)
 					out.append(doodlebugCell);
+				else if (cell.getOccupant() instanceof Titan)
+					out.append(titalCell);
 			}
 			out.append("\n");
 		}
@@ -1026,6 +1059,35 @@ public class CellGrid {
 			Cell cell = (Cell) cellData;
 			this.virtualGrid.put(cell.getUnit2().serialize(), cell);
 		}
+	}
+
+	// TODO: HEAVILY rework later - this method should not exist the way that it
+	// does
+	public Cell getCellWithNearestOccupant(Cell fromCell) {
+		Entity<?> nearestOccupant = null;
+		double nearestDist = Double.POSITIVE_INFINITY;
+
+		for (Entity<?> entity : virtualEntites) {
+			if (entity == fromCell.getOccupant() || entity.getProperty(Property.VARIANT, String.class)
+					.equals(fromCell.getOccupant().getProperty(Property.VARIANT, String.class)))
+				continue;
+			if (nearestOccupant == null)
+				nearestOccupant = entity;
+
+			double dist = entity.getProperty(Property.POSITION, Vector2.class)
+					.subtract(fromCell.getUnit2Center())
+					.magnitude();
+
+			if (dist < nearestDist) {
+				nearestDist = dist;
+				nearestOccupant = entity;
+			}
+		}
+
+		return nearestOccupant.getCell();
+		// synchronized (virtualEntities) {
+
+		// }
 	}
 
 	/**
@@ -1192,6 +1254,7 @@ public class CellGrid {
 		private CellType cellType;
 		private CellVacancy cellVacancy;
 		private Entity<?> cellOccupant;
+		private boolean isPathCell;
 
 		/**
 		 * Creates a new {@code Cell} object. A cell object by itself does not belong to
@@ -1249,6 +1312,16 @@ public class CellGrid {
 			this(new Unit2());
 		}
 
+		public boolean isPathCell() {
+			return this.isPathCell;
+		}
+
+		public void setPathCell() {
+			this.isPathCell = true;
+		}
+
+		// TODO; 'withAggregation' parameter is no longer necessary now that Cell is an
+		// inner class
 		/**
 		 * <h4>This method should not be used outside of the {@code Entity}
 		 * class.</h4>
@@ -1297,6 +1370,9 @@ public class CellGrid {
 
 			this.cellOccupant = cellOccupant;
 			setVacancy(CellVacancy.OCCUPIED);
+			// TODO: may need to change later for thread-safe reasons
+			virtualEntites.add(cellOccupant);
+			cellOccupant.setProperty(Property.POSITION, this.getUnit2Center());
 		}
 
 		/**
@@ -1361,6 +1437,8 @@ public class CellGrid {
 			return this.cellOccupant;
 		}
 
+		// TODO; 'withAggregation' parameter is no longer necessary now that Cell is an
+		// inner class
 		/**
 		 * Removes the current occupant in the cell. Does not check if the cell
 		 * already has an occupant; this must be done manually with

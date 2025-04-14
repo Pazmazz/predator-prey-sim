@@ -15,6 +15,7 @@ public class Ant extends Bug<Ant> {
 
 		// properties
 		setProperty(Property.IS_EATABLE, true);
+		setProperty(Property.VARIANT, "Ant");
 	}
 
 	@Override

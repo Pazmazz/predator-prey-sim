@@ -5,14 +5,18 @@ package classes.simulation;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 
 import classes.abstracts.Entity;
 import classes.abstracts.RunService;
 import classes.abstracts.Properties;
+import classes.abstracts.Properties.Property;
 import classes.entity.CellGrid;
 import classes.entity.CellGrid.Cell;
 import classes.entity.Game;
+import classes.entity.Titan;
 import classes.entity.TweenData;
+import classes.entity.Vector2;
 import classes.settings.GameSettings.SimulationType;
 import classes.util.Console;
 import classes.util.Math2;
@@ -41,11 +45,34 @@ public class MovementFrame extends RunService {
 
 		for (Cell cell : grid.getCells()) {
 			Entity<?> entity = cell.getOccupant();
-			ArrayList<Cell> adjCells = grid.getCellsAdjacentTo(cell);
-			Cell randCell = grid.getRandomAvailableCellFrom(adjCells);
 
-			if (randCell != null)
-				entity.assignCell(randCell);
+			switch (entity.getProperty(Property.VARIANT, String.class)) {
+				case "Titan" -> {
+					Titan titan = (Titan) entity;
+					// titan.setTarget(grid.getCellWithNearestOccupant(cell).getOccupant());
+					// Console.println("Titan target: ", titan.getTarget());
+					titan.setTarget(grid.getCellWithNearestOccupant(cell).getOccupant());
+					// Console.println("Titan target: ", titan.getTarget());
+
+					ArrayList<Cell> pathCells = grid.getCellPath(cell.getUnit2Center(),
+							titan.getTarget().getProperty(Property.POSITION, Vector2.class));
+
+					if (pathCells.size() > 0) {
+						Cell c = pathCells.get(1);
+						if (c.isAvailable()) {
+							titan.assignCell(c);
+						}
+					}
+
+				}
+				default -> {
+					ArrayList<Cell> adjCells = grid.getCellsAdjacentTo(cell);
+					Cell randCell = grid.getRandomAvailableCellFrom(adjCells);
+
+					if (randCell != null)
+						entity.assignCell(randCell);
+				}
+			}
 
 		}
 	}

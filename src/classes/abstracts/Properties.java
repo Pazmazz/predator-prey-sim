@@ -46,5 +46,7 @@ public abstract class Properties implements Serializable {
 		ASSIGNED_CELL,
 		MOVEMENT_COOLDOWN,
 		NAME,
+		TYPE,
+		VARIANT,
 	}
 }

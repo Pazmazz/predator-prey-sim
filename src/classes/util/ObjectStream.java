@@ -10,6 +10,7 @@ import classes.entity.Ant;
 import classes.entity.CellGrid.Cell;
 import classes.entity.Doodlebug;
 import classes.entity.Game;
+import classes.entity.Titan;
 import classes.entity.Unit2;
 import classes.entity.Vector2;
 
@@ -63,6 +64,9 @@ public class ObjectStream {
 			}
 			case "Doodlebug" -> {
 				obj = new Doodlebug();
+			}
+			case "Titan" -> {
+				obj = new Titan();
 			}
 			default -> obj = null;
 		}

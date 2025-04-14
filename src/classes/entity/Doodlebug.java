@@ -17,6 +17,7 @@ public class Doodlebug extends Bug<Doodlebug> {
 
 		// properties
 		setProperty(Property.IS_EATABLE, false);
+		setProperty(Property.VARIANT, "Doodlebug");
 	}
 
 	@Override

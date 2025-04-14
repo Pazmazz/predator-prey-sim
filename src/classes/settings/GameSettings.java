@@ -11,14 +11,16 @@ public class GameSettings {
 	final private String gameHeaderText;
 	final private String gameTitle;
 
-	final private int cellSize;
-	final private Unit2 gridSize;
-	final private int initialAnts;
-	final private int initialDoodlebugs;
+	private int cellSize;
+	private Unit2 gridSize;
+	private int initialAnts;
+	private int initialDoodlebugs;
 
 	final private int screenWidth;
 	final private int screenHeight;
 	final private SimulationInfo simulationInfo;
+
+	private boolean canSpawnTitan;
 
 	public GameSettings() {
 		//
@@ -31,6 +33,8 @@ public class GameSettings {
 		this.gridSize = new Unit2(20, 20); // Cell units
 		this.initialAnts = 100;
 		this.initialDoodlebugs = 5;
+
+		this.canSpawnTitan = false;
 
 		//
 		// Non-Editable
@@ -215,5 +219,28 @@ public class GameSettings {
 
 	public int getInitialDoodlebugs() {
 		return this.initialDoodlebugs;
+	}
+
+	public boolean canSpawnTitan() {
+		return this.canSpawnTitan;
+	}
+
+	//
+	// Public setters
+	//
+	public void setTitanSpawn(boolean enabled) {
+		this.canSpawnTitan = enabled;
+	}
+
+	public void setInitialAnts(int initialAnts) {
+		this.initialAnts = initialAnts;
+	}
+
+	public void setInitialDoodlebugs(int initialDoodlebugs) {
+		this.initialDoodlebugs = initialDoodlebugs;
+	}
+
+	public void setGridSize(Unit2 gridSize) {
+		this.gridSize = gridSize;
 	}
 }
