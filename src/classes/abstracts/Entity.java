@@ -3,11 +3,11 @@
  */
 package classes.abstracts;
 
-import classes.entity.Cell;
-import classes.entity.Game;
+import classes.entity.CellGrid.Cell;
 import classes.entity.Null;
 import exceptions.CellIsOccupiedException;
 import exceptions.NoCellFoundException;
+import interfaces.Serializable;
 
 /**
  * A superclass representing the most general entity that is allowed to be
@@ -19,15 +19,10 @@ import exceptions.NoCellFoundException;
  */
 public abstract class Entity<T> extends Properties {
 
-	public Game game;
-
 	// Unused constructor for now
-	public Entity(Game game) {
-		this.game = game;
+	// public Entity() {
 
-		// default properties
-		// ...
-	}
+	// }
 
 	/**
 	 * Assigns the current occupant to a given cell. Each occupant can only be

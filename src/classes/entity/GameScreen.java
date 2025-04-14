@@ -16,9 +16,11 @@ import javax.swing.JPanel;
  */
 public class GameScreen extends JFrame {
 
+	private Game game = Game.getInstance();
+
 	final private JPanel masterFrame;
 
-	public GameScreen(Game game) {
+	public GameScreen() {
 		// Default game screen settings
 		this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		this.setResizable(false);
@@ -36,7 +38,7 @@ public class GameScreen extends JFrame {
 		// Finalize game screen
 		this.pack();
 		this.setLocationRelativeTo(null);
-		this.setVisible(false);
+		this.setVisible(true);
 
 		// Handle game window closing event
 		this.addWindowListener(new WindowAdapter() {

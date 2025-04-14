@@ -1,6 +1,6 @@
 package interfaces;
 
-import classes.abstracts.FrameProcessor.Task;
+import classes.abstracts.RunService.Task;
 
 public interface TaskCallback {
 	void call(Task task);

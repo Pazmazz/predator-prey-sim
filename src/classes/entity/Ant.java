@@ -4,18 +4,22 @@ import java.util.ArrayList;
 
 import classes.abstracts.Bug;
 import classes.util.Console;
+import classes.entity.CellGrid.Cell;
 
 public class Ant extends Bug<Ant> {
     public static int antCount = 0;
     public static int numOfAntBreeds = 0;
 
-	public Ant(Game game) {
-		super(game);
+	private Game game = Game.getInstance();
+
+	public Ant() {
 		idNum = (int) (Math.random() * 1000);
 
 		// properties
 		setProperty(Property.IS_EATABLE, true);
-        antCount++;
+		setProperty(Property.VARIANT, "Ant");
+        
+		antCount++;
 	}
 
     public int getAntCount(){
@@ -50,7 +54,7 @@ public class Ant extends Bug<Ant> {
 
 		for (Cell adjCell : adjCells) {
 			if (adjCell.isInBounds() && adjCell.isEmpty()) {
-				adjCell.setOccupant(new Ant(game));
+				adjCell.setOccupant(new Ant());
 				break;
 			}
 		}
@@ -63,5 +67,10 @@ public class Ant extends Bug<Ant> {
 		return String.format(Console.withConsoleColors(
 				"$text-green Ant$text-reset #%s"),
 				idNum);
+	}
+
+	@Override
+	public String serialize() {
+		return "Ant{}";
 	}
 }

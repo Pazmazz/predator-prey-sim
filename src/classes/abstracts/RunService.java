@@ -20,7 +20,9 @@ import interfaces.TaskCallback;
  * processes in a tight loop. A {@code step} method must be implemented in the
  * subclass which handles what action should occur on that frame.
  */
-public abstract class FrameProcessor {
+public abstract class RunService {
+
+	private Game game = Game.getInstance();
 
 	private long FPS;
 	private long lastPulseTick;
@@ -28,7 +30,6 @@ public abstract class FrameProcessor {
 	private long timeBeforeStep;
 	private long timeAfterStep;
 
-	public Game game;
 	private SimulationSettings settings;
 	private FrameState state = FrameState.RUNNING;
 	private ArrayList<Task> preSimulationTasks = new ArrayList<>();
@@ -41,12 +42,11 @@ public abstract class FrameProcessor {
 		SUSPENDED,
 	}
 
-	protected FrameProcessor(Game game, SimulationType simulationType) {
+	protected RunService(SimulationType simulationType) {
 		this.settings = game.getSettings()
 				.getSimulation()
 				.getSettings(simulationType);
 
-		this.game = game;
 		this.FPS = Time.secondsToNano(settings.getFPS());
 		this.lastPulseTick = -Time.secondsToNano(settings.getFPS());
 	}
@@ -88,9 +88,9 @@ public abstract class FrameProcessor {
 
 		// run the implemented step
 		// pre-simulation task binds go here (executePreSimulationTasks())
-		executeTasks(this.preSimulationTasks);
+		stepTasks(this.preSimulationTasks);
 		step(Time.nanoToSeconds(deltaTime));
-		executeTasks(this.postSimulationTasks);
+		stepTasks(this.postSimulationTasks);
 		// post-simulation task binds go here (executePostSimulationTasks())
 
 		this.timeAfterStep = Time.tick();
@@ -180,7 +180,7 @@ public abstract class FrameProcessor {
 	 * This method should ideally be called inside a simulation frame's {@code step}
 	 * method, but it may be used outside of this context as well.
 	 */
-	public void executeTasks(ArrayList<Task> tasks) {
+	public void stepTasks(ArrayList<Task> tasks) {
 		if (tasks.size() == 0)
 			return;
 
@@ -193,6 +193,7 @@ public abstract class FrameProcessor {
 			if (task.started() == null)
 				task.setStart(currentTime);
 
+			// task timeout check
 			task.setElapsedLifetime(currentTime - task.started());
 			if (task.timeout() != -1 && task.elapsedLifetime() > task.timeout()) {
 				Console.debugPrint(
@@ -202,6 +203,7 @@ public abstract class FrameProcessor {
 				taskIterator.remove();
 			}
 
+			// task is currently suspended
 			if (task.isSuspended()) {
 				if (task.suspendedUntil() == -1)
 					task.setSuspendedUntil(currentTime + task.suspended());

@@ -79,7 +79,7 @@ Major changes.
   - `CellGrid.outOfBounds(<Cell, Unit2, Vector2>)`
     - Inverted check method for verifying if a cell, cell unit, or cell position is out of bounds. Returns true if the location is out of bounds.
 
-- `Cell.getPosition()` now returns a `Vector2` object representing the cell's actual position on the screen.
+- `Cell.getCenterUnit2()` now returns a `Vector2` object representing the cell's actual position on the screen.
 
 - `Cell.getUnit2()` now returns a `Unit2` object, which represents the integer location of the cell on the grid (i.e, `(1, 1)`, `(5, 5)`, etc)
 

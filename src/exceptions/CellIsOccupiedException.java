@@ -1,7 +1,7 @@
 package exceptions;
 
 import classes.abstracts.Entity;
-import classes.entity.Cell;
+import classes.entity.CellGrid.Cell;
 
 public class CellIsOccupiedException extends RuntimeException {
 

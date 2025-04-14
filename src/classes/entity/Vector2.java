@@ -51,7 +51,7 @@ public class Vector2 extends Vector<Vector2> {
 	 * @param x         input value to the function
 	 * @param useDomain whether or not to check for the domain set by the two
 	 *                  points
-	 * @return
+	 * @return f(x)
 	 */
 	private Double evaluateLinearFunctionWithRespectTo(
 			double x0,
@@ -109,7 +109,7 @@ public class Vector2 extends Vector<Vector2> {
 	}
 
 	@Override
-	public Vector2 newVector(Double[] components) {
+	protected Vector2 newVector(Double[] components) {
 		return new Vector2(components[0], components[1]);
 	}
 }
