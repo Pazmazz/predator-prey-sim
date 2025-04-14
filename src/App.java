@@ -83,27 +83,15 @@ public class App {
 			case 7 -> game.setFPS(4.0);
 		}
 
-		int spawnTitan = Console.promptMenu(
-				"Spawn Titan?",
-				"Carefully decide: ",
-				1,
-				new String[] {
-						"Hell yeah",
-						"No, I want to keep my FPS"
-				});
-
-		switch (spawnTitan) {
-			case 1 -> game.getSettings().setTitanSpawn(true);
-		}
-
 		int usePreload = Console.promptMenu(
 				"Select Preload",
 				"Preload: ",
-				4,
+				5,
 				new String[] {
 						"a mistake",
 						"1v1",
 						"red vs blue",
+						"1v2",
 						"none"
 				});
 
@@ -143,6 +131,23 @@ public class App {
 						"Cell{Unit2{1, 1.0}, Titan{}}, Cell{Unit2{20, 1.0}, Ant{}}, Cell{Unit2{2, 1.0}, Titan{}}, Cell{Unit2{19, 1.0}, Ant{}}, Cell{Unit2{3, 1.0}, Titan{}}, Cell{Unit2{18, 1.0}, Ant{}}, Cell{Unit2{4, 1.0}, Titan{}}, Cell{Unit2{17, 1.0}, Ant{}}, Cell{Unit2{1, 2.0}, Titan{}}, Cell{Unit2{20, 2.0}, Ant{}}, Cell{Unit2{2, 2.0}, Titan{}}, Cell{Unit2{19, 2.0}, Ant{}}, Cell{Unit2{3, 2.0}, Titan{}}, Cell{Unit2{18, 2.0}, Ant{}}, Cell{Unit2{4, 2.0}, Titan{}}, Cell{Unit2{17, 2.0}, Ant{}}, Cell{Unit2{1, 3.0}, Titan{}}, Cell{Unit2{20, 3.0}, Ant{}}, Cell{Unit2{2, 3.0}, Titan{}}, Cell{Unit2{19, 3.0}, Ant{}}, Cell{Unit2{3, 3.0}, Titan{}}, Cell{Unit2{18, 3.0}, Ant{}}, Cell{Unit2{4, 3.0}, Titan{}}, Cell{Unit2{17, 3.0}, Ant{}}, Cell{Unit2{1, 4.0}, Titan{}}, Cell{Unit2{20, 4.0}, Ant{}}, Cell{Unit2{2, 4.0}, Titan{}}, Cell{Unit2{19, 4.0}, Ant{}}, Cell{Unit2{3, 4.0}, Titan{}}, Cell{Unit2{18, 4.0}, Ant{}}, Cell{Unit2{4, 4.0}, Titan{}}, Cell{Unit2{17, 4.0}, Ant{}}, Cell{Unit2{1, 5.0}, Titan{}}, Cell{Unit2{20, 5.0}, Ant{}}, Cell{Unit2{2, 5.0}, Titan{}}, Cell{Unit2{19, 5.0}, Ant{}}, Cell{Unit2{3, 5.0}, Titan{}}, Cell{Unit2{18, 5.0}, Ant{}}, Cell{Unit2{4, 5.0}, Titan{}}, Cell{Unit2{17, 5.0}, Ant{}}, Cell{Unit2{1, 6.0}, Titan{}}, Cell{Unit2{20, 6.0}, Ant{}}, Cell{Unit2{2, 6.0}, Titan{}}, Cell{Unit2{19, 6.0}, Ant{}}, Cell{Unit2{3, 6.0}, Titan{}}, Cell{Unit2{18, 6.0}, Ant{}}, Cell{Unit2{4, 6.0}, Titan{}}, Cell{Unit2{17, 6.0}, Ant{}}, Cell{Unit2{1, 7.0}, Titan{}}, Cell{Unit2{20, 7.0}, Ant{}}, Cell{Unit2{2, 7.0}, Titan{}}, Cell{Unit2{19, 7.0}, Ant{}}, Cell{Unit2{3, 7.0}, Titan{}}, Cell{Unit2{18, 7.0}, Ant{}}, Cell{Unit2{4, 7.0}, Titan{}}, Cell{Unit2{17, 7.0}, Ant{}}, Cell{Unit2{1, 8.0}, Titan{}}, Cell{Unit2{20, 8.0}, Ant{}}, Cell{Unit2{2, 8.0}, Titan{}}, Cell{Unit2{19, 8.0}, Ant{}}, Cell{Unit2{3, 8.0}, Titan{}}, Cell{Unit2{18, 8.0}, Ant{}}, Cell{Unit2{4, 8.0}, Titan{}}, Cell{Unit2{17, 8.0}, Ant{}}, Cell{Unit2{1, 9.0}, Titan{}}, Cell{Unit2{20, 9.0}, Ant{}}, Cell{Unit2{2, 9.0}, Titan{}}, Cell{Unit2{19, 9.0}, Ant{}}, Cell{Unit2{3, 9.0}, Titan{}}, Cell{Unit2{18, 9.0}, Ant{}}, Cell{Unit2{4, 9.0}, Titan{}}, Cell{Unit2{17, 9.0}, Ant{}}, Cell{Unit2{1, 10.0}, Titan{}}, Cell{Unit2{20, 10.0}, Ant{}}, Cell{Unit2{2, 10.0}, Titan{}}, Cell{Unit2{19, 10.0}, Ant{}}, Cell{Unit2{3, 10.0}, Titan{}}, Cell{Unit2{18, 10.0}, Ant{}}, Cell{Unit2{4, 10.0}, Titan{}}, Cell{Unit2{17, 10.0}, Ant{}}, Cell{Unit2{1, 11.0}, Titan{}}, Cell{Unit2{20, 11.0}, Ant{}}, Cell{Unit2{2, 11.0}, Titan{}}, Cell{Unit2{19, 11.0}, Ant{}}, Cell{Unit2{3, 11.0}, Titan{}}, Cell{Unit2{18, 11.0}, Ant{}}, Cell{Unit2{4, 11.0}, Titan{}}, Cell{Unit2{17, 11.0}, Ant{}}, Cell{Unit2{1, 12.0}, Titan{}}, Cell{Unit2{20, 12.0}, Ant{}}, Cell{Unit2{2, 12.0}, Titan{}}, Cell{Unit2{19, 12.0}, Ant{}}, Cell{Unit2{3, 12.0}, Titan{}}, Cell{Unit2{18, 12.0}, Ant{}}, Cell{Unit2{4, 12.0}, Titan{}}, Cell{Unit2{17, 12.0}, Ant{}}, Cell{Unit2{1, 13.0}, Titan{}}, Cell{Unit2{20, 13.0}, Ant{}}, Cell{Unit2{2, 13.0}, Titan{}}, Cell{Unit2{19, 13.0}, Ant{}}, Cell{Unit2{3, 13.0}, Titan{}}, Cell{Unit2{18, 13.0}, Ant{}}, Cell{Unit2{4, 13.0}, Titan{}}, Cell{Unit2{17, 13.0}, Ant{}}, Cell{Unit2{1, 14.0}, Titan{}}, Cell{Unit2{20, 14.0}, Ant{}}, Cell{Unit2{2, 14.0}, Titan{}}, Cell{Unit2{19, 14.0}, Ant{}}, Cell{Unit2{3, 14.0}, Titan{}}, Cell{Unit2{18, 14.0}, Ant{}}, Cell{Unit2{4, 14.0}, Titan{}}, Cell{Unit2{17, 14.0}, Ant{}}, Cell{Unit2{1, 15.0}, Titan{}}, Cell{Unit2{20, 15.0}, Ant{}}, Cell{Unit2{2, 15.0}, Titan{}}, Cell{Unit2{19, 15.0}, Ant{}}, Cell{Unit2{3, 15.0}, Titan{}}, Cell{Unit2{18, 15.0}, Ant{}}, Cell{Unit2{4, 15.0}, Titan{}}, Cell{Unit2{17, 15.0}, Ant{}}, Cell{Unit2{1, 16.0}, Titan{}}, Cell{Unit2{20, 16.0}, Ant{}}, Cell{Unit2{2, 16.0}, Titan{}}, Cell{Unit2{19, 16.0}, Ant{}}, Cell{Unit2{3, 16.0}, Titan{}}, Cell{Unit2{18, 16.0}, Ant{}}, Cell{Unit2{4, 16.0}, Titan{}}, Cell{Unit2{17, 16.0}, Ant{}}, Cell{Unit2{1, 17.0}, Titan{}}, Cell{Unit2{20, 17.0}, Ant{}}, Cell{Unit2{2, 17.0}, Titan{}}, Cell{Unit2{19, 17.0}, Ant{}}, Cell{Unit2{3, 17.0}, Titan{}}, Cell{Unit2{18, 17.0}, Ant{}}, Cell{Unit2{4, 17.0}, Titan{}}, Cell{Unit2{17, 17.0}, Ant{}}, Cell{Unit2{1, 18.0}, Titan{}}, Cell{Unit2{20, 18.0}, Ant{}}, Cell{Unit2{2, 18.0}, Titan{}}, Cell{Unit2{19, 18.0}, Ant{}}, Cell{Unit2{3, 18.0}, Titan{}}, Cell{Unit2{18, 18.0}, Ant{}}, Cell{Unit2{4, 18.0}, Titan{}}, Cell{Unit2{17, 18.0}, Ant{}}, Cell{Unit2{1, 19.0}, Titan{}}, Cell{Unit2{20, 19.0}, Ant{}}, Cell{Unit2{2, 19.0}, Titan{}}, Cell{Unit2{19, 19.0}, Ant{}}, Cell{Unit2{3, 19.0}, Titan{}}, Cell{Unit2{18, 19.0}, Ant{}}, Cell{Unit2{4, 19.0}, Titan{}}, Cell{Unit2{17, 19.0}, Ant{}}, Cell{Unit2{1, 20.0}, Titan{}}, Cell{Unit2{20, 20.0}, Ant{}}, Cell{Unit2{2, 20.0}, Titan{}}, Cell{Unit2{19, 20.0}, Ant{}}, Cell{Unit2{3, 20.0}, Titan{}}, Cell{Unit2{18, 20.0}, Ant{}}, Cell{Unit2{4, 20.0}, Titan{}}, Cell{Unit2{17, 20.0}, Ant{}}, Cell{Unit2{1, 21.0}, Titan{}}, Cell{Unit2{20, 21.0}, Ant{}}, Cell{Unit2{2, 21.0}, Titan{}}, Cell{Unit2{19, 21.0}, Ant{}}, Cell{Unit2{3, 21.0}, Titan{}}, Cell{Unit2{18, 21.0}, Ant{}}, Cell{Unit2{4, 21.0}, Titan{}}, Cell{Unit2{17, 21.0}, Ant{}}, Cell{Unit2{1, 22.0}, Titan{}}, Cell{Unit2{20, 22.0}, Ant{}}, Cell{Unit2{2, 22.0}, Titan{}}, Cell{Unit2{19, 22.0}, Ant{}}, Cell{Unit2{3, 22.0}, Titan{}}, Cell{Unit2{18, 22.0}, Ant{}}, Cell{Unit2{4, 22.0}, Titan{}}, Cell{Unit2{17, 22.0}, Ant{}}, Cell{Unit2{1, 23.0}, Titan{}}, Cell{Unit2{20, 23.0}, Ant{}}, Cell{Unit2{2, 23.0}, Titan{}}, Cell{Unit2{19, 23.0}, Ant{}}, Cell{Unit2{3, 23.0}, Titan{}}, Cell{Unit2{18, 23.0}, Ant{}}, Cell{Unit2{4, 23.0}, Titan{}}, Cell{Unit2{17, 23.0}, Ant{}}, Cell{Unit2{1, 24.0}, Titan{}}, Cell{Unit2{20, 24.0}, Ant{}}, Cell{Unit2{2, 24.0}, Titan{}}, Cell{Unit2{19, 24.0}, Ant{}}, Cell{Unit2{3, 24.0}, Titan{}}, Cell{Unit2{18, 24.0}, Ant{}}, Cell{Unit2{4, 24.0}, Titan{}}, Cell{Unit2{17, 24.0}, Ant{}}, Cell{Unit2{1, 25.0}, Titan{}}, Cell{Unit2{20, 25.0}, Ant{}}, Cell{Unit2{2, 25.0}, Titan{}}, Cell{Unit2{19, 25.0}, Ant{}}, Cell{Unit2{3, 25.0}, Titan{}}, Cell{Unit2{18, 25.0}, Ant{}}, Cell{Unit2{4, 25.0}, Titan{}}, Cell{Unit2{17, 25.0}, Ant{}}");
 			}
 			case 4 -> {
+				game.getGameGrid()
+						.upload("Cell{Unit2{2, 10}, Titan{}}, Cell{Unit2{19, 19}, Ant{}}, Cell{Unit2{19, 2}, Ant{}}");
+			}
+			case 5 -> {
+				int spawnTitan = Console.promptMenu(
+						"Spawn a Titan Ant?",
+						"Carefully decide: ",
+						1,
+						new String[] {
+								"Sure, why not",
+								"No, I want to keep my FPS"
+						});
+
+				switch (spawnTitan) {
+					case 1 -> game.getSettings().setTitanSpawn(true);
+				}
+
 				int setAnts = Integer.parseInt(Console.promptMessage("Initial Ants: ", "100"));
 				int setDoodlebugs = Integer.parseInt(Console.promptMessage("Initial Doodlebugs: ", "5"));
 
@@ -164,7 +169,7 @@ public class App {
 
 		CellGrid grid = game.getGameGrid();
 
-		if (game.getSettings().canSpawnTitan() && usePreload == 4) {
+		if (game.getSettings().canSpawnTitan() && usePreload == 5) {
 			grid.populate();
 			Cell titanCell = grid.getRandomAvailableCell();
 
