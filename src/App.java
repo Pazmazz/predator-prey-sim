@@ -76,13 +76,13 @@ public class App {
 
 	@SuppressWarnings("unchecked")
 	public static <T> T deserialize(String data) {
+		data = data.trim();
 		Stack<Object> stack = new Stack<>();
 		StringBuilder keyBuffer = new StringBuilder();
 		StringBuilder valueBuffer = new StringBuilder();
 		StringBuilder currentBuffer;
-		boolean writingString = false;
 
-		data = data.trim();
+		boolean writingString = false;
 		char firstChar = data.charAt(0);
 		int len = data.length();
 
@@ -108,6 +108,7 @@ public class App {
 					case '"' -> writingString = true;
 					case '{' -> stack.push(new HashMap<String, Object>());
 					case '[' -> stack.push(new ArrayList<Object>());
+					case '}', ',', ']' -> currentBuffer = null;
 				}
 				continue;
 			}
@@ -120,10 +121,18 @@ public class App {
 						currentBuffer = keyBuffer;
 					} else
 						throw new Error("Parsing error: HashMap keys must be strings");
-				} else if (token == ':') {
-					currentBuffer = valueBuffer;
-				} else
-					throw new Error("Parsing error: Expected \":\" after key");
+				} else if (valueBuffer.isEmpty()) {
+					if (token == ':') {
+						currentBuffer = valueBuffer;
+					} else
+						throw new Error("Parsing error: Expected \":\" after key");
+				} else {
+					((HashMap<String, Object>) stack.pop()).put(
+							keyBuffer.toString(),
+							valueBuffer.toString());
+					keyBuffer.setLength(0);
+					valueBuffer.setLength(0);
+				}
 			}
 		}
 
