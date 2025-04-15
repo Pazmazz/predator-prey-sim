@@ -79,27 +79,54 @@ public class App {
 		Stack<Object> stack = new Stack<>();
 		StringBuilder keyBuffer = new StringBuilder();
 		StringBuilder valueBuffer = new StringBuilder();
+		StringBuilder currentBuffer;
+		boolean writingString = false;
 
+		data = data.trim();
+		char firstChar = data.charAt(0);
 		int len = data.length();
 
-		for (int index = 0; index < len; index++) {
+		if (firstChar == '{') {
+			stack.push(new HashMap<String, Object>());
+			currentBuffer = keyBuffer;
+		} else if (firstChar == '[') {
+			stack.push(new ArrayList<Object>());
+			currentBuffer = valueBuffer;
+		} else
+			throw new Error("Parsing error: Invalid JON structure (expected brackets, got \"" + firstChar + "\"");
+
+		for (int index = 1; index < len; index++) {
 			char token = data.charAt(index);
+			if (writingString) {
+				if (token == '"')
+					writingString = false;
+				else
+					currentBuffer.append(token);
+				continue;
+			} else if (currentBuffer == valueBuffer) {
+				switch (token) {
+					case '"' -> writingString = true;
+					case '{' -> stack.push(new HashMap<String, Object>());
+					case '[' -> stack.push(new ArrayList<Object>());
+				}
+				continue;
+			}
 			if (Character.isWhitespace(token))
 				continue;
-
-			switch (token) {
-				case '\\' -> {
-
-				}
-				case '"' -> {
-
-				}
-				case '{' -> stack.push(new HashMap<String, Object>());
-				case '[' -> stack.push(new ArrayList<Object>());
-				default -> valueBuffer.append(token);
+			if (stack.peek() instanceof HashMap) {
+				if (keyBuffer.isEmpty()) {
+					if (token == '"') {
+						writingString = true;
+						currentBuffer = keyBuffer;
+					} else
+						throw new Error("Parsing error: HashMap keys must be strings");
+				} else if (token == ':') {
+					currentBuffer = valueBuffer;
+				} else
+					throw new Error("Parsing error: Expected \":\" after key");
 			}
 		}
 
-		return (T) (stack.isEmpty() ? null : stack.peek());
+		return (T) stack.peek();
 	}
 }
