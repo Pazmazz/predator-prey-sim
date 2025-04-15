@@ -35,19 +35,13 @@ public class App {
 
 	public static void main(String[] args) {
 
-		String hashmap = "{ a=b, b=Cell(1,2,3), c=[x,y,z], g={x=1, y=2, z=3} }";
+		// String hashmap = "{ a=b, b=Cell(1,2,3), c=[x,y,z], g={x=1, y=2, z=3} }";
 		String list = "[ x, y, 2, 3, Cell(1,2,3), [4,5], {x=1, y=2, z=3} ]";
 
-		// ArrayList<Object> listObj = deserialize(list);
-		// HashMap<String, Object> hashmapObj = deserialize(hashmap);
-		String s = "";
-		Class<String> g = String.class;
+		String hashmap = "{\"asd\":\"test\"}";
 
-		ArrayList<Object> t = deserialize(list);
-		HashMap<String, Object> m = deserialize(list);
-
-		String a = "hello\\\"world\\\"";
-
+		HashMap<String, Object> m = deserialize(hashmap);
+		System.out.println(m);
 	}
 
 	public static Object getObj(String str) {
@@ -60,19 +54,6 @@ public class App {
 
 		return obj;
 	}
-
-	// @SuppressWarnings("unchecked")
-	// public static <T> T deserialize(String data) {
-	// Object collection;
-
-	// if (data.length() == 0) {
-	// collection = new HashMap<>();
-	// } else {
-	// collection = new ArrayList<>();
-	// }
-
-	// return (T) collection;
-	// }
 
 	@SuppressWarnings("unchecked")
 	public static <T> T deserialize(String data) {
@@ -93,7 +74,7 @@ public class App {
 			stack.push(new ArrayList<Object>());
 			currentBuffer = valueBuffer;
 		} else
-			throw new Error("Parsing error: Invalid JON structure (expected brackets, got \"" + firstChar + "\"");
+			throw new Error("Parsing error: Invalid JON structure (expected brackets, got \"" + firstChar + "\")");
 
 		for (int index = 1; index < len; index++) {
 			char token = data.charAt(index);
@@ -102,6 +83,8 @@ public class App {
 					writingString = false;
 				else
 					currentBuffer.append(token);
+				continue;
+			} else if (Character.isWhitespace(token)) {
 				continue;
 			} else if (currentBuffer == valueBuffer) {
 				switch (token) {
@@ -112,8 +95,6 @@ public class App {
 				}
 				continue;
 			}
-			if (Character.isWhitespace(token))
-				continue;
 			if (stack.peek() instanceof HashMap) {
 				if (keyBuffer.isEmpty()) {
 					if (token == '"') {
