@@ -17,14 +17,15 @@ import exceptions.NoOccupantFoundException;
  * occupying the cell, what type of cell it is ({@code CellType} enum), and
  * setters/getters/update methods for interacting with the cell.
  */
+@SuppressWarnings("unused")
 public class REFACTOR_Cell {
 
 	// metadata
 	final private HashMap<CellState, Boolean> states = new HashMap<>();
 	final private HashMap<Entity<?>, Boolean> occupants = new HashMap<>();
-
 	final private Unit2 unit;
 	final private Vector2 unitPosition;
+
 	private int importance = 0; // importance of zero or less is eligible for GC (based on sum of state weights)
 	private boolean garbageCollected;
 	private boolean inBounds;
@@ -59,8 +60,8 @@ public class REFACTOR_Cell {
 				unit.getY() - 0.5);
 	}
 
-	public REFACTOR_Cell() {
-		this(new Unit2());
+	public REFACTOR_Cell(HashMap<String, String> inputStream) {
+
 	}
 
 	public void addOccupant(Entity<?> occupant, boolean withAggregation) {

@@ -24,7 +24,7 @@ import java.util.ArrayList;
  * it's components to int types, it can extend this class and guarantee that all
  * inherited methods will not generate a non-int value as a result.
  */
-public abstract class BaseVector<T extends BaseVector<T>> implements Serializable {
+public abstract class BaseVector<T extends BaseVector<T>> implements Serializable<BaseVector<T>> {
 
 	protected abstract T newVector(Double[] components);
 

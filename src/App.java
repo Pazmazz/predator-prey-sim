@@ -20,6 +20,14 @@
  * - Make a custom event signal class
  */
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Stack;
+
+import test.Parser;
+
 /**
  * The entry-point file for the application
  */
@@ -27,5 +35,71 @@ public class App {
 
 	public static void main(String[] args) {
 
+		String hashmap = "{ a=b, b=Cell(1,2,3), c=[x,y,z], g={x=1, y=2, z=3} }";
+		String list = "[ x, y, 2, 3, Cell(1,2,3), [4,5], {x=1, y=2, z=3} ]";
+
+		// ArrayList<Object> listObj = deserialize(list);
+		// HashMap<String, Object> hashmapObj = deserialize(hashmap);
+		String s = "";
+		Class<String> g = String.class;
+
+		ArrayList<Object> t = deserialize(list);
+		HashMap<String, Object> m = deserialize(list);
+
+		String a = "hello\\\"world\\\"";
+
+	}
+
+	public static Object getObj(String str) {
+		Object obj;
+
+		switch (str) {
+			case "Unit2" -> obj = new Object();
+			default -> obj = null;
+		}
+
+		return obj;
+	}
+
+	// @SuppressWarnings("unchecked")
+	// public static <T> T deserialize(String data) {
+	// Object collection;
+
+	// if (data.length() == 0) {
+	// collection = new HashMap<>();
+	// } else {
+	// collection = new ArrayList<>();
+	// }
+
+	// return (T) collection;
+	// }
+
+	@SuppressWarnings("unchecked")
+	public static <T> T deserialize(String data) {
+		Stack<Object> stack = new Stack<>();
+		StringBuilder keyBuffer = new StringBuilder();
+		StringBuilder valueBuffer = new StringBuilder();
+
+		int len = data.length();
+
+		for (int index = 0; index < len; index++) {
+			char token = data.charAt(index);
+			if (Character.isWhitespace(token))
+				continue;
+
+			switch (token) {
+				case '\\' -> {
+
+				}
+				case '"' -> {
+
+				}
+				case '{' -> stack.push(new HashMap<String, Object>());
+				case '[' -> stack.push(new ArrayList<Object>());
+				default -> valueBuffer.append(token);
+			}
+		}
+
+		return (T) (stack.isEmpty() ? null : stack.peek());
 	}
 }

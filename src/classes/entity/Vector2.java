@@ -3,6 +3,9 @@
  */
 package classes.entity;
 
+import java.util.HashMap;
+
+import classes.abstracts.BaseVector;
 import classes.abstracts.Vector;
 
 /**
@@ -111,5 +114,11 @@ public class Vector2 extends Vector<Vector2> {
 	@Override
 	protected Vector2 newVector(Double[] components) {
 		return new Vector2(components[0], components[1]);
+	}
+
+	@Override
+	public Vector2 construct(HashMap<String, Object> data) {
+		this.components.add(data.get(0))
+		return new Vector2();
 	}
 }
