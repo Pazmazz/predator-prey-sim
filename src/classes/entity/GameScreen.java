@@ -22,7 +22,8 @@ public class GameScreen extends JFrame {
 
 	public GameScreen() {
 		// Default game screen settings
-		this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		// this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.setResizable(false);
 		this.setTitle(game.getSettings().getTitle());
 

@@ -91,9 +91,9 @@ public class CellGrid {
 	 * @see #isInBounds(Unit2)
 	 */
 	public boolean isInBounds(Unit2 unit) {
-		return !(unit.getX() <= 0
+		return !(unit.getX() < 1
 				|| unit.getX() > this.size.getX()
-				|| unit.getY() <= 0
+				|| unit.getY() < 1
 				|| unit.getY() > this.size.getY());
 	}
 
@@ -184,22 +184,16 @@ public class CellGrid {
 		else
 			tx = (limitX - startX) / txd;
 
-		// Console.println("start pos: ", start, " end pos: ", end);
-		// Console.println("limits: ", limitX, limitY);
-		// Console.println("t values: ", tx, ty);
-
 		Vector2 pointOfIntersection;
 		CellGridAxis axisOfIntersection;
 
 		// No intercepts
 		if (tx >= 1 && ty >= 1) {
-			// Console.println("NO COLLISION (endpoint)");
 			pointOfIntersection = end;
 			axisOfIntersection = CellGridAxis.NONE;
 
 			// X-intercept
 		} else if (tx < ty) {
-			// Console.println("X COLLISION");
 			axisOfIntersection = CellGridAxis.X_GRID;
 			pointOfIntersection = new Vector2(
 					limitX,
@@ -207,7 +201,6 @@ public class CellGrid {
 
 			// Y-intercept
 		} else if (ty < tx) {
-			// Console.println("Y COLLISION");
 			axisOfIntersection = CellGridAxis.Y_GRID;
 			pointOfIntersection = new Vector2(
 					Math2.lerp(startX, endX, ty),
@@ -215,14 +208,12 @@ public class CellGrid {
 
 			// X- and Y-intercept
 		} else {
-			// Console.println("XY COLLISION");
 			axisOfIntersection = CellGridAxis.XY_GRID;
 			pointOfIntersection = new Vector2(
 					limitX,
 					limitY);
 		}
 
-		// Console.println("POINT OF INTERSECTION: ", pointOfIntersection);
 		return interceptResult
 				.setPointOfIntersection(pointOfIntersection)
 				.setCell(getCell(start, pointOfIntersection))

@@ -35,6 +35,8 @@ public class Game implements Runnable {
 
 	final private Thread mainThread;
 	final private String sessionId;
+
+	// TODO: Implement game history snapshots
 	final private ArrayList<Snapshot> snapshots = new ArrayList<>();
 
 	private GameScreen screen;
@@ -74,7 +76,7 @@ public class Game implements Runnable {
 		this.settings = new GameSettings();
 
 		Console.setDebugModeEnabled(true);
-		Console.setConsoleColorsEnabled(true);
+		Console.setConsoleColorsEnabled(false);
 		Console.hideDebugPriority(DebugPriority.LOW);
 		Console.hideDebugPriority(DebugPriority.MEDIUM);
 
@@ -174,7 +176,10 @@ public class Game implements Runnable {
 	 */
 	@Override
 	public void run() {
+		long startTime = Time.tick();
+
 		while (isThreadRunning()) {
+			this.upTime = Time.tick() - startTime;
 			if (RunService.isAllSuspended())
 				continue;
 
