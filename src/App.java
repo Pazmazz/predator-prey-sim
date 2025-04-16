@@ -52,6 +52,8 @@ import classes.entity.Titan;
 @SuppressWarnings("unused")
 public class App {
 
+	private Game game = Game.getInstance();
+
 	public static void main(String[] args) {
 		Game game = Game.getInstance();
 
