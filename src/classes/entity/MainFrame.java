@@ -1,3 +1,6 @@
+package classes.entity;
+
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
@@ -8,6 +11,7 @@ import java.io.IOException;
 
 
 public class MainFrame implements ActionListener{
+
     public MainFrame(){
         int frameWidth = 700;
         int frameHeight = 50 + 60 + 760;
@@ -36,6 +40,7 @@ public class MainFrame implements ActionListener{
          title_panel.setLayout(new BorderLayout());
          title_panel.setPreferredSize(new Dimension(760, 60));;
          title_panel.add(textfield, BorderLayout.CENTER);
+         
          //Bottom panel with Label
          JButton[] buttons = new JButton[3];
         JPanel bottom_panel = new JPanel();
