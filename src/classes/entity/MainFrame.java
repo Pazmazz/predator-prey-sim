@@ -8,20 +8,7 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 
-//ineffective
-// class ImagePanel extends JPanel{
-//     private Image backgroundImage;
-//     public ImagePanel(String filename){
-//         backgroundImage = new ImageIcon("GridSpace1").getImage();
-//     }
-//     @Override
-//     protected void paintComponent(Graphics g){
-//         super.paintComponent(g);
-//         //Drawing image to fill the panel
-//         g.drawImage(backgroundImage, 0, 0, getWidth(), getHeight(), this);
-//     }
-// }
-//ineffective
+@SuppressWarnings("unused")
 public class MainFrame {
 
 	private Game game = Game.getInstance();

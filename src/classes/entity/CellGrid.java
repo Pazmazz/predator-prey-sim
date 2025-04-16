@@ -31,6 +31,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * HashMap for mapping all cell coordinates to their corresponding cell objects
  * instead of using a 2D array for scalability and ease-of-access.
  */
+@SuppressWarnings("unused")
 public class CellGrid {
 
 	private Game game = Game.getInstance();
