@@ -11,13 +11,16 @@ public class GameSettings {
 	final private String gameHeaderText;
 	final private String gameTitle;
 
-	final private int cellSize;
-	final private Unit2 gridSize;
+	private int cellSize;
+	private Unit2 gridSize;
+	private int initialAnts;
+	private int initialDoodlebugs;
 
 	final private int screenWidth;
 	final private int screenHeight;
-
 	final private SimulationInfo simulationInfo;
+
+	private boolean canSpawnTitan;
 
 	public GameSettings() {
 		//
@@ -28,6 +31,10 @@ public class GameSettings {
 
 		this.cellSize = 36; // Pixels
 		this.gridSize = new Unit2(20, 20); // Cell units
+		this.initialAnts = 100;
+		this.initialDoodlebugs = 5;
+
+		this.canSpawnTitan = false;
 
 		//
 		// Non-Editable
@@ -85,29 +92,31 @@ public class GameSettings {
 	 */
 	public class SimulationInfo {
 
-		final private double FPS;
+		private double FPS;
 		final private HashMap<SimulationType, SimulationSettings> settings;
 
 		public SimulationInfo() {
 			//
 			// Editable
 			//
-			FPS = 1.0 / 60;
+			FPS = 1.0 / 10;
 			settings = new HashMap<>();
+
+			// (vv) Note: Set FPS to 0 if you want it to match the game FPS (vv) //
 
 			// Render
 			SimulationSettings render = new SimulationSettings()
-					.setFPS(1.0 / 60)
+					.setFPS(0)
 					.setProcessName("Render");
 
 			// Movement
 			SimulationSettings movement = new SimulationSettings()
-					.setFPS(1.0)
+					.setFPS(0)
 					.setProcessName("Movement");
 
 			// SimulatedLag
 			SimulationSettings simulatedLag = new SimulationSettings()
-					.setFPS(5)
+					.setFPS(0)
 					.setProcessName("SimulatedLag");
 
 			render.getDebugInfo().setPrimaryColor("red");
@@ -124,6 +133,10 @@ public class GameSettings {
 
 		public double getFPS() {
 			return FPS;
+		}
+
+		public void setFPS(double FPS) {
+			this.FPS = FPS;
 		}
 
 		public SimulationSettings getSettings(SimulationType simulationType) {
@@ -198,5 +211,36 @@ public class GameSettings {
 
 	public Unit2 getGridSize() {
 		return this.gridSize;
+	}
+
+	public int getInitialAnts() {
+		return this.initialAnts;
+	}
+
+	public int getInitialDoodlebugs() {
+		return this.initialDoodlebugs;
+	}
+
+	public boolean canSpawnTitan() {
+		return this.canSpawnTitan;
+	}
+
+	//
+	// Public setters
+	//
+	public void setTitanSpawn(boolean enabled) {
+		this.canSpawnTitan = enabled;
+	}
+
+	public void setInitialAnts(int initialAnts) {
+		this.initialAnts = initialAnts;
+	}
+
+	public void setInitialDoodlebugs(int initialDoodlebugs) {
+		this.initialDoodlebugs = initialDoodlebugs;
+	}
+
+	public void setGridSize(Unit2 gridSize) {
+		this.gridSize = gridSize;
 	}
 }

@@ -1,34 +1,28 @@
 /*
  * @written 4/2/2025
  */
-package classes.entity;
+package classes.abstracts;
 
+import classes.entity.CellGrid.Cell;
+import classes.entity.Null;
 import exceptions.CellIsOccupiedException;
 import exceptions.NoCellFoundException;
+import interfaces.Serializable;
 
 /**
  * A superclass representing the most general entity that is allowed to be
  * considered an occupant in a {@code Cell} object.
  *
  * <p>
- * Any subclass that extends {@code CellOccupant} is elligable to be set as an
+ * Any subclass that extends {@code Entity} is eligible to be set as an
  * occupant in a cell using {@code cell.setOccupant}.
  */
-public class CellOccupant {
-
-	private boolean isEatable = false;
-	private Cell currentCell;
+public abstract class Entity<T> extends Properties {
 
 	// Unused constructor for now
-	// public CellOccupant() {
-	// }
-	public void setEatable(boolean eatable) {
-		this.isEatable = eatable;
-	}
+	// public Entity() {
 
-	public boolean isEatable() {
-		return this.isEatable;
-	}
+	// }
 
 	/**
 	 * Assigns the current occupant to a given cell. Each occupant can only be
@@ -42,31 +36,32 @@ public class CellOccupant {
 	 * before assigning the occupant to the new cell, if the new cell is not
 	 * already occupied.
 	 *
-	 * @param targetCell             the cell to assign the occupant
-	 * @param cellAggregatesOccupant whether the assigned cell aggregates the
-	 *                               occupant
+	 * @param targetCell      the cell to assign the occupant
+	 * @param withAggregation whether the assigned cell aggregates the
+	 *                        occupant
 	 *
 	 * @throws CellIsOccupiedException if the assigned cell already has an
 	 *                                 occupant
+	 * @throws NoCellFoundException    if the {@code targetCell} is null
 	 */
-	public void assignCell(Cell targetCell, boolean cellAggregatesOccupant) {
-		if (targetCell.hasOccupant() && targetCell.getOccupant() != this) {
-			throw new CellIsOccupiedException();
-		}
-		if (hasCell()) {
-			removeCell();
-		}
-		if (cellAggregatesOccupant) {
+	public void assignCell(Cell targetCell, boolean withAggregation) {
+		if (targetCell == null)
+			throw new NoCellFoundException();
+
+		if (withAggregation) {
+			if (hasCell())
+				removeFromCell();
+
 			targetCell.setOccupant(this, false);
 		}
 
-		this.currentCell = targetCell;
+		setProperty(Property.ASSIGNED_CELL, targetCell);
 	}
 
 	/**
 	 * Overload: {@code assignCell}
 	 *
-	 * Calls the root method while passing {@code cellAggregatesOccupant = true}
+	 * Calls the root method while passing {@code withAggregation = true}
 	 * as default
 	 *
 	 * @param targetCell the cell to assign the occupant
@@ -76,11 +71,21 @@ public class CellOccupant {
 	}
 
 	public Cell getCell() {
-		return this.currentCell;
+		return getProperty(Property.ASSIGNED_CELL, Cell.class);
 	}
 
 	public boolean hasCell() {
-		return this.currentCell != null;
+		return getCell() != null;
+	}
+
+	public void removeFromCell(boolean withAggregation) {
+		if (!hasCell())
+			throw new NoCellFoundException();
+
+		if (withAggregation)
+			getCell().removeOccupant(false);
+
+		setProperty(Property.ASSIGNED_CELL, new Null());
 	}
 
 	/**
@@ -92,11 +97,7 @@ public class CellOccupant {
 	 * @throws NoCellFoundException if the calling this method when the occupant
 	 *                              has no cell
 	 */
-	public void removeCell() {
-		if (!hasCell()) {
-			throw new NoCellFoundException();
-		}
-		this.currentCell.removeOccupant();
-		this.currentCell = null;
+	public void removeFromCell() {
+		removeFromCell(true);
 	}
 }

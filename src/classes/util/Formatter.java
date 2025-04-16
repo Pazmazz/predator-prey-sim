@@ -3,13 +3,11 @@
  */
 package classes.util;
 
-import classes.abstracts.Application;
-
 /**
  * Provides a library of format methods for handling general string format
  * needs, or converting complex data into a formatted string
  */
-public class Formatter extends Application {
+public class Formatter {
 
 	/**
 	 * Takes any array and returns a string separating the array contents by
@@ -20,27 +18,33 @@ public class Formatter extends Application {
 	 *                  returned string
 	 *
 	 * @return the returned string of the concatenated array
+	 * 
+	 * @see #concatArray(Object[], String)
 	 */
 	public static String concatArray(Object[] array, String separator) {
 		String out = "";
 
 		for (int index = 0; index < array.length; index++) {
-			out += array[index].toString();
-			if (index < array.length - 1) {
+			if (array[index] == null)
+				out += "null";
+			else
+				out += array[index].toString();
+
+			if (index < array.length - 1)
 				out += separator;
-			}
 		}
 
 		return out;
 	}
 
 	/**
-	 * @Overload: {@code concatArray}
+	 * An overload of {@link #concatArray(Object[], String)} which defaults the
+	 * {@code separator} parameter to {@code ", "}
 	 *
-	 *            Calls the root method but uses {@code ", "} as a default delimiter
-	 *
-	 * @param array ...
-	 * @return ...
+	 * @param array the array to concat
+	 * @return the returned string of the concatenated array
+	 * 
+	 * @see #concatArray(Object[])
 	 */
 	public static String concatArray(Object[] array) {
 		return concatArray(array, ", ");

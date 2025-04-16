@@ -3,6 +3,8 @@
  */
 package classes.abstracts;
 
+import classes.util.Math2;
+
 /**
  * A more specific sub-category of BaseVector which includes implementation that
  * does not assume that it's components are necessarily strictly int values.
@@ -146,5 +148,24 @@ public abstract class Vector<T extends Vector<T>> extends BaseVector<T> {
 		}
 		this.unit = divide(magnitude());
 		return this.unit;
+	}
+
+	/**
+	 * Create a {@code Vector} linearly interpolated from this vector to a target
+	 * vector given some {@code alpha} value between {@code 0} and {@code 1}
+	 * 
+	 * @param v     the target vector
+	 * @param alpha the parameterized change from this vector to the target vector
+	 * 
+	 * @return the linearly interpolated vector
+	 * 
+	 * @see #lerp(Vector, double)
+	 * @see classes.util.Math2#lerp(double, double, double)
+	 */
+	public T lerp(T v, double alpha) {
+		return newVector(computeComponents(
+				v,
+				"lerp(Vector<T>, double alpha)",
+				(args) -> Math2.lerp((double) args[0], (double) args[1], alpha)));
 	}
 }

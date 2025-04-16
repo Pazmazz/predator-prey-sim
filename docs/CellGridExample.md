@@ -42,7 +42,7 @@ while (true) {
 			ant0.assignCell(adjCell);
 
 			// This is also valid
-			ant0.removeCell();
+			ant0.removeFromCell();
 			adjCell.setOccupant(ant0);
 
 			// Exit the loop once the cell is assigned

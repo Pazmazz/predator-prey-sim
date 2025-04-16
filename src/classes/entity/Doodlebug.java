@@ -1,42 +1,39 @@
 package classes.entity;
 
-import classes.abstracts.Bug;
+import java.util.ArrayList;
 
-public class Doodlebug extends Bug {
+import classes.abstracts.Bug;
+import classes.util.Console;
+import classes.entity.CellGrid.Cell;
+
+public class Doodlebug extends Bug<Doodlebug> {
+
+	private Game game = Game.getInstance();
 
 	int starvationTracker = 0;
 
 	public Doodlebug() {
 		idNum = (int) (Math.random() * 1000);
+
+		// properties
+		setProperty(Property.IS_EATABLE, false);
+		setProperty(Property.VARIANT, "Doodlebug");
 	}
 
 	@Override
-	public void move(Cell currentCell, CellGrid grid) {
-		Cell[] adjCells = grid.getCellsAdjacentTo(currentCell);
+	public void move() {
+		ArrayList<Cell> adjCells = game
+				.getGameGrid()
+				.getCellsAdjacentTo(getCell());
 
 		for (Cell adjCell : adjCells) {
-			if (adjCell.isOccupantEatable(currentCell)) {
-
-				//
-				// Accounting for removal of 'moveOccupantTo' method,
-				// this does the same thing.
-				//
+			if (adjCell.isOccupantEatable(getCell())) {
 				adjCell.removeOccupant();
 				assignCell(adjCell);
-
-				//
-				// currentCell.removeOccupant();
-				// currentCell.moveOccupantTo(adjCell);
-				// this.currentCell = adjCell;
-				//
 				starvationTracker = 0;
 				break;
 			} else if (adjCell.isInBounds() && adjCell.isEmpty()) {
 				assignCell(adjCell);
-				//
-				// currentCell.moveOccupantTo(adjCell);
-				// this.currentCell = adjCell;
-				//
 				starvationTracker++;
 				break;
 			}
@@ -44,23 +41,24 @@ public class Doodlebug extends Bug {
 		movementCounter++;
 
 		if (starvationTracker == 3) {
-			currentCell.removeOccupant();
+			removeFromCell();
 		}
 
 		if (movementCounter == 8) {
 			movementCounter = 0;
-			this.breed(adjCells);
+			this.breed();
 		}
 	}
 
 	@Override
-	public void breed(Cell[] adjCells) {
+	public void breed() {
+		ArrayList<Cell> adjCells = game
+				.getGameGrid()
+				.getCellsAdjacentTo(getCell());
+
 		for (Cell adjCell : adjCells) {
 			if (adjCell.isInBounds() && adjCell.isEmpty()) {
 				adjCell.setOccupant(new Doodlebug());
-				//
-				// currentCell.setOccupant(new Doodlebug());
-				//
 				break;
 			}
 		}
@@ -68,6 +66,13 @@ public class Doodlebug extends Bug {
 
 	@Override
 	public String toString() {
-		return "Doodlebug";
+		return String.format(Console.withConsoleColors(
+				"$text-green Doodlebug$text-reset #%s"),
+				idNum);
+	}
+
+	@Override
+	public String serialize() {
+		return "Doodlebug{}";
 	}
 }
