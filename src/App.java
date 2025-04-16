@@ -36,13 +36,13 @@ public class App {
 	public static void main(String[] args) {
 
 		// String hashmap = "{ a=b, b=Cell(1,2,3), c=[x,y,z], g={x=1, y=2, z=3} }";
-		String list = "[1,[6,5,4],3]";
+		String list = "[1,[6,5,4],3, ]";
 
-		String hashmap = "{\"asd\":\"test\"}";
+		String hashmap = "{\"key\":ghj,\"asd\":df}";
 
-		// HashMap<String, Object> m = deserialize(hashmap);
+		HashMap<String, Object> m = deserialize(hashmap);
 		ArrayList<Object> l = deserialize(list);
-		// System.out.println(m);
+		System.out.println(m);
 		System.out.println(l);
 
 	}
@@ -68,23 +68,25 @@ public class App {
 
 		int len = data.length();
 		boolean writingString = false;
-		char firstChar = data.charAt(0);
-		char lastChar = data.charAt(len - 1);
 		T root;
 
-		if (firstChar == '{' && lastChar == '}') {
-			root = (T) stack.push(new HashMap<String, Object>());
+		char firstChar = data.charAt(0);
+		char lastChar = data.charAt(len - 1);
+		if (!(firstChar == '{' && lastChar == '}' || firstChar == '[' && lastChar == ']'))
+			throw new Error("Parsing error: No initial data structure was provided");
+		else if (firstChar == '{') {
 			currentBuffer = keyBuffer;
-		} else if (firstChar == '[' && lastChar == ']') {
-			root = (T) stack.push(new ArrayList<Object>());
+			root = (T) stack.push(new HashMap<String, Object>());
+		} else {
 			currentBuffer = valueBuffer;
-		} else
-			throw new Error("Parsing error: Invalid JON structure (expected [] or {}, got \"" + firstChar + "\" and \""
-					+ lastChar + "\")");
+			root = (T) stack.push(new ArrayList<Object>());
+		}
 
 		for (int index = 1; index < len; index++) {
 			char token = data.charAt(index);
-			Object current = stack.peek();
+			Object currentStack = stack.peek();
+			boolean isMap = currentStack instanceof HashMap;
+			boolean isArray = currentStack instanceof ArrayList;
 			if (writingString) {
 				if (token == '"')
 					writingString = false;
@@ -104,35 +106,44 @@ public class App {
 					case '[' -> value = stack.push(new ArrayList<Object>());
 					case ',', '}', ']' -> {
 						value = valueBuffer.toString();
-						valueBuffer.setLength(0);
-						if (token == '}' || token == ']')
+						if (token == '}' || token == ']') {
 							stack.pop();
+						}
 					}
 					default -> {
 						valueBuffer.append(token);
 						continue;
 					}
 				}
-				if (current instanceof HashMap) {
-					((HashMap<String, Object>) current).put(keyBuffer.toString(), value);
+				valueBuffer.setLength(0);
+				if (isMap) {
+					System.out.println("Adding entry \"" + keyBuffer.toString() + "\" -> \"" + value + "\"");
+					((HashMap<String, Object>) currentStack).put(
+							keyBuffer.toString(),
+							value);
 					keyBuffer.setLength(0);
 					currentBuffer = keyBuffer;
-				} else
-					((ArrayList<Object>) current).add(value);
+				} else if (isArray)
+					((ArrayList<Object>) currentStack).add(value);
 				continue;
 			}
-			if (current instanceof HashMap) {
-				if (keyBuffer.isEmpty())
-					if (token == '"')
+			if (isMap) {
+				if (keyBuffer.isEmpty()) {
+					if (token == '"') {
 						writingString = true;
-					else
-						throw new Error("Parsing error: HashMap keys must be strings (key \"" + keyBuffer.toString()
+						currentBuffer = keyBuffer;
+					} else
+						throw new Error("Parsing error: HashMap keys must be strings (key \""
+								+ keyBuffer.toString()
 								+ "\" is invalid)");
-				else if (valueBuffer.isEmpty())
+				} else if (valueBuffer.isEmpty()) {
 					if (token == ':')
 						currentBuffer = valueBuffer;
 					else
-						throw new Error("Parsing error: Expected \":\" after key \"" + keyBuffer.toString() + "\"");
+						throw new Error("Parsing error: Expected \":\" after key \""
+								+ keyBuffer.toString()
+								+ "\"");
+				}
 				// Current stack is ArrayList
 			} else if (valueBuffer.isEmpty()) {
 				currentBuffer = valueBuffer;
