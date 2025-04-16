@@ -34,6 +34,7 @@ import classes.entity.CellGrid.CellType;
 import classes.entity.CellGrid;
 import classes.entity.CellGrid.GridIntercept;
 import classes.entity.Game;
+import classes.entity.MainFrame;
 import classes.entity.Unit2;
 import classes.util.Console;
 import classes.util.Console.DebugPriority;
@@ -48,6 +49,7 @@ import classes.entity.Titan;
 /**
  * The entry-point file for the application
  */
+@SuppressWarnings("unused")
 public class App {
 
 	public static void main(String[] args) {
@@ -201,6 +203,8 @@ public class App {
 			Console.promptMessage("Press enter to START", "");
 			game.start();
 		}).start();
+
+		new MainFrame();
 
 		// Console.println(grid.download());
 	}
