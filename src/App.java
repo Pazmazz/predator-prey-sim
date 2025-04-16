@@ -36,12 +36,15 @@ public class App {
 	public static void main(String[] args) {
 
 		// String hashmap = "{ a=b, b=Cell(1,2,3), c=[x,y,z], g={x=1, y=2, z=3} }";
-		String list = "[ x, y, 2, 3, Cell(1,2,3), [4,5], {x=1, y=2, z=3} ]";
+		String list = "[1,[6,5,4],3]";
 
 		String hashmap = "{\"asd\":\"test\"}";
 
-		HashMap<String, Object> m = deserialize(hashmap);
-		System.out.println(m);
+		// HashMap<String, Object> m = deserialize(hashmap);
+		ArrayList<Object> l = deserialize(list);
+		// System.out.println(m);
+		System.out.println(l);
+
 	}
 
 	public static Object getObj(String str) {
@@ -63,60 +66,79 @@ public class App {
 		StringBuilder valueBuffer = new StringBuilder();
 		StringBuilder currentBuffer;
 
+		int len = data.length();
 		boolean writingString = false;
 		char firstChar = data.charAt(0);
-		int len = data.length();
+		char lastChar = data.charAt(len - 1);
+		T root;
 
-		if (firstChar == '{') {
-			stack.push(new HashMap<String, Object>());
+		if (firstChar == '{' && lastChar == '}') {
+			root = (T) stack.push(new HashMap<String, Object>());
 			currentBuffer = keyBuffer;
-		} else if (firstChar == '[') {
-			stack.push(new ArrayList<Object>());
+		} else if (firstChar == '[' && lastChar == ']') {
+			root = (T) stack.push(new ArrayList<Object>());
 			currentBuffer = valueBuffer;
 		} else
-			throw new Error("Parsing error: Invalid JON structure (expected brackets, got \"" + firstChar + "\")");
+			throw new Error("Parsing error: Invalid JON structure (expected [] or {}, got \"" + firstChar + "\" and \""
+					+ lastChar + "\")");
 
 		for (int index = 1; index < len; index++) {
 			char token = data.charAt(index);
+			Object current = stack.peek();
 			if (writingString) {
 				if (token == '"')
 					writingString = false;
 				else
 					currentBuffer.append(token);
 				continue;
-			} else if (Character.isWhitespace(token)) {
+			} else if (Character.isWhitespace(token))
 				continue;
-			} else if (currentBuffer == valueBuffer) {
+			else if (currentBuffer == valueBuffer) {
+				Object value = null;
 				switch (token) {
-					case '"' -> writingString = true;
-					case '{' -> stack.push(new HashMap<String, Object>());
-					case '[' -> stack.push(new ArrayList<Object>());
-					case '}', ',', ']' -> currentBuffer = null;
+					case '"' -> {
+						writingString = true;
+						continue;
+					}
+					case '{' -> value = stack.push(new HashMap<String, Object>());
+					case '[' -> value = stack.push(new ArrayList<Object>());
+					case ',', '}', ']' -> {
+						value = valueBuffer.toString();
+						valueBuffer.setLength(0);
+						if (token == '}' || token == ']')
+							stack.pop();
+					}
+					default -> {
+						valueBuffer.append(token);
+						continue;
+					}
 				}
+				if (current instanceof HashMap) {
+					((HashMap<String, Object>) current).put(keyBuffer.toString(), value);
+					keyBuffer.setLength(0);
+					currentBuffer = keyBuffer;
+				} else
+					((ArrayList<Object>) current).add(value);
 				continue;
 			}
-			if (stack.peek() instanceof HashMap) {
-				if (keyBuffer.isEmpty()) {
-					if (token == '"') {
+			if (current instanceof HashMap) {
+				if (keyBuffer.isEmpty())
+					if (token == '"')
 						writingString = true;
-						currentBuffer = keyBuffer;
-					} else
-						throw new Error("Parsing error: HashMap keys must be strings");
-				} else if (valueBuffer.isEmpty()) {
-					if (token == ':') {
+					else
+						throw new Error("Parsing error: HashMap keys must be strings (key \"" + keyBuffer.toString()
+								+ "\" is invalid)");
+				else if (valueBuffer.isEmpty())
+					if (token == ':')
 						currentBuffer = valueBuffer;
-					} else
-						throw new Error("Parsing error: Expected \":\" after key");
-				} else {
-					((HashMap<String, Object>) stack.pop()).put(
-							keyBuffer.toString(),
-							valueBuffer.toString());
-					keyBuffer.setLength(0);
-					valueBuffer.setLength(0);
-				}
+					else
+						throw new Error("Parsing error: Expected \":\" after key \"" + keyBuffer.toString() + "\"");
+				// Current stack is ArrayList
+			} else if (valueBuffer.isEmpty()) {
+				currentBuffer = valueBuffer;
 			}
 		}
 
-		return (T) stack.peek();
+		return root;
 	}
 }
