@@ -231,44 +231,44 @@ public class CellGrid {
 
 	// TODO: Make getGridIntercept better
 
-	// public GridIntercept getGridIntercept2(Vector2 start, Vector2 end) {
-	// if (start.equals(end))
-	// return new GridIntercept()
-	// .setAxisOfIntersection(CellGridAxis.ENDPOINT);
+	public GridIntercept getGridIntercept2(Vector2 start, Vector2 end) {
+		if (start.equals(end))
+			return new GridIntercept()
+					.setAxisOfIntersection(CellGridAxis.ENDPOINT);
 
-	// Vector2 signedUnit = end.subtract(start).signedUnit();
-	// GridIntercept result = new GridIntercept();
-	// result.setDirection(signedUnit);
+		Vector2 signedUnit = end.subtract(start).signedUnit();
+		GridIntercept result = new GridIntercept();
+		result.setDirection(signedUnit);
 
-	// double startX = start.getX();
-	// double startY = start.getY();
-	// double endX = end.getX();
-	// double endY = end.getY();
+		double startX = start.getX();
+		double startY = start.getY();
+		double endX = end.getX();
+		double endY = end.getY();
 
-	// boolean posX = signedUnit.getX() > 0;
-	// boolean posY = signedUnit.getY() >= 0;
+		boolean posX = signedUnit.getX() > 0;
+		boolean posY = signedUnit.getY() >= 0;
 
-	// double limitX = posX
-	// ? Math.ceil(startX)
-	// : Math.floor(startX);
-	// double limitY = posY
-	// ? Math.ceil(startY)
-	// : Math.floor(startY);
+		double limitX = posX
+				? Math.ceil(startX)
+				: Math.floor(startX);
+		double limitY = posY
+				? Math.ceil(startY)
+				: Math.floor(startY);
 
-	// if (startX == limitX)
-	// limitX += signedUnit.getX();
-	// if (startY == limitY)
-	// limitY += signedUnit.getY();
+		if (startX == limitX)
+			limitX += signedUnit.getX();
+		if (startY == limitY)
+			limitY += signedUnit.getY();
 
-	// double dx = endX - startX;
-	// double dy = endY - startY;
-	// double tx = dx == 0
-	// ? 0
-	// : (limitX - startX) / dx;
-	// double ty = (limitY - startY) / dy;
+		double dx = endX - startX;
+		double dy = endY - startY;
+		double tx = dx == 0
+				? 0
+				: (limitX - startX) / dx;
+		double ty = (limitY - startY) / dy;
 
-	// return result;
-	// }
+		return result;
+	}
 
 	/**
 	 * The primary root method for retrieving a cell object from the virtual
