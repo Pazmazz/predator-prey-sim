@@ -77,6 +77,8 @@ public class App {
 		// Avg: ~0.3s
 		Console.benchmark("Initializing game screen", game::initGameScreen);
 
+		// new MainFrame();
+
 		// game.start();
 	}
 }

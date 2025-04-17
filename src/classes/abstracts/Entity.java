@@ -100,4 +100,6 @@ public abstract class Entity<T> extends Properties {
 	public void removeFromCell() {
 		removeFromCell(true);
 	}
+
+	public abstract String getAvatar();
 }

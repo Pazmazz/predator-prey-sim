@@ -176,13 +176,12 @@ public class CellGrid {
 		if (startY == limitY)
 			limitY += signedUnit.getY();
 
-		double ty = (limitY - startY) / (endY - startY);
-		double tx;
-		double txd = (endX - startX);
-		if (txd == 0)
-			tx = 0;
-		else
-			tx = (limitX - startX) / txd;
+		double dx = endX - startX;
+		double dy = endY - startY;
+		double tx = dx == 0
+				? 0
+				: (limitX - startX) / dx;
+		double ty = (limitY - startY) / dy;
 
 		Vector2 pointOfIntersection;
 		CellGridAxis axisOfIntersection;
@@ -345,8 +344,6 @@ public class CellGrid {
 	 * @see #getCell(Vector2, Vector2)
 	 */
 	public Cell getCell(Vector2 p0, Vector2 p1) {
-		// Console.println("vector segment: ", p0, p1);
-		// Console.println("vector midpoint: ", p0.midpoint(p1));
 		return getCell(p0.midpoint(p1));
 	}
 
@@ -746,7 +743,7 @@ public class CellGrid {
 		ArrayList<Cell> randCells = new ArrayList<>(cells);
 		Collections.shuffle(randCells);
 		ArrayList<Cell> subList = new ArrayList<>(
-				randCells.subList(0, Math.min(amount, cells.size())));
+				randCells.subList(0, amount));
 
 		return subList;
 	}
@@ -800,8 +797,7 @@ public class CellGrid {
 	 * @see #getRandomAvailableCellsFrom(ArrayList)
 	 */
 	public ArrayList<Cell> getRandomAvailableCellsFrom(ArrayList<Cell> cells) {
-		ArrayList<Cell> availableCells = getAvailableCellsFrom(cells);
-		return getRandomCellsFrom(availableCells, availableCells.size());
+		return getRandomCellsFrom(getAvailableCellsFrom(cells));
 	}
 
 	/**
@@ -928,7 +924,7 @@ public class CellGrid {
 
 		for (int row = 1; row <= rowLength; row++) {
 			for (int col = 1; col <= colLength; col++) {
-				getCell(new Unit2(row, col));
+				getCell(new Unit2(col, row));
 			}
 		}
 		return this;
