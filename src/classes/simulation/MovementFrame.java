@@ -7,10 +7,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 
+import classes.abstracts.Bug;
 import classes.abstracts.Entity;
 import classes.abstracts.RunService;
 import classes.abstracts.Properties;
 import classes.abstracts.Properties.Property;
+import classes.entity.Ant;
 import classes.entity.CellGrid;
 import classes.entity.CellGrid.Cell;
 import classes.entity.Game;
@@ -41,18 +43,14 @@ public class MovementFrame extends RunService {
 	@Override
 	public void step(double deltaTimeSeconds) {
 		CellGrid grid = game.getGameGrid();
-		// grid.collectCells();
+		grid.collectCells();
 
 		for (Cell cell : grid.getGrid().values()) {
-			if (cell.isEmpty())
-				continue;
-
 			Entity<?> entity = cell.getOccupant();
-			ArrayList<Cell> adjCells = grid.getCellsAdjacentTo(cell);
-			Cell randCell = grid.getRandomAvailableCellFrom(adjCells);
 
-			if (randCell != null) {
-				entity.assignCell(randCell);
+			if (entity instanceof Bug) {
+				Bug<?> bug = (Bug<?>) entity;
+				bug.move();
 			}
 		}
 

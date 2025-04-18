@@ -16,6 +16,7 @@ import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.ArrayList;
@@ -30,6 +31,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
+import classes.abstracts.Bug;
 import classes.abstracts.Properties.Property;
 import classes.entity.CellGrid.Cell;
 import classes.settings.GameSettings;
@@ -49,15 +51,19 @@ public class GameScreen {
 	final private JFrame window;
 	final private JPanel masterFrame;
 
-	final private int ROWS = 20;
-	final private int COLS = 20;
+	final private int ROWS = settings.getGridSize().getY();
+	final private int COLS = settings.getGridSize().getX();
 	final private int GRID_LINE_THICKNESS = 2;
 	final private int SCREEN_WIDTH = settings.getScreenWidth();
 	final private int SCREEN_HEIGHT = settings.getScreenHeight();
 	final private int CELL_SIZE = (SCREEN_WIDTH - GRID_LINE_THICKNESS) / ROWS;
 
-	final private ArrayList<JLabel> cellImages = new ArrayList<>();
-	final private HashMap<String, ImageIcon> imageIcons = new HashMap<>();
+	final private GameGrid renderedGrid;
+
+	HashMap<String, BufferedImage> loadedImages = new HashMap<>();
+
+	// final private ArrayList<JLabel> cellImages = new ArrayList<>();
+	// final private HashMap<String, ImageIcon> imageIcons = new HashMap<>();
 
 	public GameScreen() {
 		// Default game screen settings
@@ -68,12 +74,14 @@ public class GameScreen {
 		window.setSize(SCREEN_WIDTH, SCREEN_HEIGHT);
 		window.setLocationRelativeTo(null);
 
+		loadImages();
+
 		// Build the UI
 		masterFrame = buildMainFrame();
 		buildHeaderFrame();
 
-		GameGrid grid = new GameGrid();
-		masterFrame.add(grid);
+		renderedGrid = new GameGrid();
+		masterFrame.add(renderedGrid);
 
 		// Handle game window closing event
 		window.addWindowListener(new WindowAdapter() {
@@ -85,24 +93,39 @@ public class GameScreen {
 		window.setVisible(true);
 	}
 
-	private void buildImageIcons() {
-
+	public void loadImages() {
+		try {
+			loadedImages.put("ant", ImageIO.read(new File("src/Assets/ant2.jpg")));
+			loadedImages.put("doodlebug", ImageIO.read(new File("src/Assets/doodlebug3.jpg")));
+			loadedImages.put("titan", ImageIO.read(new File("src/Assets/titanant.jpg")));
+			loadedImages.put("pathcell", ImageIO.read(new File("src/Assets/pathcell.jpg")));
+		} catch (Exception e) {
+			throw new Error("Error loading images");
+		}
 	}
 
-	private ImageIcon getImageIcon(String source) {
-		try {
-			BufferedImage imgBuffer = ImageIO.read(new File(source));
-			Image img = new ImageIcon(imgBuffer)
-					.getImage()
-					.getScaledInstance(
-							CELL_SIZE,
-							CELL_SIZE,
-							Image.SCALE_SMOOTH);
+	// private void buildImageIcons() {
 
-			return new ImageIcon(img);
-		} catch (Exception e) {
-			throw new Error(e);
-		}
+	// }
+
+	// private ImageIcon getImageIcon(String source) {
+	// try {
+	// BufferedImage imgBuffer = ImageIO.read(new File(source));
+	// Image img = new ImageIcon(imgBuffer)
+	// .getImage()
+	// .getScaledInstance(
+	// CELL_SIZE,
+	// CELL_SIZE,
+	// Image.SCALE_SMOOTH);
+
+	// return new ImageIcon(img);
+	// } catch (Exception e) {
+	// throw new Error(e);
+	// }
+	// }
+
+	public void repaintGrid() {
+		renderedGrid.repaint();
 	}
 
 	private JPanel buildMainFrame() {
@@ -136,74 +159,9 @@ public class GameScreen {
 		return headerFrame;
 	}
 
-	public void redraw() {
-		CellGrid grid = game.getGameGrid();
-
-		try {
-			for (Cell cell : grid.getGrid().values()) {
-				String imgPath = "src/Assets/gridcell.jpg";
-				if (cell.hasOccupant())
-					imgPath = cell.getOccupant().getAvatar();
-
-				BufferedImage imgBuffer = ImageIO.read(new File(imgPath));
-				Image img = new ImageIcon(imgBuffer)
-						.getImage()
-						.getScaledInstance(
-								CELL_SIZE,
-								CELL_SIZE,
-								Image.SCALE_SMOOTH);
-
-				cell.getImgRef().setIcon(new ImageIcon(img));
-
-			}
-		} catch (Exception e) {
-
-		}
-	}
-
-	public void draw(JPanel gridGUI) {
-		CellGrid grid = game.getGameGrid();
-
-		for (Cell cell : grid.getGrid().values()) {
-			String imgPath = "src/Assets/gridcell.jpg";
-			if (cell.hasOccupant())
-				imgPath = cell.getOccupant().getAvatar();
-			// continue;
-
-			int col = cell.getUnit2().getX();
-			int row = cell.getUnit2().getY();
-
-			JLabel img = getCellImage(imgPath);
-			img.setLocation((col - 1) * CELL_SIZE, (row - 1) * CELL_SIZE);
-			gridGUI.add(img);
-			cellImages.add(img);
-			cell.setImgRef(img);
-		}
-	}
-
-	private JLabel getCellImage(String imagePath) {
-		try {
-			BufferedImage imgBuffer = ImageIO.read(new File(imagePath));
-			Image img = new ImageIcon(imgBuffer)
-					.getImage()
-					.getScaledInstance(
-							CELL_SIZE,
-							CELL_SIZE,
-							Image.SCALE_SMOOTH);
-
-			JLabel cellImg = new JLabel(new ImageIcon(img));
-			cellImg.setBackground(Color.YELLOW);
-			cellImg.setSize(
-					CELL_SIZE - GRID_LINE_THICKNESS,
-					CELL_SIZE - GRID_LINE_THICKNESS);
-
-			return cellImg;
-		} catch (Exception e) {
-			throw new Error(e);
-		}
-	}
-
 	private class GameGrid extends JPanel {
+		final private JPanel contentFrame;
+
 		public GameGrid() {
 			setBackground(Color.BLACK);
 			setLayout(new BorderLayout());
@@ -213,15 +171,11 @@ public class GameScreen {
 					GRID_LINE_THICKNESS,
 					GRID_LINE_THICKNESS));
 
-			JPanel paddedFrame = new JPanel();
-			paddedFrame.setLayout(null);
-			paddedFrame.setOpaque(false);
+			contentFrame = new JPanel();
+			contentFrame.setLayout(null);
+			contentFrame.setOpaque(false);
 
-			// paddedFrame.add(getCellImage("src/assets/ant2.jpg"));
-			// paddedFrame.add(a);
-			// paddedFrame.add(b);
-			draw(paddedFrame);
-			add(paddedFrame);
+			add(contentFrame);
 		}
 
 		@Override
@@ -237,7 +191,7 @@ public class GameScreen {
 
 			for (int row = 0; row <= ROWS; row++) {
 				g2.drawLine(
-						0,
+						GRID_LINE_THICKNESS,
 						row * computedCellSize + lineThicknessOffset,
 						COLS * computedCellSize,
 						row * computedCellSize + lineThicknessOffset);
@@ -246,10 +200,48 @@ public class GameScreen {
 			for (int col = 0; col <= COLS; col++) {
 				g2.drawLine(
 						col * computedCellSize + lineThicknessOffset,
-						0,
+						GRID_LINE_THICKNESS,
 						col * computedCellSize + lineThicknessOffset,
 						ROWS * computedCellSize);
 			}
+
+			for (Cell cell : game.getGameGrid().getGrid().values()) {
+				int row = cell.getUnit2().getY();
+				int col = cell.getUnit2().getX();
+
+				if (cell.isEmpty())
+					continue;
+
+				Bug<?> occupant = (Bug<?>) cell.getOccupant();
+
+				if (cell.getOccupant() instanceof Ant) {
+					g2.drawImage(
+							loadedImages.get("ant"),
+							GRID_LINE_THICKNESS + (col - 1) * CELL_SIZE,
+							GRID_LINE_THICKNESS + (row - 1) * CELL_SIZE,
+							CELL_SIZE - GRID_LINE_THICKNESS,
+							CELL_SIZE - GRID_LINE_THICKNESS,
+							contentFrame);
+				} else if (cell.getOccupant() instanceof Doodlebug) {
+					g2.drawImage(
+							loadedImages.get("doodlebug"),
+							GRID_LINE_THICKNESS + (col - 1) * CELL_SIZE,
+							GRID_LINE_THICKNESS + (row - 1) * CELL_SIZE,
+							CELL_SIZE - GRID_LINE_THICKNESS,
+							CELL_SIZE - GRID_LINE_THICKNESS,
+							contentFrame);
+				} else if (cell.getOccupant() instanceof Titan) {
+					g2.drawImage(
+							loadedImages.get("titan"),
+							GRID_LINE_THICKNESS + (col - 1) * CELL_SIZE,
+							GRID_LINE_THICKNESS + (row - 1) * CELL_SIZE,
+							CELL_SIZE - GRID_LINE_THICKNESS,
+							CELL_SIZE - GRID_LINE_THICKNESS,
+							contentFrame);
+				}
+
+			}
+
 		}
 
 		@Override

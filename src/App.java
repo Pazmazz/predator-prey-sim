@@ -56,15 +56,22 @@ public class App {
 
 	public static void main(String[] args) {
 		Game game = Game.getInstance();
+
 		Console.benchmark("Creating game grid", game::initConfig);
+		game.setFPS(1.0 / 10);
 
 		// Avg: ~0.001s
 		Console.benchmark("Creating game grid", game::createGameGrid);
 
 		CellGrid grid = game.getGameGrid();
+		// grid.populate();
 
 		// Avg: ~0.02s
 		Console.benchmark("Initializing game grid", game::initGameGrid);
+		// grid.getCell(new Unit2(2, 2)).setOccupant(new Titan());
+		// grid.getCell(new Unit2(7, 7)).setOccupant(new Ant());
+		// grid.upload("Cell{Unit2{5, 5}, Ant{}}");
+		// Console.println(grid.getCell(new Unit2(5, 5)).getOccupant());
 
 		// Avg: ~0.01s
 		Console.benchmark("Render game grid", grid::toASCII);

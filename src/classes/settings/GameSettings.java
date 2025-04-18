@@ -33,6 +33,8 @@ public class GameSettings {
 		// this.cellSize = 36; // Pixels
 		this.screenWidth = 560;
 		this.screenHeight = 680;
+		// this.screenWidth = 680;
+		// this.screenHeight = 740;
 		this.gridSize = new Unit2(20, 20); // Cell units
 		this.initialAnts = 100;
 		this.initialDoodlebugs = 5;
@@ -103,7 +105,7 @@ public class GameSettings {
 			//
 			// Editable
 			//
-			FPS = 1.0 / 10;
+			FPS = 1.0 / 2;
 			settings = new HashMap<>();
 
 			// (vv) Note: Set FPS to 0 if you want it to match the game FPS (vv) //

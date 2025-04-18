@@ -690,6 +690,16 @@ public class CellGrid {
 		return availableCells;
 	}
 
+	public ArrayList<Cell> getOccupiedCellsFrom(ArrayList<Cell> cells) {
+		ArrayList<Cell> occupiedCells = new ArrayList<>();
+
+		for (Cell cell : cells)
+			if (cell.hasOccupant())
+				occupiedCells.add(cell);
+
+		return occupiedCells;
+	}
+
 	/**
 	 * Get a random cell from a provided {@code ArrayList<Cell>} of cells.
 	 * 
@@ -723,6 +733,10 @@ public class CellGrid {
 	 */
 	public Cell getRandomAvailableCellFrom(ArrayList<Cell> cells) {
 		return getRandomCellFrom(getAvailableCellsFrom(cells));
+	}
+
+	public Cell getRandomOccupiedCellFrom(ArrayList<Cell> cells) {
+		return getRandomCellFrom(getOccupiedCellsFrom(cells));
 	}
 
 	/**
@@ -1394,8 +1408,8 @@ public class CellGrid {
 		 * @param cell
 		 * @return true if the occupant is eatable
 		 */
-		public boolean isOccupantEatable(Cell cell) {
-			Entity<?> _cellOccupant = cell.getOccupant();
+		public boolean isOccupantEatable() {
+			Entity<?> _cellOccupant = getOccupant();
 			return _cellOccupant.getProperty(Property.IS_EATABLE, Boolean.class);
 		}
 
@@ -1619,7 +1633,7 @@ public class CellGrid {
 		 * @return true if this cell is eligible for garbage collection
 		 */
 		public boolean isCollectable() {
-			return isEmpty() || this.cellOccupant == null;
+			return isEmpty();
 		}
 
 		/**
