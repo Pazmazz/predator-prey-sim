@@ -9,6 +9,11 @@ import classes.util.Console;
 import classes.entity.CellGrid.Cell;
 
 public class Titan extends Bug<Titan> {
+	public int healthBar = 2;
+	public static int titanCount = 0;
+    public static int numOfTitanBreeds = 0;
+	public static int killCount = 0;
+
 
 	private Entity<?> target;
 	private Game game = Game.getInstance();
@@ -19,12 +24,34 @@ public class Titan extends Bug<Titan> {
 	}
 
 	@Override
-	public void move() {
+	public void move(Turn turn) {
+		ArrayList<Cell> adjCells = game
+				.getGameGrid()
+				.getCellsAdjacentTo(getCell());
 
+		for (Cell adjCell : adjCells) {
+			if (adjCell.getOccupantVariant(getCell()) == "Doodlebug") {
+				adjCell.removeOccupant();
+				assignCell(adjCell);
+                turn.setKillCount();
+                killCount++;
+				break;
+			} else if (adjCell.isInBounds() && adjCell.isEmpty()) {
+				assignCell(adjCell);
+				break;
+			}
+		}
+		
+		movementCounter++;
+
+		if (movementCounter == 8) {
+			movementCounter = 0;
+			this.breed(turn);
+		}
 	}
 
 	@Override
-	public void breed() {
+	public void breed(Turn turn) {
 	}
 
 	@Override

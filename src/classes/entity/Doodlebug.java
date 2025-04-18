@@ -8,6 +8,7 @@ import classes.entity.CellGrid.Cell;
 
 public class Doodlebug extends Bug<Doodlebug> {
     int starvationTracker = 0;
+	public static int starvationCounter = 0;
     public static int doodlebugCounter = 0;
     public static int killCount = 0;
     public static int numOfDoodlebugBreeds = 0;
@@ -45,6 +46,7 @@ public class Doodlebug extends Bug<Doodlebug> {
 		movementCounter++;
 
 		if (starvationTracker == 3) {
+			starvationCounter++;
 			removeFromCell();
 		}
 

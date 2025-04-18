@@ -4,6 +4,7 @@
  */
 package classes.entity;
 
+import classes.abstracts.Bug;
 import classes.abstracts.Entity;
 import classes.abstracts.Properties.Property;
 import classes.entity.CellGrid.Cell;
@@ -1398,6 +1399,19 @@ public class CellGrid {
 		public boolean isOccupantEatable(Cell cell) {
 			Entity<?> _cellOccupant = cell.getOccupant();
 			return _cellOccupant.getProperty(Property.IS_EATABLE, Boolean.class);
+		}
+
+		/**
+		 * Added getOccupantVariant method (by Jaylen)
+		 *
+		 * This checks the variant type of the occupant in the specified cell
+		 *
+		 * @param cell
+		 * @return the object currently occupying the cell and its variant properties
+		 */
+		public Object getOccupantVariant(Cell cell){
+			Entity<?> _cellOccupant = cell.getOccupant();
+			return _cellOccupant.getProperty(Property.VARIANT);
 		}
 
 		/**
