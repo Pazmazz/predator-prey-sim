@@ -11,6 +11,8 @@ import java.io.IOException;
 
 public class MainFrame implements ActionListener {
 
+	private Game game = Game.getInstance();
+
 	public MainFrame() {
 		int frameWidth = 700;
 		int frameHeight = 50 + 60 + 760;
@@ -38,7 +40,6 @@ public class MainFrame implements ActionListener {
 
 		title_panel.setLayout(new BorderLayout());
 		title_panel.setPreferredSize(new Dimension(760, 60));
-		;
 		title_panel.add(textfield, BorderLayout.CENTER);
 
 		// Bottom panel with Label
@@ -49,8 +50,7 @@ public class MainFrame implements ActionListener {
 		frame.getContentPane().setBackground(new Color(50, 50, 50));
 
 		frame.setVisible(true);
-		bottom_panel.setPreferredSize(new Dimension(760, 50));
-		;
+		// bottom_panel.setPreferredSize(new Dimension(760, 50));
 		textfield2.setBackground(new Color(25, 25, 25));
 		textfield2.setForeground(new Color(25, 255, 0));
 		// textfield2.setFont(new Font("Courier New",Font.BOLD,40));
@@ -87,15 +87,15 @@ public class MainFrame implements ActionListener {
 		JPanel gridPanel = new JPanel();
 
 		gridPanel.setLayout(new GridLayout(20, 20, 0, 0));
-		gridPanel.setPreferredSize(new Dimension(760, 760));
+		// gridPanel.setPreferredSize(new Dimension(760, 760));
 
 		for (int i = 0; i < 20; i++) {
 			for (int j = 0; j < 20; j++) {
 				try {
-					BufferedImage image = ImageIO.read(new File("gridcell.jpg"));
+					BufferedImage image = ImageIO.read(new File("src/Assets/ant.jpg"));
 					ImageIcon icon = new ImageIcon(image);
 					// Scaling image
-					Image scaledImage = icon.getImage().getScaledInstance(38, 38, Image.SCALE_SMOOTH);
+					Image scaledImage = icon.getImage();
 					ImageIcon scaledIcon = new ImageIcon(scaledImage);
 
 					JLabel label = new JLabel(scaledIcon);
@@ -114,7 +114,7 @@ public class MainFrame implements ActionListener {
 		// Wraping grid in a container panel
 		JPanel gridWrapper = new JPanel();
 		gridWrapper.setLayout(new FlowLayout(FlowLayout.CENTER, 0, 0));
-		gridWrapper.setPreferredSize(new Dimension(760, 760));
+		// gridWrapper.setPreferredSize(new Dimension(760, 760));
 		gridWrapper.add(gridPanel);
 
 		// Add panels to frame
@@ -122,7 +122,7 @@ public class MainFrame implements ActionListener {
 		frame.add(bottom_panel, BorderLayout.SOUTH);
 		frame.add(gridPanel, BorderLayout.CENTER);
 
-		frame.pack();// adjusts frame size to fit components
+		// frame.pack();// adjusts frame size to fit components
 		frame.setLocationRelativeTo(null);
 		frame.setVisible(true);
 
