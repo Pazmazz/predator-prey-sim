@@ -9,6 +9,7 @@ import classes.entity.CellGrid.Cell;
 public class Doodlebug extends Bug<Doodlebug> {
 
 	private Game game = Game.getInstance();
+	final private String avatar = "src/assets/doodlebug2.jpg";
 
 	int starvationTracker = 0;
 
@@ -18,6 +19,11 @@ public class Doodlebug extends Bug<Doodlebug> {
 		// properties
 		setProperty(Property.IS_EATABLE, false);
 		setProperty(Property.VARIANT, "Doodlebug");
+	}
+
+	@Override
+	public String getAvatar() {
+		return avatar;
 	}
 
 	@Override

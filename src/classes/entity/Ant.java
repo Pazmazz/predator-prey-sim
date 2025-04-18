@@ -9,6 +9,7 @@ import classes.entity.CellGrid.Cell;
 public class Ant extends Bug<Ant> {
 
 	private Game game = Game.getInstance();
+	private final String avatar = "src/assets/ant2.jpg";
 
 	public Ant() {
 		idNum = (int) (Math.random() * 1000);
@@ -16,6 +17,11 @@ public class Ant extends Bug<Ant> {
 		// properties
 		setProperty(Property.IS_EATABLE, true);
 		setProperty(Property.VARIANT, "Ant");
+	}
+
+	@Override
+	public String getAvatar() {
+		return avatar;
 	}
 
 	@Override

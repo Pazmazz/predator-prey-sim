@@ -18,6 +18,7 @@ public class GameSettings {
 
 	final private int screenWidth;
 	final private int screenHeight;
+	final private int screenAspectRatio;
 	final private SimulationInfo simulationInfo;
 
 	private boolean canSpawnTitan;
@@ -29,7 +30,9 @@ public class GameSettings {
 		this.gameHeaderText = "one"; // Text of the main header within the window
 		this.gameTitle = "two"; // Title of game window
 
-		this.cellSize = 36; // Pixels
+		// this.cellSize = 36; // Pixels
+		this.screenWidth = 560;
+		this.screenHeight = 680;
 		this.gridSize = new Unit2(20, 20); // Cell units
 		this.initialAnts = 100;
 		this.initialDoodlebugs = 5;
@@ -39,9 +42,10 @@ public class GameSettings {
 		//
 		// Non-Editable
 		//
-		this.screenWidth = gridSize.getX() * this.cellSize;
-		this.screenHeight = gridSize.getY() * this.cellSize;
+		// this.screenWidth = gridSize.getX() * this.cellSize;
+		// this.screenHeight = gridSize.getY() * this.cellSize;
 		this.simulationInfo = new SimulationInfo();
+		this.screenAspectRatio = this.screenWidth / this.screenHeight;
 	}
 
 	public enum SimulationType {
@@ -242,5 +246,9 @@ public class GameSettings {
 
 	public void setGridSize(Unit2 gridSize) {
 		this.gridSize = gridSize;
+	}
+
+	public int getScreenAspectRatio() {
+		return screenAspectRatio;
 	}
 }
