@@ -56,8 +56,7 @@ public class App {
 
 	public static void main(String[] args) {
 		Game game = Game.getInstance();
-		game.initConfig();
-		game.initGameScreen();
+		Console.benchmark("Creating game grid", game::initConfig);
 
 		// Avg: ~0.001s
 		Console.benchmark("Creating game grid", game::createGameGrid);
@@ -78,6 +77,6 @@ public class App {
 
 		// new MainFrame();
 
-		// game.start();
+		game.start();
 	}
 }

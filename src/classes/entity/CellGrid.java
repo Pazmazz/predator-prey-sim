@@ -26,6 +26,8 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.concurrent.ConcurrentHashMap;
 
+import javax.swing.JLabel;
+
 /**
  * The primary API for interacting with the virtual game grid. Implements a
  * HashMap for mapping all cell coordinates to their corresponding cell objects
@@ -1243,6 +1245,7 @@ public class CellGrid {
 		private CellVacancy cellVacancy;
 		private Entity<?> cellOccupant;
 		private boolean isPathCell;
+		private JLabel imgRef;
 
 		/**
 		 * Creates a new {@code Cell} object. A cell object by itself does not belong to
@@ -1306,6 +1309,14 @@ public class CellGrid {
 
 		public void setPathCell() {
 			this.isPathCell = true;
+		}
+
+		public void setImgRef(JLabel img) {
+			this.imgRef = img;
+		}
+
+		public JLabel getImgRef() {
+			return this.imgRef;
 		}
 
 		// TODO; 'withAggregation' parameter is no longer necessary now that Cell is an

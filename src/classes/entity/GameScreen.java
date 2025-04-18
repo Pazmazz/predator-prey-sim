@@ -18,6 +18,9 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.util.ArrayList;
+import java.util.HashMap;
+
 import javax.swing.ImageIcon;
 
 import javax.imageio.ImageIO;
@@ -53,6 +56,9 @@ public class GameScreen {
 	final private int SCREEN_HEIGHT = settings.getScreenHeight();
 	final private int CELL_SIZE = (SCREEN_WIDTH - GRID_LINE_THICKNESS) / ROWS;
 
+	final private ArrayList<JLabel> cellImages = new ArrayList<>();
+	final private HashMap<String, ImageIcon> imageIcons = new HashMap<>();
+
 	public GameScreen() {
 		// Default game screen settings
 		window = new JFrame();
@@ -77,6 +83,26 @@ public class GameScreen {
 			}
 		});
 		window.setVisible(true);
+	}
+
+	private void buildImageIcons() {
+
+	}
+
+	private ImageIcon getImageIcon(String source) {
+		try {
+			BufferedImage imgBuffer = ImageIO.read(new File(source));
+			Image img = new ImageIcon(imgBuffer)
+					.getImage()
+					.getScaledInstance(
+							CELL_SIZE,
+							CELL_SIZE,
+							Image.SCALE_SMOOTH);
+
+			return new ImageIcon(img);
+		} catch (Exception e) {
+			throw new Error(e);
+		}
 	}
 
 	private JPanel buildMainFrame() {
@@ -110,19 +136,48 @@ public class GameScreen {
 		return headerFrame;
 	}
 
+	public void redraw() {
+		CellGrid grid = game.getGameGrid();
+
+		try {
+			for (Cell cell : grid.getGrid().values()) {
+				String imgPath = "src/Assets/gridcell.jpg";
+				if (cell.hasOccupant())
+					imgPath = cell.getOccupant().getAvatar();
+
+				BufferedImage imgBuffer = ImageIO.read(new File(imgPath));
+				Image img = new ImageIcon(imgBuffer)
+						.getImage()
+						.getScaledInstance(
+								CELL_SIZE,
+								CELL_SIZE,
+								Image.SCALE_SMOOTH);
+
+				cell.getImgRef().setIcon(new ImageIcon(img));
+
+			}
+		} catch (Exception e) {
+
+		}
+	}
+
 	public void draw(JPanel gridGUI) {
 		CellGrid grid = game.getGameGrid();
 
 		for (Cell cell : grid.getGrid().values()) {
-			if (cell.isEmpty())
-				continue;
+			String imgPath = "src/Assets/gridcell.jpg";
+			if (cell.hasOccupant())
+				imgPath = cell.getOccupant().getAvatar();
+			// continue;
 
 			int col = cell.getUnit2().getX();
 			int row = cell.getUnit2().getY();
 
-			JLabel img = getCellImage(cell.getOccupant().getAvatar());
+			JLabel img = getCellImage(imgPath);
 			img.setLocation((col - 1) * CELL_SIZE, (row - 1) * CELL_SIZE);
 			gridGUI.add(img);
+			cellImages.add(img);
+			cell.setImgRef(img);
 		}
 	}
 
