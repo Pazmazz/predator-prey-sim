@@ -55,7 +55,7 @@ public class App {
 	public static void main(String[] args) {
 		Game game = Game.getInstance();
 
-		new MainFrame();
+		// new MainFrame();
 
 		// Avg: ~0.004s
 		Console.benchmark("Game config", game::initConfig);
