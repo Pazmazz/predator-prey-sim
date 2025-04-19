@@ -11,6 +11,7 @@ import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.GridLayout;
 import java.awt.Image;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
@@ -23,7 +24,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import javax.swing.ImageIcon;
-
+import javax.swing.JButton;
 import javax.imageio.ImageIO;
 import javax.swing.BoxLayout;
 import javax.swing.JFrame;
@@ -46,9 +47,10 @@ import classes.util.Console;
 @SuppressWarnings("unused")
 public class GameScreen {
 
-	final private Game game = Game.getInstance();
-	final private GameSettings settings = game.getSettings();
-	final private CellGrid gameGrid = game.getGameGrid();
+	final private static Game game = Game.getInstance();
+	final private static GameSettings settings = game.getSettings();
+	final private static CellGrid gameGrid = game.getGameGrid();
+
 	final private JFrame window;
 	final private JPanel masterFrame;
 
@@ -68,9 +70,8 @@ public class GameScreen {
 		this.window = new JFrame();
 		this.window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.window.setResizable(false);
-		this.window.setTitle(this.settings.getTitle());
+		this.window.setTitle(settings.getTitle());
 		this.window.setSize(this.SCREEN_WIDTH, this.SCREEN_HEIGHT);
-		this.window.setLocationRelativeTo(null);
 
 		this.loadImages();
 
@@ -80,6 +81,7 @@ public class GameScreen {
 
 		this.renderedGrid = new GameGrid();
 		this.masterFrame.add(this.renderedGrid);
+		this.buildBottomPanel();
 
 		// Handle game window closing event
 		this.window.addWindowListener(new WindowAdapter() {
@@ -89,6 +91,8 @@ public class GameScreen {
 			}
 		});
 		this.window.setVisible(true);
+		// this.window.pack();
+		this.window.setLocationRelativeTo(null);
 	}
 
 	public void loadImages() {
@@ -108,7 +112,8 @@ public class GameScreen {
 
 	private JPanel buildMainFrame() {
 		JPanel masterFrame = new JPanel();
-		masterFrame.setLayout(new FlowLayout());
+		// masterFrame.setLayout(new FlowLayout());
+		masterFrame.setLayout(new BoxLayout(masterFrame, BoxLayout.Y_AXIS));
 		masterFrame.setDoubleBuffered(true);
 		masterFrame.setBackground(Color.BLACK);
 
@@ -133,6 +138,36 @@ public class GameScreen {
 		headerFrame.add(titleLabel, BorderLayout.CENTER);
 		this.masterFrame.add(headerFrame);
 		return headerFrame;
+	}
+
+	private JPanel buildBottomPanel() {
+		JButton[] buttons = new JButton[3];
+		JPanel bottomPanel = new JPanel();
+		bottomPanel.setLayout(new GridLayout(1, 3));
+		bottomPanel.setBackground(new Color(25, 25, 25));
+
+		for (int i = 0; i < 3; i++) {
+			buttons[i] = new JButton();
+			if (i == 0) {
+				buttons[i].setText("▷");
+			}
+			if (i == 1) {
+				buttons[i].setText("I>");
+			}
+			if (i == 2) {
+				buttons[i].setText("I>I");
+			}
+			bottomPanel.add(buttons[i]);
+			buttons[i].setFont(new Font("MV Boli", Font.BOLD, 20));
+			buttons[i].setFocusable(false);
+			// buttons[i].addActionListener(this);
+			buttons[i].setBackground(new Color(25, 25, 25));
+			buttons[i].setForeground(new Color(25, 255, 0));
+
+		}
+
+		this.masterFrame.add(bottomPanel);
+		return bottomPanel;
 	}
 
 	private class GameGrid extends JPanel {
@@ -160,7 +195,7 @@ public class GameScreen {
 			Graphics2D g2 = (Graphics2D) g;
 
 			g2.setStroke(new BasicStroke(GRID_LINE_THICKNESS));
-			g2.setColor(Color.GREEN);
+			g2.setColor(Color.BLUE);
 
 			int lineThicknessOffset = GRID_LINE_THICKNESS / 2;
 
@@ -192,12 +227,6 @@ public class GameScreen {
 				int sizeX = CELL_SIZE - GRID_LINE_THICKNESS;
 				int sizeY = sizeX;
 
-				Bug<?> occupant = (Bug<?>) cell.getOccupant();
-				if (occupant != null) {
-					// Console.println("Rotation: " + occupant.getRotation());
-					// g2.rotate(occupant.getRotation(), posX + sizeX / 2, posY + sizeY / 2);
-				}
-
 				if (cell.getOccupant() instanceof Ant) {
 					g2.drawImage(
 							loadedImages.get("ant"),
@@ -223,8 +252,6 @@ public class GameScreen {
 							sizeY,
 							contentFrame);
 				}
-
-				// g2.dispose();
 			}
 
 		}

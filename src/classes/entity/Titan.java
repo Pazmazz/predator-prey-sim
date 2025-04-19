@@ -20,21 +20,6 @@ public class Titan extends Bug<Titan> {
 
 	@Override
 	public void move() {
-		CellGrid grid = game.getGameGrid();
-		Cell cell = getCell();
-		setTarget(grid.getCellWithNearestOccupant(cell).getOccupant());
-		// Console.println("Titan target: ", titan.getTarget());
-
-		ArrayList<Cell> pathCells = grid.getCellPath(
-				cell.getUnit2Center(),
-				getTarget().getProperty(Property.POSITION, Vector2.class));
-
-		if (pathCells.size() > 0) {
-			Cell c = pathCells.get(1);
-			if (c.isAvailable()) {
-				assignCell(c);
-			}
-		}
 	}
 
 	@Override
@@ -45,7 +30,7 @@ public class Titan extends Bug<Titan> {
 	public String toString() {
 		return String.format(Console.filterConsoleColors(
 				"$text-green Ant$text-reset #%s"),
-				idNum);
+				this.getId());
 	}
 
 	@Override
@@ -53,17 +38,8 @@ public class Titan extends Bug<Titan> {
 		return "Titan{}";
 	}
 
-	public void setTarget(Entity<?> target) {
-		this.target = target;
-	}
-
-	public Entity<?> getTarget() {
-		return this.target;
-	}
-
 	@Override
-	public String getAvatar() {
-		// TODO Auto-generated method stub
-		return "";
+	public Titan newInstance() {
+		return new Titan();
 	}
 }

@@ -34,7 +34,7 @@ import classes.entity.CellGrid;
 import classes.entity.CellGrid.GridIntercept;
 import classes.entity.ValueMeter.RESET_TYPE;
 import classes.entity.Game;
-import classes.entity.MainFrame;
+import classes.entity.ScreenTest;
 import classes.entity.Unit2;
 import classes.entity.ValueMeter;
 import classes.util.Console;
@@ -57,13 +57,16 @@ public class App {
 
 	public static void main(String[] args) {
 
-		game.boot();
-		new Thread(() -> {
-			try {
-				Thread.sleep(1000);
-				game.start();
-			} catch (Exception e) {
-			}
-		}).start();
+		game.initConfig();
+		new ScreenTest();
+
+		// game.boot();
+		// new Thread(() -> {
+		// try {
+		// Thread.sleep(1000);
+		// game.start();
+		// } catch (Exception e) {
+		// }
+		// }).start();
 	}
 }

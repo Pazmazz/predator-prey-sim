@@ -21,10 +21,11 @@ public class GameSettings {
 		this.gameTitle = "two"; // Title of game window
 
 		// Game grid
-		this.screenWidth = 560;
-		this.screenHeight = 680;
+		this.screenWidth = 800;
+		// this.screenHeight = 680;
 
-		this.gridLineThickness = 2;
+		this.gridLineThickness = 8;
+		this.gridBorderPadding = 50;
 		this.gridSize = new Unit2(20, 20);
 
 		this.initialAnts = 100;
@@ -55,6 +56,7 @@ public class GameSettings {
 		//
 		// Non-Editable
 		//
+		this.screenHeight = this.screenWidth + 120;
 		this.screenAspectRatio = this.screenWidth / this.screenHeight;
 	}
 
@@ -66,6 +68,7 @@ public class GameSettings {
 	private int initialAnts;
 	private int initialDoodlebugs;
 	private int gridLineThickness;
+	private int gridBorderPadding;
 
 	private double gameHertz;
 	private double renderFPS;
@@ -161,6 +164,10 @@ public class GameSettings {
 
 	public double getGameHertz() {
 		return this.gameHertz;
+	}
+
+	public int getGridBorderPadding() {
+		return this.gridBorderPadding;
 	}
 
 	//
