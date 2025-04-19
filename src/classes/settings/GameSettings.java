@@ -22,7 +22,7 @@ public class GameSettings {
 		this.gameTitle = "two"; // Title of game window
 
 		// Game grid
-		this.screenWidth = 760;
+		this.screenWidth = 560;
 		// this.screenHeight = 680;
 
 		this.gridLineThickness = 2;
@@ -56,7 +56,7 @@ public class GameSettings {
 		// Debug
 		Console.setDebugModeEnabled(true);
 		Console.setConsoleColorsEnabled(true);
-		Console.hideDebugPriority(DebugPriority.LOW);
+		// Console.hideDebugPriority(DebugPriority.LOW);
 		Console.hideDebugPriority(DebugPriority.MEDIUM);
 
 		//
