@@ -3,10 +3,9 @@
  */
 package classes.simulation;
 
-import classes.abstracts.RunService;
+import classes.abstracts.FrameRunner;
 import classes.entity.CellGrid;
 import classes.entity.Game;
-import classes.settings.GameSettings.SimulationType;
 import classes.util.Console;
 
 /**
@@ -14,13 +13,13 @@ import classes.util.Console;
  * handles what should happen on every Render step in the simulation should be
  * written in this class's step method.
  */
-public class RenderFrame extends RunService {
+@SuppressWarnings("unused")
+public class RenderFrame extends FrameRunner {
 
-	@SuppressWarnings("unused")
-	private Game game = Game.getInstance();
+	final private Game game = Game.getInstance();
 
-	public RenderFrame(SimulationType simulationFrame) {
-		super(simulationFrame);
+	protected RenderFrame(String processName, double FPS) {
+		super(processName, FPS);
 	}
 
 	@Override

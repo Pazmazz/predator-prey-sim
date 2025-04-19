@@ -4,14 +4,9 @@
 package classes.entity;
 
 import classes.abstracts.Entity;
-import classes.abstracts.RunService;
-import classes.abstracts.RunService.FrameState;
-import classes.abstracts.RunService.Task;
 import classes.settings.GameSettings;
-import classes.settings.GameSettings.SimulationType;
 import classes.simulation.MovementFrame;
 import classes.simulation.RenderFrame;
-import classes.simulation.SimulatedLagFrame;
 import classes.util.Console;
 import classes.util.Console.DebugPriority;
 import classes.util.Time;
@@ -44,7 +39,6 @@ public class Game implements Runnable {
 	private GameScreen screen;
 	private GameState state = GameState.INITIAL;
 
-	private long simulationFPS;
 	private long upTime;
 
 	//
@@ -52,7 +46,6 @@ public class Game implements Runnable {
 	//
 	private MovementFrame movementFrame;
 	private RenderFrame renderFrame;
-	private SimulatedLagFrame simulatedLagFrame;
 	private RunService[] frameProcesses;
 
 	//
@@ -104,16 +97,12 @@ public class Game implements Runnable {
 	}
 
 	public String initRunService() {
-		this.simulationFPS = Time.secondsToNano(settings.getSimulation().getFPS());
-
-		this.movementFrame = new MovementFrame(SimulationType.MOVEMENT);
+		this.movementFrame = new MovementFrame("Simulation");
 		this.renderFrame = new RenderFrame(SimulationType.RENDER);
-		this.simulatedLagFrame = new SimulatedLagFrame(SimulationType.SIMULATED_LAG);
 
 		this.frameProcesses = new RunService[] {
 				movementFrame,
 				renderFrame,
-				simulatedLagFrame
 		};
 
 		return "RunService benchmark";

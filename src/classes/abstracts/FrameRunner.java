@@ -8,8 +8,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 
 import classes.entity.Game;
-import classes.settings.GameSettings.SimulationSettings;
-import classes.settings.GameSettings.SimulationType;
+import classes.settings.GameSettings;
 import classes.util.Console;
 import classes.util.Console.DebugPriority;
 import classes.util.Time;
@@ -20,9 +19,10 @@ import interfaces.TaskCallback;
  * processes in a tight loop. A {@code step} method must be implemented in the
  * subclass which handles what action should occur on that frame.
  */
-public abstract class RunService {
+public abstract class FrameRunner {
 
-	private Game game = Game.getInstance();
+	final private Game game = Game.getInstance();
+	final private GameSettings settings = game.getSettings();
 
 	private long FPS;
 	private long lastPulseTick;
@@ -30,7 +30,6 @@ public abstract class RunService {
 	private long timeBeforeStep;
 	private long timeAfterStep;
 
-	private SimulationSettings settings;
 	private FrameState state = FrameState.RUNNING;
 	private ArrayList<Task> preSimulationTasks = new ArrayList<>();
 	private ArrayList<Task> postSimulationTasks = new ArrayList<>();
@@ -42,13 +41,9 @@ public abstract class RunService {
 		SUSPENDED,
 	}
 
-	protected RunService(SimulationType simulationType) {
-		this.settings = game.getSettings()
-				.getSimulation()
-				.getSettings(simulationType);
-
-		this.FPS = Time.secondsToNano(settings.getFPS());
-		this.lastPulseTick = -Time.secondsToNano(settings.getFPS());
+	protected FrameRunner(String processName, double FPS) {
+		this.FPS = Time.secondsToNano(FPS);
+		this.lastPulseTick = -Time.secondsToNano(FPS);
 	}
 
 	/**

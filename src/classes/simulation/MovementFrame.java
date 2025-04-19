@@ -9,7 +9,7 @@ import java.util.Iterator;
 
 import classes.abstracts.Bug;
 import classes.abstracts.Entity;
-import classes.abstracts.RunService;
+import classes.abstracts.FrameRunner;
 import classes.abstracts.Properties;
 import classes.abstracts.Properties.Property;
 import classes.entity.Ant;
@@ -19,7 +19,6 @@ import classes.entity.Game;
 import classes.entity.Titan;
 import classes.entity.TweenData;
 import classes.entity.Vector2;
-import classes.settings.GameSettings.SimulationType;
 import classes.util.Console;
 import classes.util.Math2;
 
@@ -31,13 +30,12 @@ import classes.util.Math2;
  * This frame can be thought of as a "game state update" process. It's goal is
  * to update all game state variables in the data model.
  */
-public class MovementFrame extends RunService {
+@SuppressWarnings("unused")
+public class MovementFrame extends FrameRunner {
+	final private Game game = Game.getInstance();
 
-	@SuppressWarnings("unused")
-	private Game game = Game.getInstance();
-
-	public MovementFrame(SimulationType simulationFrame) {
-		super(simulationFrame);
+	protected MovementFrame(String processName, double FPS) {
+		super(processName, FPS);
 	}
 
 	@Override
