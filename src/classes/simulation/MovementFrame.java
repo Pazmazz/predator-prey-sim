@@ -19,6 +19,7 @@ import classes.entity.Game;
 import classes.entity.Titan;
 import classes.entity.TweenData;
 import classes.entity.Vector2;
+import classes.settings.GameSettings;
 import classes.util.Console;
 import classes.util.Math2;
 
@@ -32,10 +33,14 @@ import classes.util.Math2;
  */
 @SuppressWarnings("unused")
 public class MovementFrame extends FrameRunner {
-	final private Game game = Game.getInstance();
+	final private static Game game = Game.getInstance();
+	final private static GameSettings settings = game.getSettings();
 
-	protected MovementFrame(String processName, double FPS) {
-		super(processName, FPS);
+	public MovementFrame() {
+		super(
+				settings.getSimulationProcessName(),
+				settings.getSimulationFPS(),
+				settings.getSimulationDebugInfo());
 	}
 
 	@Override

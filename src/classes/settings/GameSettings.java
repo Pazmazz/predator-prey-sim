@@ -35,14 +35,16 @@ public class GameSettings {
 
 		// RunService
 		this.gameHertz = 1.0 / 60;
+
 		this.renderFPS = 0;
+		this.renderProcessName = "Render";
+		this.renderDebugInfo = new DebugInfo();
+		this.renderDebugInfo.setPrimaryColor("red");
+
 		this.simulationFPS = 0;
-
-		this.renderDebugInfo = new DebugInfo()
-				.setPrimaryColor("red");
-
-		this.simulationDebugInfo = new DebugInfo()
-				.setPrimaryColor("yellow");
+		this.simulationProcessName = "Simulation";
+		this.simulationDebugInfo = new DebugInfo();
+		this.renderDebugInfo.setPrimaryColor("yellow");
 
 		// Debug
 		Console.setDebugModeEnabled(true);
@@ -71,6 +73,9 @@ public class GameSettings {
 
 	private DebugInfo renderDebugInfo;
 	private DebugInfo simulationDebugInfo;
+
+	private String renderProcessName;
+	private String simulationProcessName;
 
 	private boolean antBreedingEnabled;
 	private boolean doodlebugBreedingEnabled;
@@ -127,7 +132,35 @@ public class GameSettings {
 	}
 
 	public int getScreenAspectRatio() {
-		return screenAspectRatio;
+		return this.screenAspectRatio;
+	}
+
+	public DebugInfo getRenderDebugInfo() {
+		return this.renderDebugInfo;
+	}
+
+	public double getRenderFPS() {
+		return this.renderFPS;
+	}
+
+	public String getRenderProcessName() {
+		return this.renderProcessName;
+	}
+
+	public DebugInfo getSimulationDebugInfo() {
+		return this.simulationDebugInfo;
+	}
+
+	public double getSimulationFPS() {
+		return this.simulationFPS;
+	}
+
+	public String getSimulationProcessName() {
+		return this.simulationProcessName;
+	}
+
+	public double getGameHertz() {
+		return this.gameHertz;
 	}
 
 	//

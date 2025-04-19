@@ -26,7 +26,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 
 import classes.abstracts.Entity;
-import classes.abstracts.RunService;
 import classes.abstracts.Properties.Property;
 import classes.entity.Ant;
 import classes.entity.CellGrid.Cell;

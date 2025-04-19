@@ -4,6 +4,7 @@
 package classes.entity;
 
 import classes.abstracts.Entity;
+import classes.abstracts.FrameRunner;
 import classes.settings.GameSettings;
 import classes.simulation.MovementFrame;
 import classes.simulation.RenderFrame;
@@ -25,7 +26,7 @@ import java.util.UUID;
 @SuppressWarnings("unused")
 public class Game implements Runnable {
 
-	private static Game game = new Game();
+	final private static Game game = new Game();
 	private GameSettings settings;
 	private CellGrid gameGrid;
 
@@ -40,13 +41,14 @@ public class Game implements Runnable {
 	private GameState state = GameState.INITIAL;
 
 	private long upTime;
+	private long gameHertz;
 
 	//
 	// Update frames
 	//
 	private MovementFrame movementFrame;
 	private RenderFrame renderFrame;
-	private RunService[] frameProcesses;
+	private FrameRunner[] frameProcesses;
 
 	//
 	// Internal states
@@ -97,10 +99,11 @@ public class Game implements Runnable {
 	}
 
 	public String initRunService() {
-		this.movementFrame = new MovementFrame("Simulation");
-		this.renderFrame = new RenderFrame(SimulationType.RENDER);
+		this.gameHertz = Time.secondsToNano(this.settings.getGameHertz());
+		this.movementFrame = new MovementFrame();
+		this.renderFrame = new RenderFrame();
 
-		this.frameProcesses = new RunService[] {
+		this.frameProcesses = new FrameRunner[] {
 				movementFrame,
 				renderFrame,
 		};
@@ -165,12 +168,12 @@ public class Game implements Runnable {
 
 		while (isThreadRunning()) {
 			this.upTime = Time.tick() - startTime;
-			if (RunService.isAllSuspended())
+			if (FrameRunner.isAllSuspended())
 				continue;
 
 			long simulationDelta = 0;
 
-			for (RunService frame : this.frameProcesses) {
+			for (FrameRunner frame : this.frameProcesses) {
 				if (frame.isSuspended())
 					continue;
 				else if (this.isTerminated())
@@ -181,7 +184,7 @@ public class Game implements Runnable {
 					simulationDelta += frameDelta;
 			}
 
-			long threadYieldTime = this.simulationFPS - simulationDelta;
+			long threadYieldTime = this.gameHertz - simulationDelta;
 			if (threadYieldTime > 0) {
 				try {
 					Thread.sleep((long) Time.nanoToMillisecond(threadYieldTime));
@@ -241,7 +244,7 @@ public class Game implements Runnable {
 	}
 
 	public boolean isThreadRunning() {
-		return isRunning() || isPaused();
+		return this.isRunning() || isPaused();
 	}
 
 	public boolean isInitial() {

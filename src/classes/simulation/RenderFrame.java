@@ -6,6 +6,7 @@ package classes.simulation;
 import classes.abstracts.FrameRunner;
 import classes.entity.CellGrid;
 import classes.entity.Game;
+import classes.settings.GameSettings;
 import classes.util.Console;
 
 /**
@@ -16,10 +17,14 @@ import classes.util.Console;
 @SuppressWarnings("unused")
 public class RenderFrame extends FrameRunner {
 
-	final private Game game = Game.getInstance();
+	final private static Game game = Game.getInstance();
+	final private static GameSettings settings = game.getSettings();
 
-	protected RenderFrame(String processName, double FPS) {
-		super(processName, FPS);
+	public RenderFrame() {
+		super(
+				settings.getRenderProcessName(),
+				settings.getRenderFPS(),
+				settings.getRenderDebugInfo());
 	}
 
 	@Override

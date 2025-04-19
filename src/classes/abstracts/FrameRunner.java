@@ -7,8 +7,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 
-import classes.entity.Game;
-import classes.settings.GameSettings;
+import classes.entity.DebugInfo;
 import classes.util.Console;
 import classes.util.Console.DebugPriority;
 import classes.util.Time;
@@ -20,10 +19,6 @@ import interfaces.TaskCallback;
  * subclass which handles what action should occur on that frame.
  */
 public abstract class FrameRunner {
-
-	final private Game game = Game.getInstance();
-	final private GameSettings settings = game.getSettings();
-
 	private long FPS;
 	private long lastPulseTick;
 	private long deltaTime = 0;
@@ -36,14 +31,19 @@ public abstract class FrameRunner {
 
 	public static FrameState masterState = FrameState.RUNNING;
 
+	final private DebugInfo debugInfo;
+	final private String processName;
+
 	public enum FrameState {
 		RUNNING,
 		SUSPENDED,
 	}
 
-	protected FrameRunner(String processName, double FPS) {
+	protected FrameRunner(String processName, double FPS, DebugInfo debugInfo) {
 		this.FPS = Time.secondsToNano(FPS);
 		this.lastPulseTick = -Time.secondsToNano(FPS);
+		this.debugInfo = debugInfo;
+		this.processName = processName;
 	}
 
 	/**
@@ -74,8 +74,8 @@ public abstract class FrameRunner {
 
 		Console.debugPrint(String.format(
 				"$text-%s [%s FRAME] $text-reset ",
-				settings.getDebugInfo().getPrimaryColor(),
-				settings.getProcessName().toUpperCase()));
+				this.debugInfo.getPrimaryColor(),
+				this.processName.toUpperCase()));
 
 		this.lastPulseTick = preSimulationTime;
 		this.deltaTime = dt;
@@ -93,12 +93,12 @@ public abstract class FrameRunner {
 
 		Console.debugPrint(String.format(
 				"completed in: $text-%s %s $text-reset seconds",
-				settings.getDebugInfo().getPrimaryColor(),
+				this.debugInfo.getPrimaryColor(),
 				Time.nanoToSeconds(simulationTime)));
 
 		Console.debugPrint(String.format(
 				"last simulation: $text-%s %s $text-reset seconds ago",
-				settings.getDebugInfo().getPrimaryColor(),
+				this.debugInfo.getPrimaryColor(),
 				Time.nanoToSeconds(deltaTime)));
 
 		Console.debugPrint("-".repeat(50));
