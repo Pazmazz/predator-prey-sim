@@ -4,81 +4,59 @@ import java.util.ArrayList;
 
 import classes.abstracts.Bug;
 import classes.util.Console;
+import classes.util.Math2;
 import classes.entity.CellGrid.Cell;
 
 public class Doodlebug extends Bug<Doodlebug> {
-
-	private Game game = Game.getInstance();
-	final private String avatar = "src/assets/doodlebug2.jpg";
-
-	int starvationTracker = 0;
+	final private Game game = Game.getInstance();
+	final private CellGrid gameGrid = game.getGameGrid();
 
 	public Doodlebug() {
-		idNum = (int) (Math.random() * 1000);
 
 		// properties
-		setProperty(Property.IS_EATABLE, false);
-		setProperty(Property.VARIANT, "Doodlebug");
+		this.setProperty(Property.IS_EATABLE, false);
+		this.setProperty(Property.HUNGER_METER, new ValueMeter(3));
+
+		ValueMeter movementMeter = this.getProperty(Property.MOVEMENT_METER, ValueMeter.class);
+		movementMeter.setMaxAndFill(8);
 	}
 
-	@Override
-	public String getAvatar() {
-		return avatar;
+	public ValueMeter getHungerMeter() {
+		return this.getProperty(Property.HUNGER_METER, ValueMeter.class);
 	}
 
 	@Override
 	public void move() {
-		CellGrid grid = game.getGameGrid();
-		ArrayList<Cell> adjCells = grid.getCellsAdjacentTo(getCell());
-		Cell randOccupiedCell = grid.getRandomOccupiedCellFrom(adjCells);
-		Cell randAvailableCell = grid.getRandomAvailableCellFrom(adjCells);
+		ArrayList<Cell> adjCells = this.gameGrid.getCellsAdjacentTo(getCell());
+		Cell randOccupiedCell = this.gameGrid.getRandomOccupiedCellFrom(adjCells);
 
-		if (randOccupiedCell != null) {
-			// Console.println("Occupant eatable: ", adjCell.isOccupantEatable(getCell()));
-			if (randOccupiedCell.isOccupantEatable()) {
-				randOccupiedCell.removeOccupant();
-				assignCell(randOccupiedCell);
-				starvationTracker = -1;
-			}
-		} else if (randAvailableCell != null) {
-			assignCell(randAvailableCell);
+		if (randOccupiedCell != null && randOccupiedCell.isOccupantEatable()) {
+			randOccupiedCell.removeOccupant();
+			this.assignCell(randOccupiedCell);
+			this.getHungerMeter().setValue(0);
+		} else {
+			Cell randAvailableCell = this.gameGrid.getRandomAvailableCellFrom(adjCells);
+			if (randAvailableCell != null)
+				this.assignCell(randAvailableCell);
+			this.getHungerMeter().increment();
 		}
-
-		starvationTracker++;
-		movementCounter++;
-
-		if (movementCounter == 8) {
-			movementCounter = 0;
-			this.breed();
-		}
-		if (starvationTracker == 3) {
-			removeFromCell();
-		}
-	}
-
-	@Override
-	public void breed() {
-		ArrayList<Cell> adjCells = game
-				.getGameGrid()
-				.getCellsAdjacentTo(getCell());
-
-		for (Cell adjCell : adjCells) {
-			if (adjCell.isInBounds() && adjCell.isEmpty()) {
-				adjCell.setOccupant(new Doodlebug());
-				break;
-			}
-		}
+		this.getMovementMeter().increment();
 	}
 
 	@Override
 	public String toString() {
-		return String.format(Console.withConsoleColors(
+		return String.format(Console.filterConsoleColors(
 				"$text-green Doodlebug$text-reset #%s"),
-				idNum);
+				this.getId());
 	}
 
 	@Override
 	public String serialize() {
 		return "Doodlebug{}";
+	}
+
+	@Override
+	public Doodlebug newInstance() {
+		return new Doodlebug();
 	}
 }

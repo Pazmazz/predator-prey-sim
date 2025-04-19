@@ -15,6 +15,7 @@ public class GameSettings {
 	private Unit2 gridSize;
 	private int initialAnts;
 	private int initialDoodlebugs;
+	private int gridLineThickness;
 
 	final private int screenWidth;
 	final private int screenHeight;
@@ -30,12 +31,11 @@ public class GameSettings {
 		this.gameHeaderText = "one"; // Text of the main header within the window
 		this.gameTitle = "two"; // Title of game window
 
-		// this.cellSize = 36; // Pixels
 		this.screenWidth = 560;
 		this.screenHeight = 680;
-		// this.screenWidth = 680;
-		// this.screenHeight = 740;
+		this.gridLineThickness = 2;
 		this.gridSize = new Unit2(20, 20); // Cell units
+
 		this.initialAnts = 100;
 		this.initialDoodlebugs = 5;
 
@@ -105,7 +105,7 @@ public class GameSettings {
 			//
 			// Editable
 			//
-			FPS = 1.0 / 2;
+			FPS = 1.0 / 20;
 			settings = new HashMap<>();
 
 			// (vv) Note: Set FPS to 0 if you want it to match the game FPS (vv) //
@@ -227,6 +227,10 @@ public class GameSettings {
 		return this.initialDoodlebugs;
 	}
 
+	public int getGridLineThickness() {
+		return this.gridLineThickness;
+	}
+
 	public boolean canSpawnTitan() {
 		return this.canSpawnTitan;
 	}
@@ -248,6 +252,10 @@ public class GameSettings {
 
 	public void setGridSize(Unit2 gridSize) {
 		this.gridSize = gridSize;
+	}
+
+	public void setGridLineThickness(int gridLineThickness) {
+		this.gridLineThickness = gridLineThickness;
 	}
 
 	public int getScreenAspectRatio() {

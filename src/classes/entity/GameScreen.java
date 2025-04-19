@@ -48,84 +48,62 @@ public class GameScreen {
 
 	final private Game game = Game.getInstance();
 	final private GameSettings settings = game.getSettings();
+	final private CellGrid gameGrid = game.getGameGrid();
 	final private JFrame window;
 	final private JPanel masterFrame;
 
 	final private int ROWS = settings.getGridSize().getY();
 	final private int COLS = settings.getGridSize().getX();
-	final private int GRID_LINE_THICKNESS = 2;
+	final private int GRID_LINE_THICKNESS = settings.getGridLineThickness();
 	final private int SCREEN_WIDTH = settings.getScreenWidth();
 	final private int SCREEN_HEIGHT = settings.getScreenHeight();
 	final private int CELL_SIZE = (SCREEN_WIDTH - GRID_LINE_THICKNESS) / ROWS;
 
 	final private GameGrid renderedGrid;
 
-	HashMap<String, BufferedImage> loadedImages = new HashMap<>();
-
-	// final private ArrayList<JLabel> cellImages = new ArrayList<>();
-	// final private HashMap<String, ImageIcon> imageIcons = new HashMap<>();
+	final private HashMap<String, BufferedImage> loadedImages = new HashMap<>();
 
 	public GameScreen() {
 		// Default game screen settings
-		window = new JFrame();
-		window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		window.setResizable(true);
-		window.setTitle(settings.getTitle());
-		window.setSize(SCREEN_WIDTH, SCREEN_HEIGHT);
-		window.setLocationRelativeTo(null);
+		this.window = new JFrame();
+		this.window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		this.window.setResizable(false);
+		this.window.setTitle(this.settings.getTitle());
+		this.window.setSize(this.SCREEN_WIDTH, this.SCREEN_HEIGHT);
+		this.window.setLocationRelativeTo(null);
 
-		loadImages();
+		this.loadImages();
 
 		// Build the UI
-		masterFrame = buildMainFrame();
-		buildHeaderFrame();
+		this.masterFrame = buildMainFrame();
+		this.buildHeaderFrame();
 
-		renderedGrid = new GameGrid();
-		masterFrame.add(renderedGrid);
+		this.renderedGrid = new GameGrid();
+		this.masterFrame.add(this.renderedGrid);
 
 		// Handle game window closing event
-		window.addWindowListener(new WindowAdapter() {
+		this.window.addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowClosed(WindowEvent e) {
 				game.terminate();
 			}
 		});
-		window.setVisible(true);
+		this.window.setVisible(true);
 	}
 
 	public void loadImages() {
 		try {
-			loadedImages.put("ant", ImageIO.read(new File("src/Assets/ant2.jpg")));
-			loadedImages.put("doodlebug", ImageIO.read(new File("src/Assets/doodlebug3.jpg")));
-			loadedImages.put("titan", ImageIO.read(new File("src/Assets/titanant.jpg")));
-			loadedImages.put("pathcell", ImageIO.read(new File("src/Assets/pathcell.jpg")));
+			this.loadedImages.put("ant", ImageIO.read(new File("src/Assets/ant2.jpg")));
+			this.loadedImages.put("doodlebug", ImageIO.read(new File("src/Assets/doodlebug3.jpg")));
+			this.loadedImages.put("titan", ImageIO.read(new File("src/Assets/titanant.jpg")));
+			this.loadedImages.put("pathcell", ImageIO.read(new File("src/Assets/pathcell.jpg")));
 		} catch (Exception e) {
 			throw new Error("Error loading images");
 		}
 	}
 
-	// private void buildImageIcons() {
-
-	// }
-
-	// private ImageIcon getImageIcon(String source) {
-	// try {
-	// BufferedImage imgBuffer = ImageIO.read(new File(source));
-	// Image img = new ImageIcon(imgBuffer)
-	// .getImage()
-	// .getScaledInstance(
-	// CELL_SIZE,
-	// CELL_SIZE,
-	// Image.SCALE_SMOOTH);
-
-	// return new ImageIcon(img);
-	// } catch (Exception e) {
-	// throw new Error(e);
-	// }
-	// }
-
 	public void repaintGrid() {
-		renderedGrid.repaint();
+		this.renderedGrid.repaint();
 	}
 
 	private JPanel buildMainFrame() {
@@ -136,7 +114,7 @@ public class GameScreen {
 		masterFrame.setDoubleBuffered(true);
 		masterFrame.setBackground(Color.BLACK);
 
-		window.getContentPane().add(masterFrame);
+		this.window.getContentPane().add(masterFrame);
 		return masterFrame;
 	}
 
@@ -155,7 +133,7 @@ public class GameScreen {
 		titleLabel.setOpaque(true);
 
 		headerFrame.add(titleLabel, BorderLayout.CENTER);
-		masterFrame.add(headerFrame);
+		this.masterFrame.add(headerFrame);
 		return headerFrame;
 	}
 
@@ -163,19 +141,19 @@ public class GameScreen {
 		final private JPanel contentFrame;
 
 		public GameGrid() {
-			setBackground(Color.BLACK);
-			setLayout(new BorderLayout());
-			setBorder(new EmptyBorder(
+			this.setBackground(Color.BLACK);
+			this.setLayout(new BorderLayout());
+			this.setBorder(new EmptyBorder(
 					GRID_LINE_THICKNESS,
 					GRID_LINE_THICKNESS,
 					GRID_LINE_THICKNESS,
 					GRID_LINE_THICKNESS));
 
-			contentFrame = new JPanel();
-			contentFrame.setLayout(null);
-			contentFrame.setOpaque(false);
+			this.contentFrame = new JPanel();
+			this.contentFrame.setLayout(null);
+			this.contentFrame.setOpaque(false);
 
-			add(contentFrame);
+			this.add(contentFrame);
 		}
 
 		@Override
@@ -187,25 +165,24 @@ public class GameScreen {
 			g2.setColor(Color.GREEN);
 
 			int lineThicknessOffset = GRID_LINE_THICKNESS / 2;
-			int computedCellSize = CELL_SIZE;
 
 			for (int row = 0; row <= ROWS; row++) {
 				g2.drawLine(
 						GRID_LINE_THICKNESS,
-						row * computedCellSize + lineThicknessOffset,
-						COLS * computedCellSize,
-						row * computedCellSize + lineThicknessOffset);
+						row * CELL_SIZE + lineThicknessOffset,
+						COLS * CELL_SIZE,
+						row * CELL_SIZE + lineThicknessOffset);
 			}
 
 			for (int col = 0; col <= COLS; col++) {
 				g2.drawLine(
-						col * computedCellSize + lineThicknessOffset,
+						col * CELL_SIZE + lineThicknessOffset,
 						GRID_LINE_THICKNESS,
-						col * computedCellSize + lineThicknessOffset,
-						ROWS * computedCellSize);
+						col * CELL_SIZE + lineThicknessOffset,
+						ROWS * CELL_SIZE);
 			}
 
-			for (Cell cell : game.getGameGrid().getGrid().values()) {
+			for (Cell cell : gameGrid.getGrid().values()) {
 				int row = cell.getUnit2().getY();
 				int col = cell.getUnit2().getX();
 

@@ -27,6 +27,7 @@ import java.util.UUID;
  * with the game and all game state is managed through the instance of this
  * class.
  */
+@SuppressWarnings("unused")
 public class Game implements Runnable {
 
 	private static Game game = new Game();
@@ -38,6 +39,7 @@ public class Game implements Runnable {
 
 	// TODO: Implement game history snapshots
 	final private ArrayList<Snapshot> snapshots = new ArrayList<>();
+	final private int snapshotInterval = 1;
 
 	private GameScreen screen;
 	private GameState state = GameState.INITIAL;
@@ -108,7 +110,7 @@ public class Game implements Runnable {
 	}
 
 	public String initRunService() {
-		// this.simulationFPS = Time.secondsToNano(settings.getSimulation().getFPS());
+		this.simulationFPS = Time.secondsToNano(settings.getSimulation().getFPS());
 
 		this.movementFrame = new MovementFrame(SimulationType.MOVEMENT);
 		this.renderFrame = new RenderFrame(SimulationType.RENDER);
@@ -280,10 +282,6 @@ public class Game implements Runnable {
 	//
 	public void setState(GameState newState) {
 		this.state = newState;
-	}
-
-	public void setFPS(double FPS) {
-		this.simulationFPS = Time.secondsToNano(FPS);
 	}
 
 	@Override

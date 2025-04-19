@@ -43,7 +43,7 @@ public class Titan extends Bug<Titan> {
 
 	@Override
 	public String toString() {
-		return String.format(Console.withConsoleColors(
+		return String.format(Console.filterConsoleColors(
 				"$text-green Ant$text-reset #%s"),
 				idNum);
 	}

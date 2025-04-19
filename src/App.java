@@ -52,13 +52,11 @@ import classes.entity.Titan;
 @SuppressWarnings("unused")
 public class App {
 
-	private Game game = Game.getInstance();
+	public static Game game = Game.getInstance();
 
 	public static void main(String[] args) {
-		Game game = Game.getInstance();
 
 		Console.benchmark("Creating game grid", game::initConfig);
-		game.setFPS(1.0 / 10);
 
 		// Avg: ~0.001s
 		Console.benchmark("Creating game grid", game::createGameGrid);
@@ -81,8 +79,6 @@ public class App {
 
 		// Avg: ~0.3s
 		Console.benchmark("Initializing game screen", game::initGameScreen);
-
-		// new MainFrame();
 
 		game.start();
 	}

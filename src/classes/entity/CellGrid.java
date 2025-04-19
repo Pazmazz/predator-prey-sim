@@ -1234,7 +1234,7 @@ public class CellGrid {
 
 		@Override
 		public String toString() {
-			return Console.withConsoleColors(String.format(
+			return Console.filterConsoleColors(String.format(
 					"$text-yellow GridIntercept$text-reset <Axis: $text-purple %s$text-reset , Point: %s>",
 					this.axisOfIntersection,
 					this.pointOfIntersection));
@@ -1697,7 +1697,7 @@ public class CellGrid {
 		@Override
 		public String toString() {
 			return String.format(
-					Console.withConsoleColors("$text-green Cell$text-reset <%s, %s>"),
+					Console.filterConsoleColors("$text-green Cell$text-reset <%s, %s>"),
 					unit.getX(),
 					unit.getY());
 		}

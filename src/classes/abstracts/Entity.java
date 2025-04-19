@@ -17,7 +17,7 @@ import interfaces.Serializable;
  * Any subclass that extends {@code Entity} is eligible to be set as an
  * occupant in a cell using {@code cell.setOccupant}.
  */
-public abstract class Entity<T> extends Properties {
+public abstract class Entity<T extends Entity<T>> extends Properties {
 
 	// Unused constructor for now
 	// public Entity() {
@@ -100,6 +100,4 @@ public abstract class Entity<T> extends Properties {
 	public void removeFromCell() {
 		removeFromCell(true);
 	}
-
-	public abstract String getAvatar();
 }
