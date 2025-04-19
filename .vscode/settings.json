@@ -5,6 +5,10 @@
         "lib/**/*.jar",
 	],
 	"cSpell.words": [
-		"nindex"
+		"COOLDOWN",
+		"Entites",
+		"nindex",
+		"pathcell",
+		"titanant"
 	]
 }

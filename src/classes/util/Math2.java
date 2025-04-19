@@ -50,4 +50,8 @@ public class Math2 {
 	public static int randInt(int upperBound) {
 		return (int) (Math.random() * upperBound);
 	}
+
+	public static int clamp(int value, int min, int max) {
+		return Math.max(min, Math.min(max, value));
+	}
 }

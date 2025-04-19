@@ -3,24 +3,16 @@
  */
 package classes.settings;
 
+import classes.entity.DebugInfo;
 import classes.entity.Unit2;
+import classes.util.Console;
+import classes.util.Console.DebugPriority;
+
+import java.awt.Color;
 import java.util.HashMap;
 
+@SuppressWarnings("unused")
 public class GameSettings {
-
-	final private String gameHeaderText;
-	final private String gameTitle;
-
-	private int cellSize;
-	private Unit2 gridSize;
-	private int initialAnts;
-	private int initialDoodlebugs;
-
-	final private int screenWidth;
-	final private int screenHeight;
-	final private SimulationInfo simulationInfo;
-
-	private boolean canSpawnTitan;
 
 	public GameSettings() {
 		//
@@ -29,166 +21,85 @@ public class GameSettings {
 		this.gameHeaderText = "one"; // Text of the main header within the window
 		this.gameTitle = "two"; // Title of game window
 
-		this.cellSize = 36; // Pixels
-		this.gridSize = new Unit2(20, 20); // Cell units
+		// Game grid
+		this.screenWidth = 760;
+		// this.screenHeight = 680;
+
+		this.gridLineThickness = 2;
+		this.gridBorderPadding = 1;
+		this.gridSize = new Unit2(20, 20);
+
+		this.gridBackgroundColor = Color.BLACK;
+		this.gridLinesColor = Color.BLUE;
+
 		this.initialAnts = 100;
 		this.initialDoodlebugs = 5;
+		this.antMovementCooldown = 0;
+		this.doodlebugMovementCooldown = 0;
 
-		this.canSpawnTitan = false;
+		this.antBreedingEnabled = true;
+		this.doodlebugBreedingEnabled = true;
+
+		// RunService
+		this.gameHertz = 1.0 / 60;
+
+		this.renderFPS = 0;
+		this.renderProcessName = "Render";
+		this.renderDebugInfo = new DebugInfo();
+		this.renderDebugInfo.setPrimaryColor("red");
+
+		this.simulationFPS = 0;
+		this.simulationProcessName = "Simulation";
+		this.simulationDebugInfo = new DebugInfo();
+		this.renderDebugInfo.setPrimaryColor("yellow");
+
+		// Debug
+		Console.setDebugModeEnabled(true);
+		Console.setConsoleColorsEnabled(true);
+		Console.hideDebugPriority(DebugPriority.LOW);
+		Console.hideDebugPriority(DebugPriority.MEDIUM);
 
 		//
 		// Non-Editable
 		//
-		this.screenWidth = gridSize.getX() * this.cellSize;
-		this.screenHeight = gridSize.getY() * this.cellSize;
-		this.simulationInfo = new SimulationInfo();
+		this.screenHeight = this.screenWidth + 120;
+		this.screenAspectRatio = this.screenWidth / this.screenHeight;
 	}
 
-	public enum SimulationType {
-		MOVEMENT,
-		RENDER,
-		SIMULATED_LAG,
-	}
+	final private String gameHeaderText;
+	final private String gameTitle;
 
-	public class DebugInfo {
+	private int cellSize;
+	private Unit2 gridSize;
+	private int initialAnts;
+	private int initialDoodlebugs;
+	private int gridLineThickness;
+	private int gridBorderPadding;
+	private Color gridBackgroundColor;
+	private Color gridLinesColor;
+	private double antMovementCooldown;
+	private double doodlebugMovementCooldown;
 
-		private String primaryColor;
-		private String secondaryColor;
+	private double gameHertz;
+	private double renderFPS;
+	private double simulationFPS;
 
-		public DebugInfo() {
-			//
-			// Editable
-			//
-			this.primaryColor = "green";
-			this.secondaryColor = "cyan";
-		}
+	private DebugInfo renderDebugInfo;
+	private DebugInfo simulationDebugInfo;
 
-		public String getPrimaryColor() {
-			return this.primaryColor;
-		}
+	private String renderProcessName;
+	private String simulationProcessName;
 
-		public String getSecondaryColor() {
-			return this.secondaryColor;
-		}
+	private boolean antBreedingEnabled;
+	private boolean doodlebugBreedingEnabled;
 
-		public DebugInfo setPrimaryColor(String color) {
-			this.primaryColor = color;
-			return this;
-		}
-
-		public DebugInfo setSecondaryColor(String color) {
-			this.secondaryColor = color;
-			return this;
-		}
-	}
-
-	/**
-	 * This class is the main API for accessing simulation settings such as FPS.
-	 * It holds all information about each simulation frame and can be accessed
-	 * with chained getter methods
-	 *
-	 * <p>
-	 * This class aggregates instances of `SimulationSettings`
-	 */
-	public class SimulationInfo {
-
-		private double FPS;
-		final private HashMap<SimulationType, SimulationSettings> settings;
-
-		public SimulationInfo() {
-			//
-			// Editable
-			//
-			FPS = 1.0 / 10;
-			settings = new HashMap<>();
-
-			// (vv) Note: Set FPS to 0 if you want it to match the game FPS (vv) //
-
-			// Render
-			SimulationSettings render = new SimulationSettings()
-					.setFPS(0)
-					.setProcessName("Render");
-
-			// Movement
-			SimulationSettings movement = new SimulationSettings()
-					.setFPS(0)
-					.setProcessName("Movement");
-
-			// SimulatedLag
-			SimulationSettings simulatedLag = new SimulationSettings()
-					.setFPS(0)
-					.setProcessName("SimulatedLag");
-
-			render.getDebugInfo().setPrimaryColor("red");
-			movement.getDebugInfo().setPrimaryColor("yellow");
-			simulatedLag.getDebugInfo().setPrimaryColor("purple");
-
-			//
-			// Non-Editable
-			//
-			settings.put(SimulationType.RENDER, render);
-			settings.put(SimulationType.MOVEMENT, movement);
-			settings.put(SimulationType.SIMULATED_LAG, simulatedLag);
-		}
-
-		public double getFPS() {
-			return FPS;
-		}
-
-		public void setFPS(double FPS) {
-			this.FPS = FPS;
-		}
-
-		public SimulationSettings getSettings(SimulationType simulationType) {
-			return settings.get(simulationType);
-		}
-	}
-
-	/**
-	 * A settings class that holds all relevant information about a given
-	 * simulation process. These instances are aggregated in the Simulation
-	 * class for central organization.
-	 */
-	public class SimulationSettings {
-
-		private double FPS;
-		private String processName;
-		final private DebugInfo debugInfo;
-
-		public SimulationSettings() {
-			this.debugInfo = new DebugInfo();
-		}
-
-		public String getProcessName() {
-			return this.processName;
-		}
-
-		public double getFPS() {
-			return FPS;
-		}
-
-		public DebugInfo getDebugInfo() {
-			return this.debugInfo;
-		}
-
-		public SimulationSettings setFPS(double FPS) {
-			this.FPS = FPS;
-			return this;
-		}
-
-		public SimulationSettings setProcessName(String name) {
-			this.processName = name;
-			return this;
-		}
-	}
+	final private int screenWidth;
+	final private int screenHeight;
+	final private int screenAspectRatio;
 
 	//
 	// Public getters
 	//
-	public SimulationInfo getSimulation() {
-		return this.simulationInfo;
-	}
-
 	public String getTitle() {
 		return this.gameTitle;
 	}
@@ -221,17 +132,73 @@ public class GameSettings {
 		return this.initialDoodlebugs;
 	}
 
-	public boolean canSpawnTitan() {
-		return this.canSpawnTitan;
+	public int getGridLineThickness() {
+		return this.gridLineThickness;
+	}
+
+	public boolean getAntBreedingEnabled() {
+		return this.antBreedingEnabled;
+	}
+
+	public boolean getDoodlebugBreedingEnabled() {
+		return this.doodlebugBreedingEnabled;
+	}
+
+	public int getScreenAspectRatio() {
+		return this.screenAspectRatio;
+	}
+
+	public DebugInfo getRenderDebugInfo() {
+		return this.renderDebugInfo;
+	}
+
+	public double getRenderFPS() {
+		return this.renderFPS;
+	}
+
+	public String getRenderProcessName() {
+		return this.renderProcessName;
+	}
+
+	public DebugInfo getSimulationDebugInfo() {
+		return this.simulationDebugInfo;
+	}
+
+	public double getSimulationFPS() {
+		return this.simulationFPS;
+	}
+
+	public String getSimulationProcessName() {
+		return this.simulationProcessName;
+	}
+
+	public double getGameHertz() {
+		return this.gameHertz;
+	}
+
+	public int getGridBorderPadding() {
+		return this.gridBorderPadding;
+	}
+
+	public Color getGridBackgroundColor() {
+		return this.gridBackgroundColor;
+	}
+
+	public Color getGridLinesColor() {
+		return this.gridLinesColor;
+	}
+
+	public double getAntMovementCooldown() {
+		return this.antMovementCooldown;
+	}
+
+	public double getDoodlebugMovementCooldown() {
+		return this.doodlebugMovementCooldown;
 	}
 
 	//
 	// Public setters
 	//
-	public void setTitanSpawn(boolean enabled) {
-		this.canSpawnTitan = enabled;
-	}
-
 	public void setInitialAnts(int initialAnts) {
 		this.initialAnts = initialAnts;
 	}
@@ -242,5 +209,17 @@ public class GameSettings {
 
 	public void setGridSize(Unit2 gridSize) {
 		this.gridSize = gridSize;
+	}
+
+	public void setGridLineThickness(int gridLineThickness) {
+		this.gridLineThickness = gridLineThickness;
+	}
+
+	public void setAntBreedingEnabled(boolean bool) {
+		this.antBreedingEnabled = bool;
+	}
+
+	public void setDoodlebugBreedingEnabled(boolean bool) {
+		this.doodlebugBreedingEnabled = bool;
 	}
 }

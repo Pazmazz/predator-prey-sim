@@ -1,78 +1,93 @@
 package classes.entity;
 
+import java.io.File;
 import java.util.ArrayList;
 
 import classes.abstracts.Bug;
 import classes.util.Console;
+import classes.util.Math2;
 import classes.entity.CellGrid.Cell;
+import classes.entity.ScreenTest.IMAGE;
+import classes.entity.ValueMeter.RESET_TYPE;
+import classes.settings.GameSettings;
 
+@SuppressWarnings("unused")
 public class Doodlebug extends Bug<Doodlebug> {
+	public IMAGE avatar = IMAGE.BASE_DOODLEBUG;
 
-	private Game game = Game.getInstance();
-
-	int starvationTracker = 0;
+	final private Game game = Game.getInstance();
+	final private CellGrid gameGrid = game.getGameGrid();
+	final private GameSettings settings = game.getSettings();
 
 	public Doodlebug() {
-		idNum = (int) (Math.random() * 1000);
-
 		// properties
-		setProperty(Property.IS_EATABLE, false);
-		setProperty(Property.VARIANT, "Doodlebug");
+		ValueMeter hungerMeter = new ValueMeter(4, 0, 0);
+		this.setProperty(Property.HUNGER_METER, hungerMeter);
+		this.setProperty(Property.IS_EATABLE, false);
+		this.setProperty(Property.MOVEMENT_COOLDOWN, settings.getDoodlebugMovementCooldown());
+
+		ValueMeter movementMeter = this.getProperty(Property.MOVEMENT_METER, ValueMeter.class);
+		movementMeter.setMax(8);
+
+		// event listeners
+		hungerMeter.onMaxValueReached.connect(e -> this.removeFromCell());
+		if (settings.getDoodlebugBreedingEnabled())
+			movementMeter.onMaxValueReached.connect(e -> this.breed());
+	}
+
+	public ValueMeter getHungerMeter() {
+		return this.getProperty(Property.HUNGER_METER, ValueMeter.class);
 	}
 
 	@Override
 	public void move() {
-		ArrayList<Cell> adjCells = game
-				.getGameGrid()
-				.getCellsAdjacentTo(getCell());
+		this.getMovementMeter().increment();
+		ArrayList<Cell> adjCells = this.gameGrid.randomizeCells(
+				this.gameGrid.getCellsAdjacentTo(getCell()));
+		Cell fallbackCell = null;
 
-		for (Cell adjCell : adjCells) {
-			if (adjCell.isOccupantEatable(getCell())) {
-				adjCell.removeOccupant();
-				assignCell(adjCell);
-				starvationTracker = 0;
-				break;
-			} else if (adjCell.isInBounds() && adjCell.isEmpty()) {
-				assignCell(adjCell);
-				starvationTracker++;
-				break;
+		for (Cell cell : adjCells) {
+			if (cell.hasOccupant()) {
+				if (cell.isOccupantEatable()) {
+					cell.removeOccupant();
+					this.assignCell(cell);
+					this.getHungerMeter().empty();
+					return;
+				}
+			} else if (fallbackCell == null) {
+				fallbackCell = cell;
 			}
 		}
-		movementCounter++;
 
-		if (starvationTracker == 3) {
-			removeFromCell();
-		}
-
-		if (movementCounter == 8) {
-			movementCounter = 0;
-			this.breed();
-		}
-	}
-
-	@Override
-	public void breed() {
-		ArrayList<Cell> adjCells = game
-				.getGameGrid()
-				.getCellsAdjacentTo(getCell());
-
-		for (Cell adjCell : adjCells) {
-			if (adjCell.isInBounds() && adjCell.isEmpty()) {
-				adjCell.setOccupant(new Doodlebug());
-				break;
-			}
-		}
+		if (fallbackCell != null)
+			this.assignCell(fallbackCell);
+		this.getHungerMeter().increment();
 	}
 
 	@Override
 	public String toString() {
-		return String.format(Console.withConsoleColors(
+		return String.format(Console.filterConsoleColors(
 				"$text-green Doodlebug$text-reset #%s"),
-				idNum);
+				this.getId());
 	}
 
 	@Override
 	public String serialize() {
 		return "Doodlebug{}";
+	}
+
+	@Override
+	public Doodlebug newInstance() {
+		return new Doodlebug();
+	}
+
+	@Override
+	public IMAGE getAvatar() {
+		return this.avatar;
+	}
+
+	@Override
+	public void setAvatar(IMAGE avatar) {
+		this.avatar = avatar;
 	}
 }

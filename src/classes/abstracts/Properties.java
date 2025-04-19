@@ -48,5 +48,12 @@ public abstract class Properties implements Serializable {
 		NAME,
 		TYPE,
 		VARIANT,
+		HEALTH,
+		MAX_HEALTH,
+		MAX_HUNGER,
+		HUNGER,
+		HEALTH_METER,
+		HUNGER_METER,
+		MOVEMENT_METER,
 	}
 }

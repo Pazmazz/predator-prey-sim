@@ -4,14 +4,10 @@
 package classes.entity;
 
 import classes.abstracts.Entity;
-import classes.abstracts.RunService;
-import classes.abstracts.RunService.FrameState;
-import classes.abstracts.RunService.Task;
+import classes.abstracts.FrameRunner;
 import classes.settings.GameSettings;
-import classes.settings.GameSettings.SimulationType;
 import classes.simulation.MovementFrame;
 import classes.simulation.RenderFrame;
-import classes.simulation.SimulatedLagFrame;
 import classes.util.Console;
 import classes.util.Console.DebugPriority;
 import classes.util.Time;
@@ -27,29 +23,32 @@ import java.util.UUID;
  * with the game and all game state is managed through the instance of this
  * class.
  */
+@SuppressWarnings("unused")
 public class Game implements Runnable {
 
-	private static Game game = new Game();
+	final private static Game game = new Game();
 	private GameSettings settings;
 	private CellGrid gameGrid;
 
 	final private Thread mainThread;
 	final private String sessionId;
-	final private ArrayList<Snapshot> snapshots = new ArrayList<>();
 
-	private GameScreen screen;
+	// TODO: Implement game history snapshots
+	final private ArrayList<Snapshot> snapshots = new ArrayList<>();
+	final private int snapshotInterval = 1;
+
+	private ScreenTest screen;
 	private GameState state = GameState.INITIAL;
 
-	private long simulationFPS;
 	private long upTime;
+	private long gameHertz;
 
 	//
 	// Update frames
 	//
 	private MovementFrame movementFrame;
 	private RenderFrame renderFrame;
-	private SimulatedLagFrame simulatedLagFrame;
-	private RunService[] frameProcesses;
+	private FrameRunner[] frameProcesses;
 
 	//
 	// Internal states
@@ -72,12 +71,6 @@ public class Game implements Runnable {
 	// TODO: Add documentation
 	public String initConfig() {
 		this.settings = new GameSettings();
-
-		Console.setDebugModeEnabled(true);
-		Console.setConsoleColorsEnabled(true);
-		Console.hideDebugPriority(DebugPriority.LOW);
-		Console.hideDebugPriority(DebugPriority.MEDIUM);
-
 		return "Game config benchmark";
 	}
 
@@ -106,23 +99,20 @@ public class Game implements Runnable {
 	}
 
 	public String initRunService() {
-		// this.simulationFPS = Time.secondsToNano(settings.getSimulation().getFPS());
+		this.gameHertz = Time.secondsToNano(this.settings.getGameHertz());
+		this.movementFrame = new MovementFrame();
+		this.renderFrame = new RenderFrame();
 
-		this.movementFrame = new MovementFrame(SimulationType.MOVEMENT);
-		this.renderFrame = new RenderFrame(SimulationType.RENDER);
-		this.simulatedLagFrame = new SimulatedLagFrame(SimulationType.SIMULATED_LAG);
-
-		this.frameProcesses = new RunService[] {
+		this.frameProcesses = new FrameRunner[] {
 				movementFrame,
 				renderFrame,
-				simulatedLagFrame
 		};
 
 		return "RunService benchmark";
 	}
 
 	public String initGameScreen() {
-		this.screen = new GameScreen();
+		this.screen = new ScreenTest();
 		return "Game screen benchmark";
 	}
 
@@ -174,16 +164,19 @@ public class Game implements Runnable {
 	 */
 	@Override
 	public void run() {
+		long startTime = Time.tick();
+
 		while (isThreadRunning()) {
-			if (RunService.isAllSuspended())
+			this.upTime = Time.tick() - startTime;
+			if (FrameRunner.isAllSuspended())
 				continue;
 
 			long simulationDelta = 0;
 
-			for (RunService frame : this.frameProcesses) {
+			for (FrameRunner frame : this.frameProcesses) {
 				if (frame.isSuspended())
 					continue;
-				else if (game.isTerminated())
+				else if (this.isTerminated())
 					break;
 
 				long frameDelta = frame.pulse();
@@ -191,7 +184,7 @@ public class Game implements Runnable {
 					simulationDelta += frameDelta;
 			}
 
-			long threadYieldTime = this.simulationFPS - simulationDelta;
+			long threadYieldTime = this.gameHertz - simulationDelta;
 			if (threadYieldTime > 0) {
 				try {
 					Thread.sleep((long) Time.nanoToMillisecond(threadYieldTime));
@@ -210,7 +203,7 @@ public class Game implements Runnable {
 		return game;
 	}
 
-	public GameScreen getScreen() {
+	public ScreenTest getScreen() {
 		return this.screen;
 	}
 
@@ -251,7 +244,7 @@ public class Game implements Runnable {
 	}
 
 	public boolean isThreadRunning() {
-		return isRunning() || isPaused();
+		return this.isRunning() || isPaused();
 	}
 
 	public boolean isInitial() {
@@ -277,8 +270,23 @@ public class Game implements Runnable {
 		this.state = newState;
 	}
 
-	public void setFPS(double FPS) {
-		this.simulationFPS = Time.secondsToNano(FPS);
+	public void boot() {
+		Console.benchmark("Creating game grid", this::initConfig);
+
+		// Avg: ~0.001s
+		Console.benchmark("Creating game grid", this::createGameGrid);
+
+		// Avg: ~0.02s
+		Console.benchmark("Initializing game grid", this::initGameGrid);
+
+		// Avg: ~0.01s
+		Console.benchmark("Render game grid", this.getGameGrid()::toASCII);
+
+		// Avg: ~0.005s
+		Console.benchmark("Initializing RunService", this::initRunService);
+
+		// Avg: ~0.3s
+		Console.benchmark("Initializing game screen", this::initGameScreen);
 	}
 
 	@Override

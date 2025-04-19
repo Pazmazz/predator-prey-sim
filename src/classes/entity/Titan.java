@@ -1,5 +1,6 @@
 package classes.entity;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Iterator;
 
@@ -7,8 +8,11 @@ import classes.abstracts.Bug;
 import classes.abstracts.Entity;
 import classes.util.Console;
 import classes.entity.CellGrid.Cell;
+import classes.entity.ScreenTest.IMAGE;
 
 public class Titan extends Bug<Titan> {
+
+	public IMAGE avatar = IMAGE.BASE_TITAN;
 
 	private Entity<?> target;
 	private Game game = Game.getInstance();
@@ -20,7 +24,6 @@ public class Titan extends Bug<Titan> {
 
 	@Override
 	public void move() {
-
 	}
 
 	@Override
@@ -29,9 +32,9 @@ public class Titan extends Bug<Titan> {
 
 	@Override
 	public String toString() {
-		return String.format(Console.withConsoleColors(
-				"$text-green Ant$text-reset #%s"),
-				idNum);
+		return String.format(Console.filterConsoleColors(
+				"$text-red Titan$text-reset #%s"),
+				this.getId());
 	}
 
 	@Override
@@ -39,11 +42,18 @@ public class Titan extends Bug<Titan> {
 		return "Titan{}";
 	}
 
-	public void setTarget(Entity<?> target) {
-		this.target = target;
+	@Override
+	public Titan newInstance() {
+		return new Titan();
 	}
 
-	public Entity<?> getTarget() {
-		return this.target;
+	@Override
+	public IMAGE getAvatar() {
+		return this.avatar;
+	}
+
+	@Override
+	public void setAvatar(IMAGE avatar) {
+		this.avatar = avatar;
 	}
 }

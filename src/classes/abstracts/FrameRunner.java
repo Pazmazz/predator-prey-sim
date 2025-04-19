@@ -7,9 +7,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 
-import classes.entity.Game;
-import classes.settings.GameSettings.SimulationSettings;
-import classes.settings.GameSettings.SimulationType;
+import classes.entity.DebugInfo;
 import classes.util.Console;
 import classes.util.Console.DebugPriority;
 import classes.util.Time;
@@ -20,35 +18,32 @@ import interfaces.TaskCallback;
  * processes in a tight loop. A {@code step} method must be implemented in the
  * subclass which handles what action should occur on that frame.
  */
-public abstract class RunService {
-
-	private Game game = Game.getInstance();
-
+public abstract class FrameRunner {
 	private long FPS;
 	private long lastPulseTick;
 	private long deltaTime = 0;
 	private long timeBeforeStep;
 	private long timeAfterStep;
 
-	private SimulationSettings settings;
 	private FrameState state = FrameState.RUNNING;
 	private ArrayList<Task> preSimulationTasks = new ArrayList<>();
 	private ArrayList<Task> postSimulationTasks = new ArrayList<>();
 
 	public static FrameState masterState = FrameState.RUNNING;
 
+	final private DebugInfo debugInfo;
+	final private String processName;
+
 	public enum FrameState {
 		RUNNING,
 		SUSPENDED,
 	}
 
-	protected RunService(SimulationType simulationType) {
-		this.settings = game.getSettings()
-				.getSimulation()
-				.getSettings(simulationType);
-
-		this.FPS = Time.secondsToNano(settings.getFPS());
-		this.lastPulseTick = -Time.secondsToNano(settings.getFPS());
+	protected FrameRunner(String processName, double FPS, DebugInfo debugInfo) {
+		this.FPS = Time.secondsToNano(FPS);
+		this.lastPulseTick = -Time.secondsToNano(FPS);
+		this.debugInfo = debugInfo;
+		this.processName = processName;
 	}
 
 	/**
@@ -79,8 +74,8 @@ public abstract class RunService {
 
 		Console.debugPrint(String.format(
 				"$text-%s [%s FRAME] $text-reset ",
-				settings.getDebugInfo().getPrimaryColor(),
-				settings.getProcessName().toUpperCase()));
+				this.debugInfo.getPrimaryColor(),
+				this.processName.toUpperCase()));
 
 		this.lastPulseTick = preSimulationTime;
 		this.deltaTime = dt;
@@ -98,12 +93,12 @@ public abstract class RunService {
 
 		Console.debugPrint(String.format(
 				"completed in: $text-%s %s $text-reset seconds",
-				settings.getDebugInfo().getPrimaryColor(),
+				this.debugInfo.getPrimaryColor(),
 				Time.nanoToSeconds(simulationTime)));
 
 		Console.debugPrint(String.format(
 				"last simulation: $text-%s %s $text-reset seconds ago",
-				settings.getDebugInfo().getPrimaryColor(),
+				this.debugInfo.getPrimaryColor(),
 				Time.nanoToSeconds(deltaTime)));
 
 		Console.debugPrint("-".repeat(50));

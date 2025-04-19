@@ -153,7 +153,7 @@ Minor changes.
 
 * **Removed** issue where `$text-color` tags still showed up in text printed to the console even if `consoleColorsEnabled` was set to `false`.
 
-	* **Solution:** Passed text through a new static `Console` method called `withConsoleColors`, which will remove stray text color tags if `consoleColorsEnabled` is `false`.
+	* **Solution:** Passed text through a new static `Console` method called `filterConsoleColors`, which will remove stray text color tags if `consoleColorsEnabled` is `false`.
 
 * **Fixed** issue with `Console.println` throwing an error when printing a `null` value.
 	* **Solution:** The issue was actually with the `Formatter.concatArray` method not checking for null entries inside of the `Object[]` parameter when iterating over it. This has now been accounted for.

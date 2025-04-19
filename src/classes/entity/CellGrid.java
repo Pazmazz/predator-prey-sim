@@ -26,11 +26,14 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.concurrent.ConcurrentHashMap;
 
+import javax.swing.JLabel;
+
 /**
  * The primary API for interacting with the virtual game grid. Implements a
  * HashMap for mapping all cell coordinates to their corresponding cell objects
  * instead of using a 2D array for scalability and ease-of-access.
  */
+@SuppressWarnings("unused")
 public class CellGrid {
 
 	private Game game = Game.getInstance();
@@ -90,9 +93,9 @@ public class CellGrid {
 	 * @see #isInBounds(Unit2)
 	 */
 	public boolean isInBounds(Unit2 unit) {
-		return !(unit.getX() <= 0
+		return !(unit.getX() < 1
 				|| unit.getX() > this.size.getX()
-				|| unit.getY() <= 0
+				|| unit.getY() < 1
 				|| unit.getY() > this.size.getY());
 	}
 
@@ -175,30 +178,23 @@ public class CellGrid {
 		if (startY == limitY)
 			limitY += signedUnit.getY();
 
-		double ty = (limitY - startY) / (endY - startY);
-		double tx;
-		double txd = (endX - startX);
-		if (txd == 0)
-			tx = 0;
-		else
-			tx = (limitX - startX) / txd;
-
-		// Console.println("start pos: ", start, " end pos: ", end);
-		// Console.println("limits: ", limitX, limitY);
-		// Console.println("t values: ", tx, ty);
+		double dx = endX - startX;
+		double dy = endY - startY;
+		double tx = dx == 0
+				? 0
+				: (limitX - startX) / dx;
+		double ty = (limitY - startY) / dy;
 
 		Vector2 pointOfIntersection;
 		CellGridAxis axisOfIntersection;
 
 		// No intercepts
 		if (tx >= 1 && ty >= 1) {
-			// Console.println("NO COLLISION (endpoint)");
 			pointOfIntersection = end;
 			axisOfIntersection = CellGridAxis.NONE;
 
 			// X-intercept
 		} else if (tx < ty) {
-			// Console.println("X COLLISION");
 			axisOfIntersection = CellGridAxis.X_GRID;
 			pointOfIntersection = new Vector2(
 					limitX,
@@ -206,7 +202,6 @@ public class CellGrid {
 
 			// Y-intercept
 		} else if (ty < tx) {
-			// Console.println("Y COLLISION");
 			axisOfIntersection = CellGridAxis.Y_GRID;
 			pointOfIntersection = new Vector2(
 					Math2.lerp(startX, endX, ty),
@@ -214,14 +209,12 @@ public class CellGrid {
 
 			// X- and Y-intercept
 		} else {
-			// Console.println("XY COLLISION");
 			axisOfIntersection = CellGridAxis.XY_GRID;
 			pointOfIntersection = new Vector2(
 					limitX,
 					limitY);
 		}
 
-		// Console.println("POINT OF INTERSECTION: ", pointOfIntersection);
 		return interceptResult
 				.setPointOfIntersection(pointOfIntersection)
 				.setCell(getCell(start, pointOfIntersection))
@@ -353,8 +346,6 @@ public class CellGrid {
 	 * @see #getCell(Vector2, Vector2)
 	 */
 	public Cell getCell(Vector2 p0, Vector2 p1) {
-		// Console.println("vector segment: ", p0, p1);
-		// Console.println("vector midpoint: ", p0.midpoint(p1));
 		return getCell(p0.midpoint(p1));
 	}
 
@@ -699,6 +690,16 @@ public class CellGrid {
 		return availableCells;
 	}
 
+	public ArrayList<Cell> getOccupiedCellsFrom(ArrayList<Cell> cells) {
+		ArrayList<Cell> occupiedCells = new ArrayList<>();
+
+		for (Cell cell : cells)
+			if (cell.hasOccupant())
+				occupiedCells.add(cell);
+
+		return occupiedCells;
+	}
+
 	/**
 	 * Get a random cell from a provided {@code ArrayList<Cell>} of cells.
 	 * 
@@ -734,6 +735,18 @@ public class CellGrid {
 		return getRandomCellFrom(getAvailableCellsFrom(cells));
 	}
 
+	public Cell getRandomOccupiedCellFrom(ArrayList<Cell> cells) {
+		return getRandomCellFrom(getOccupiedCellsFrom(cells));
+	}
+
+	public ArrayList<Cell> getRandomOccupiedCellsFrom(ArrayList<Cell> cells, int amount) {
+		return getRandomCellsFrom(getOccupiedCellsFrom(cells), amount);
+	}
+
+	public ArrayList<Cell> getRandomOccupiedCellsFrom(ArrayList<Cell> cells) {
+		return getRandomCellsFrom(getOccupiedCellsFrom(cells));
+	}
+
 	/**
 	 * Get one or more random cells from a provided {@code ArrayList<Cell>} of
 	 * {@code Cell} objects.
@@ -754,9 +767,14 @@ public class CellGrid {
 		ArrayList<Cell> randCells = new ArrayList<>(cells);
 		Collections.shuffle(randCells);
 		ArrayList<Cell> subList = new ArrayList<>(
-				randCells.subList(0, Math.min(amount, cells.size())));
+				randCells.subList(0, amount));
 
 		return subList;
+	}
+
+	public ArrayList<Cell> randomizeCells(ArrayList<Cell> cells) {
+		Collections.shuffle(cells);
+		return cells;
 	}
 
 	/**
@@ -808,8 +826,7 @@ public class CellGrid {
 	 * @see #getRandomAvailableCellsFrom(ArrayList)
 	 */
 	public ArrayList<Cell> getRandomAvailableCellsFrom(ArrayList<Cell> cells) {
-		ArrayList<Cell> availableCells = getAvailableCellsFrom(cells);
-		return getRandomCellsFrom(availableCells, availableCells.size());
+		return getRandomCellsFrom(getAvailableCellsFrom(cells));
 	}
 
 	/**
@@ -936,7 +953,7 @@ public class CellGrid {
 
 		for (int row = 1; row <= rowLength; row++) {
 			for (int col = 1; col <= colLength; col++) {
-				getCell(new Unit2(row, col));
+				getCell(new Unit2(col, row));
 			}
 		}
 		return this;
@@ -1230,7 +1247,7 @@ public class CellGrid {
 
 		@Override
 		public String toString() {
-			return Console.withConsoleColors(String.format(
+			return Console.filterConsoleColors(String.format(
 					"$text-yellow GridIntercept$text-reset <Axis: $text-purple %s$text-reset , Point: %s>",
 					this.axisOfIntersection,
 					this.pointOfIntersection));
@@ -1255,6 +1272,7 @@ public class CellGrid {
 		private CellVacancy cellVacancy;
 		private Entity<?> cellOccupant;
 		private boolean isPathCell;
+		private JLabel imgRef;
 
 		/**
 		 * Creates a new {@code Cell} object. A cell object by itself does not belong to
@@ -1318,6 +1336,14 @@ public class CellGrid {
 
 		public void setPathCell() {
 			this.isPathCell = true;
+		}
+
+		public void setImgRef(JLabel img) {
+			this.imgRef = img;
+		}
+
+		public JLabel getImgRef() {
+			return this.imgRef;
 		}
 
 		// TODO; 'withAggregation' parameter is no longer necessary now that Cell is an
@@ -1395,8 +1421,8 @@ public class CellGrid {
 		 * @param cell
 		 * @return true if the occupant is eatable
 		 */
-		public boolean isOccupantEatable(Cell cell) {
-			Entity<?> _cellOccupant = cell.getOccupant();
+		public boolean isOccupantEatable() {
+			Entity<?> _cellOccupant = getOccupant();
 			return _cellOccupant.getProperty(Property.IS_EATABLE, Boolean.class);
 		}
 
@@ -1620,7 +1646,7 @@ public class CellGrid {
 		 * @return true if this cell is eligible for garbage collection
 		 */
 		public boolean isCollectable() {
-			return isEmpty() || this.cellOccupant == null;
+			return isEmpty();
 		}
 
 		/**
@@ -1684,7 +1710,7 @@ public class CellGrid {
 		@Override
 		public String toString() {
 			return String.format(
-					Console.withConsoleColors("$text-green Cell$text-reset <%s, %s>"),
+					Console.filterConsoleColors("$text-green Cell$text-reset <%s, %s>"),
 					unit.getX(),
 					unit.getY());
 		}
