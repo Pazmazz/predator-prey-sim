@@ -4,6 +4,9 @@
 package classes.settings;
 
 import classes.entity.Unit2;
+import classes.util.Console;
+import classes.util.Console.DebugPriority;
+
 import java.util.HashMap;
 
 public class GameSettings {
@@ -17,12 +20,13 @@ public class GameSettings {
 	private int initialDoodlebugs;
 	private int gridLineThickness;
 
+	private boolean antBreedingEnabled;
+	private boolean doodlebugBreedingEnabled;
+
 	final private int screenWidth;
 	final private int screenHeight;
 	final private int screenAspectRatio;
 	final private SimulationInfo simulationInfo;
-
-	private boolean canSpawnTitan;
 
 	public GameSettings() {
 		//
@@ -31,21 +35,28 @@ public class GameSettings {
 		this.gameHeaderText = "one"; // Text of the main header within the window
 		this.gameTitle = "two"; // Title of game window
 
+		// Game grid
 		this.screenWidth = 560;
 		this.screenHeight = 680;
+
 		this.gridLineThickness = 2;
-		this.gridSize = new Unit2(20, 20); // Cell units
+		this.gridSize = new Unit2(20, 20);
 
 		this.initialAnts = 100;
 		this.initialDoodlebugs = 5;
 
-		this.canSpawnTitan = false;
+		this.antBreedingEnabled = true;
+		this.doodlebugBreedingEnabled = true;
+
+		// Debug
+		Console.setDebugModeEnabled(true);
+		Console.setConsoleColorsEnabled(false);
+		Console.hideDebugPriority(DebugPriority.LOW);
+		Console.hideDebugPriority(DebugPriority.MEDIUM);
 
 		//
 		// Non-Editable
 		//
-		// this.screenWidth = gridSize.getX() * this.cellSize;
-		// this.screenHeight = gridSize.getY() * this.cellSize;
 		this.simulationInfo = new SimulationInfo();
 		this.screenAspectRatio = this.screenWidth / this.screenHeight;
 	}
@@ -105,7 +116,7 @@ public class GameSettings {
 			//
 			// Editable
 			//
-			FPS = 1.0 / 20;
+			FPS = 1.0 / 60;
 			settings = new HashMap<>();
 
 			// (vv) Note: Set FPS to 0 if you want it to match the game FPS (vv) //
@@ -231,17 +242,21 @@ public class GameSettings {
 		return this.gridLineThickness;
 	}
 
-	public boolean canSpawnTitan() {
-		return this.canSpawnTitan;
+	public boolean getAntBreedingEnabled() {
+		return this.antBreedingEnabled;
+	}
+
+	public boolean getDoodlebugBreedingEnabled() {
+		return this.doodlebugBreedingEnabled;
+	}
+
+	public int getScreenAspectRatio() {
+		return screenAspectRatio;
 	}
 
 	//
 	// Public setters
 	//
-	public void setTitanSpawn(boolean enabled) {
-		this.canSpawnTitan = enabled;
-	}
-
 	public void setInitialAnts(int initialAnts) {
 		this.initialAnts = initialAnts;
 	}
@@ -258,7 +273,11 @@ public class GameSettings {
 		this.gridLineThickness = gridLineThickness;
 	}
 
-	public int getScreenAspectRatio() {
-		return screenAspectRatio;
+	public void setAntBreedingEnabled(boolean bool) {
+		this.antBreedingEnabled = bool;
+	}
+
+	public void setDoodlebugBreedingEnabled(boolean bool) {
+		this.doodlebugBreedingEnabled = bool;
 	}
 }

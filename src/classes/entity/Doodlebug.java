@@ -6,19 +6,28 @@ import classes.abstracts.Bug;
 import classes.util.Console;
 import classes.util.Math2;
 import classes.entity.CellGrid.Cell;
+import classes.entity.ValueMeter.RESET_TYPE;
+import classes.settings.GameSettings;
 
+@SuppressWarnings("unused")
 public class Doodlebug extends Bug<Doodlebug> {
 	final private Game game = Game.getInstance();
 	final private CellGrid gameGrid = game.getGameGrid();
+	final private GameSettings settings = game.getSettings();
 
 	public Doodlebug() {
-
 		// properties
+		ValueMeter hungerMeter = new ValueMeter(4, 0, 0);
+		this.setProperty(Property.HUNGER_METER, hungerMeter);
 		this.setProperty(Property.IS_EATABLE, false);
-		this.setProperty(Property.HUNGER_METER, new ValueMeter(3));
 
 		ValueMeter movementMeter = this.getProperty(Property.MOVEMENT_METER, ValueMeter.class);
-		movementMeter.setMaxAndFill(8);
+		movementMeter.setMax(8);
+
+		// event listeners
+		hungerMeter.onMaxValueReached.connect(e -> this.removeFromCell());
+		if (settings.getDoodlebugBreedingEnabled())
+			movementMeter.onMaxValueReached.connect(e -> this.breed());
 	}
 
 	public ValueMeter getHungerMeter() {
@@ -27,20 +36,27 @@ public class Doodlebug extends Bug<Doodlebug> {
 
 	@Override
 	public void move() {
-		ArrayList<Cell> adjCells = this.gameGrid.getCellsAdjacentTo(getCell());
-		Cell randOccupiedCell = this.gameGrid.getRandomOccupiedCellFrom(adjCells);
-
-		if (randOccupiedCell != null && randOccupiedCell.isOccupantEatable()) {
-			randOccupiedCell.removeOccupant();
-			this.assignCell(randOccupiedCell);
-			this.getHungerMeter().setValue(0);
-		} else {
-			Cell randAvailableCell = this.gameGrid.getRandomAvailableCellFrom(adjCells);
-			if (randAvailableCell != null)
-				this.assignCell(randAvailableCell);
-			this.getHungerMeter().increment();
-		}
 		this.getMovementMeter().increment();
+		ArrayList<Cell> adjCells = this.gameGrid.randomizeCells(
+				this.gameGrid.getCellsAdjacentTo(getCell()));
+		Cell fallbackCell = null;
+
+		for (Cell cell : adjCells) {
+			if (cell.hasOccupant()) {
+				if (cell.isOccupantEatable()) {
+					cell.removeOccupant();
+					this.assignCell(cell);
+					this.getHungerMeter().empty();
+					return;
+				}
+			} else if (fallbackCell == null) {
+				fallbackCell = cell;
+			}
+		}
+
+		if (fallbackCell != null)
+			this.assignCell(fallbackCell);
+		this.getHungerMeter().increment();
 	}
 
 	@Override

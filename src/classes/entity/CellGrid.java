@@ -739,6 +739,14 @@ public class CellGrid {
 		return getRandomCellFrom(getOccupiedCellsFrom(cells));
 	}
 
+	public ArrayList<Cell> getRandomOccupiedCellsFrom(ArrayList<Cell> cells, int amount) {
+		return getRandomCellsFrom(getOccupiedCellsFrom(cells), amount);
+	}
+
+	public ArrayList<Cell> getRandomOccupiedCellsFrom(ArrayList<Cell> cells) {
+		return getRandomCellsFrom(getOccupiedCellsFrom(cells));
+	}
+
 	/**
 	 * Get one or more random cells from a provided {@code ArrayList<Cell>} of
 	 * {@code Cell} objects.
@@ -762,6 +770,11 @@ public class CellGrid {
 				randCells.subList(0, amount));
 
 		return subList;
+	}
+
+	public ArrayList<Cell> randomizeCells(ArrayList<Cell> cells) {
+		Collections.shuffle(cells);
+		return cells;
 	}
 
 	/**

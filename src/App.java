@@ -33,9 +33,11 @@ import classes.entity.CellGrid.Cell;
 import classes.entity.CellGrid.CellType;
 import classes.entity.CellGrid;
 import classes.entity.CellGrid.GridIntercept;
+import classes.entity.ValueMeter.RESET_TYPE;
 import classes.entity.Game;
 import classes.entity.MainFrame;
 import classes.entity.Unit2;
+import classes.entity.ValueMeter;
 import classes.util.Console;
 import classes.util.Console.DebugPriority;
 import classes.util.Time;
@@ -56,30 +58,13 @@ public class App {
 
 	public static void main(String[] args) {
 
-		Console.benchmark("Creating game grid", game::initConfig);
-
-		// Avg: ~0.001s
-		Console.benchmark("Creating game grid", game::createGameGrid);
-
-		CellGrid grid = game.getGameGrid();
-		// grid.populate();
-
-		// Avg: ~0.02s
-		Console.benchmark("Initializing game grid", game::initGameGrid);
-		// grid.getCell(new Unit2(2, 2)).setOccupant(new Titan());
-		// grid.getCell(new Unit2(7, 7)).setOccupant(new Ant());
-		// grid.upload("Cell{Unit2{5, 5}, Ant{}}");
-		// Console.println(grid.getCell(new Unit2(5, 5)).getOccupant());
-
-		// Avg: ~0.01s
-		Console.benchmark("Render game grid", grid::toASCII);
-
-		// Avg: ~0.005s
-		Console.benchmark("Initializing RunService", game::initRunService);
-
-		// Avg: ~0.3s
-		Console.benchmark("Initializing game screen", game::initGameScreen);
-
-		game.start();
+		game.boot();
+		new Thread(() -> {
+			try {
+				Thread.sleep(1000);
+				game.start();
+			} catch (Exception e) {
+			}
+		}).start();
 	}
 }

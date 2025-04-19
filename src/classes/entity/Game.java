@@ -76,12 +76,6 @@ public class Game implements Runnable {
 	// TODO: Add documentation
 	public String initConfig() {
 		this.settings = new GameSettings();
-
-		Console.setDebugModeEnabled(true);
-		Console.setConsoleColorsEnabled(false);
-		Console.hideDebugPriority(DebugPriority.LOW);
-		Console.hideDebugPriority(DebugPriority.MEDIUM);
-
 		return "Game config benchmark";
 	}
 
@@ -190,7 +184,7 @@ public class Game implements Runnable {
 			for (RunService frame : this.frameProcesses) {
 				if (frame.isSuspended())
 					continue;
-				else if (game.isTerminated())
+				else if (this.isTerminated())
 					break;
 
 				long frameDelta = frame.pulse();
@@ -282,6 +276,25 @@ public class Game implements Runnable {
 	//
 	public void setState(GameState newState) {
 		this.state = newState;
+	}
+
+	public void boot() {
+		Console.benchmark("Creating game grid", this::initConfig);
+
+		// Avg: ~0.001s
+		Console.benchmark("Creating game grid", this::createGameGrid);
+
+		// Avg: ~0.02s
+		Console.benchmark("Initializing game grid", this::initGameGrid);
+
+		// Avg: ~0.01s
+		Console.benchmark("Render game grid", this.getGameGrid()::toASCII);
+
+		// Avg: ~0.005s
+		Console.benchmark("Initializing RunService", this::initRunService);
+
+		// Avg: ~0.3s
+		Console.benchmark("Initializing game screen", this::initGameScreen);
 	}
 
 	@Override

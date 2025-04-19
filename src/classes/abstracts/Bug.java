@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import classes.entity.CellGrid;
 import classes.entity.CellGrid.Cell;
+import classes.entity.ValueMeter.RESET_TYPE;
 import classes.entity.Doodlebug;
 import classes.entity.EventSignal;
 import classes.entity.Game;
@@ -25,7 +26,7 @@ public abstract class Bug<T extends Bug<T>> extends Entity<T> {
 
 		// properties
 		this.setProperty(Property.POSITION, new Vector2());
-		this.setProperty(Property.ROTATION, 0);
+		this.setProperty(Property.ROTATION, 0.0);
 		this.setProperty(Property.MOVEMENT_SPEED, 5);
 		this.setProperty(Property.IS_EATABLE, false);
 		this.setProperty(Property.ASSIGNED_CELL, new Null());
@@ -33,7 +34,7 @@ public abstract class Bug<T extends Bug<T>> extends Entity<T> {
 		this.setProperty(Property.VARIANT, getClass().getSimpleName());
 		this.setProperty(Property.NAME, this.getClass().getSimpleName());
 		this.setProperty(Property.HEALTH_METER, new ValueMeter(1));
-		this.setProperty(Property.MOVEMENT_METER, new ValueMeter(3));
+		this.setProperty(Property.MOVEMENT_METER, new ValueMeter(3, 0, 0, RESET_TYPE.ON_MAX));
 	}
 
 	public ValueMeter getHealthMeter() {

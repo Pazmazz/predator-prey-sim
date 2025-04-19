@@ -109,8 +109,6 @@ public class GameScreen {
 	private JPanel buildMainFrame() {
 		JPanel masterFrame = new JPanel();
 		masterFrame.setLayout(new FlowLayout());
-		// masterFrame.setLayout(new BorderLayout());
-		// masterFrame.setLayout(new BoxLayout(masterFrame, BoxLayout.Y_AXIS));
 		masterFrame.setDoubleBuffered(true);
 		masterFrame.setBackground(Color.BLACK);
 
@@ -183,40 +181,50 @@ public class GameScreen {
 			}
 
 			for (Cell cell : gameGrid.getGrid().values()) {
-				int row = cell.getUnit2().getY();
-				int col = cell.getUnit2().getX();
-
 				if (cell.isEmpty())
 					continue;
 
+				int row = cell.getUnit2().getY();
+				int col = cell.getUnit2().getX();
+
+				int posX = GRID_LINE_THICKNESS + (col - 1) * CELL_SIZE;
+				int posY = GRID_LINE_THICKNESS + (row - 1) * CELL_SIZE;
+				int sizeX = CELL_SIZE - GRID_LINE_THICKNESS;
+				int sizeY = sizeX;
+
 				Bug<?> occupant = (Bug<?>) cell.getOccupant();
+				if (occupant != null) {
+					// Console.println("Rotation: " + occupant.getRotation());
+					// g2.rotate(occupant.getRotation(), posX + sizeX / 2, posY + sizeY / 2);
+				}
 
 				if (cell.getOccupant() instanceof Ant) {
 					g2.drawImage(
 							loadedImages.get("ant"),
-							GRID_LINE_THICKNESS + (col - 1) * CELL_SIZE,
-							GRID_LINE_THICKNESS + (row - 1) * CELL_SIZE,
-							CELL_SIZE - GRID_LINE_THICKNESS,
-							CELL_SIZE - GRID_LINE_THICKNESS,
+							posX,
+							posY,
+							sizeX,
+							sizeY,
 							contentFrame);
 				} else if (cell.getOccupant() instanceof Doodlebug) {
 					g2.drawImage(
 							loadedImages.get("doodlebug"),
-							GRID_LINE_THICKNESS + (col - 1) * CELL_SIZE,
-							GRID_LINE_THICKNESS + (row - 1) * CELL_SIZE,
-							CELL_SIZE - GRID_LINE_THICKNESS,
-							CELL_SIZE - GRID_LINE_THICKNESS,
+							posX,
+							posY,
+							sizeX,
+							sizeY,
 							contentFrame);
 				} else if (cell.getOccupant() instanceof Titan) {
 					g2.drawImage(
 							loadedImages.get("titan"),
-							GRID_LINE_THICKNESS + (col - 1) * CELL_SIZE,
-							GRID_LINE_THICKNESS + (row - 1) * CELL_SIZE,
-							CELL_SIZE - GRID_LINE_THICKNESS,
-							CELL_SIZE - GRID_LINE_THICKNESS,
+							posX,
+							posY,
+							sizeX,
+							sizeY,
 							contentFrame);
 				}
 
+				// g2.dispose();
 			}
 
 		}

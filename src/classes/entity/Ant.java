@@ -5,18 +5,21 @@ import java.util.ArrayList;
 import classes.abstracts.Bug;
 import classes.util.Console;
 import classes.entity.CellGrid.Cell;
+import classes.settings.GameSettings;
 
 @SuppressWarnings("unused")
 public class Ant extends Bug<Ant> {
 
 	final private Game game = Game.getInstance();
 	final private CellGrid gameGrid = game.getGameGrid();
+	final private GameSettings settings = game.getSettings();
 
 	public Ant() {
-		this.setMovementCountLimit(3);
-		this.onMovementLimitReached.connect(e -> breed());
 		// properties
-		setProperty(Property.IS_EATABLE, true);
+		this.setProperty(Property.IS_EATABLE, true);
+
+		if (settings.getAntBreedingEnabled())
+			this.getMovementMeter().onMaxValueReached.connect(e -> breed());
 	}
 
 	@Override
@@ -25,11 +28,12 @@ public class Ant extends Bug<Ant> {
 		Cell randCell = gameGrid.getRandomAvailableCellFrom(adjCells);
 
 		if (randCell != null) {
-			double angle = (randCell.getUnit2Center().subtract(getCell().getUnit2Center())).screenAngle();
+			double angle = (randCell.getUnit2Center().subtract(getCell().getUnit2Center())).screenAngle()
+					+ Math.PI * 3 / 2;
 			setRotation(angle);
 			assignCell(randCell);
 		}
-		incrementMovement();
+		this.getMovementMeter().increment();
 	}
 
 	@Override
