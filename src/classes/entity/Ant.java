@@ -9,6 +9,7 @@ import classes.entity.CellGrid.Cell;
 public class Ant extends Bug<Ant> {
 
 	private Game game = Game.getInstance();
+	private final String avatar = "src/assets/ant2.jpg";
 
 	public Ant() {
 		idNum = (int) (Math.random() * 1000);
@@ -19,19 +20,22 @@ public class Ant extends Bug<Ant> {
 	}
 
 	@Override
+	public String getAvatar() {
+		return avatar;
+	}
+
+	@Override
 	public void move() {
-		ArrayList<Cell> adjCells = game
-				.getGameGrid()
-				.getCellsAdjacentTo(getCell());
-
-		for (Cell adjCell : adjCells) {
-			if (adjCell.isInBounds() && adjCell.isEmpty()) {
-				assignCell(adjCell);
-				break;
-			}
+		CellGrid grid = game.getGameGrid();
+		ArrayList<Cell> adjCells = grid.getCellsAdjacentTo(getCell());
+		Cell randCell = grid.getRandomAvailableCellFrom(adjCells);
+		if (randCell != null) {
+			double angle = (randCell.getUnit2Center().subtract(getCell().getUnit2Center())).screenAngle();
+			setRotation(angle);
+			assignCell(randCell);
 		}
-		movementCounter++;
 
+		movementCounter++;
 		if (movementCounter == 3) {
 			movementCounter = 0;
 			this.breed();

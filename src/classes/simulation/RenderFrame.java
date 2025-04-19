@@ -26,6 +26,7 @@ public class RenderFrame extends RunService {
 	@Override
 	public void step(double deltaTimeSeconds) {
 		CellGrid grid = game.getGameGrid();
-		Console.println(grid.toASCII());
+		// Console.println(grid.toASCII());
+		game.getScreen().repaintGrid();
 	}
 }

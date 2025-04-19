@@ -8,6 +8,7 @@ import classes.util.Console;
 public abstract class Bug<T> extends Entity<T> {
 	public int idNum;
 	Cell cell;
+	private double rotation = 0;
 
 	public int movementCounter = 0;
 
@@ -29,4 +30,12 @@ public abstract class Bug<T> extends Entity<T> {
 	public abstract void move();
 
 	public abstract void breed();
+
+	public double getRotation() {
+		return this.rotation;
+	}
+
+	public void setRotation(double rotation) {
+		this.rotation = rotation;
+	}
 }

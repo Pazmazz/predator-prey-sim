@@ -9,6 +9,7 @@ import classes.entity.CellGrid.Cell;
 public class Doodlebug extends Bug<Doodlebug> {
 
 	private Game game = Game.getInstance();
+	final private String avatar = "src/assets/doodlebug2.jpg";
 
 	int starvationTracker = 0;
 
@@ -21,32 +22,37 @@ public class Doodlebug extends Bug<Doodlebug> {
 	}
 
 	@Override
+	public String getAvatar() {
+		return avatar;
+	}
+
+	@Override
 	public void move() {
-		ArrayList<Cell> adjCells = game
-				.getGameGrid()
-				.getCellsAdjacentTo(getCell());
+		CellGrid grid = game.getGameGrid();
+		ArrayList<Cell> adjCells = grid.getCellsAdjacentTo(getCell());
+		Cell randOccupiedCell = grid.getRandomOccupiedCellFrom(adjCells);
+		Cell randAvailableCell = grid.getRandomAvailableCellFrom(adjCells);
 
-		for (Cell adjCell : adjCells) {
-			if (adjCell.isOccupantEatable(getCell())) {
-				adjCell.removeOccupant();
-				assignCell(adjCell);
-				starvationTracker = 0;
-				break;
-			} else if (adjCell.isInBounds() && adjCell.isEmpty()) {
-				assignCell(adjCell);
-				starvationTracker++;
-				break;
+		if (randOccupiedCell != null) {
+			// Console.println("Occupant eatable: ", adjCell.isOccupantEatable(getCell()));
+			if (randOccupiedCell.isOccupantEatable()) {
+				randOccupiedCell.removeOccupant();
+				assignCell(randOccupiedCell);
+				starvationTracker = -1;
 			}
+		} else if (randAvailableCell != null) {
+			assignCell(randAvailableCell);
 		}
-		movementCounter++;
 
-		if (starvationTracker == 3) {
-			removeFromCell();
-		}
+		starvationTracker++;
+		movementCounter++;
 
 		if (movementCounter == 8) {
 			movementCounter = 0;
 			this.breed();
+		}
+		if (starvationTracker == 3) {
+			removeFromCell();
 		}
 	}
 

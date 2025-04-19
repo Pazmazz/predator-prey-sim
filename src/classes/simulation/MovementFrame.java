@@ -7,10 +7,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 
+import classes.abstracts.Bug;
 import classes.abstracts.Entity;
 import classes.abstracts.RunService;
 import classes.abstracts.Properties;
 import classes.abstracts.Properties.Property;
+import classes.entity.Ant;
 import classes.entity.CellGrid;
 import classes.entity.CellGrid.Cell;
 import classes.entity.Game;
@@ -43,37 +45,14 @@ public class MovementFrame extends RunService {
 		CellGrid grid = game.getGameGrid();
 		grid.collectCells();
 
-		for (Cell cell : grid.getCells()) {
+		for (Cell cell : grid.getGrid().values()) {
 			Entity<?> entity = cell.getOccupant();
 
-			switch (entity.getProperty(Property.VARIANT, String.class)) {
-				case "Titan" -> {
-					Titan titan = (Titan) entity;
-					// titan.setTarget(grid.getCellWithNearestOccupant(cell).getOccupant());
-					// Console.println("Titan target: ", titan.getTarget());
-					titan.setTarget(grid.getCellWithNearestOccupant(cell).getOccupant());
-					// Console.println("Titan target: ", titan.getTarget());
-
-					ArrayList<Cell> pathCells = grid.getCellPath(cell.getUnit2Center(),
-							titan.getTarget().getProperty(Property.POSITION, Vector2.class));
-
-					if (pathCells.size() > 0) {
-						Cell c = pathCells.get(1);
-						if (c.isAvailable()) {
-							titan.assignCell(c);
-						}
-					}
-
-				}
-				default -> {
-					ArrayList<Cell> adjCells = grid.getCellsAdjacentTo(cell);
-					Cell randCell = grid.getRandomAvailableCellFrom(adjCells);
-
-					if (randCell != null)
-						entity.assignCell(randCell);
-				}
+			if (entity instanceof Bug) {
+				Bug<?> bug = (Bug<?>) entity;
+				bug.move();
 			}
-
 		}
+
 	}
 }
