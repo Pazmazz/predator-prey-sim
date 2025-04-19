@@ -21,11 +21,11 @@ public class GameSettings {
 		this.gameTitle = "two"; // Title of game window
 
 		// Game grid
-		this.screenWidth = 800;
+		this.screenWidth = 500;
 		// this.screenHeight = 680;
 
-		this.gridLineThickness = 8;
-		this.gridBorderPadding = 50;
+		this.gridLineThickness = 1;
+		this.gridBorderPadding = 8;
 		this.gridSize = new Unit2(20, 20);
 
 		this.initialAnts = 100;

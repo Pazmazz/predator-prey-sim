@@ -32,12 +32,13 @@ public class ScreenTest {
 
 	final private int GRID_LINE_THICKNESS = settings.getGridLineThickness();
 	final private int GRID_BORDER_PADDING = settings.getGridBorderPadding();
-	final private int GRID_LINE_OFFSET = (int) Math.ceil(GRID_LINE_THICKNESS / 2.0);
+	final private double GRID_LINE_OFFSET = GRID_LINE_THICKNESS / 2.0;
 
 	final private int ROWS = settings.getGridSize().getY();
 	final private int COLS = settings.getGridSize().getX();
 	final private int SCREEN_WIDTH = settings.getScreenWidth();
-	final private int CELL_SIZE = (SCREEN_WIDTH - GRID_BORDER_PADDING * 2) / COLS;
+	final private int CONTENT_WIDTH = (SCREEN_WIDTH - GRID_BORDER_PADDING * 2);
+	final private double CELL_SIZE = CONTENT_WIDTH / (double) COLS;
 
 	public ScreenTest() {
 		// Default game screen settings
@@ -55,7 +56,6 @@ public class ScreenTest {
 		// Console.println("Worked");
 		// });
 		// this.masterFrame.add(butt);
-
 		Console.println("Cell size: ", CELL_SIZE);
 
 		this.window.pack();
@@ -63,10 +63,14 @@ public class ScreenTest {
 		this.window.setVisible(true);
 	}
 
+	private int toPixel(double n) {
+		return (int) Math.ceil(n);
+	}
+
 	private JPanel buildMainFrame() {
 		JPanel masterFrame = new JPanel();
 		masterFrame.setLayout(new BoxLayout(masterFrame, BoxLayout.Y_AXIS));
-		// masterFrame.setBorder(new EmptyBorder(100, 100, 100, 100));
+		masterFrame.setBorder(new EmptyBorder(10, 10, 10, 10));
 		masterFrame.setDoubleBuffered(true);
 		masterFrame.setBackground(Color.BLACK);
 
@@ -76,7 +80,7 @@ public class ScreenTest {
 
 	private JPanel square() {
 		JPanel square = new JPanel();
-		square.setPreferredSize(new Dimension(CELL_SIZE, CELL_SIZE));
+		square.setPreferredSize(new Dimension(this.toPixel(CELL_SIZE), this.toPixel(CELL_SIZE)));
 		square.setSize(new Dimension(20, 20));
 		// square.setLocation(20, 20);
 		square.setBackground(Color.RED);
@@ -85,12 +89,9 @@ public class ScreenTest {
 
 	private class GridPanel extends JPanel {
 
-		final private int halfGridLineThickness = GRID_LINE_THICKNESS / 2;
-
 		public GridPanel() {
 			this.setBackground(Color.BLUE);
 			this.setLayout(null);
-			this.add(square());
 		}
 
 		@Override
@@ -103,15 +104,15 @@ public class ScreenTest {
 			int gridStart = GRID_BORDER_PADDING;
 			int gridEnd = SCREEN_WIDTH - GRID_BORDER_PADDING;
 
-			g2.setColor(Color.GRAY);
+			g2.setColor(Color.CYAN);
 			for (int row = 0; row <= ROWS; row++) {
-				int Y = gridStart + row * CELL_SIZE;
+				int Y = toPixel(gridStart + row * CELL_SIZE);
 				g2.drawLine(gridStart, Y, gridEnd, Y);
 			}
 
-			g2.setColor(Color.DARK_GRAY);
+			g2.setColor(Color.CYAN);
 			for (int col = 0; col <= COLS; col++) {
-				int X = gridStart + col * CELL_SIZE;
+				int X = toPixel(gridStart + col * CELL_SIZE);
 				g2.drawLine(X, gridStart, X, gridEnd);
 			}
 
@@ -127,14 +128,14 @@ public class ScreenTest {
 				int row = unit.getY();
 				int col = unit.getX();
 
-				int posX = gridStart + (col - 1) * CELL_SIZE + GRID_LINE_OFFSET;
-				int posY = gridStart + (row - 1) * CELL_SIZE + GRID_LINE_OFFSET;
+				int posX = toPixel(gridStart + (col - 1) * CELL_SIZE + GRID_LINE_OFFSET);
+				int posY = toPixel(gridStart + (row - 1) * CELL_SIZE + GRID_LINE_OFFSET);
 
 				g2.fillRect(
 						posX,
 						posY,
-						CELL_SIZE - GRID_LINE_THICKNESS,
-						CELL_SIZE - GRID_LINE_THICKNESS);
+						toPixel(CELL_SIZE - GRID_LINE_THICKNESS),
+						toPixel(CELL_SIZE - GRID_LINE_THICKNESS));
 			}
 
 		}
