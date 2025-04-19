@@ -54,7 +54,7 @@ public class ValueMeter {
 	}
 
 	public double getRatio() {
-		return this.value / this.max;
+		return this.value / (double) this.max;
 	}
 
 	public void setValue(int value) {

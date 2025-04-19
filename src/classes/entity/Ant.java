@@ -1,14 +1,21 @@
 package classes.entity;
 
+import java.awt.image.BufferedImage;
+import java.io.File;
 import java.util.ArrayList;
+
+import javax.imageio.ImageIO;
 
 import classes.abstracts.Bug;
 import classes.util.Console;
 import classes.entity.CellGrid.Cell;
+import classes.entity.ScreenTest.IMAGE;
 import classes.settings.GameSettings;
 
 @SuppressWarnings("unused")
 public class Ant extends Bug<Ant> {
+
+	public IMAGE avatar = IMAGE.BASE_ANT;
 
 	final private Game game = Game.getInstance();
 	final private CellGrid gameGrid = game.getGameGrid();
@@ -17,6 +24,7 @@ public class Ant extends Bug<Ant> {
 	public Ant() {
 		// properties
 		this.setProperty(Property.IS_EATABLE, true);
+		this.setProperty(Property.MOVEMENT_COOLDOWN, settings.getAntMovementCooldown());
 
 		if (settings.getAntBreedingEnabled())
 			this.getMovementMeter().onMaxValueReached.connect(e -> breed());
@@ -28,8 +36,7 @@ public class Ant extends Bug<Ant> {
 		Cell randCell = gameGrid.getRandomAvailableCellFrom(adjCells);
 
 		if (randCell != null) {
-			double angle = (randCell.getUnit2Center().subtract(getCell().getUnit2Center())).screenAngle()
-					+ Math.PI * 3 / 2;
+			double angle = (randCell.getUnit2Center().subtract(getCell().getUnit2Center())).screenAngle();
 			setRotation(angle);
 			assignCell(randCell);
 		}
@@ -51,5 +58,15 @@ public class Ant extends Bug<Ant> {
 	@Override
 	public Ant newInstance() {
 		return new Ant();
+	}
+
+	@Override
+	public IMAGE getAvatar() {
+		return this.avatar;
+	}
+
+	@Override
+	public void setAvatar(IMAGE avatar) {
+		this.avatar = avatar;
 	}
 }

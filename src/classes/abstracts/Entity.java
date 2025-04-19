@@ -3,7 +3,10 @@
  */
 package classes.abstracts;
 
+import java.io.File;
+
 import classes.entity.CellGrid.Cell;
+import classes.entity.ScreenTest.IMAGE;
 import classes.entity.Null;
 import exceptions.CellIsOccupiedException;
 import exceptions.NoCellFoundException;
@@ -18,6 +21,10 @@ import interfaces.Serializable;
  * occupant in a cell using {@code cell.setOccupant}.
  */
 public abstract class Entity<T extends Entity<T>> extends Properties {
+
+	public abstract IMAGE getAvatar();
+
+	public abstract void setAvatar(IMAGE image);
 
 	// Unused constructor for now
 	// public Entity() {

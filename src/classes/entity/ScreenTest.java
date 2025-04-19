@@ -1,5 +1,6 @@
 package classes.entity;
 
+import java.awt.AlphaComposite;
 import java.awt.BasicStroke;
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -8,7 +9,11 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.util.HashMap;
 
+import javax.imageio.ImageIO;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JComponent;
@@ -16,10 +21,13 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
+import classes.abstracts.Bug;
+import classes.abstracts.Entity;
 import classes.entity.CellGrid.Cell;
 import classes.settings.GameSettings;
 import classes.util.Console;
 import classes.util.Math2;
+import classes.util.Time;
 
 @SuppressWarnings("unused")
 public class ScreenTest {
@@ -44,6 +52,15 @@ public class ScreenTest {
 	final private int GRID_START = GRID_BORDER_PADDING;
 	final private int GRID_END = SCREEN_WIDTH - GRID_BORDER_PADDING;
 
+	final private HashMap<IMAGE, BufferedImage> loadedImages = new HashMap<>();
+
+	public enum IMAGE {
+		BASE_ANT,
+		BASE_DOODLEBUG,
+		BASE_TITAN,
+		RED_CELL,
+	}
+
 	public ScreenTest() {
 		// Default game screen settings
 		this.window = new JFrame();
@@ -52,6 +69,7 @@ public class ScreenTest {
 		this.window.setTitle("Test");
 
 		this.masterFrame = buildMasterFrame();
+		this.loadImages();
 
 		JPanel grid = new GridPanel();
 		this.masterFrame.add(grid);
@@ -62,6 +80,21 @@ public class ScreenTest {
 		this.window.pack();
 		this.window.setLocationRelativeTo(null);
 		this.window.setVisible(true);
+	}
+
+	public void loadImages() {
+		try {
+			this.loadedImages.put(IMAGE.BASE_ANT, ImageIO.read(new File("src/assets/ant2.jpg")));
+			this.loadedImages.put(IMAGE.BASE_DOODLEBUG, ImageIO.read(new File("src/assets/doodlebug3.jpg")));
+			this.loadedImages.put(IMAGE.BASE_TITAN, ImageIO.read(new File("src/assets/titanant.jpg")));
+			this.loadedImages.put(IMAGE.RED_CELL, ImageIO.read(new File("src/assets/pathcell.jpg")));
+		} catch (Exception e) {
+			throw new Error("Error loading images");
+		}
+	}
+
+	public void renderGrid() {
+		this.gridContent.repaint();
 	}
 
 	private int toPixel(double n) {
@@ -82,6 +115,34 @@ public class ScreenTest {
 		return new Unit2(
 				toPixel(CELL_SIZE - GRID_LINE_THICKNESS),
 				toPixel(CELL_SIZE - GRID_LINE_THICKNESS));
+	}
+
+	private void renderCell(JPanel grid, Graphics2D g2, Cell cell) {
+		if (cell.isEmpty())
+			return;
+
+		Entity<?> entity = cell.getOccupant();
+		Unit2 cellPos = cellUnitToScreenPosition(cell.getUnit2());
+		Unit2 cellSize = getCellSize();
+
+		int posX = cellPos.getX();
+		int posY = cellPos.getY();
+		int sizeX = cellSize.getX();
+		int sizeY = cellSize.getY();
+
+		if (entity instanceof Doodlebug) {
+			Doodlebug db = (Doodlebug) entity;
+			double hungerAlpha = 1 - db.getHungerMeter().getRatio();
+			g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, (float) hungerAlpha));
+		} else if (entity instanceof Bug<?>) {
+			Bug<?> bug = (Bug<?>) entity;
+			double timeAliveAlpha = Math.min(1, Time.nanoToSeconds(bug.getTimeAlive()) / 0.3);
+			g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, (float) timeAliveAlpha));
+		}
+
+		g2.drawImage(loadedImages.get(entity.getAvatar()), posX, posY, sizeX, sizeY, grid);
+
+		g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1));
 	}
 
 	private JPanel buildMasterFrame() {
@@ -114,21 +175,11 @@ public class ScreenTest {
 			super.paintComponent(g);
 			Graphics2D g2 = (Graphics2D) g;
 
-			Unit2[] points = new Unit2[] {
-					new Unit2(2, 2),
-					new Unit2(5, 3),
-					new Unit2(6, 5),
-					new Unit2(13, 13)
-			};
-
-			g2.setColor(Color.YELLOW);
-			for (Unit2 unit : points) {
-				Unit2 cellPos = cellUnitToScreenPosition(unit);
-				Unit2 cellSize = getCellSize();
-				g2.fillRect(
-						cellPos.getX(), cellPos.getY(),
-						cellSize.getX(), cellSize.getY());
+			for (Cell cell : gameGrid.getGrid().values()) {
+				renderCell(this, g2, cell);
 			}
+
+			g2.dispose();
 		}
 
 		@Override
@@ -142,7 +193,7 @@ public class ScreenTest {
 	private class GridPanel extends JPanel {
 
 		public GridPanel() {
-			this.setBackground(Color.BLUE);
+			this.setBackground(settings.getGridBackgroundColor());
 			this.setLayout(null);
 		}
 
@@ -153,13 +204,12 @@ public class ScreenTest {
 
 			g2.setStroke(new BasicStroke(GRID_LINE_THICKNESS));
 
-			g2.setColor(Color.CYAN);
+			g2.setColor(settings.getGridLinesColor());
 			for (int row = 0; row <= ROWS; row++) {
 				int Y = toPixel(GRID_START + row * CELL_SIZE);
 				g2.drawLine(GRID_START, Y, GRID_END, Y);
 			}
 
-			g2.setColor(Color.CYAN);
 			for (int col = 0; col <= COLS; col++) {
 				int X = toPixel(GRID_START + col * CELL_SIZE);
 				g2.drawLine(X, GRID_START, X, GRID_END);

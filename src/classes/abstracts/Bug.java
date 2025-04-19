@@ -13,6 +13,7 @@ import classes.entity.ValueMeter;
 import classes.entity.Vector2;
 import classes.util.Console;
 import classes.util.Math2;
+import classes.util.Time;
 import interfaces.Callback;
 
 @SuppressWarnings("unused")
@@ -20,6 +21,9 @@ public abstract class Bug<T extends Bug<T>> extends Entity<T> {
 	final private Game game = Game.getInstance();
 	final private CellGrid gameGrid = game.getGameGrid();
 	final private int idNum;
+
+	private long timeLastMoved = 0;
+	private long birthTime = Time.tick();
 
 	protected Bug() {
 		this.idNum = (int) (Math.random() * 1000);
@@ -30,7 +34,7 @@ public abstract class Bug<T extends Bug<T>> extends Entity<T> {
 		this.setProperty(Property.MOVEMENT_SPEED, 5);
 		this.setProperty(Property.IS_EATABLE, false);
 		this.setProperty(Property.ASSIGNED_CELL, new Null());
-		this.setProperty(Property.MOVEMENT_COOLDOWN, 1);
+		this.setProperty(Property.MOVEMENT_COOLDOWN, 1.0);
 		this.setProperty(Property.VARIANT, getClass().getSimpleName());
 		this.setProperty(Property.NAME, this.getClass().getSimpleName());
 		this.setProperty(Property.HEALTH_METER, new ValueMeter(1));
@@ -47,6 +51,22 @@ public abstract class Bug<T extends Bug<T>> extends Entity<T> {
 
 	public double getRotation() {
 		return this.getProperty(Property.ROTATION, Double.class);
+	}
+
+	public double getMovementCooldown() {
+		return this.getProperty(Property.MOVEMENT_COOLDOWN, Double.class);
+	}
+
+	public long getTimeLastMoved() {
+		return this.timeLastMoved;
+	}
+
+	public long getTimeAlive() {
+		return Time.tick() - this.birthTime;
+	}
+
+	public void setTimeLastMoved() {
+		this.timeLastMoved = Time.tick();
 	}
 
 	public int getId() {

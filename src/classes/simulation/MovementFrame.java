@@ -22,6 +22,7 @@ import classes.entity.Vector2;
 import classes.settings.GameSettings;
 import classes.util.Console;
 import classes.util.Math2;
+import classes.util.Time;
 
 /**
  * This implements the {@code step} method for FrameProcessor. All code that
@@ -48,12 +49,19 @@ public class MovementFrame extends FrameRunner {
 		CellGrid grid = game.getGameGrid();
 		grid.collectCells();
 
+		long currentTime = Time.tick();
 		for (Cell cell : grid.getGrid().values()) {
 			Entity<?> entity = cell.getOccupant();
 
 			if (entity instanceof Bug) {
 				Bug<?> bug = (Bug<?>) entity;
-				bug.move();
+				double movementCooldown = bug.getMovementCooldown();
+				long lastMoved = bug.getTimeLastMoved();
+
+				if (currentTime - lastMoved > Time.secondsToNano(movementCooldown)) {
+					bug.move();
+					bug.setTimeLastMoved();
+				}
 			}
 		}
 

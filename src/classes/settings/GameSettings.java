@@ -8,6 +8,7 @@ import classes.entity.Unit2;
 import classes.util.Console;
 import classes.util.Console.DebugPriority;
 
+import java.awt.Color;
 import java.util.HashMap;
 
 @SuppressWarnings("unused")
@@ -28,8 +29,13 @@ public class GameSettings {
 		this.gridBorderPadding = 1;
 		this.gridSize = new Unit2(20, 20);
 
+		this.gridBackgroundColor = Color.BLACK;
+		this.gridLinesColor = Color.BLUE;
+
 		this.initialAnts = 100;
 		this.initialDoodlebugs = 5;
+		this.antMovementCooldown = 0;
+		this.doodlebugMovementCooldown = 0;
 
 		this.antBreedingEnabled = true;
 		this.doodlebugBreedingEnabled = true;
@@ -49,7 +55,7 @@ public class GameSettings {
 
 		// Debug
 		Console.setDebugModeEnabled(true);
-		Console.setConsoleColorsEnabled(false);
+		Console.setConsoleColorsEnabled(true);
 		Console.hideDebugPriority(DebugPriority.LOW);
 		Console.hideDebugPriority(DebugPriority.MEDIUM);
 
@@ -69,6 +75,10 @@ public class GameSettings {
 	private int initialDoodlebugs;
 	private int gridLineThickness;
 	private int gridBorderPadding;
+	private Color gridBackgroundColor;
+	private Color gridLinesColor;
+	private double antMovementCooldown;
+	private double doodlebugMovementCooldown;
 
 	private double gameHertz;
 	private double renderFPS;
@@ -168,6 +178,22 @@ public class GameSettings {
 
 	public int getGridBorderPadding() {
 		return this.gridBorderPadding;
+	}
+
+	public Color getGridBackgroundColor() {
+		return this.gridBackgroundColor;
+	}
+
+	public Color getGridLinesColor() {
+		return this.gridLinesColor;
+	}
+
+	public double getAntMovementCooldown() {
+		return this.antMovementCooldown;
+	}
+
+	public double getDoodlebugMovementCooldown() {
+		return this.doodlebugMovementCooldown;
 	}
 
 	//

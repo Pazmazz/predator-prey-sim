@@ -37,7 +37,7 @@ public class Game implements Runnable {
 	final private ArrayList<Snapshot> snapshots = new ArrayList<>();
 	final private int snapshotInterval = 1;
 
-	private GameScreen screen;
+	private ScreenTest screen;
 	private GameState state = GameState.INITIAL;
 
 	private long upTime;
@@ -112,7 +112,7 @@ public class Game implements Runnable {
 	}
 
 	public String initGameScreen() {
-		this.screen = new GameScreen();
+		this.screen = new ScreenTest();
 		return "Game screen benchmark";
 	}
 
@@ -203,7 +203,7 @@ public class Game implements Runnable {
 		return game;
 	}
 
-	public GameScreen getScreen() {
+	public ScreenTest getScreen() {
 		return this.screen;
 	}
 

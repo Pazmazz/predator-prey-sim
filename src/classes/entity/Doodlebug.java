@@ -1,16 +1,20 @@
 package classes.entity;
 
+import java.io.File;
 import java.util.ArrayList;
 
 import classes.abstracts.Bug;
 import classes.util.Console;
 import classes.util.Math2;
 import classes.entity.CellGrid.Cell;
+import classes.entity.ScreenTest.IMAGE;
 import classes.entity.ValueMeter.RESET_TYPE;
 import classes.settings.GameSettings;
 
 @SuppressWarnings("unused")
 public class Doodlebug extends Bug<Doodlebug> {
+	public IMAGE avatar = IMAGE.BASE_DOODLEBUG;
+
 	final private Game game = Game.getInstance();
 	final private CellGrid gameGrid = game.getGameGrid();
 	final private GameSettings settings = game.getSettings();
@@ -20,6 +24,7 @@ public class Doodlebug extends Bug<Doodlebug> {
 		ValueMeter hungerMeter = new ValueMeter(4, 0, 0);
 		this.setProperty(Property.HUNGER_METER, hungerMeter);
 		this.setProperty(Property.IS_EATABLE, false);
+		this.setProperty(Property.MOVEMENT_COOLDOWN, settings.getDoodlebugMovementCooldown());
 
 		ValueMeter movementMeter = this.getProperty(Property.MOVEMENT_METER, ValueMeter.class);
 		movementMeter.setMax(8);
@@ -74,5 +79,15 @@ public class Doodlebug extends Bug<Doodlebug> {
 	@Override
 	public Doodlebug newInstance() {
 		return new Doodlebug();
+	}
+
+	@Override
+	public IMAGE getAvatar() {
+		return this.avatar;
+	}
+
+	@Override
+	public void setAvatar(IMAGE avatar) {
+		this.avatar = avatar;
 	}
 }

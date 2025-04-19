@@ -31,6 +31,6 @@ public class RenderFrame extends FrameRunner {
 	public void step(double deltaTimeSeconds) {
 		CellGrid grid = game.getGameGrid();
 		// Console.println(grid.toASCII());
-		game.getScreen().repaintGrid();
+		game.getScreen().renderGrid();
 	}
 }
