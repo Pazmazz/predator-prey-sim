@@ -11,6 +11,7 @@ import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.GridLayout;
+import java.awt.MouseInfo;
 import java.awt.Point;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -28,6 +29,7 @@ import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
 
 import classes.abstracts.Bug;
@@ -157,6 +159,12 @@ public class GameScreen {
 			return;
 
 		Entity<?> entity = cell.getOccupant();
+
+		// TODO: temp solution to fixing null entity, fix this later
+		if (entity == null) {
+			return;
+		}
+
 		Unit2 cellPos = cellUnitToScreenPosition(cell.getUnit2());
 		Unit2 cellSize = getCellSize();
 
@@ -165,18 +173,42 @@ public class GameScreen {
 		int sizeX = cellSize.getX();
 		int sizeY = cellSize.getY();
 
+		// RENDER CELL
 		if (entity instanceof Doodlebug) {
 			Doodlebug db = (Doodlebug) entity;
 			double hungerAlpha = 1 - db.getHungerMeter().getRatio();
 			g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, (float) hungerAlpha));
 		} else if (entity instanceof Bug<?>) {
 			Bug<?> bug = (Bug<?>) entity;
-			double timeAliveAlpha = Math.min(1, Time.nanoToSeconds(bug.getTimeAlive()) / 0.3);
+			double timeAliveAlpha = Math.min(1, Time.nanoToSeconds(bug.getTimeSinceBirth()) / 0.3);
 			g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, (float) timeAliveAlpha));
 		}
 
+		// TODO: Very rare error case where "entity" is null here, fix later
 		g2.drawImage(loadedImages.get(entity.getAvatar()), posX, posY, sizeX, sizeY, grid);
 		g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1));
+
+		// RENDER TOOLTIP
+		// Point mousePos = MouseInfo.getPointerInfo().getLocation();
+		// Point mousePoint = new Point(mousePos);
+		// SwingUtilities.convertPointFromScreen(mousePoint, this.gridContent);
+
+		// if (entity instanceof Bug<?>) {
+		// Bug<?> bug = (Bug<?>) entity;
+		// tooltip.setText("<html>" + bug.getTooltipString() + "</html>");
+		// Dimension tooltipSize = tooltip.getPreferredSize();
+
+		// int tooltipX = (int) (mousePoint.getX());
+		// int tooltipY = (int) (mousePoint.getY() - tooltipSize.getHeight());
+
+		// if (tooltipX + tooltipSize.getWidth() > SCREEN_WIDTH) {
+		// tooltipX -= tooltipSize.getWidth();
+		// }
+
+		// tooltip.setLocation(tooltipX, tooltipY);
+		// tooltip.setVisible(true);
+		// tooltip.setSize(tooltipSize);
+		// }
 	}
 
 	private JLabel buildTooltip() {
@@ -433,7 +465,8 @@ public class GameScreen {
 							Dimension tooltipSize = tooltip.getPreferredSize();
 
 							int tooltipX = (int) (gridLocation.getX() + point.getX());
-							int tooltipY = (int) (gridLocation.getY() + point.getY() - tooltipSize.getHeight());
+							int tooltipY = (int) (gridLocation.getY() + point.getY() -
+									tooltipSize.getHeight());
 
 							if (tooltipX + tooltipSize.getWidth() > SCREEN_WIDTH) {
 								tooltipX -= tooltipSize.getWidth();

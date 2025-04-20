@@ -26,6 +26,7 @@ public class GameSettings {
 		this.screenWidth = 600;
 		// this.screenHeight = 680;
 
+		this.gridSnapshotHistory = 100;
 		this.gridLineThickness = 2;
 		this.gridBorderPadding = 1;
 		this.gridSize = new Unit2(20, 20);
@@ -82,6 +83,7 @@ public class GameSettings {
 	private double antMovementCooldown;
 	private double doodlebugMovementCooldown;
 	private int doodlebugHungerLimit;
+	private int gridSnapshotHistory;
 
 	private String[] bugFirstNames = new String[] {
 			"Anton",
@@ -184,6 +186,7 @@ public class GameSettings {
 			"Small",
 			"Horn",
 			"McKnight",
+			"Lancaster",
 			"Crick",
 			"Underleaf",
 			"Tunneler",
@@ -389,9 +392,17 @@ public class GameSettings {
 		return this.doodlebugHungerLimit;
 	}
 
+	public int getGridSnapshotHistory() {
+		return this.gridSnapshotHistory;
+	}
+
 	//
 	// Public setters
 	//
+	public void setGridSnapshotHistory(int length) {
+		this.gridSnapshotHistory = length;
+	}
+
 	public void setInitialAnts(int initialAnts) {
 		this.initialAnts = initialAnts;
 	}

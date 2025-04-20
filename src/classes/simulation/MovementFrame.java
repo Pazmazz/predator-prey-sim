@@ -47,7 +47,7 @@ public class MovementFrame extends FrameRunner {
 	}
 
 	@Override
-	public void step(double deltaTimeSeconds) {
+	public void step() {
 		CellGrid grid = game.getGameGrid();
 		grid.collectCells();
 
@@ -68,6 +68,7 @@ public class MovementFrame extends FrameRunner {
 					bug.setTimeLastMoved();
 					moveOccurred = true;
 				}
+				bug.incrementTimeAlive(this.getDeltaTime());
 			}
 		}
 

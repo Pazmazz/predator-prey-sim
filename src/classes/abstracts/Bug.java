@@ -24,6 +24,7 @@ public abstract class Bug<T extends Bug<T>> extends Entity<T> {
 
 	private long timeLastMoved = 0;
 	private long birthTime = Time.tick();
+	private long timeAlive = 0;
 
 	protected Bug() {
 		this.idNum = (int) (Math.random() * 1000);
@@ -62,7 +63,15 @@ public abstract class Bug<T extends Bug<T>> extends Entity<T> {
 	}
 
 	public long getTimeAlive() {
+		return this.timeAlive;
+	}
+
+	public long getTimeSinceBirth() {
 		return Time.tick() - this.birthTime;
+	}
+
+	public double getTimeAliveInSeconds() {
+		return Time.nanoToSeconds(this.timeAlive);
 	}
 
 	public void setTimeLastMoved() {
@@ -103,6 +112,10 @@ public abstract class Bug<T extends Bug<T>> extends Entity<T> {
 
 	public void setBirthTime(long t) {
 		this.birthTime = t;
+	}
+
+	public void incrementTimeAlive(long delta) {
+		this.timeAlive += delta;
 	}
 
 	public void breed() {

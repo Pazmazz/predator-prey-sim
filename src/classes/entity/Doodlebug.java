@@ -101,7 +101,13 @@ public class Doodlebug extends Bug<Doodlebug> {
 	@Override
 	public String getTooltipString() {
 		return new StringBuilder(this.getNameWithId())
-				.append("<br>test")
+				.append("<span style='font-size:10px;color:white;'>")
+				.append("<br>Time alive: <span style='color:#bf00ff;'>")
+				.append(Math.round((long) this.getTimeAliveInSeconds()))
+				.append(" seconds</span>")
+				.append("<br>Ants eaten: <span style='color:#bf00ff;'>")
+				.append(this.getAntsEatenMeter().getValue())
+				.append("</span>")
 				.toString();
 	}
 }

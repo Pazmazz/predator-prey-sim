@@ -74,7 +74,11 @@ public class Ant extends Bug<Ant> {
 	@Override
 	public String getTooltipString() {
 		return new StringBuilder(this.getNameWithId())
-				.append("<br><span style='color:white;font-size:10px'>Time alive: </span>")
+				.append("<span style='font-size:10px;color:white;'>")
+				.append("<br>Time alive: <span style='color:#bf00ff;'>")
+				.append(Math.round((long) this.getTimeAliveInSeconds()))
+				.append(" seconds</span>")
+				.append("</span>")
 				.toString();
 	}
 }

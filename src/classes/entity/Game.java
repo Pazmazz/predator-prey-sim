@@ -36,7 +36,7 @@ public class Game implements Runnable {
 	// TODO: Implement game history snapshots
 	final private ArrayList<String> snapshots = new ArrayList<>();
 	private int currentSnapshot = 0;
-	final private int snapshotInterval = 1;
+	// final private int snapshotInterval = 1;
 
 	private GameScreen screen;
 	private GameState state = GameState.INITIAL;
@@ -152,7 +152,7 @@ public class Game implements Runnable {
 
 	// TODO: Implement snapshot saving/loading
 	public void saveSnapshot() {
-		if (this.snapshots.size() >= 25) {
+		if (this.snapshots.size() >= this.getSettings().getGridSnapshotHistory()) {
 			this.snapshots.remove(0);
 		}
 		String serializedGrid = gameGrid.download();
@@ -169,21 +169,23 @@ public class Game implements Runnable {
 	}
 
 	public void loadNextSnapshot() {
-		Console.println(this.currentSnapshot, this.snapshots.size());
 		if (this.currentSnapshot < this.snapshots.size()) {
 			this.getGameGrid().upload(this.snapshots.get(this.currentSnapshot));
 			this.currentSnapshot++;
 		} else {
-			this.movementFrame.step(0);
+			this.movementFrame.step();
 		}
+		Console.println("$text-green Current Snapshot: $text-white " + this.currentSnapshot,
+				"$text-green Out Of: $text-white " + this.snapshots.size());
 	}
 
 	public void loadPrevSnapshot() {
-		Console.println(this.currentSnapshot, this.snapshots.size());
 		if (this.currentSnapshot > 1) {
 			this.currentSnapshot--;
 			this.getGameGrid().upload(this.snapshots.get(this.currentSnapshot - 1));
 		}
+		Console.println("$text-green Current Snapshot: $text-white" + this.currentSnapshot,
+				"$text-green Out Of: $text-white " + this.snapshots.size());
 	}
 
 	/**
