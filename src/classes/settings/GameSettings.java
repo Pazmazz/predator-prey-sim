@@ -6,6 +6,7 @@ package classes.settings;
 import classes.entity.DebugInfo;
 import classes.entity.Unit2;
 import classes.util.Console;
+import classes.util.Math2;
 import classes.util.Console.DebugPriority;
 
 import java.awt.Color;
@@ -79,6 +80,113 @@ public class GameSettings {
 	private Color gridLinesColor;
 	private double antMovementCooldown;
 	private double doodlebugMovementCooldown;
+
+	private String[] bugFirstNames = new String[] {
+			"Anton",
+			"Andy",
+			"Anya",
+			"Antoinette",
+			"Anthony",
+			"Pip",
+			"Dot",
+			"Tiny",
+			"Bitsy",
+			"Nib",
+			"Flick",
+			"Chip",
+			"Scurry",
+			"Twitch",
+			"Minnie",
+			"Zippy",
+			"Clove",
+			"Buzz",
+			"Pebble",
+			"Midge",
+			"Skitter",
+			"Linty",
+			"Tilly",
+			"Crumb",
+			"Tizzy",
+			"Sarge",
+			"Queenie",
+			"Thorax",
+			"Mandee",
+			"Scout",
+			"Rook",
+			"Hexa",
+			"Bubbles",
+			"Coco",
+			"Luma",
+			"Amber",
+			"Inky",
+			"Soot",
+			"Grain",
+			"Bean",
+			"Noodle",
+			"Speck",
+			"Zula",
+			"Wisp",
+			"Rolo",
+			"Blip",
+			"Elba",
+			"Gnatash",
+			"Antsy",
+			"Scamp",
+	};
+
+	private String[] bugLastNames = new String[] {
+			"Smurf",
+			"Crick",
+			"Underleaf",
+			"Tunneler",
+			"Sprocket",
+			"Dirtchaser",
+			"Burrowes",
+			"Mulch",
+			"Leafson",
+			"Grubbe",
+			"Stickley",
+			"Antwhistle",
+			"Skitteridg",
+			"Buggins",
+			"Pollen",
+			"Pebbleston",
+			"Webber",
+			"Groundling",
+			"Scritch",
+			"Sapthorn",
+			"Nestlewick",
+			"Rootwell",
+			"Scuttle",
+			"Chitter",
+			"Mossgrove",
+			"Whiskerfel",
+			"Dapple",
+			"Clickley",
+			"Hivetide",
+			"Dungworth",
+			"Crawleigh",
+			"Barkley",
+			"Thistledew",
+			"Crumbwell",
+			"Swarmson",
+			"Fuzzle",
+			"Scampers",
+			"Holloway",
+			"Beetlewitz",
+			"Twigg",
+			"Latchwing",
+			"Fizzleburr",
+			"Dapplewick",
+			"Antlersnap",
+			"Snickett",
+			"Wriggles",
+			"Dapplethor",
+			"Chirple",
+			"Minibeet",
+			"Creever",
+			"Dustmoor",
+	};
 
 	private double gameHertz;
 	private double renderFPS;
@@ -194,6 +302,29 @@ public class GameSettings {
 
 	public double getDoodlebugMovementCooldown() {
 		return this.doodlebugMovementCooldown;
+	}
+
+	public String[] getBugFirstNames() {
+		return this.bugFirstNames;
+	}
+
+	public String[] getBugLastNames() {
+		return this.bugLastNames;
+	}
+
+	public String getRandomBugFirstName() {
+		return this.bugFirstNames[Math2.randInt(this.bugFirstNames.length)];
+	}
+
+	public String getRandomBugLastName() {
+		return this.bugLastNames[Math2.randInt(this.bugLastNames.length)];
+	}
+
+	public String getRandomBugFirstAndLastName() {
+		return new StringBuilder(this.getRandomBugFirstName())
+				.append(" ")
+				.append(this.getRandomBugLastName())
+				.toString();
 	}
 
 	//

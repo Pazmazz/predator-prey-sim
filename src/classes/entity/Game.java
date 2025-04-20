@@ -110,6 +110,7 @@ public class Game implements Runnable {
 		for (Cell cell : doodlebugCells)
 			cell.setOccupant(new Doodlebug());
 
+		this.saveSnapshot();
 		return "Initialize game grid benchmark";
 	}
 
@@ -164,22 +165,24 @@ public class Game implements Runnable {
 	}
 
 	public boolean onCurrentSnapshot() {
-		return this.getCurrentSnapshot() == this.snapshots.size() - 1;
+		return this.currentSnapshot == this.snapshots.size();
 	}
 
 	public void loadNextSnapshot() {
-		this.currentSnapshot = Math.min(this.snapshots.size() - 1, this.currentSnapshot + 1);
 		Console.println(this.currentSnapshot, this.snapshots.size());
-		if (this.currentSnapshot <= this.snapshots.size()) {
+		if (this.currentSnapshot < this.snapshots.size()) {
 			this.getGameGrid().upload(this.snapshots.get(this.currentSnapshot));
+			this.currentSnapshot++;
+		} else {
+			this.movementFrame.step(0);
 		}
 	}
 
 	public void loadPrevSnapshot() {
-		this.currentSnapshot = Math.max(0, this.currentSnapshot - 1);
 		Console.println(this.currentSnapshot, this.snapshots.size());
-		if (this.currentSnapshot >= 0) {
-			this.getGameGrid().upload(this.snapshots.get(this.currentSnapshot));
+		if (this.currentSnapshot > 1) {
+			this.currentSnapshot--;
+			this.getGameGrid().upload(this.snapshots.get(this.currentSnapshot - 1));
 		}
 	}
 

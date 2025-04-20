@@ -11,8 +11,14 @@ import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.GridLayout;
+import java.awt.Point;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionAdapter;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import javax.imageio.ImageIO;
@@ -42,8 +48,9 @@ public class ScreenTest {
 	final private static CellGrid gameGrid = game.getGameGrid();
 
 	final private JFrame window;
-	final private JPanel masterFrame;
+	final private JPanel contentFrame;
 	final private JPanel gridContent;
+	final private JLabel tooltip;
 
 	final private int GRID_LINE_THICKNESS = settings.getGridLineThickness();
 	final private int GRID_BORDER_PADDING = settings.getGridBorderPadding();
@@ -52,8 +59,8 @@ public class ScreenTest {
 	final private int ROWS = settings.getGridSize().getY();
 	final private int COLS = settings.getGridSize().getX();
 	final private int SCREEN_WIDTH = settings.getScreenWidth();
-	final private int CONTENT_WIDTH = (SCREEN_WIDTH - GRID_BORDER_PADDING * 2);
-	final private double CELL_SIZE = CONTENT_WIDTH / (double) COLS;
+	final private int GRID_CONTENT_WIDTH = (SCREEN_WIDTH - GRID_BORDER_PADDING * 2);
+	final private double CELL_SIZE = GRID_CONTENT_WIDTH / (double) COLS;
 
 	final private int GRID_START = GRID_BORDER_PADDING;
 	final private int GRID_END = SCREEN_WIDTH - GRID_BORDER_PADDING;
@@ -69,21 +76,31 @@ public class ScreenTest {
 
 	public ScreenTest() {
 		// Default game screen settings
-		this.window = new JFrame();
+		JFrame window = new JFrame();
+		this.window = window;
 		this.window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.window.setResizable(false);
 		this.window.setTitle("Test");
 
 		this.loadImages();
 
-		JPanel masterFrame = buildMasterFrame();
-		this.masterFrame = masterFrame;
+		JPanel contentFrame = buildContentFrame();
+		this.contentFrame = contentFrame;
+
+		JLabel tooltip = buildTooltip();
+		this.tooltip = tooltip;
+
+		JComponent windowOverlay = (JComponent) window.getGlassPane();
+		windowOverlay.setLayout(null);
+		windowOverlay.add(tooltip);
+		windowOverlay.setVisible(true);
+		windowOverlay.setOpaque(false);
 
 		JPanel headerPanel = this.buildHeaderPanel();
-		masterFrame.add(headerPanel);
+		contentFrame.add(headerPanel);
 
 		JPanel grid = new GridPanel();
-		masterFrame.add(grid);
+		contentFrame.add(grid);
 
 		this.gridContent = new GridContent(grid);
 		grid.add(this.gridContent);
@@ -128,6 +145,13 @@ public class ScreenTest {
 				toPixel(CELL_SIZE - GRID_LINE_THICKNESS));
 	}
 
+	private Cell getCellFromScreenPoint(Point point) {
+		double relX = point.getX() / SCREEN_WIDTH * COLS;
+		double relY = point.getY() / SCREEN_WIDTH * ROWS;
+		Vector2 gridPoint = new Vector2(relX, relY);
+		return game.getGameGrid().getCell(gridPoint);
+	}
+
 	private void renderCell(JPanel grid, Graphics2D g2, Cell cell) {
 		if (cell.isEmpty())
 			return;
@@ -152,19 +176,31 @@ public class ScreenTest {
 		}
 
 		g2.drawImage(loadedImages.get(entity.getAvatar()), posX, posY, sizeX, sizeY, grid);
-
 		g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1));
 	}
 
-	private JPanel buildMasterFrame() {
-		JPanel masterFrame = new JPanel();
-		masterFrame.setLayout(new BoxLayout(masterFrame, BoxLayout.Y_AXIS));
-		// masterFrame.setBorder(new EmptyBorder(10, 10, 10, 10));
-		masterFrame.setDoubleBuffered(true);
-		masterFrame.setBackground(Color.BLACK);
+	private JLabel buildTooltip() {
+		JLabel tooltip = new JLabel();
+		// tooltip.setBounds(0, 0, 100, 20);
+		tooltip.setText("Some");
+		tooltip.setBackground(Color.BLACK);
+		tooltip.setFont(new Font("Courier New", Font.BOLD, 16));
+		tooltip.setVisible(true);
+		tooltip.setForeground(new Color(25, 255, 0));
+		tooltip.setOpaque(true);
 
-		this.window.getContentPane().add(masterFrame);
-		return masterFrame;
+		return tooltip;
+	}
+
+	private JPanel buildContentFrame() {
+		JPanel contentFrame = new JPanel();
+		contentFrame.setLayout(new BoxLayout(contentFrame, BoxLayout.Y_AXIS));
+		// contentFrame.setBorder(new EmptyBorder(10, 10, 10, 10));
+		contentFrame.setDoubleBuffered(true);
+		contentFrame.setBackground(Color.BLACK);
+
+		this.window.getContentPane().add(contentFrame);
+		return contentFrame;
 	}
 
 	private JPanel buildHeaderPanel() {
@@ -240,12 +276,7 @@ public class ScreenTest {
 
 		stepForwardButton.addActionListener(e -> {
 			game.setSimulationState(SimulationState.MANUAL);
-			if (game.onCurrentSnapshot()) {
-				MovementFrame movementFrame = game.getMovementFrame();
-				movementFrame.step(0);
-			} else {
-				game.loadNextSnapshot();
-			}
+			game.loadNextSnapshot();
 		});
 
 		JButton stepBackButton = new JButton();
@@ -354,8 +385,10 @@ public class ScreenTest {
 			this.parentWidth = toPixel(grid.getPreferredSize().getWidth());
 			this.parentHeight = toPixel(grid.getPreferredSize().getHeight());
 			this.setLayout(null);
-			this.setOpaque(false);
 			this.setSize(this.parentWidth, this.parentHeight);
+			// this.setSize(300, 300);
+			this.setOpaque(false);
+
 		}
 
 		@Override
@@ -383,6 +416,45 @@ public class ScreenTest {
 		public GridPanel() {
 			this.setBackground(settings.getGridBackgroundColor());
 			this.setLayout(null);
+			JPanel gridPanel = this;
+
+			this.addMouseMotionListener(new MouseMotionAdapter() {
+				@Override
+				public void mouseMoved(MouseEvent e) {
+					Point point = e.getPoint();
+					Point gridLocation = gridPanel.getLocation();
+					Cell hoveredCell = getCellFromScreenPoint(point);
+
+					if (hoveredCell.hasOccupant()) {
+						Entity<?> entity = hoveredCell.getOccupant();
+						if (entity instanceof Bug<?>) {
+							Bug<?> bug = (Bug<?>) entity;
+							tooltip.setText(bug.getNameWithId());
+							Dimension tooltipSize = tooltip.getPreferredSize();
+
+							int tooltipX = (int) (gridLocation.getX() + point.getX());
+							int tooltipY = (int) (gridLocation.getY() + point.getY() - 20);
+
+							if (tooltipX + tooltipSize.getWidth() > SCREEN_WIDTH) {
+								tooltipX -= tooltipSize.getWidth();
+							}
+
+							tooltip.setLocation(tooltipX, tooltipY);
+							tooltip.setVisible(true);
+							tooltip.setSize(tooltipSize);
+						}
+					} else {
+						tooltip.setVisible(false);
+					}
+				}
+			});
+
+			this.addMouseListener(new MouseAdapter() {
+				@Override
+				public void mouseExited(MouseEvent e) {
+					tooltip.setVisible(false);
+				}
+			});
 		}
 
 		@Override
