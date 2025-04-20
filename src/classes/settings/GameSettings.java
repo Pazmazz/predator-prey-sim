@@ -314,7 +314,9 @@ public class GameSettings {
 	}
 
 	public double getRenderFPS() {
-		return this.renderFPS;
+		return this.renderFPS <= 0
+				? this.gameHertz
+				: this.renderFPS;
 	}
 
 	public String getRenderProcessName() {
@@ -326,7 +328,9 @@ public class GameSettings {
 	}
 
 	public double getSimulationFPS() {
-		return this.simulationFPS;
+		return this.simulationFPS <= 0
+				? this.gameHertz
+				: this.simulationFPS;
 	}
 
 	public String getSimulationProcessName() {

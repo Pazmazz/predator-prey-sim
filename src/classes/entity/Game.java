@@ -173,6 +173,7 @@ public class Game implements Runnable {
 			this.getGameGrid().upload(this.snapshots.get(this.currentSnapshot));
 			this.currentSnapshot++;
 		} else {
+			this.movementFrame.setDeltaTimeSeconds(this.getSettings().getSimulationFPS());
 			this.movementFrame.step();
 		}
 		Console.println("$text-green Current Snapshot: $text-white " + this.currentSnapshot,

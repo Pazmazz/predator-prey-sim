@@ -8,6 +8,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 
 import classes.entity.DebugInfo;
+import classes.entity.Game;
+import classes.entity.Game.SimulationState;
 import classes.util.Console;
 import classes.util.Console.DebugPriority;
 import classes.util.Time;
@@ -19,6 +21,8 @@ import interfaces.TaskCallback;
  * subclass which handles what action should occur on that frame.
  */
 public abstract class FrameRunner {
+	private Game game = Game.getInstance();
+
 	private long FPS;
 	private long lastPulseTick;
 	private long deltaTime = 0;
@@ -44,6 +48,13 @@ public abstract class FrameRunner {
 		this.lastPulseTick = -Time.secondsToNano(FPS);
 		this.debugInfo = debugInfo;
 		this.processName = processName;
+
+		game.onSimulationStateChanged.connect(data -> {
+			SimulationState state = (SimulationState) data[0];
+			if (state == SimulationState.RUNNING) {
+				this.voidLastTickPulse();
+			}
+		});
 	}
 
 	/**
@@ -113,6 +124,15 @@ public abstract class FrameRunner {
 	 */
 	public double getDeltaTimeSeconds() {
 		return Time.nanoToSeconds(this.deltaTime);
+	}
+
+	public void setDeltaTimeSeconds(double dt) {
+		Console.println("Delta: ", dt);
+		this.deltaTime = Time.secondsToNano(dt);
+	}
+
+	public void voidLastTickPulse() {
+		this.lastPulseTick = Time.tick();
 	}
 
 	public long getDeltaTime() {
