@@ -34,6 +34,7 @@ import javax.swing.border.EmptyBorder;
 
 import classes.abstracts.Bug;
 import classes.abstracts.Entity;
+import classes.abstracts.Entity.EntityVariant;
 import classes.abstracts.Properties.Property;
 import classes.entity.CellGrid.Cell;
 import classes.entity.Game.SimulationState;
@@ -50,6 +51,8 @@ public class GameScreen {
 	final private static CellGrid gameGrid = game.getGameGrid();
 
 	final private JFrame window;
+	final private JPanel victoryScreen;
+	final private JComponent windowOverlay;
 	final private JPanel contentFrame;
 	final private JPanel gridContent;
 	final private JLabel tooltip;
@@ -86,17 +89,24 @@ public class GameScreen {
 
 		this.loadImages();
 
-		JPanel contentFrame = buildContentFrame();
-		this.contentFrame = contentFrame;
+		// window overlays
+		JComponent windowOverlay = (JComponent) window.getGlassPane();
+		windowOverlay.setLayout(null);
+		windowOverlay.setVisible(true);
+		windowOverlay.setOpaque(false);
+		this.windowOverlay = windowOverlay;
 
 		JLabel tooltip = buildTooltip();
 		this.tooltip = tooltip;
-
-		JComponent windowOverlay = (JComponent) window.getGlassPane();
-		windowOverlay.setLayout(null);
 		windowOverlay.add(tooltip);
-		windowOverlay.setVisible(true);
-		windowOverlay.setOpaque(false);
+
+		JPanel victoryScreen = this.buildVictoryScreen();
+		this.victoryScreen = victoryScreen;
+		windowOverlay.add(victoryScreen);
+
+		// main components
+		JPanel contentFrame = buildContentFrame();
+		this.contentFrame = contentFrame;
 
 		JPanel headerPanel = this.buildHeaderPanel();
 		contentFrame.add(headerPanel);
@@ -110,6 +120,20 @@ public class GameScreen {
 		this.window.pack();
 		this.window.setLocationRelativeTo(null);
 		this.window.setVisible(true);
+
+		game.onSimulationEnd.connect(data -> {
+			EntityVariant winnerVariant = (EntityVariant) data[0];
+			Doodlebug dbMVP = (Doodlebug) data[1];
+			Ant antMVP = (Ant) data[2];
+			this.renderVictoryScreen(winnerVariant, dbMVP, antMVP);
+		});
+
+		game.onSimulationStateChanged.connect(data -> {
+			SimulationState state = (SimulationState) data[0];
+			if (state != SimulationState.ENDED) {
+				victoryScreen.setVisible(false);
+			}
+		});
 	}
 
 	public void loadImages() {
@@ -187,28 +211,24 @@ public class GameScreen {
 		// TODO: Very rare error case where "entity" is null here, fix later
 		g2.drawImage(loadedImages.get(entity.getAvatar()), posX, posY, sizeX, sizeY, grid);
 		g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1));
+	}
 
-		// RENDER TOOLTIP
-		// Point mousePos = MouseInfo.getPointerInfo().getLocation();
-		// Point mousePoint = new Point(mousePos);
-		// SwingUtilities.convertPointFromScreen(mousePoint, this.gridContent);
+	private void renderVictoryScreen(EntityVariant winner, Doodlebug dbMVP, Ant antMVP) {
+		this.victoryScreen.setVisible(true);
+	}
 
-		// if (entity instanceof Bug<?>) {
-		// Bug<?> bug = (Bug<?>) entity;
-		// tooltip.setText("<html>" + bug.getTooltipString() + "</html>");
-		// Dimension tooltipSize = tooltip.getPreferredSize();
+	private JPanel buildVictoryScreen() {
+		JPanel victoryScreen = new JPanel();
+		victoryScreen.setBackground(Color.BLACK);
+		victoryScreen.setLayout(new BoxLayout(victoryScreen, BoxLayout.Y_AXIS));
+		victoryScreen.setBounds(0, 100, SCREEN_WIDTH, 100);
+		victoryScreen.setVisible(false);
 
-		// int tooltipX = (int) (mousePoint.getX());
-		// int tooltipY = (int) (mousePoint.getY() - tooltipSize.getHeight());
+		JLabel victoryTitle = new JLabel();
+		victoryTitle.setForeground(Color.white);
 
-		// if (tooltipX + tooltipSize.getWidth() > SCREEN_WIDTH) {
-		// tooltipX -= tooltipSize.getWidth();
-		// }
-
-		// tooltip.setLocation(tooltipX, tooltipY);
-		// tooltip.setVisible(true);
-		// tooltip.setSize(tooltipSize);
-		// }
+		victoryScreen.add(victoryTitle);
+		return victoryScreen;
 	}
 
 	private JLabel buildTooltip() {
@@ -275,7 +295,8 @@ public class GameScreen {
 		game.onSimulationStateChanged.connect(data -> {
 			MovementFrame movementFrame = game.getMovementFrame();
 			SimulationState state = (SimulationState) data[0];
-			if (state == SimulationState.PAUSED || state == SimulationState.INITIAL || state == SimulationState.ENDED
+			if (state == SimulationState.PAUSED || state == SimulationState.INITIAL
+					|| state == SimulationState.ENDED
 					|| state == SimulationState.MANUAL) {
 				toggleSimulationButton.setText("▶");
 				toggleSimulationButton.setBackground(Color.GREEN);
@@ -296,6 +317,8 @@ public class GameScreen {
 				game.setSimulationState(SimulationState.RUNNING);
 			} else if (game.getSimulationState() == SimulationState.RUNNING) {
 				game.setSimulationState(SimulationState.PAUSED);
+			} else {
+				Console.println("$text-yellow No play state available");
 			}
 		});
 

@@ -12,6 +12,7 @@ import classes.abstracts.Bug;
 import classes.abstracts.Entity;
 import classes.abstracts.FrameRunner;
 import classes.abstracts.Properties;
+import classes.abstracts.Entity.EntityVariant;
 import classes.abstracts.Properties.Property;
 import classes.entity.Ant;
 import classes.entity.CellGrid;
@@ -49,6 +50,14 @@ public class MovementFrame extends FrameRunner {
 				settings.getSimulationProcessName(),
 				settings.getSimulationFPS(),
 				settings.getSimulationDebugInfo());
+
+		game.onSimulationStateChanged.connect(data -> {
+			SimulationState state = (SimulationState) data[0];
+			if (state == SimulationState.INITIAL) {
+				this.doodlebugMVP = new Doodlebug();
+				this.antMVP = new Ant();
+			}
+		});
 	}
 
 	public Doodlebug getCurrentDoodlebugMVP() {
@@ -75,15 +84,23 @@ public class MovementFrame extends FrameRunner {
 		Collection<Cell> cells = grid.getGrid().values();
 		long currentTime = Time.tick();
 		boolean moveOccurred = false;
+		int doodlebugCount = 0;
+		int antCount = 0;
+		int bugCount = 0;
+		int titanCount = 0;
+		int entityCount = 0;
 
 		for (Cell cell : cells) {
 			Entity<?> entity = cell.getOccupant();
+			entityCount++;
 
 			if (entity instanceof Bug) {
+				bugCount++;
 				Bug<?> bug = (Bug<?>) entity;
 				double movementCooldown = bug.getMovementCooldown();
 				long lastMoved = bug.getTimeLastMoved();
 
+				// movement cooldown checks
 				if (currentTime - lastMoved > Time.secondsToNano(movementCooldown)) {
 					bug.move();
 					bug.setTimeLastMoved();
@@ -91,7 +108,9 @@ public class MovementFrame extends FrameRunner {
 				}
 				bug.incrementTimeInSimulation(this.getDeltaTime());
 
+				// update turn stats
 				if (bug instanceof Doodlebug) {
+					doodlebugCount++;
 					Doodlebug db = (Doodlebug) bug;
 					int antsEaten = db.getAntsEatenMeter().getValue();
 
@@ -99,6 +118,7 @@ public class MovementFrame extends FrameRunner {
 						this.setCurrentDoodlebugMVP(db);
 					}
 				} else if (bug instanceof Ant) {
+					antCount++;
 					Ant ant = (Ant) bug;
 					long timeInSim = ant.getTimeInSimulation();
 
@@ -112,9 +132,19 @@ public class MovementFrame extends FrameRunner {
 		if (moveOccurred)
 			game.saveSnapshot();
 
-		if (cells.size() == 0) {
+		// doodlebugs win
+		if (bugCount == 0) {
 			game.setSimulationState(SimulationState.ENDED);
-			return;
+			game.onSimulationEnd.fire(EntityVariant.DOODLEBUG, doodlebugMVP, antMVP);
+			// ants win
+		} else if (antCount == bugCount) {
+			game.setSimulationState(SimulationState.ENDED);
+			game.onSimulationEnd.fire(EntityVariant.ANT, doodlebugMVP, antMVP);
+
+			// titans win
+		} else if (antCount == 0 && doodlebugCount == 0 && titanCount > 0) {
+			game.setSimulationState(SimulationState.ENDED);
+			game.onSimulationEnd.fire(EntityVariant.TITAN, doodlebugMVP, antMVP);
 		}
 
 	}

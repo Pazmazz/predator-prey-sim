@@ -43,6 +43,7 @@ public class Game implements Runnable {
 	private SimulationState simState = SimulationState.INITIAL;
 
 	final public EventSignal onSimulationStateChanged = new EventSignal();
+	final public EventSignal onSimulationEnd = new EventSignal();
 
 	private long upTime;
 	private long gameHertz;
@@ -72,7 +73,7 @@ public class Game implements Runnable {
 		RUNNING,
 		ENDED,
 		PAUSED,
-		EDITING
+		EDITING,
 	}
 
 	private Game() {

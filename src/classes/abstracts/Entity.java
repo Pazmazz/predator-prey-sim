@@ -29,6 +29,12 @@ public abstract class Entity<T extends Entity<T>> extends Properties {
 
 	public abstract void setAvatar(IMAGE image);
 
+	public enum EntityVariant {
+		DOODLEBUG,
+		ANT,
+		TITAN,
+	}
+
 	// Unused constructor for now
 	// public Entity() {
 	// entityList.add(this);
