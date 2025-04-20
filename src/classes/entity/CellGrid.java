@@ -1060,13 +1060,14 @@ public class CellGrid {
 	}
 
 	// TODO: Add documentation
-	public ArrayList<String> download() {
-		ArrayList<String> serializedGridCells = new ArrayList<>();
+	public String download() {
+		StringBuilder serializedGrid = new StringBuilder();
+
 		for (Cell cell : this.virtualGrid.values())
 			if (cell.hasOccupant())
-				serializedGridCells.add(cell.serialize());
+				serializedGrid.append(cell.serialize()).append(",");
 
-		return serializedGridCells;
+		return serializedGrid.toString();
 	}
 
 	public void upload(String serializedString) {

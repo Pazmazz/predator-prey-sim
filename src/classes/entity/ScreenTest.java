@@ -7,8 +7,10 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.GridLayout;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.HashMap;
@@ -18,13 +20,17 @@ import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
 import classes.abstracts.Bug;
 import classes.abstracts.Entity;
+import classes.abstracts.Properties.Property;
 import classes.entity.CellGrid.Cell;
+import classes.entity.Game.SimulationState;
 import classes.settings.GameSettings;
+import classes.simulation.MovementFrame;
 import classes.util.Console;
 import classes.util.Math2;
 import classes.util.Time;
@@ -65,14 +71,19 @@ public class ScreenTest {
 		// Default game screen settings
 		this.window = new JFrame();
 		this.window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		this.window.setResizable(true);
+		this.window.setResizable(false);
 		this.window.setTitle("Test");
 
-		this.masterFrame = buildMasterFrame();
 		this.loadImages();
 
+		JPanel masterFrame = buildMasterFrame();
+		this.masterFrame = masterFrame;
+
+		JPanel headerPanel = this.buildHeaderPanel();
+		masterFrame.add(headerPanel);
+
 		JPanel grid = new GridPanel();
-		this.masterFrame.add(grid);
+		masterFrame.add(grid);
 
 		this.gridContent = new GridContent(grid);
 		grid.add(this.gridContent);
@@ -148,12 +159,184 @@ public class ScreenTest {
 	private JPanel buildMasterFrame() {
 		JPanel masterFrame = new JPanel();
 		masterFrame.setLayout(new BoxLayout(masterFrame, BoxLayout.Y_AXIS));
-		masterFrame.setBorder(new EmptyBorder(10, 10, 10, 10));
+		// masterFrame.setBorder(new EmptyBorder(10, 10, 10, 10));
 		masterFrame.setDoubleBuffered(true);
 		masterFrame.setBackground(Color.BLACK);
 
 		this.window.getContentPane().add(masterFrame);
 		return masterFrame;
+	}
+
+	private JPanel buildHeaderPanel() {
+		JPanel headerPanel = new JPanel();
+		headerPanel.setLayout(new BoxLayout(headerPanel, BoxLayout.Y_AXIS));
+		// headerPanel.setBackground(Color.RED);
+		headerPanel.setOpaque(false);
+		headerPanel.setPreferredSize(new Dimension(0, 60));
+
+		JLabel title = new JLabel();
+		// title.setBorder(new EmptyBorder(10, 10, 10, 10));
+		title.setText("Predator Prey Simulation");
+		title.setFont(new Font("Courier New", Font.BOLD, 30));
+		title.setAlignmentX(JFrame.CENTER_ALIGNMENT);
+		title.setForeground(new Color(25, 255, 0));
+
+		JPanel mainToolbar = new JPanel();
+		mainToolbar.setLayout(new GridLayout());
+		mainToolbar.setBackground(Color.GRAY);
+
+		JButton initGridButton = new JButton();
+		initGridButton.setText("INIT");
+		// startButton.setFont(new Font("MV Boli", Font.BOLD, 20));
+		initGridButton.setBackground(new Color(25, 25, 25));
+		initGridButton.setForeground(Color.WHITE);
+		initGridButton.setFocusable(false);
+
+		initGridButton.addActionListener(e -> {
+			Console.benchmark("Initializing game grid", game::initGameGrid);
+			game.setSimulationState(SimulationState.STARTED);
+		});
+
+		JButton toggleSimulationButton = new JButton();
+		toggleSimulationButton.setText("▶");
+		// startButton.setFont(new Font("MV Boli", Font.BOLD, 20));
+		toggleSimulationButton.setBackground(Color.GREEN);
+		toggleSimulationButton.setForeground(Color.BLACK);
+		toggleSimulationButton.setFocusable(false);
+
+		game.onSimulationStateChanged.connect(data -> {
+			MovementFrame movementFrame = game.getMovementFrame();
+			SimulationState state = (SimulationState) data[0];
+			if (state == SimulationState.PAUSED || state == SimulationState.INITIAL || state == SimulationState.ENDED
+					|| state == SimulationState.MANUAL) {
+				toggleSimulationButton.setText("▶");
+				toggleSimulationButton.setBackground(Color.GREEN);
+				movementFrame.suspend();
+			} else if (state == SimulationState.RUNNING) {
+				toggleSimulationButton.setText("⏸︎");
+				toggleSimulationButton.setBackground(Color.ORANGE);
+				movementFrame.resume();
+			}
+		});
+
+		toggleSimulationButton.addActionListener(e -> {
+			SimulationState simState = game.getSimulationState();
+
+			if (simState == SimulationState.PAUSED
+					|| simState == SimulationState.STARTED || simState == SimulationState.MANUAL
+					|| simState == SimulationState.INITIAL) {
+				game.setSimulationState(SimulationState.RUNNING);
+			} else if (game.getSimulationState() == SimulationState.RUNNING) {
+				game.setSimulationState(SimulationState.PAUSED);
+			}
+		});
+
+		JButton stepForwardButton = new JButton();
+		stepForwardButton.setText(">");
+		// startButton.setFont(new Font("MV Boli", Font.BOLD, 20));
+		stepForwardButton.setBackground(new Color(25, 25, 25));
+		stepForwardButton.setForeground(Color.WHITE);
+		stepForwardButton.setFocusable(false);
+
+		stepForwardButton.addActionListener(e -> {
+			game.setSimulationState(SimulationState.MANUAL);
+			MovementFrame movementFrame = game.getMovementFrame();
+			movementFrame.step(0);
+		});
+
+		JButton stepBackButton = new JButton();
+		stepBackButton.setText("<");
+		// startButton.setFont(new Font("MV Boli", Font.BOLD, 20));
+		stepBackButton.setBackground(new Color(25, 25, 25));
+		stepBackButton.setForeground(Color.WHITE);
+		stepBackButton.setFocusable(false);
+
+		stepBackButton.addActionListener(e -> {
+			game.setSimulationState(SimulationState.MANUAL);
+		});
+
+		JButton clearButton = new JButton();
+		clearButton.setText("CLEAR");
+		// startButton.setFont(new Font("MV Boli", Font.BOLD, 20));
+		clearButton.setBackground(new Color(25, 25, 25));
+		clearButton.setForeground(Color.WHITE);
+		clearButton.setFocusable(false);
+
+		clearButton.addActionListener(e -> {
+			game.getGameGrid().clearCells();
+			game.setSimulationState(SimulationState.INITIAL);
+		});
+
+		JButton downloadButton = new JButton();
+		downloadButton.setText("DOWNLOAD");
+		// startButton.setFont(new Font("MV Boli", Font.BOLD, 20));
+		downloadButton.setBackground(new Color(25, 25, 25));
+		downloadButton.setForeground(Color.WHITE);
+		downloadButton.setFocusable(false);
+
+		downloadButton.addActionListener(e -> {
+			System.out.println(game.getGameGrid().download());
+		});
+
+		JButton fasterButton = new JButton();
+		fasterButton.setText("+");
+		// startButton.setFont(new Font("MV Boli", Font.BOLD, 20));
+		fasterButton.setBackground(new Color(25, 25, 25));
+		fasterButton.setForeground(Color.WHITE);
+		fasterButton.setFocusable(false);
+
+		fasterButton.addActionListener(e -> {
+			settings.setAntMovementCooldown(Math.max(0.001, settings.getAntMovementCooldown() / 1.2));
+			settings.setDoodlebugMovementCooldown(Math.max(0.001, settings.getDoodlebugMovementCooldown() / 1.2));
+			for (Cell cell : gameGrid.getGrid().values()) {
+				if (cell.hasOccupant()) {
+					if (cell.getOccupant() instanceof Ant) {
+						cell.getOccupant().setProperty(Property.MOVEMENT_COOLDOWN,
+								settings.getAntMovementCooldown());
+					} else if (cell.getOccupant() instanceof Doodlebug) {
+						cell.getOccupant().setProperty(Property.MOVEMENT_COOLDOWN,
+								settings.getDoodlebugMovementCooldown());
+					}
+				}
+			}
+		});
+
+		JButton slowerButton = new JButton();
+		slowerButton.setText("-");
+		// startButton.setFont(new Font("MV Boli", Font.BOLD, 20));
+		slowerButton.setBackground(new Color(25, 25, 25));
+		slowerButton.setForeground(Color.WHITE);
+		slowerButton.setFocusable(false);
+
+		slowerButton.addActionListener(e -> {
+			settings.setAntMovementCooldown(Math.min(1.0, settings.getAntMovementCooldown() * 1.2));
+			settings.setDoodlebugMovementCooldown(Math.min(1.0, settings.getDoodlebugMovementCooldown() * 1.2));
+			for (Cell cell : gameGrid.getGrid().values()) {
+				if (cell.hasOccupant()) {
+					if (cell.getOccupant() instanceof Ant) {
+						cell.getOccupant().setProperty(Property.MOVEMENT_COOLDOWN,
+								settings.getAntMovementCooldown());
+					} else if (cell.getOccupant() instanceof Doodlebug) {
+						cell.getOccupant().setProperty(Property.MOVEMENT_COOLDOWN,
+								settings.getDoodlebugMovementCooldown());
+					}
+				}
+			}
+		});
+
+		mainToolbar.add(slowerButton);
+		mainToolbar.add(fasterButton);
+		mainToolbar.add(downloadButton);
+		mainToolbar.add(clearButton);
+		mainToolbar.add(stepBackButton);
+		mainToolbar.add(stepForwardButton);
+		mainToolbar.add(toggleSimulationButton);
+		mainToolbar.add(initGridButton);
+
+		//
+		headerPanel.add(title);
+		headerPanel.add(mainToolbar);
+		return headerPanel;
 	}
 
 	private class GridContent extends JPanel {

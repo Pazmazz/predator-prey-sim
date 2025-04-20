@@ -22,7 +22,7 @@ public class GameSettings {
 		this.gameTitle = "two"; // Title of game window
 
 		// Game grid
-		this.screenWidth = 760;
+		this.screenWidth = 600;
 		// this.screenHeight = 680;
 
 		this.gridLineThickness = 2;
@@ -34,8 +34,8 @@ public class GameSettings {
 
 		this.initialAnts = 100;
 		this.initialDoodlebugs = 5;
-		this.antMovementCooldown = 0;
-		this.doodlebugMovementCooldown = 0;
+		this.antMovementCooldown = 1.0 / 10;
+		this.doodlebugMovementCooldown = 1.0 / 10;
 
 		this.antBreedingEnabled = true;
 		this.doodlebugBreedingEnabled = true;
@@ -221,5 +221,13 @@ public class GameSettings {
 
 	public void setDoodlebugBreedingEnabled(boolean bool) {
 		this.doodlebugBreedingEnabled = bool;
+	}
+
+	public void setAntMovementCooldown(double cooldown) {
+		this.antMovementCooldown = cooldown;
+	}
+
+	public void setDoodlebugMovementCooldown(double cooldown) {
+		this.doodlebugMovementCooldown = cooldown;
 	}
 }

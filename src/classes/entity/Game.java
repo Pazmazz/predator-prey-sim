@@ -34,11 +34,15 @@ public class Game implements Runnable {
 	final private String sessionId;
 
 	// TODO: Implement game history snapshots
-	final private ArrayList<Snapshot> snapshots = new ArrayList<>();
+	final private ArrayList<String> snapshots = new ArrayList<>();
+	private int currentSnapshot = 0;
 	final private int snapshotInterval = 1;
 
 	private ScreenTest screen;
 	private GameState state = GameState.INITIAL;
+	private SimulationState simState = SimulationState.INITIAL;
+
+	final public EventSignal onSimulationStateChanged = new EventSignal();
 
 	private long upTime;
 	private long gameHertz;
@@ -61,6 +65,16 @@ public class Game implements Runnable {
 		TERMINATED,
 	}
 
+	public static enum SimulationState {
+		INITIAL,
+		MANUAL,
+		STARTED,
+		RUNNING,
+		ENDED,
+		PAUSED,
+		EDITING
+	}
+
 	private Game() {
 		this.sessionId = UUID.randomUUID().toString();
 		this.upTime = Time.tick();
@@ -81,6 +95,7 @@ public class Game implements Runnable {
 
 	// TODO: Optimize
 	public String initGameGrid() {
+		this.gameGrid.clearCells();
 		this.gameGrid.populate();
 
 		ArrayList<Cell> antCells = this.gameGrid
@@ -108,6 +123,7 @@ public class Game implements Runnable {
 				renderFrame,
 		};
 
+		this.movementFrame.suspend();
 		return "RunService benchmark";
 	}
 
@@ -135,9 +151,11 @@ public class Game implements Runnable {
 
 	// TODO: Implement snapshot saving/loading
 	public void saveSnapshot() {
-		Snapshot snapshot = new Snapshot();
-
-		this.snapshots.add(snapshot);
+		if (this.snapshots.size() >= 25) {
+			this.snapshots.remove(0);
+		}
+		String serializedGrid = gameGrid.download();
+		this.snapshots.add(serializedGrid);
 	}
 
 	public void loadSnapshot() {
@@ -211,6 +229,10 @@ public class Game implements Runnable {
 		return this.state;
 	}
 
+	public SimulationState getSimulationState() {
+		return this.simState;
+	}
+
 	public String getSessionId() {
 		return this.sessionId;
 	}
@@ -270,23 +292,29 @@ public class Game implements Runnable {
 		this.state = newState;
 	}
 
+	public void setSimulationState(SimulationState state) {
+		this.simState = state;
+		this.onSimulationStateChanged.fire(state);
+	}
+
 	public void boot() {
 		Console.benchmark("Creating game grid", this::initConfig);
 
 		// Avg: ~0.001s
 		Console.benchmark("Creating game grid", this::createGameGrid);
 
-		// Avg: ~0.02s
-		Console.benchmark("Initializing game grid", this::initGameGrid);
-
-		// Avg: ~0.01s
-		Console.benchmark("Render game grid", this.getGameGrid()::toASCII);
-
 		// Avg: ~0.005s
 		Console.benchmark("Initializing RunService", this::initRunService);
 
 		// Avg: ~0.3s
 		Console.benchmark("Initializing game screen", this::initGameScreen);
+
+		// Avg: ~0.02s
+		// Console.benchmark("Initializing game grid", this::initGameGrid);
+
+		// Avg: ~0.01s
+		// Console.benchmark("Render game grid", this.getGameGrid()::toASCII);
+
 	}
 
 	@Override

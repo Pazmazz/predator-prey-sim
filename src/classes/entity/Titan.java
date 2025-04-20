@@ -18,8 +18,7 @@ public class Titan extends Bug<Titan> {
 	private Game game = Game.getInstance();
 
 	public Titan() {
-		setProperty(Property.IS_EATABLE, false);
-		setProperty(Property.VARIANT, "Titan");
+		this.setDefaultProperties();
 	}
 
 	@Override
@@ -55,5 +54,11 @@ public class Titan extends Bug<Titan> {
 	@Override
 	public void setAvatar(IMAGE avatar) {
 		this.avatar = avatar;
+	}
+
+	@Override
+	public void setDefaultProperties() {
+		setProperty(Property.IS_EATABLE, false);
+		setProperty(Property.VARIANT, "Titan");
 	}
 }

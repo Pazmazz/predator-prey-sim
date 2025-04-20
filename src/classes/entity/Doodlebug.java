@@ -21,13 +21,11 @@ public class Doodlebug extends Bug<Doodlebug> {
 
 	public Doodlebug() {
 		// properties
+		this.setDefaultProperties();
+
 		ValueMeter hungerMeter = new ValueMeter(4, 0, 0);
 		this.setProperty(Property.HUNGER_METER, hungerMeter);
-		this.setProperty(Property.IS_EATABLE, false);
-		this.setProperty(Property.MOVEMENT_COOLDOWN, settings.getDoodlebugMovementCooldown());
-
 		ValueMeter movementMeter = this.getProperty(Property.MOVEMENT_METER, ValueMeter.class);
-		movementMeter.setMax(8);
 
 		// event listeners
 		hungerMeter.onMaxValueReached.connect(e -> this.removeFromCell());
@@ -89,5 +87,14 @@ public class Doodlebug extends Bug<Doodlebug> {
 	@Override
 	public void setAvatar(IMAGE avatar) {
 		this.avatar = avatar;
+	}
+
+	@Override
+	public void setDefaultProperties() {
+		this.setProperty(Property.IS_EATABLE, false);
+		this.setProperty(Property.MOVEMENT_COOLDOWN, settings.getDoodlebugMovementCooldown());
+
+		ValueMeter movementMeter = this.getProperty(Property.MOVEMENT_METER, ValueMeter.class);
+		movementMeter.setMax(8);
 	}
 }
