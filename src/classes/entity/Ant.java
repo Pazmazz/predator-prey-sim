@@ -23,8 +23,8 @@ public class Ant extends Bug<Ant> {
 
 	public Ant() {
 		// properties
-		this.setProperty(Property.IS_EATABLE, true);
-		this.setProperty(Property.MOVEMENT_COOLDOWN, settings.getAntMovementCooldown());
+
+		this.setDefaultProperties();
 
 		if (settings.getAntBreedingEnabled())
 			this.getMovementMeter().onMaxValueReached.connect(e -> breed());
@@ -68,5 +68,11 @@ public class Ant extends Bug<Ant> {
 	@Override
 	public void setAvatar(IMAGE avatar) {
 		this.avatar = avatar;
+	}
+
+	@Override
+	public void setDefaultProperties() {
+		this.setProperty(Property.IS_EATABLE, true);
+		this.setProperty(Property.MOVEMENT_COOLDOWN, settings.getAntMovementCooldown());
 	}
 }

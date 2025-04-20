@@ -13,7 +13,7 @@ public class EventSignal {
 
 	public void fire(Object... args) {
 		for (OneWayCallback handler : connections) {
-			handler.call();
+			handler.call(args);
 		}
 	}
 }

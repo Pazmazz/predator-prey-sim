@@ -57,18 +57,7 @@ public class App {
 
 	public static void main(String[] args) {
 
-		// game.initConfig();
-		// game.createGameGrid();
-		// game.initGameGrid();
-		// new ScreenTest();
-
 		game.boot();
-		new Thread(() -> {
-			try {
-				Thread.sleep(1000);
-				game.start();
-			} catch (Exception e) {
-			}
-		}).start();
+		game.start();
 	}
 }

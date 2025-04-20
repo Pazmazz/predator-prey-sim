@@ -4,6 +4,7 @@
 package classes.simulation;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 
@@ -15,6 +16,7 @@ import classes.abstracts.Properties.Property;
 import classes.entity.Ant;
 import classes.entity.CellGrid;
 import classes.entity.CellGrid.Cell;
+import classes.entity.Game.SimulationState;
 import classes.entity.Game;
 import classes.entity.Titan;
 import classes.entity.TweenData;
@@ -49,7 +51,15 @@ public class MovementFrame extends FrameRunner {
 		CellGrid grid = game.getGameGrid();
 		grid.collectCells();
 
+		Collection<Cell> cells = grid.getGrid().values();
+
+		if (cells.size() == 0) {
+			game.setSimulationState(SimulationState.ENDED);
+			return;
+		}
+
 		long currentTime = Time.tick();
+		boolean moveOccurred = false;
 		for (Cell cell : grid.getGrid().values()) {
 			Entity<?> entity = cell.getOccupant();
 
@@ -61,9 +71,13 @@ public class MovementFrame extends FrameRunner {
 				if (currentTime - lastMoved > Time.secondsToNano(movementCooldown)) {
 					bug.move();
 					bug.setTimeLastMoved();
+					moveOccurred = true;
 				}
 			}
 		}
+
+		if (moveOccurred)
+			game.saveSnapshot();
 
 	}
 }
