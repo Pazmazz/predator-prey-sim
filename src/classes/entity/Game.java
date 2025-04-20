@@ -36,9 +36,9 @@ public class Game implements Runnable {
 	// TODO: Implement game history snapshots
 	final private ArrayList<String> snapshots = new ArrayList<>();
 	private int currentSnapshot = 0;
-	final private int snapshotInterval = 1;
+	// final private int snapshotInterval = 1;
 
-	private ScreenTest screen;
+	private GameScreen screen;
 	private GameState state = GameState.INITIAL;
 	private SimulationState simState = SimulationState.INITIAL;
 
@@ -110,6 +110,7 @@ public class Game implements Runnable {
 		for (Cell cell : doodlebugCells)
 			cell.setOccupant(new Doodlebug());
 
+		this.saveSnapshot();
 		return "Initialize game grid benchmark";
 	}
 
@@ -128,7 +129,7 @@ public class Game implements Runnable {
 	}
 
 	public String initGameScreen() {
-		this.screen = new ScreenTest();
+		this.screen = new GameScreen();
 		return "Game screen benchmark";
 	}
 
@@ -151,7 +152,7 @@ public class Game implements Runnable {
 
 	// TODO: Implement snapshot saving/loading
 	public void saveSnapshot() {
-		if (this.snapshots.size() >= 25) {
+		if (this.snapshots.size() >= this.getSettings().getGridSnapshotHistory()) {
 			this.snapshots.remove(0);
 		}
 		String serializedGrid = gameGrid.download();
@@ -164,23 +165,27 @@ public class Game implements Runnable {
 	}
 
 	public boolean onCurrentSnapshot() {
-		return this.getCurrentSnapshot() == this.snapshots.size() - 1;
+		return this.currentSnapshot == this.snapshots.size();
 	}
 
 	public void loadNextSnapshot() {
-		this.currentSnapshot = Math.min(this.snapshots.size() - 1, this.currentSnapshot + 1);
-		Console.println(this.currentSnapshot, this.snapshots.size());
-		if (this.currentSnapshot <= this.snapshots.size()) {
+		if (this.currentSnapshot < this.snapshots.size()) {
 			this.getGameGrid().upload(this.snapshots.get(this.currentSnapshot));
+			this.currentSnapshot++;
+		} else {
+			this.movementFrame.step();
 		}
+		Console.println("$text-green Current Snapshot: $text-white " + this.currentSnapshot,
+				"$text-green Out Of: $text-white " + this.snapshots.size());
 	}
 
 	public void loadPrevSnapshot() {
-		this.currentSnapshot = Math.max(0, this.currentSnapshot - 1);
-		Console.println(this.currentSnapshot, this.snapshots.size());
-		if (this.currentSnapshot >= 0) {
-			this.getGameGrid().upload(this.snapshots.get(this.currentSnapshot));
+		if (this.currentSnapshot > 1) {
+			this.currentSnapshot--;
+			this.getGameGrid().upload(this.snapshots.get(this.currentSnapshot - 1));
 		}
+		Console.println("$text-green Current Snapshot: $text-white" + this.currentSnapshot,
+				"$text-green Out Of: $text-white " + this.snapshots.size());
 	}
 
 	/**
@@ -242,7 +247,7 @@ public class Game implements Runnable {
 		return game;
 	}
 
-	public ScreenTest getScreen() {
+	public GameScreen getScreen() {
 		return this.screen;
 	}
 

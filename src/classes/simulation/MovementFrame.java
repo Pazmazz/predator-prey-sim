@@ -47,20 +47,15 @@ public class MovementFrame extends FrameRunner {
 	}
 
 	@Override
-	public void step(double deltaTimeSeconds) {
+	public void step() {
 		CellGrid grid = game.getGameGrid();
 		grid.collectCells();
 
 		Collection<Cell> cells = grid.getGrid().values();
-
-		if (cells.size() == 0) {
-			game.setSimulationState(SimulationState.ENDED);
-			return;
-		}
-
 		long currentTime = Time.tick();
 		boolean moveOccurred = false;
-		for (Cell cell : grid.getGrid().values()) {
+
+		for (Cell cell : cells) {
 			Entity<?> entity = cell.getOccupant();
 
 			if (entity instanceof Bug) {
@@ -73,11 +68,17 @@ public class MovementFrame extends FrameRunner {
 					bug.setTimeLastMoved();
 					moveOccurred = true;
 				}
+				bug.incrementTimeAlive(this.getDeltaTime());
 			}
 		}
 
 		if (moveOccurred)
 			game.saveSnapshot();
+
+		if (cells.size() == 0) {
+			game.setSimulationState(SimulationState.ENDED);
+			return;
+		}
 
 	}
 }

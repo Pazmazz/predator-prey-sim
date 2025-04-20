@@ -55,5 +55,6 @@ public abstract class Properties implements Serializable {
 		HEALTH_METER,
 		HUNGER_METER,
 		MOVEMENT_METER,
+		ANTS_EATEN,
 	}
 }

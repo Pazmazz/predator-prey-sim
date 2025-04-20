@@ -4,6 +4,7 @@
  */
 package classes.entity;
 
+import classes.abstracts.Bug;
 import classes.abstracts.Entity;
 import classes.abstracts.Properties.Property;
 import classes.entity.CellGrid.Cell;
@@ -1076,6 +1077,10 @@ public class CellGrid {
 		for (Object cellData : data) {
 			Cell cell = (Cell) cellData;
 			this.virtualGrid.put(cell.getUnit2().serialize(), cell);
+			if (cell.hasOccupant() && cell.getOccupant() instanceof Bug<?>) {
+				Bug<?> bug = (Bug<?>) cell.getOccupant();
+				bug.setBirthTime(-1);
+			}
 		}
 	}
 

@@ -6,6 +6,7 @@ package classes.settings;
 import classes.entity.DebugInfo;
 import classes.entity.Unit2;
 import classes.util.Console;
+import classes.util.Math2;
 import classes.util.Console.DebugPriority;
 
 import java.awt.Color;
@@ -25,6 +26,7 @@ public class GameSettings {
 		this.screenWidth = 600;
 		// this.screenHeight = 680;
 
+		this.gridSnapshotHistory = 100;
 		this.gridLineThickness = 2;
 		this.gridBorderPadding = 1;
 		this.gridSize = new Unit2(20, 20);
@@ -34,6 +36,7 @@ public class GameSettings {
 
 		this.initialAnts = 100;
 		this.initialDoodlebugs = 5;
+		this.doodlebugHungerLimit = 4;
 		this.antMovementCooldown = 1.0 / 10;
 		this.doodlebugMovementCooldown = 1.0 / 10;
 
@@ -79,6 +82,164 @@ public class GameSettings {
 	private Color gridLinesColor;
 	private double antMovementCooldown;
 	private double doodlebugMovementCooldown;
+	private int doodlebugHungerLimit;
+	private int gridSnapshotHistory;
+
+	private String[] bugFirstNames = new String[] {
+			"Anton",
+			"Andy",
+			"Anya",
+			"Antoinette",
+			"Anthony",
+			"Pip",
+			"Dot",
+			"Tiny",
+			"Bitsy",
+			"Nib",
+			"Flick",
+			"Chip",
+			"Scurry",
+			"Twitch",
+			"Minnie",
+			"Zippy",
+			"Clove",
+			"Buzz",
+			"Pebble",
+			"Midge",
+			"Skitter",
+			"Linty",
+			"Tilly",
+			"Crumb",
+			"Tizzy",
+			"Sarge",
+			"Queenie",
+			"Thorax",
+			"Mandee",
+			"Scout",
+			"Rook",
+			"Hexa",
+			"Bubbles",
+			"Coco",
+			"Luma",
+			"Amber",
+			"Inky",
+			"Soot",
+			"Grain",
+			"Bean",
+			"Noodle",
+			"Speck",
+			"Zula",
+			"Wisp",
+			"Rolo",
+			"Blip",
+			"Elba",
+			"Gnatash",
+			"Antsy",
+			"Scamp",
+			"Jojo",
+			"Gojo",
+			"Trevor",
+			"Cillian",
+			"Atomic",
+			"Ivan",
+			"John",
+			"Billy",
+			"Eugene",
+			"Tanjiro",
+			"Goku",
+			"Henry",
+			"Luffy",
+			"Will",
+			"Jaylen",
+			"Alex",
+			"Grier",
+			"Gandalf",
+			"Bernie",
+			"Erin",
+			"Titan",
+			"Thor",
+			"Odin",
+			"Metallic",
+			"Olaf",
+	};
+
+	private String[] bugLastNames = new String[] {
+			"Smurf",
+			"Burns",
+			"Scuttlebutt",
+			"The Divine",
+			"The Great",
+			"Broth",
+			"Ironhand",
+			"Skullsplitter",
+			"Bonebreaker",
+			"The Wise",
+			"The Humble",
+			"Stormrider",
+			"The Destroyer",
+			"Stonefist",
+			"Longaxe",
+			"Silverbeard",
+			"The Dominator",
+			"The Brave",
+			"The Inconspicuous",
+			"Small",
+			"Horn",
+			"McKnight",
+			"Lancaster",
+			"Crick",
+			"Underleaf",
+			"Tunneler",
+			"Sprocket",
+			"Dirtchaser",
+			"Burrowes",
+			"Mulch",
+			"Leafson",
+			"Grubbe",
+			"Stickley",
+			"Antwhistle",
+			"Skitteridg",
+			"Buggins",
+			"Pollen",
+			"Pebbleston",
+			"Webber",
+			"Groundling",
+			"Scritch",
+			"Sapthorn",
+			"Nestlewick",
+			"Rootwell",
+			"Scuttle",
+			"Chitter",
+			"Mossgrove",
+			"Whiskerfel",
+			"Dapple",
+			"Clickley",
+			"Hivetide",
+			"Dungworth",
+			"Crawleigh",
+			"Barkley",
+			"Thistledew",
+			"Crumbwell",
+			"Swarmson",
+			"Fuzzle",
+			"Scampers",
+			"Holloway",
+			"Beetlewitz",
+			"Twigg",
+			"Latchwing",
+			"Fizzleburr",
+			"Dapplewick",
+			"Antlersnap",
+			"Snickett",
+			"Wriggles",
+			"Dapplethor",
+			"Chirple",
+			"Minibeet",
+			"Creever",
+			"Dustmoor",
+			"Jazzhands",
+			"Pit",
+	};
 
 	private double gameHertz;
 	private double renderFPS;
@@ -196,9 +357,52 @@ public class GameSettings {
 		return this.doodlebugMovementCooldown;
 	}
 
+	public String[] getBugFirstNames() {
+		return this.bugFirstNames;
+	}
+
+	public String[] getBugLastNames() {
+		return this.bugLastNames;
+	}
+
+	public String getRandomBugFirstName() {
+		StringBuilder name = new StringBuilder();
+		if (Math2.randInt(10) == 0) {
+			name.append("<span style='color:yellow;'>");
+			name.append((new String[] { "King ", "Queen ", "Sir " })[Math2.randInt(3)]);
+			name.append("</span>");
+		}
+		return name
+				.append(this.bugFirstNames[Math2.randInt(this.bugFirstNames.length)])
+				.toString();
+	}
+
+	public String getRandomBugLastName() {
+		return this.bugLastNames[Math2.randInt(this.bugLastNames.length)];
+	}
+
+	public String getRandomBugFirstAndLastName() {
+		return new StringBuilder(this.getRandomBugFirstName())
+				.append(" ")
+				.append(this.getRandomBugLastName())
+				.toString();
+	}
+
+	public int getDoodlebugHungerLimit() {
+		return this.doodlebugHungerLimit;
+	}
+
+	public int getGridSnapshotHistory() {
+		return this.gridSnapshotHistory;
+	}
+
 	//
 	// Public setters
 	//
+	public void setGridSnapshotHistory(int length) {
+		this.gridSnapshotHistory = length;
+	}
+
 	public void setInitialAnts(int initialAnts) {
 		this.initialAnts = initialAnts;
 	}
@@ -229,5 +433,9 @@ public class GameSettings {
 
 	public void setDoodlebugMovementCooldown(double cooldown) {
 		this.doodlebugMovementCooldown = cooldown;
+	}
+
+	public void setDoodlebugHungerLimit(int limit) {
+		this.doodlebugHungerLimit = limit;
 	}
 }

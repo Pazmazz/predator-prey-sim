@@ -9,7 +9,7 @@ import javax.imageio.ImageIO;
 import classes.abstracts.Bug;
 import classes.util.Console;
 import classes.entity.CellGrid.Cell;
-import classes.entity.ScreenTest.IMAGE;
+import classes.entity.GameScreen.IMAGE;
 import classes.settings.GameSettings;
 
 @SuppressWarnings("unused")
@@ -24,7 +24,8 @@ public class Ant extends Bug<Ant> {
 	public Ant() {
 		// properties
 
-		this.setDefaultProperties();
+		this.setProperty(Property.IS_EATABLE, true);
+		this.setProperty(Property.MOVEMENT_COOLDOWN, settings.getAntMovementCooldown());
 
 		if (settings.getAntBreedingEnabled())
 			this.getMovementMeter().onMaxValueReached.connect(e -> breed());
@@ -71,8 +72,13 @@ public class Ant extends Bug<Ant> {
 	}
 
 	@Override
-	public void setDefaultProperties() {
-		this.setProperty(Property.IS_EATABLE, true);
-		this.setProperty(Property.MOVEMENT_COOLDOWN, settings.getAntMovementCooldown());
+	public String getTooltipString() {
+		return new StringBuilder(this.getNameWithId())
+				.append("<span style='font-size:10px;color:white;'>")
+				.append("<br>Time alive: <span style='color:#bf00ff;'>")
+				.append(Math.round((long) this.getTimeAliveInSeconds()))
+				.append(" seconds</span>")
+				.append("</span>")
+				.toString();
 	}
 }

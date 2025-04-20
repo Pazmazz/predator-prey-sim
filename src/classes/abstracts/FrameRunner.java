@@ -84,7 +84,7 @@ public abstract class FrameRunner {
 		// run the implemented step
 		// pre-simulation task binds go here (executePreSimulationTasks())
 		stepTasks(this.preSimulationTasks);
-		step(Time.nanoToSeconds(deltaTime));
+		step();
 		stepTasks(this.postSimulationTasks);
 		// post-simulation task binds go here (executePostSimulationTasks())
 
@@ -99,7 +99,7 @@ public abstract class FrameRunner {
 		Console.debugPrint(String.format(
 				"last simulation: $text-%s %s $text-reset seconds ago",
 				this.debugInfo.getPrimaryColor(),
-				Time.nanoToSeconds(deltaTime)));
+				Time.nanoToSeconds(this.deltaTime)));
 
 		Console.debugPrint("-".repeat(50));
 		return simulationTime;
@@ -113,6 +113,10 @@ public abstract class FrameRunner {
 	 */
 	public double getDeltaTimeSeconds() {
 		return Time.nanoToSeconds(this.deltaTime);
+	}
+
+	public long getDeltaTime() {
+		return this.deltaTime;
 	}
 
 	// TODO: Add documentation
@@ -419,5 +423,5 @@ public abstract class FrameRunner {
 		RUNNING,
 	}
 
-	protected abstract void step(double deltaTimeSeconds);
+	protected abstract void step();
 }

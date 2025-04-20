@@ -7,7 +7,7 @@ import java.io.File;
 import java.util.ArrayList;
 
 import classes.entity.CellGrid.Cell;
-import classes.entity.ScreenTest.IMAGE;
+import classes.entity.GameScreen.IMAGE;
 import classes.entity.Null;
 import exceptions.CellIsOccupiedException;
 import exceptions.NoCellFoundException;
@@ -28,8 +28,6 @@ public abstract class Entity<T extends Entity<T>> extends Properties {
 	public abstract IMAGE getAvatar();
 
 	public abstract void setAvatar(IMAGE image);
-
-	public abstract void setDefaultProperties();
 
 	// Unused constructor for now
 	// public Entity() {
