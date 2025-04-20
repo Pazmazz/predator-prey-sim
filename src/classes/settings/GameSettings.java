@@ -186,7 +186,7 @@ public class GameSettings {
 			"Small",
 			"Horn",
 			"McKnight",
-			"Lancaster",
+			"Lance",
 			"Crick",
 			"Underleaf",
 			"Tunneler",
@@ -367,14 +367,19 @@ public class GameSettings {
 
 	public String getRandomBugFirstName() {
 		StringBuilder name = new StringBuilder();
+		if (Math2.randInt(200) == 0) {
+			name.append("<span style='color:#bf00ff;'>[LEGENDARY] </span>");
+		}
+		if (Math2.randInt(50) == 0) {
+			name.append("<span style='color:red;'>[ELITE] </span>");
+		}
 		if (Math2.randInt(10) == 0) {
 			name.append("<span style='color:yellow;'>");
 			name.append((new String[] { "King ", "Queen ", "Sir " })[Math2.randInt(3)]);
 			name.append("</span>");
 		}
-		return name
-				.append(this.bugFirstNames[Math2.randInt(this.bugFirstNames.length)])
-				.toString();
+		name.append(this.bugFirstNames[Math2.randInt(this.bugFirstNames.length)]);
+		return name.toString();
 	}
 
 	public String getRandomBugLastName() {

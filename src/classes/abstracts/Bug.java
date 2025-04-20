@@ -24,7 +24,8 @@ public abstract class Bug<T extends Bug<T>> extends Entity<T> {
 
 	private long timeLastMoved = 0;
 	private long birthTime = Time.tick();
-	private long timeAlive = 0;
+	private long timeInSimulation = 0;
+	private int generation = 1;
 
 	protected Bug() {
 		this.idNum = (int) (Math.random() * 1000);
@@ -62,16 +63,20 @@ public abstract class Bug<T extends Bug<T>> extends Entity<T> {
 		return this.timeLastMoved;
 	}
 
-	public long getTimeAlive() {
-		return this.timeAlive;
+	public long getTimeInSimulation() {
+		return this.timeInSimulation;
+	}
+
+	public int getGeneration() {
+		return this.generation;
 	}
 
 	public long getTimeSinceBirth() {
 		return Time.tick() - this.birthTime;
 	}
 
-	public double getTimeAliveInSeconds() {
-		return Time.nanoToSeconds(this.timeAlive);
+	public double getTimeInSimulationInSeconds() {
+		return Time.nanoToSeconds(this.timeInSimulation);
 	}
 
 	public void setTimeLastMoved() {
@@ -114,8 +119,12 @@ public abstract class Bug<T extends Bug<T>> extends Entity<T> {
 		this.birthTime = t;
 	}
 
-	public void incrementTimeAlive(long delta) {
-		this.timeAlive += delta;
+	public void setGeneration(int generation) {
+		this.generation = generation;
+	}
+
+	public void incrementTimeInSimulation(long delta) {
+		this.timeInSimulation += delta;
 	}
 
 	public void breed() {
@@ -123,7 +132,10 @@ public abstract class Bug<T extends Bug<T>> extends Entity<T> {
 		Cell randCell = gameGrid.getRandomAvailableCellFrom(adjCells);
 
 		if (randCell != null) {
-			newInstance().assignCell(randCell);
+			Bug<T> bug = newInstance();
+			bug.assignCell(randCell);
+			bug.setGeneration(this.getGeneration() + 1);
+
 		}
 	}
 

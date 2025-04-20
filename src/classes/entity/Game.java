@@ -184,7 +184,7 @@ public class Game implements Runnable {
 			this.currentSnapshot--;
 			this.getGameGrid().upload(this.snapshots.get(this.currentSnapshot - 1));
 		}
-		Console.println("$text-green Current Snapshot: $text-white" + this.currentSnapshot,
+		Console.println("$text-green Current Snapshot: $text-white " + this.currentSnapshot,
 				"$text-green Out Of: $text-white " + this.snapshots.size());
 	}
 

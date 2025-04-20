@@ -15,6 +15,7 @@ import classes.abstracts.Properties;
 import classes.abstracts.Properties.Property;
 import classes.entity.Ant;
 import classes.entity.CellGrid;
+import classes.entity.Doodlebug;
 import classes.entity.CellGrid.Cell;
 import classes.entity.Game.SimulationState;
 import classes.entity.Game;
@@ -39,11 +40,31 @@ public class MovementFrame extends FrameRunner {
 	final private static Game game = Game.getInstance();
 	final private static GameSettings settings = game.getSettings();
 
+	// STATS
+	private Doodlebug doodlebugMVP = new Doodlebug();
+	private Ant antMVP = new Ant();
+
 	public MovementFrame() {
 		super(
 				settings.getSimulationProcessName(),
 				settings.getSimulationFPS(),
 				settings.getSimulationDebugInfo());
+	}
+
+	public Doodlebug getCurrentDoodlebugMVP() {
+		return this.doodlebugMVP;
+	}
+
+	public Ant getCurrentAntMPV() {
+		return this.antMVP;
+	}
+
+	public void setCurrentDoodlebugMVP(Doodlebug db) {
+		this.doodlebugMVP = db;
+	}
+
+	public void setCurrentAntMVP(Ant ant) {
+		this.antMVP = ant;
 	}
 
 	@Override
@@ -68,7 +89,23 @@ public class MovementFrame extends FrameRunner {
 					bug.setTimeLastMoved();
 					moveOccurred = true;
 				}
-				bug.incrementTimeAlive(this.getDeltaTime());
+				bug.incrementTimeInSimulation(this.getDeltaTime());
+
+				if (bug instanceof Doodlebug) {
+					Doodlebug db = (Doodlebug) bug;
+					int antsEaten = db.getAntsEatenMeter().getValue();
+
+					if (antsEaten > this.doodlebugMVP.getAntsEatenMeter().getValue()) {
+						this.setCurrentDoodlebugMVP(db);
+					}
+				} else if (bug instanceof Ant) {
+					Ant ant = (Ant) bug;
+					long timeInSim = ant.getTimeInSimulation();
+
+					if (timeInSim > this.antMVP.getTimeInSimulation()) {
+						this.setCurrentAntMVP(ant);
+					}
+				}
 			}
 		}
 

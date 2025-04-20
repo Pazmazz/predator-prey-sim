@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import classes.abstracts.Bug;
 import classes.util.Console;
 import classes.util.Math2;
+import classes.util.Time;
 import classes.entity.CellGrid.Cell;
 import classes.entity.GameScreen.IMAGE;
 import classes.entity.ValueMeter.RESET_TYPE;
@@ -103,10 +104,11 @@ public class Doodlebug extends Bug<Doodlebug> {
 		return new StringBuilder(this.getNameWithId())
 				.append("<span style='font-size:10px;color:white;'>")
 				.append("<br>Time alive: <span style='color:#bf00ff;'>")
-				.append(Math.round((long) this.getTimeAliveInSeconds()))
-				.append(" seconds</span>")
-				.append("<br>Ants eaten: <span style='color:#bf00ff;'>")
+				.append(Time.formatTime(this.getTimeInSimulationInSeconds()))
+				.append("</span><br>Ants eaten: <span style='color:#bf00ff;'>")
 				.append(this.getAntsEatenMeter().getValue())
+				.append("</span><br>Generation: <span style='color:#bf00ff;'>")
+				.append(this.getGeneration())
 				.append("</span>")
 				.toString();
 	}

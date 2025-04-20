@@ -58,7 +58,6 @@ public class App {
 	public static Game game = Game.getInstance();
 
 	public static void main(String[] args) {
-
 		game.boot();
 		game.start();
 	}

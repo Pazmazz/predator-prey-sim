@@ -8,6 +8,7 @@ import javax.imageio.ImageIO;
 
 import classes.abstracts.Bug;
 import classes.util.Console;
+import classes.util.Time;
 import classes.entity.CellGrid.Cell;
 import classes.entity.GameScreen.IMAGE;
 import classes.settings.GameSettings;
@@ -76,8 +77,9 @@ public class Ant extends Bug<Ant> {
 		return new StringBuilder(this.getNameWithId())
 				.append("<span style='font-size:10px;color:white;'>")
 				.append("<br>Time alive: <span style='color:#bf00ff;'>")
-				.append(Math.round((long) this.getTimeAliveInSeconds()))
-				.append(" seconds</span>")
+				.append(Time.formatTime(this.getTimeInSimulationInSeconds()))
+				.append("</span><br>Generation: <span style='color:#bf00ff;'>")
+				.append(this.getGeneration())
 				.append("</span>")
 				.toString();
 	}
