@@ -38,7 +38,7 @@ public class Game implements Runnable {
 	private int currentSnapshot = 0;
 	final private int snapshotInterval = 1;
 
-	private ScreenTest screen;
+	private GameScreen screen;
 	private GameState state = GameState.INITIAL;
 	private SimulationState simState = SimulationState.INITIAL;
 
@@ -129,7 +129,7 @@ public class Game implements Runnable {
 	}
 
 	public String initGameScreen() {
-		this.screen = new ScreenTest();
+		this.screen = new GameScreen();
 		return "Game screen benchmark";
 	}
 
@@ -245,7 +245,7 @@ public class Game implements Runnable {
 		return game;
 	}
 
-	public ScreenTest getScreen() {
+	public GameScreen getScreen() {
 		return this.screen;
 	}
 

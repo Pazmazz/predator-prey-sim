@@ -8,7 +8,7 @@ import classes.abstracts.Bug;
 import classes.abstracts.Entity;
 import classes.util.Console;
 import classes.entity.CellGrid.Cell;
-import classes.entity.ScreenTest.IMAGE;
+import classes.entity.GameScreen.IMAGE;
 
 public class Titan extends Bug<Titan> {
 
@@ -18,7 +18,8 @@ public class Titan extends Bug<Titan> {
 	private Game game = Game.getInstance();
 
 	public Titan() {
-		this.setDefaultProperties();
+		setProperty(Property.IS_EATABLE, false);
+		setProperty(Property.VARIANT, "Titan");
 	}
 
 	@Override
@@ -54,11 +55,5 @@ public class Titan extends Bug<Titan> {
 	@Override
 	public void setAvatar(IMAGE avatar) {
 		this.avatar = avatar;
-	}
-
-	@Override
-	public void setDefaultProperties() {
-		setProperty(Property.IS_EATABLE, false);
-		setProperty(Property.VARIANT, "Titan");
 	}
 }

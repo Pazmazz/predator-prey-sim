@@ -7,7 +7,7 @@ import classes.abstracts.Bug;
 import classes.util.Console;
 import classes.util.Math2;
 import classes.entity.CellGrid.Cell;
-import classes.entity.ScreenTest.IMAGE;
+import classes.entity.GameScreen.IMAGE;
 import classes.entity.ValueMeter.RESET_TYPE;
 import classes.settings.GameSettings;
 
@@ -21,11 +21,15 @@ public class Doodlebug extends Bug<Doodlebug> {
 
 	public Doodlebug() {
 		// properties
-		this.setDefaultProperties();
+		this.setProperty(Property.IS_EATABLE, false);
+		this.setProperty(Property.MOVEMENT_COOLDOWN, settings.getDoodlebugMovementCooldown());
+		this.setProperty(Property.ANTS_EATEN, new ValueMeter(0, 0).removeLimit());
 
-		ValueMeter hungerMeter = new ValueMeter(4, 0, 0);
-		this.setProperty(Property.HUNGER_METER, hungerMeter);
 		ValueMeter movementMeter = this.getProperty(Property.MOVEMENT_METER, ValueMeter.class);
+		movementMeter.setMax(8);
+
+		ValueMeter hungerMeter = new ValueMeter(settings.getDoodlebugHungerLimit(), 0, 0);
+		this.setProperty(Property.HUNGER_METER, hungerMeter);
 
 		// event listeners
 		hungerMeter.onMaxValueReached.connect(e -> this.removeFromCell());
@@ -35,6 +39,10 @@ public class Doodlebug extends Bug<Doodlebug> {
 
 	public ValueMeter getHungerMeter() {
 		return this.getProperty(Property.HUNGER_METER, ValueMeter.class);
+	}
+
+	public ValueMeter getAntsEatenMeter() {
+		return this.getProperty(Property.ANTS_EATEN, ValueMeter.class);
 	}
 
 	@Override
@@ -50,6 +58,7 @@ public class Doodlebug extends Bug<Doodlebug> {
 					cell.removeOccupant();
 					this.assignCell(cell);
 					this.getHungerMeter().empty();
+					this.getAntsEatenMeter().increment();
 					return;
 				}
 			} else if (fallbackCell == null) {
@@ -90,11 +99,9 @@ public class Doodlebug extends Bug<Doodlebug> {
 	}
 
 	@Override
-	public void setDefaultProperties() {
-		this.setProperty(Property.IS_EATABLE, false);
-		this.setProperty(Property.MOVEMENT_COOLDOWN, settings.getDoodlebugMovementCooldown());
-
-		ValueMeter movementMeter = this.getProperty(Property.MOVEMENT_METER, ValueMeter.class);
-		movementMeter.setMax(8);
+	public String getTooltipString() {
+		return new StringBuilder(this.getNameWithId())
+				.append("<br>test")
+				.toString();
 	}
 }

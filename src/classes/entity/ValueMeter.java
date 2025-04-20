@@ -123,6 +123,11 @@ public class ValueMeter {
 		this.decrementBy(1);
 	}
 
+	public ValueMeter removeLimit() {
+		this.setMax(Integer.MAX_VALUE);
+		return this;
+	}
+
 	@Override
 	public String toString() {
 		return new StringBuilder("ValueMeter<")

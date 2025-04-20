@@ -35,6 +35,7 @@ public class GameSettings {
 
 		this.initialAnts = 100;
 		this.initialDoodlebugs = 5;
+		this.doodlebugHungerLimit = 4;
 		this.antMovementCooldown = 1.0 / 10;
 		this.doodlebugMovementCooldown = 1.0 / 10;
 
@@ -80,6 +81,7 @@ public class GameSettings {
 	private Color gridLinesColor;
 	private double antMovementCooldown;
 	private double doodlebugMovementCooldown;
+	private int doodlebugHungerLimit;
 
 	private String[] bugFirstNames = new String[] {
 			"Anton",
@@ -132,10 +134,56 @@ public class GameSettings {
 			"Gnatash",
 			"Antsy",
 			"Scamp",
+			"Jojo",
+			"Gojo",
+			"Trevor",
+			"Cillian",
+			"Atomic",
+			"Ivan",
+			"John",
+			"Billy",
+			"Eugene",
+			"Tanjiro",
+			"Goku",
+			"Henry",
+			"Luffy",
+			"Will",
+			"Jaylen",
+			"Alex",
+			"Grier",
+			"Gandalf",
+			"Bernie",
+			"Erin",
+			"Titan",
+			"Thor",
+			"Odin",
+			"Metallic",
+			"Olaf",
 	};
 
 	private String[] bugLastNames = new String[] {
 			"Smurf",
+			"Burns",
+			"Scuttlebutt",
+			"The Divine",
+			"The Great",
+			"Broth",
+			"Ironhand",
+			"Skullsplitter",
+			"Bonebreaker",
+			"The Wise",
+			"The Humble",
+			"Stormrider",
+			"The Destroyer",
+			"Stonefist",
+			"Longaxe",
+			"Silverbeard",
+			"The Dominator",
+			"The Brave",
+			"The Inconspicuous",
+			"Small",
+			"Horn",
+			"McKnight",
 			"Crick",
 			"Underleaf",
 			"Tunneler",
@@ -186,6 +234,8 @@ public class GameSettings {
 			"Minibeet",
 			"Creever",
 			"Dustmoor",
+			"Jazzhands",
+			"Pit",
 	};
 
 	private double gameHertz;
@@ -313,7 +363,15 @@ public class GameSettings {
 	}
 
 	public String getRandomBugFirstName() {
-		return this.bugFirstNames[Math2.randInt(this.bugFirstNames.length)];
+		StringBuilder name = new StringBuilder();
+		if (Math2.randInt(10) == 0) {
+			name.append("<span style='color:yellow;'>");
+			name.append((new String[] { "King ", "Queen ", "Sir " })[Math2.randInt(3)]);
+			name.append("</span>");
+		}
+		return name
+				.append(this.bugFirstNames[Math2.randInt(this.bugFirstNames.length)])
+				.toString();
 	}
 
 	public String getRandomBugLastName() {
@@ -325,6 +383,10 @@ public class GameSettings {
 				.append(" ")
 				.append(this.getRandomBugLastName())
 				.toString();
+	}
+
+	public int getDoodlebugHungerLimit() {
+		return this.doodlebugHungerLimit;
 	}
 
 	//
@@ -360,5 +422,9 @@ public class GameSettings {
 
 	public void setDoodlebugMovementCooldown(double cooldown) {
 		this.doodlebugMovementCooldown = cooldown;
+	}
+
+	public void setDoodlebugHungerLimit(int limit) {
+		this.doodlebugHungerLimit = limit;
 	}
 }

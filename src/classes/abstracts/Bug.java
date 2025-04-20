@@ -85,6 +85,10 @@ public abstract class Bug<T extends Bug<T>> extends Entity<T> {
 				.toString();
 	}
 
+	public String getTooltipString() {
+		return "Tooltip";
+	}
+
 	public boolean isEatable() {
 		return this.getProperty(Property.IS_EATABLE, Boolean.class);
 	}
