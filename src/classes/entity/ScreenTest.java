@@ -240,8 +240,12 @@ public class ScreenTest {
 
 		stepForwardButton.addActionListener(e -> {
 			game.setSimulationState(SimulationState.MANUAL);
-			MovementFrame movementFrame = game.getMovementFrame();
-			movementFrame.step(0);
+			if (game.onCurrentSnapshot()) {
+				MovementFrame movementFrame = game.getMovementFrame();
+				movementFrame.step(0);
+			} else {
+				game.loadNextSnapshot();
+			}
 		});
 
 		JButton stepBackButton = new JButton();
@@ -253,6 +257,7 @@ public class ScreenTest {
 
 		stepBackButton.addActionListener(e -> {
 			game.setSimulationState(SimulationState.MANUAL);
+			game.loadPrevSnapshot();
 		});
 
 		JButton clearButton = new JButton();

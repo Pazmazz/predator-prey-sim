@@ -59,6 +59,7 @@ public class MovementFrame extends FrameRunner {
 		}
 
 		long currentTime = Time.tick();
+		boolean moveOccurred = false;
 		for (Cell cell : grid.getGrid().values()) {
 			Entity<?> entity = cell.getOccupant();
 
@@ -70,10 +71,13 @@ public class MovementFrame extends FrameRunner {
 				if (currentTime - lastMoved > Time.secondsToNano(movementCooldown)) {
 					bug.move();
 					bug.setTimeLastMoved();
-					game.saveSnapshot();
+					moveOccurred = true;
 				}
 			}
 		}
+
+		if (moveOccurred)
+			game.saveSnapshot();
 
 	}
 }

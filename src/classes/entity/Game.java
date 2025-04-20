@@ -156,10 +156,31 @@ public class Game implements Runnable {
 		}
 		String serializedGrid = gameGrid.download();
 		this.snapshots.add(serializedGrid);
+		this.currentSnapshot = this.snapshots.size();
 	}
 
-	public void loadSnapshot() {
+	public int getCurrentSnapshot() {
+		return this.currentSnapshot;
+	}
 
+	public boolean onCurrentSnapshot() {
+		return this.getCurrentSnapshot() == this.snapshots.size() - 1;
+	}
+
+	public void loadNextSnapshot() {
+		this.currentSnapshot = Math.min(this.snapshots.size() - 1, this.currentSnapshot + 1);
+		Console.println(this.currentSnapshot, this.snapshots.size());
+		if (this.currentSnapshot <= this.snapshots.size()) {
+			this.getGameGrid().upload(this.snapshots.get(this.currentSnapshot));
+		}
+	}
+
+	public void loadPrevSnapshot() {
+		this.currentSnapshot = Math.max(0, this.currentSnapshot - 1);
+		Console.println(this.currentSnapshot, this.snapshots.size());
+		if (this.currentSnapshot >= 0) {
+			this.getGameGrid().upload(this.snapshots.get(this.currentSnapshot));
+		}
 	}
 
 	/**
