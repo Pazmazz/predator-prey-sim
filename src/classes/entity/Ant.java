@@ -43,26 +43,6 @@ public class Ant extends Bug<Ant> {
 	}
 
 	@Override
-	public void move(Turn turn) {
-		ArrayList<Cell> adjCells = game
-				.getGameGrid()
-				.getCellsAdjacentTo(getCell());
-
-		for (Cell adjCell : adjCells) {
-			if (adjCell.isInBounds() && adjCell.isEmpty()) {
-				assignCell(adjCell);
-				break;
-			}
-		}
-		movementCounter++;
-
-		if (movementCounter == 3) {
-			movementCounter = 0;
-			this.breed(turn);
-		}
-	}
-
-	@Override
 	public boolean move() {
 		boolean moved = this.getBreedingMeter().increment() == this.getBreedingMeter().getMax();
 		ArrayList<Cell> adjCells = gameGrid.getCellsAdjacentTo(getCell());
@@ -74,6 +54,12 @@ public class Ant extends Bug<Ant> {
 			assignCell(randCell);
 			return true;
 		}
+		return moved;
+
+	}
+
+	@Override
+	public void breed(Turn turn) {
 
 	}
 

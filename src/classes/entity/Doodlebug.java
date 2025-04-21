@@ -87,19 +87,9 @@ public class Doodlebug extends Bug<Doodlebug> {
 		return moved;
 	}
 
-	public void breed() {
-		ArrayList<Cell> adjCells = game
-				.getGameGrid()
-				.getCellsAdjacentTo(getCell());
+	@Override
+	public void breed(Turn turn) {
 
-		for (Cell adjCell : adjCells) {
-			if (adjCell.isInBounds() && adjCell.isEmpty()) {
-				adjCell.setOccupant(new Doodlebug());
-				numOfDoodlebugBreeds++;
-				turn.setDoodlebugBreedCount();
-				break;
-			}
-		}
 	}
 
 	@Override

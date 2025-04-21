@@ -143,7 +143,5 @@ public abstract class Bug<T extends Bug<T>> extends Entity<T> {
 
 	public abstract T newInstance();
 
-	public abstract void move(Turn turn);
-
 	public abstract void breed(Turn turn);
 }
