@@ -28,6 +28,11 @@ public class Time {
 	public static String formatTime(double seconds) {
 		double minutes = (seconds / 60.0) % 60.0;
 		double hours = (minutes / 60.0);
-		return String.format("%02d:%02d:%02d", (long) hours, (long) minutes, (long) seconds % 60);
+		return String.format(
+				"%02d:%02d:%02d.%02d",
+				(long) hours,
+				(long) minutes,
+				(long) seconds % 60,
+				(long) ((seconds * 1000.0) % 1000));
 	}
 }
