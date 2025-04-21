@@ -471,6 +471,11 @@ public class GameScreen {
 					this.secondaryAntsEatenLabel.setVisible(false);
 					this.secondaryWinnerIcon.setIcon(new ImageIcon(loadedImages.get(IMAGE.ANT_PROFILE)));
 					this.secondaryWinnerTitle.setText("<html>" + antMVP.getName() + "</html>");
+					this.secondaryGenerationLabel.setText(
+							"<html>Generation: <span style='color:#bf00ff;'>" + antMVP.getGeneration()
+									+ "</span></html>");
+					this.secondaryTimeInSimLabel.setText("<html>Time in Simulation: <span style='color:#bf00ff;'>"
+							+ Time.formatTime(antMVP.getTimeInSimulationInSeconds()) + "</span></html>");
 				}
 				case ANT -> {
 					bugMVP = antMVP;
@@ -483,6 +488,11 @@ public class GameScreen {
 					this.secondaryAntsEatenLabel.setVisible(true);
 					this.secondaryWinnerIcon.setIcon(new ImageIcon(loadedImages.get(IMAGE.BASE_DOODLEBUG)));
 					this.secondaryWinnerTitle.setText("<html>" + dbMVP.getName() + "</html>");
+					this.secondaryGenerationLabel.setText(
+							"<html>Generation: <span style='color:#bf00ff;'>" + dbMVP.getGeneration()
+									+ "</span></html>");
+					this.secondaryTimeInSimLabel.setText("<html>Time in Simulation: <span style='color:#bf00ff;'>"
+							+ Time.formatTime(dbMVP.getTimeInSimulationInSeconds()) + "</span></html>");
 				}
 				case TITAN -> bugMVP = null;
 				default -> {

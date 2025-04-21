@@ -23,7 +23,7 @@ public class GameSettings {
 		this.gameTitle = "two"; // Title of game window
 
 		// Game grid
-		this.screenWidth = 600;
+		this.screenWidth = 700;
 		// this.screenHeight = 680;
 
 		this.gridSnapshotHistory = 100;
