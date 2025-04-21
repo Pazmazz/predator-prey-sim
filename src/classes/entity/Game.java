@@ -158,7 +158,15 @@ public class Game implements Runnable {
 		}
 		String serializedGrid = gameGrid.download();
 		this.snapshots.add(serializedGrid);
+		this.setMostRecentSnapshot();
+	}
+
+	public void setMostRecentSnapshot() {
 		this.currentSnapshot = this.snapshots.size();
+	}
+
+	public int getMostRecentSnapshot() {
+		return this.snapshots.size();
 	}
 
 	public int getCurrentSnapshot() {
@@ -169,12 +177,20 @@ public class Game implements Runnable {
 		return this.currentSnapshot == this.snapshots.size();
 	}
 
+	public void loadSnapshot(int index) {
+		this.getGameGrid().upload(this.snapshots.get(index));
+	}
+
+	public void loadMostRecentSnapshot() {
+		this.loadSnapshot(this.getMostRecentSnapshot() - 1);
+	}
+
 	public void loadNextSnapshot() {
 		if (this.currentSnapshot < this.snapshots.size()) {
-			this.getGameGrid().upload(this.snapshots.get(this.currentSnapshot));
+			this.loadSnapshot(this.currentSnapshot);
 			this.currentSnapshot++;
 		} else {
-			this.movementFrame.setDeltaTimeSeconds(this.getSettings().getSimulationFPS());
+			this.movementFrame.setDeltaTimeSeconds(this.getSettings().getManualTimeStepDelta());
 			this.movementFrame.step();
 		}
 		Console.println("$text-green Current Snapshot: $text-white " + this.currentSnapshot,
@@ -184,7 +200,7 @@ public class Game implements Runnable {
 	public void loadPrevSnapshot() {
 		if (this.currentSnapshot > 1) {
 			this.currentSnapshot--;
-			this.getGameGrid().upload(this.snapshots.get(this.currentSnapshot - 1));
+			this.loadSnapshot(this.currentSnapshot - 1);
 		}
 		Console.println("$text-green Current Snapshot: $text-white " + this.currentSnapshot,
 				"$text-green Out Of: $text-white " + this.snapshots.size());

@@ -127,7 +127,6 @@ public abstract class FrameRunner {
 	}
 
 	public void setDeltaTimeSeconds(double dt) {
-		Console.println("Delta: ", dt);
 		this.deltaTime = Time.secondsToNano(dt);
 	}
 

@@ -281,6 +281,9 @@ public class GameScreen {
 		initGridButton.setFocusable(false);
 
 		initGridButton.addActionListener(e -> {
+			if (game.getSimulationState() != SimulationState.INITIAL)
+				return;
+
 			Console.benchmark("Initializing game grid", game::initGameGrid);
 			game.setSimulationState(SimulationState.STARTED);
 		});
@@ -314,6 +317,9 @@ public class GameScreen {
 			if (simState == SimulationState.PAUSED
 					|| simState == SimulationState.STARTED || simState == SimulationState.MANUAL
 					|| simState == SimulationState.INITIAL) {
+				if (!game.onCurrentSnapshot()) {
+					game.loadMostRecentSnapshot();
+				}
 				game.setSimulationState(SimulationState.RUNNING);
 			} else if (game.getSimulationState() == SimulationState.RUNNING) {
 				game.setSimulationState(SimulationState.PAUSED);

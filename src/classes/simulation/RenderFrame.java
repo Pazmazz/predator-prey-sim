@@ -6,6 +6,7 @@ package classes.simulation;
 import classes.abstracts.FrameRunner;
 import classes.entity.CellGrid;
 import classes.entity.Game;
+import classes.entity.Game.SimulationState;
 import classes.settings.GameSettings;
 import classes.util.Console;
 
@@ -31,6 +32,8 @@ public class RenderFrame extends FrameRunner {
 	public void step() {
 		CellGrid grid = game.getGameGrid();
 		// Console.println(grid.toASCII());
-		game.getScreen().renderGrid();
+		if (game.getSimulationState() != SimulationState.ENDED) {
+			game.getScreen().renderGrid();
+		}
 	}
 }

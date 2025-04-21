@@ -158,6 +158,7 @@ public class GameSettings {
 			"Erin",
 			"Titan",
 			"Thor",
+			"Mario",
 			"Odin",
 			"Metallic",
 			"Olaf",
@@ -169,6 +170,8 @@ public class GameSettings {
 			"Scuttlebutt",
 			"The Divine",
 			"The Great",
+			"Eatsalot",
+			"Pattywagon",
 			"Broth",
 			"Ironhand",
 			"Skullsplitter",
@@ -367,6 +370,17 @@ public class GameSettings {
 
 	public String[] getBugLastNames() {
 		return this.bugLastNames;
+	}
+
+	public double getManualTimeStepDelta() {
+		double antStep = this.getAntMovementCooldown() == 0
+				? this.getGameHertz()
+				: this.getAntMovementCooldown();
+		double dbStep = this.getDoodlebugMovementCooldown() == 0
+				? this.getGameHertz()
+				: this.getDoodlebugMovementCooldown();
+
+		return (antStep + dbStep) / 2.0;
 	}
 
 	public String getRandomBugFirstName() {
