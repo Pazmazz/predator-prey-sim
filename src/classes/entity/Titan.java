@@ -23,7 +23,8 @@ public class Titan extends Bug<Titan> {
 	}
 
 	@Override
-	public void move() {
+	public boolean move() {
+		return true;
 	}
 
 	@Override

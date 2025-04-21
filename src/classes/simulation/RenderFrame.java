@@ -32,8 +32,6 @@ public class RenderFrame extends FrameRunner {
 	public void step() {
 		CellGrid grid = game.getGameGrid();
 		// Console.println(grid.toASCII());
-		if (game.getSimulationState() != SimulationState.ENDED) {
-			game.getScreen().renderGrid();
-		}
+		game.getScreen().renderGrid();
 	}
 }

@@ -29,11 +29,12 @@ public class Ant extends Bug<Ant> {
 		this.setProperty(Property.MOVEMENT_COOLDOWN, settings.getAntMovementCooldown());
 
 		if (settings.getAntBreedingEnabled())
-			this.getMovementMeter().onMaxValueReached.connect(e -> breed());
+			this.getBreedingMeter().onMaxValueReached.connect(e -> breed());
 	}
 
 	@Override
-	public void move() {
+	public boolean move() {
+		boolean moved = this.getBreedingMeter().increment() == this.getBreedingMeter().getMax();
 		ArrayList<Cell> adjCells = gameGrid.getCellsAdjacentTo(getCell());
 		Cell randCell = gameGrid.getRandomAvailableCellFrom(adjCells);
 
@@ -41,8 +42,9 @@ public class Ant extends Bug<Ant> {
 			double angle = (randCell.getUnit2Center().subtract(getCell().getUnit2Center())).screenAngle();
 			setRotation(angle);
 			assignCell(randCell);
+			return true;
 		}
-		this.getMovementMeter().increment();
+		return moved;
 	}
 
 	@Override
@@ -74,12 +76,19 @@ public class Ant extends Bug<Ant> {
 
 	@Override
 	public String getTooltipString() {
+		Cell cell = this.getCell();
+		Unit2 unit = cell.getUnit2();
 		return new StringBuilder(this.getNameWithId())
 				.append("<span style='font-size:10px;color:white;'>")
 				.append("<br>Time alive: <span style='color:#bf00ff;'>")
 				.append(Time.formatTime(this.getTimeInSimulationInSeconds()))
 				.append("</span><br>Generation: <span style='color:#bf00ff;'>")
 				.append(this.getGeneration())
+				.append("</span><br>Cell: <span style='color:#44D0FF;'>Cell&lt;")
+				.append(unit.getX())
+				.append(", ")
+				.append(unit.getY())
+				.append(">")
 				.append("</span>")
 				.toString();
 	}

@@ -10,6 +10,7 @@ import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.MouseInfo;
 import java.awt.Point;
@@ -23,13 +24,17 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import javax.imageio.ImageIO;
+import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
+import javax.swing.GroupLayout.Alignment;
+import javax.swing.ImageIcon;
 import javax.swing.border.EmptyBorder;
 
 import classes.abstracts.Bug;
@@ -55,6 +60,7 @@ public class GameScreen {
 	final private JComponent windowOverlay;
 	final private JPanel contentFrame;
 	final private JPanel gridContent;
+	final private JPanel grid;
 	final private JLabel tooltip;
 
 	final private int GRID_LINE_THICKNESS = settings.getGridLineThickness();
@@ -77,6 +83,7 @@ public class GameScreen {
 		BASE_DOODLEBUG,
 		BASE_TITAN,
 		RED_CELL,
+		ANT_PROFILE,
 	}
 
 	public GameScreen() {
@@ -100,10 +107,6 @@ public class GameScreen {
 		this.tooltip = tooltip;
 		windowOverlay.add(tooltip);
 
-		JPanel victoryScreen = this.buildVictoryScreen();
-		this.victoryScreen = victoryScreen;
-		windowOverlay.add(victoryScreen);
-
 		// main components
 		JPanel contentFrame = buildContentFrame();
 		this.contentFrame = contentFrame;
@@ -111,27 +114,31 @@ public class GameScreen {
 		JPanel headerPanel = this.buildHeaderPanel();
 		contentFrame.add(headerPanel);
 
-		JPanel grid = new GridPanel();
+		GridPanel grid = new GridPanel();
+		this.grid = grid;
 		contentFrame.add(grid);
 
-		this.gridContent = new GridContent(grid);
-		grid.add(this.gridContent);
+		GridContent gridContent = new GridContent(grid);
+		this.gridContent = gridContent;
+		grid.add(gridContent);
+
+		VictoryScreen victoryScreen = new VictoryScreen();
+		this.victoryScreen = victoryScreen;
+		// windowOverlay.add(victoryScreen);
+		grid.getOverlay().add(victoryScreen);
 
 		this.window.pack();
 		this.window.setLocationRelativeTo(null);
 		this.window.setVisible(true);
 
-		game.onSimulationEnd.connect(data -> {
-			EntityVariant winnerVariant = (EntityVariant) data[0];
-			Doodlebug dbMVP = (Doodlebug) data[1];
-			Ant antMVP = (Ant) data[2];
-			this.renderVictoryScreen(winnerVariant, dbMVP, antMVP);
-		});
-
 		game.onSimulationStateChanged.connect(data -> {
 			SimulationState state = (SimulationState) data[0];
 			if (state != SimulationState.ENDED) {
-				victoryScreen.setVisible(false);
+				victoryScreen.conceal();
+			} else {
+				tooltip.setVisible(false);
+				victoryScreen.update();
+				victoryScreen.display();
 			}
 		});
 	}
@@ -142,6 +149,7 @@ public class GameScreen {
 			this.loadedImages.put(IMAGE.BASE_DOODLEBUG, ImageIO.read(new File("src/assets/doodlebug3.jpg")));
 			this.loadedImages.put(IMAGE.BASE_TITAN, ImageIO.read(new File("src/assets/titanant.jpg")));
 			this.loadedImages.put(IMAGE.RED_CELL, ImageIO.read(new File("src/assets/pathcell.jpg")));
+			this.loadedImages.put(IMAGE.ANT_PROFILE, ImageIO.read(new File("src/assets/ant3.jpg")));
 		} catch (Exception e) {
 			throw new Error("Error loading images");
 		}
@@ -209,26 +217,103 @@ public class GameScreen {
 		}
 
 		// TODO: Very rare error case where "entity" is null here, fix later
-		g2.drawImage(loadedImages.get(entity.getAvatar()), posX, posY, sizeX, sizeY, grid);
+		g2.drawImage(
+				loadedImages.get(entity.getAvatar()),
+				posX,
+				posY,
+				sizeX,
+				sizeY,
+				grid);
 		g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1));
 	}
 
-	private void renderVictoryScreen(EntityVariant winner, Doodlebug dbMVP, Ant antMVP) {
-		this.victoryScreen.setVisible(true);
-	}
+	private class VictoryScreen extends JPanel {
+		private JLabel winnerTitle;
+		private JLabel winnerIcon;
 
-	private JPanel buildVictoryScreen() {
-		JPanel victoryScreen = new JPanel();
-		victoryScreen.setBackground(Color.BLACK);
-		victoryScreen.setLayout(new BoxLayout(victoryScreen, BoxLayout.Y_AXIS));
-		victoryScreen.setBounds(0, 100, SCREEN_WIDTH, 100);
-		victoryScreen.setVisible(false);
+		public VictoryScreen() {
+			this.setBackground(new Color(0, 0, 0, 150));
+			this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+			this.setBorder(new EmptyBorder(20, 10, 10, 20));
+			this.setBounds(0, 0, SCREEN_WIDTH, SCREEN_WIDTH);
+			this.setVisible(false);
 
-		JLabel victoryTitle = new JLabel();
-		victoryTitle.setForeground(Color.white);
+			JPanel headerContent = new JPanel();
+			headerContent.setOpaque(true);
 
-		victoryScreen.add(victoryTitle);
-		return victoryScreen;
+			JLabel winnerHeader = new JLabel();
+			winnerHeader.setFont(new Font("Showcard Gothic", Font.BOLD, 25));
+			winnerHeader.setText("<html><div style='color:#FF5BB2;'>W I N N E R</div></html>");
+			headerContent.add(winnerHeader);
+
+			JLabel winnerIcon = new JLabel();
+			winnerIcon.setIcon(new ImageIcon(loadedImages.get(IMAGE.BASE_DOODLEBUG)));
+			winnerIcon.setAlignmentX(Component.CENTER_ALIGNMENT);
+			this.winnerIcon = winnerIcon;
+
+			JPanel centerContent = new JPanel();
+			centerContent.setLayout(new BorderLayout());
+			centerContent.setOpaque(true);
+
+			JLabel winnerTitle = new JLabel();
+			winnerTitle.setForeground(Color.GREEN);
+			winnerTitle.setFont(new Font("Courier New", Font.BOLD, 20));
+			winnerTitle.setText("Default");
+			winnerTitle.setHorizontalAlignment(SwingConstants.CENTER);
+			this.winnerTitle = winnerTitle;
+
+			centerContent.add(winnerTitle, BorderLayout.NORTH);
+
+			// JLabel title = new JLabel();
+			// // title.setBorder(new EmptyBorder(10, 10, 10, 10));
+			// title.setText("Predator Prey Simulation");
+			// title.setFont(new Font("Courier New", Font.BOLD, 30));
+			// title.setAlignmentX(JFrame.CENTER_ALIGNMENT);
+			// title.setForeground(new Color(25, 255, 0));
+
+			// this.add(winnerHeader);
+			this.add(headerContent);
+			this.add(Box.createVerticalStrut(15));
+			this.add(winnerIcon);
+			this.add(Box.createVerticalStrut(15));
+			this.add(centerContent);
+		}
+
+		public void display() {
+			this.setVisible(true);
+		}
+
+		public void conceal() {
+			this.setVisible(false);
+		}
+
+		public void update() {
+			MovementFrame movementFrame = game.getMovementFrame();
+			EntityVariant winner = movementFrame.getWinner();
+			Doodlebug dbMVP = movementFrame.getCurrentDoodlebugMVP();
+			Ant antMVP = movementFrame.getCurrentAntMPV();
+
+			Bug<?> bugMVP = null;
+			ImageIcon mvpIcon = null;
+
+			switch (winner) {
+				case DOODLEBUG -> {
+					bugMVP = dbMVP;
+					mvpIcon = new ImageIcon(loadedImages.get(IMAGE.BASE_DOODLEBUG));
+				}
+				case ANT -> {
+					bugMVP = antMVP;
+					mvpIcon = new ImageIcon(loadedImages.get(IMAGE.ANT_PROFILE));
+				}
+				case TITAN -> bugMVP = null;
+				default -> {
+					bugMVP = antMVP;
+				}
+			}
+
+			this.winnerTitle.setText("<html>" + bugMVP.getName() + "</html>");
+			this.winnerIcon.setIcon(mvpIcon);
+		}
 	}
 
 	private JLabel buildTooltip() {
@@ -336,6 +421,9 @@ public class GameScreen {
 		stepForwardButton.setFocusable(false);
 
 		stepForwardButton.addActionListener(e -> {
+			if (game.getSimulationState() == SimulationState.ENDED)
+				return;
+
 			game.setSimulationState(SimulationState.MANUAL);
 			game.loadNextSnapshot();
 		});
@@ -474,14 +562,27 @@ public class GameScreen {
 
 	private class GridPanel extends JPanel {
 
+		private JPanel overlay;
+
 		public GridPanel() {
+			JPanel overlay = new JPanel();
+			overlay.setLayout(null);
+			overlay.setSize(SCREEN_WIDTH, SCREEN_WIDTH);
+			overlay.setOpaque(false);
+			this.overlay = overlay;
+			this.add(overlay);
+
 			this.setBackground(settings.getGridBackgroundColor());
 			this.setLayout(null);
+			// this.setBorder(new EmptyBorder(0, 0, 0, 0));
 			JPanel gridPanel = this;
 
 			this.addMouseMotionListener(new MouseMotionAdapter() {
 				@Override
 				public void mouseMoved(MouseEvent e) {
+					if (game.getSimulationState() == SimulationState.ENDED)
+						return;
+
 					Point point = e.getPoint();
 					Point gridLocation = gridPanel.getLocation();
 					Cell hoveredCell = getCellFromScreenPoint(point);
@@ -543,6 +644,10 @@ public class GameScreen {
 			return new Dimension(
 					SCREEN_WIDTH,
 					SCREEN_WIDTH);
+		}
+
+		public JPanel getOverlay() {
+			return this.overlay;
 		}
 	}
 }

@@ -78,12 +78,14 @@ public class ValueMeter {
 		}
 	}
 
-	public void setMax(int value) {
+	public ValueMeter setMax(int value) {
 		this.max = value;
+		return this;
 	}
 
-	public void setMin(int value) {
+	public ValueMeter setMin(int value) {
 		this.min = value;
+		return this;
 	}
 
 	public void fill() {
@@ -94,33 +96,39 @@ public class ValueMeter {
 		this.setValue(this.min);
 	}
 
-	public void setMaxAndFill(int value) {
+	public ValueMeter setMaxAndFill(int value) {
 		this.setMax(value);
 		this.setValue(value);
+		return this;
 	}
 
-	public void setResetType(RESET_TYPE resetType) {
+	public ValueMeter setResetType(RESET_TYPE resetType) {
 		this.meterResetType = resetType;
+		return this;
 	}
 
-	public void incrementBy(int value) {
+	public int incrementBy(int value) {
 		if (value < 0)
 			throw new Error("Cannot increment value meter by a negative number");
-		this.setValue(this.value + value);
+		int newValue = this.value + value;
+		this.setValue(newValue);
+		return newValue;
 	}
 
-	public void decrementBy(int value) {
+	public int decrementBy(int value) {
 		if (value < 0)
 			throw new Error("Cannot decrement value meter by a negative number");
+		int newValue = this.value + value;
 		this.setValue(this.value - value);
+		return newValue;
 	}
 
-	public void increment() {
-		this.incrementBy(1);
+	public int increment() {
+		return this.incrementBy(1);
 	}
 
-	public void decrement() {
-		this.decrementBy(1);
+	public int decrement() {
+		return this.decrementBy(1);
 	}
 
 	public ValueMeter removeLimit() {

@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import classes.entity.CellGrid.Cell;
 import classes.entity.GameScreen.IMAGE;
 import classes.entity.Null;
+import classes.util.Console;
 import exceptions.CellIsOccupiedException;
 import exceptions.NoCellFoundException;
 import interfaces.Serializable;

@@ -42,6 +42,7 @@ public class MovementFrame extends FrameRunner {
 	final private static GameSettings settings = game.getSettings();
 
 	// STATS
+	private EntityVariant winner;
 	private Doodlebug doodlebugMVP = new Doodlebug();
 	private Ant antMVP = new Ant();
 
@@ -66,6 +67,14 @@ public class MovementFrame extends FrameRunner {
 
 	public Ant getCurrentAntMPV() {
 		return this.antMVP;
+	}
+
+	public EntityVariant getWinner() {
+		return this.winner;
+	}
+
+	public void setWinner(EntityVariant winner) {
+		this.winner = winner;
 	}
 
 	public void setCurrentDoodlebugMVP(Doodlebug db) {
@@ -101,16 +110,19 @@ public class MovementFrame extends FrameRunner {
 				long lastMoved = bug.getTimeLastMoved();
 
 				// movement cooldown checks
-				if (currentTime - lastMoved > Time.secondsToNano(movementCooldown)) {
-					bug.move();
+				if (currentTime - lastMoved >= Time.secondsToNano(movementCooldown)) {
+					boolean success = bug.move();
+					if (success && !moveOccurred) {
+						moveOccurred = true;
+					}
+					if (!bug.hasCell())
+						continue;
 					bug.setTimeLastMoved();
-					moveOccurred = true;
 				}
 				bug.incrementTimeInSimulation(this.getDeltaTime());
 
 				// update turn stats
 				if (bug instanceof Doodlebug) {
-					doodlebugCount++;
 					Doodlebug db = (Doodlebug) bug;
 					int antsEaten = db.getAntsEatenMeter().getValue();
 
@@ -129,22 +141,30 @@ public class MovementFrame extends FrameRunner {
 			}
 		}
 
-		if (moveOccurred)
+		if (moveOccurred) {
 			game.saveSnapshot();
+		}
 
 		// doodlebugs win
 		if (bugCount == 0) {
+			this.setWinner(EntityVariant.DOODLEBUG);
 			game.setSimulationState(SimulationState.ENDED);
-			game.onSimulationEnd.fire(EntityVariant.DOODLEBUG, doodlebugMVP, antMVP);
 			// ants win
-		} else if (antCount == bugCount) {
+		} else if (antCount == 400) {
+			this.setWinner(EntityVariant.ANT);
+			int count = 0;
+			for (Cell cell : cells) {
+				if (cell.hasOccupant() && cell.getOccupant() instanceof Ant) {
+					count++;
+				}
+			}
+			Console.println("NOW: ", count);
 			game.setSimulationState(SimulationState.ENDED);
-			game.onSimulationEnd.fire(EntityVariant.ANT, doodlebugMVP, antMVP);
 
 			// titans win
 		} else if (antCount == 0 && doodlebugCount == 0 && titanCount > 0) {
+			this.setWinner(EntityVariant.TITAN);
 			game.setSimulationState(SimulationState.ENDED);
-			game.onSimulationEnd.fire(EntityVariant.TITAN, doodlebugMVP, antMVP);
 		}
 
 	}

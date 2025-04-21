@@ -47,7 +47,7 @@ public abstract class Bug<T extends Bug<T>> extends Entity<T> {
 		return this.getProperty(Property.HEALTH_METER, ValueMeter.class);
 	}
 
-	public ValueMeter getMovementMeter() {
+	public ValueMeter getBreedingMeter() {
 		return this.getProperty(Property.MOVEMENT_METER, ValueMeter.class);
 	}
 
@@ -135,11 +135,10 @@ public abstract class Bug<T extends Bug<T>> extends Entity<T> {
 			Bug<T> bug = newInstance();
 			bug.assignCell(randCell);
 			bug.setGeneration(this.getGeneration() + 1);
-
 		}
 	}
 
-	public abstract void move();
+	public abstract boolean move();
 
 	public abstract T newInstance();
 }

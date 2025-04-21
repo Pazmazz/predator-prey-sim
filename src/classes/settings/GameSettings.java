@@ -28,7 +28,7 @@ public class GameSettings {
 
 		this.gridSnapshotHistory = 100;
 		this.gridLineThickness = 2;
-		this.gridBorderPadding = 1;
+		this.gridBorderPadding = 1; // we shouldn't actually need this, use EmptyBorder instead
 		this.gridSize = new Unit2(20, 20);
 
 		this.gridBackgroundColor = Color.BLACK;
