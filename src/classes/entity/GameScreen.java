@@ -234,6 +234,12 @@ public class GameScreen {
 		private JLabel antsEatenLabel;
 		private JLabel generationLabel;
 
+		private JLabel secondaryWinnerTitle;
+		private JLabel secondaryWinnerIcon;
+		private JLabel secondaryTimeInSimLabel;
+		private JLabel secondaryAntsEatenLabel;
+		private JLabel secondaryGenerationLabel;
+
 		public VictoryScreen() {
 			/*
 			 * IMPORTANT:
@@ -248,12 +254,14 @@ public class GameScreen {
 			this.setBounds(0, 0, SCREEN_WIDTH, SCREEN_WIDTH);
 			this.setVisible(false);
 
+			boolean showBackgrounds = false;
+
 			// HEADER CONTENT
 			JPanel headerContent = new JPanel();
-			headerContent.setOpaque(false);
+			headerContent.setOpaque(showBackgrounds);
 
 			JLabel winnerHeader = new JLabel();
-			winnerHeader.setFont(new Font("Showcard Gothic", Font.BOLD, 25));
+			winnerHeader.setFont(new Font("Showcard Gothic", Font.BOLD, 20));
 			winnerHeader.setText("<html><div style='color:#FF5BB2;'>W I N N E R</div></html>");
 			headerContent.add(winnerHeader);
 
@@ -266,18 +274,18 @@ public class GameScreen {
 			// WINNER TITLE CONTENT
 			JPanel centerContent = new JPanel();
 			centerContent.setLayout(new FlowLayout(FlowLayout.CENTER));
-			centerContent.setOpaque(false);
+			centerContent.setOpaque(showBackgrounds);
 
 			JLabel mvpLabel = new JLabel();
 			mvpLabel.setForeground(Color.YELLOW);
 			mvpLabel.setFont(new Font("Felix Titling", Font.BOLD, 10));
-			mvpLabel.setText("MVP:");
+			mvpLabel.setText("MVP");
 			mvpLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-			mvpLabel.setOpaque(false);
+			mvpLabel.setOpaque(showBackgrounds);
 
 			JLabel winnerTitle = new JLabel();
 			winnerTitle.setForeground(Color.GREEN);
-			winnerTitle.setFont(new Font("Felix Titling", Font.BOLD, 20));
+			winnerTitle.setFont(new Font("Felix Titling", Font.BOLD, 15));
 			winnerTitle.setText("Default");
 			winnerTitle.setHorizontalAlignment(SwingConstants.CENTER);
 			this.winnerTitle = winnerTitle;
@@ -287,39 +295,129 @@ public class GameScreen {
 			// BODY CONTENT
 			JPanel mainContent = new JPanel();
 			mainContent.setLayout(new BorderLayout());
-			mainContent.setOpaque(false);
+			mainContent.setBackground(Color.RED);
+			mainContent.setOpaque(showBackgrounds);
 
-			JPanel innerMainContent = new JPanel();
-			innerMainContent.setLayout(new GridLayout(0, 1));
-			innerMainContent.setOpaque(false);
-			innerMainContent.setBorder(new EmptyBorder(0, 20, 0, 20));
-			mainContent.add(innerMainContent, BorderLayout.NORTH);
+			// JPanel innerMainContent = new JPanel();
+			// // innerMainContent.setLayout(new GridLayout(3, 0, 20, 20));
+			// innerMainContent.setOpaque(true);
+			// innerMainContent.setBorder(new EmptyBorder(0, 20, 0, 20));
+			// mainContent.add(innerMainContent, BorderLayout.NORTH);
+
+			JPanel timeInSimFrame = new JPanel();
+			timeInSimFrame.setLayout(new FlowLayout(FlowLayout.CENTER));
+			timeInSimFrame.setOpaque(showBackgrounds);
 
 			JLabel timeInSimLabel = new JLabel();
 			timeInSimLabel.setForeground(Color.WHITE);
 			timeInSimLabel.setFont(new Font("Courier New", Font.PLAIN, 15));
 			timeInSimLabel.setText("Time in Simulation: ");
-			timeInSimLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 			this.timeInSimLabel = timeInSimLabel;
-			innerMainContent.add(timeInSimLabel);
+			timeInSimFrame.add(timeInSimLabel);
+			// innerMainContent.add(timeInSimLabel);
+
+			JPanel antsEatenFrame = new JPanel();
+			antsEatenFrame.setLayout(new FlowLayout(FlowLayout.CENTER));
+			antsEatenFrame.setOpaque(showBackgrounds);
 
 			JLabel antsEatenLabel = new JLabel();
 			antsEatenLabel.setForeground(Color.WHITE);
 			antsEatenLabel.setFont(new Font("Courier New", Font.PLAIN, 15));
 			antsEatenLabel.setText("Ants Eaten: ");
-			antsEatenLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 			this.antsEatenLabel = antsEatenLabel;
-			innerMainContent.add(antsEatenLabel);
+			antsEatenFrame.add(antsEatenLabel);
+			// innerMainContent.add(antsEatenLabel);
+
+			JPanel generationFrame = new JPanel();
+			generationFrame.setLayout(new FlowLayout(FlowLayout.CENTER));
+			generationFrame.setOpaque(showBackgrounds);
 
 			JLabel generationLabel = new JLabel();
 			generationLabel.setForeground(Color.WHITE);
 			generationLabel.setFont(new Font("Courier New", Font.PLAIN, 15));
 			generationLabel.setText("Generation: ");
-			generationLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+			// generationLabel.setHorizontalAlignment(SwingConstants.CENTER);
 			this.generationLabel = generationLabel;
-			innerMainContent.add(generationLabel);
+			generationFrame.add(generationLabel);
+			// innerMainContent.add(generationLabel);
 
-			// this.add(winnerHeader);
+			// SECONDARY HEADER
+			JPanel secondaryHeaderContent = new JPanel();
+			secondaryHeaderContent.setOpaque(showBackgrounds);
+
+			JLabel secondMVP = new JLabel();
+			secondMVP.setFont(new Font("Showcard Gothic", Font.BOLD, 20));
+			secondMVP
+					.setText("<html><div style='color:#FF5BB2;'>S E C O N D&emsp;M V P</div></html>");
+			secondaryHeaderContent.add(secondMVP);
+
+			JLabel secondaryWinnerIcon = new JLabel();
+			secondaryWinnerIcon.setIcon(new ImageIcon(loadedImages.get(IMAGE.BASE_DOODLEBUG)));
+			secondaryWinnerIcon.setAlignmentX(Component.CENTER_ALIGNMENT);
+			this.secondaryWinnerIcon = secondaryWinnerIcon;
+
+			JPanel secondaryCenterContent = new JPanel();
+			secondaryCenterContent.setLayout(new FlowLayout(FlowLayout.CENTER));
+			secondaryCenterContent.setOpaque(showBackgrounds);
+
+			JLabel secondaryMVPLabel = new JLabel();
+			secondaryMVPLabel.setForeground(Color.YELLOW);
+			secondaryMVPLabel.setFont(new Font("Felix Titling", Font.BOLD, 10));
+			secondaryMVPLabel.setText("MVP");
+			secondaryMVPLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+			secondaryMVPLabel.setOpaque(showBackgrounds);
+
+			JLabel secondaryWinnerTitle = new JLabel();
+			secondaryWinnerTitle.setForeground(Color.GREEN);
+			secondaryWinnerTitle.setFont(new Font("Felix Titling", Font.BOLD, 15));
+			secondaryWinnerTitle.setText("Default");
+			secondaryWinnerTitle.setHorizontalAlignment(SwingConstants.CENTER);
+			this.secondaryWinnerTitle = secondaryWinnerTitle;
+
+			secondaryCenterContent.add(secondaryWinnerTitle);
+
+			JPanel secondaryMainContent = new JPanel();
+			mainContent.setLayout(new BorderLayout());
+			mainContent.setBackground(Color.RED);
+			mainContent.setOpaque(showBackgrounds);
+
+			JPanel secondaryTimeInSimFrame = new JPanel();
+			secondaryTimeInSimFrame.setLayout(new FlowLayout(FlowLayout.CENTER));
+			secondaryTimeInSimFrame.setOpaque(showBackgrounds);
+
+			JLabel secondaryTimeInSimLabel = new JLabel();
+			secondaryTimeInSimLabel.setForeground(Color.WHITE);
+			secondaryTimeInSimLabel.setFont(new Font("Courier New", Font.PLAIN, 15));
+			secondaryTimeInSimLabel.setText("Time in Simulation: ");
+			this.secondaryTimeInSimLabel = secondaryTimeInSimLabel;
+			secondaryTimeInSimFrame.add(secondaryTimeInSimLabel);
+			// innerMainContent.add(timeInSimLabel);
+
+			JPanel secondaryAntsEatenFrame = new JPanel();
+			secondaryAntsEatenFrame.setLayout(new FlowLayout(FlowLayout.CENTER));
+			secondaryAntsEatenFrame.setOpaque(showBackgrounds);
+
+			JLabel secondaryAntsEatenLabel = new JLabel();
+			secondaryAntsEatenLabel.setForeground(Color.WHITE);
+			secondaryAntsEatenLabel.setFont(new Font("Courier New", Font.PLAIN, 15));
+			secondaryAntsEatenLabel.setText("Ants Eaten: ");
+			this.secondaryAntsEatenLabel = secondaryAntsEatenLabel;
+			secondaryAntsEatenFrame.add(secondaryAntsEatenLabel);
+			// innerMainContent.add(antsEatenLabel);
+
+			JPanel secondaryGenerationFrame = new JPanel();
+			secondaryGenerationFrame.setLayout(new FlowLayout(FlowLayout.CENTER));
+			secondaryGenerationFrame.setOpaque(showBackgrounds);
+
+			JLabel secondaryGenerationLabel = new JLabel();
+			secondaryGenerationLabel.setForeground(Color.WHITE);
+			secondaryGenerationLabel.setFont(new Font("Courier New", Font.PLAIN, 15));
+			secondaryGenerationLabel.setText("Generation: ");
+			// generationLabel.setHorizontalAlignment(SwingConstants.CENTER);
+			this.secondaryGenerationLabel = secondaryGenerationLabel;
+			secondaryGenerationFrame.add(secondaryGenerationLabel);
+			// innerMainContent.add(generationLabel);
+
 			this.add(headerContent);
 			this.add(Box.createVerticalStrut(15));
 			this.add(winnerIcon);
@@ -327,6 +425,20 @@ public class GameScreen {
 			this.add(mvpLabel);
 			this.add(centerContent);
 			this.add(Box.createVerticalStrut(20));
+			this.add(timeInSimFrame);
+			this.add(antsEatenFrame);
+			this.add(generationFrame);
+			this.add(Box.createVerticalStrut(20));
+			this.add(secondaryHeaderContent);
+			this.add(Box.createVerticalStrut(15));
+			this.add(secondaryWinnerIcon);
+			this.add(Box.createVerticalStrut(20));
+			this.add(secondaryMVPLabel);
+			this.add(secondaryCenterContent);
+			this.add(Box.createVerticalStrut(15));
+			this.add(secondaryTimeInSimFrame);
+			this.add(secondaryAntsEatenFrame);
+			this.add(secondaryGenerationFrame);
 			this.add(mainContent);
 		}
 
@@ -347,8 +459,6 @@ public class GameScreen {
 			Bug<?> bugMVP = null;
 			ImageIcon mvpIcon = null;
 
-			this.antsEatenLabel.setVisible(false);
-
 			switch (winner) {
 				case DOODLEBUG -> {
 					bugMVP = dbMVP;
@@ -358,10 +468,21 @@ public class GameScreen {
 									+ dbMVP.getAntsEatenMeter().getValue()
 									+ "</span></html>");
 					this.antsEatenLabel.setVisible(true);
+					this.secondaryAntsEatenLabel.setVisible(false);
+					this.secondaryWinnerIcon.setIcon(new ImageIcon(loadedImages.get(IMAGE.ANT_PROFILE)));
+					this.secondaryWinnerTitle.setText("<html>" + antMVP.getName() + "</html>");
 				}
 				case ANT -> {
 					bugMVP = antMVP;
 					mvpIcon = new ImageIcon(loadedImages.get(IMAGE.ANT_PROFILE));
+					this.secondaryAntsEatenLabel
+							.setText("<html>Ants Eaten: <span style='color:#bf00ff;'>"
+									+ dbMVP.getAntsEatenMeter().getValue()
+									+ "</span></html>");
+					this.antsEatenLabel.setVisible(false);
+					this.secondaryAntsEatenLabel.setVisible(true);
+					this.secondaryWinnerIcon.setIcon(new ImageIcon(loadedImages.get(IMAGE.BASE_DOODLEBUG)));
+					this.secondaryWinnerTitle.setText("<html>" + dbMVP.getName() + "</html>");
 				}
 				case TITAN -> bugMVP = null;
 				default -> {
