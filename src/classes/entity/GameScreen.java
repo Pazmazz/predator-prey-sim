@@ -10,6 +10,7 @@ import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.MouseInfo;
 import java.awt.Point;
@@ -23,17 +24,22 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import javax.imageio.ImageIO;
+import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
+import javax.swing.GroupLayout.Alignment;
+import javax.swing.ImageIcon;
 import javax.swing.border.EmptyBorder;
 
 import classes.abstracts.Bug;
 import classes.abstracts.Entity;
+import classes.abstracts.Entity.EntityVariant;
 import classes.abstracts.Properties.Property;
 import classes.entity.CellGrid.Cell;
 import classes.entity.Game.SimulationState;
@@ -50,8 +56,11 @@ public class GameScreen {
 	final private static CellGrid gameGrid = game.getGameGrid();
 
 	final private JFrame window;
+	final private JPanel victoryScreen;
+	final private JComponent windowOverlay;
 	final private JPanel contentFrame;
 	final private JPanel gridContent;
+	final private JPanel grid;
 	final private JLabel tooltip;
 
 	final private int GRID_LINE_THICKNESS = settings.getGridLineThickness();
@@ -74,6 +83,7 @@ public class GameScreen {
 		BASE_DOODLEBUG,
 		BASE_TITAN,
 		RED_CELL,
+		ANT_PROFILE,
 	}
 
 	public GameScreen() {
@@ -86,30 +96,51 @@ public class GameScreen {
 
 		this.loadImages();
 
-		JPanel contentFrame = buildContentFrame();
-		this.contentFrame = contentFrame;
+		// window overlays
+		JComponent windowOverlay = (JComponent) window.getGlassPane();
+		windowOverlay.setLayout(null);
+		windowOverlay.setVisible(true);
+		windowOverlay.setOpaque(false);
+		this.windowOverlay = windowOverlay;
 
 		JLabel tooltip = buildTooltip();
 		this.tooltip = tooltip;
-
-		JComponent windowOverlay = (JComponent) window.getGlassPane();
-		windowOverlay.setLayout(null);
 		windowOverlay.add(tooltip);
-		windowOverlay.setVisible(true);
-		windowOverlay.setOpaque(false);
+
+		// main components
+		JPanel contentFrame = buildContentFrame();
+		this.contentFrame = contentFrame;
 
 		JPanel headerPanel = this.buildHeaderPanel();
 		contentFrame.add(headerPanel);
 
-		JPanel grid = new GridPanel();
+		GridPanel grid = new GridPanel();
+		this.grid = grid;
 		contentFrame.add(grid);
 
-		this.gridContent = new GridContent(grid);
-		grid.add(this.gridContent);
+		GridContent gridContent = new GridContent(grid);
+		this.gridContent = gridContent;
+		grid.add(gridContent);
+
+		VictoryScreen victoryScreen = new VictoryScreen();
+		this.victoryScreen = victoryScreen;
+		// windowOverlay.add(victoryScreen);
+		grid.getOverlay().add(victoryScreen);
 
 		this.window.pack();
 		this.window.setLocationRelativeTo(null);
 		this.window.setVisible(true);
+
+		game.onSimulationStateChanged.connect(data -> {
+			SimulationState state = (SimulationState) data[0];
+			if (state != SimulationState.ENDED) {
+				victoryScreen.conceal();
+			} else {
+				tooltip.setVisible(false);
+				victoryScreen.update();
+				victoryScreen.display();
+			}
+		});
 	}
 
 	public void loadImages() {
@@ -118,6 +149,7 @@ public class GameScreen {
 			this.loadedImages.put(IMAGE.BASE_DOODLEBUG, ImageIO.read(new File("src/assets/doodlebug3.jpg")));
 			this.loadedImages.put(IMAGE.BASE_TITAN, ImageIO.read(new File("src/assets/titanant.jpg")));
 			this.loadedImages.put(IMAGE.RED_CELL, ImageIO.read(new File("src/assets/pathcell.jpg")));
+			this.loadedImages.put(IMAGE.ANT_PROFILE, ImageIO.read(new File("src/assets/ant3.jpg")));
 		} catch (Exception e) {
 			throw new Error("Error loading images");
 		}
@@ -185,30 +217,297 @@ public class GameScreen {
 		}
 
 		// TODO: Very rare error case where "entity" is null here, fix later
-		g2.drawImage(loadedImages.get(entity.getAvatar()), posX, posY, sizeX, sizeY, grid);
+		g2.drawImage(
+				loadedImages.get(entity.getAvatar()),
+				posX,
+				posY,
+				sizeX,
+				sizeY,
+				grid);
 		g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1));
+	}
 
-		// RENDER TOOLTIP
-		// Point mousePos = MouseInfo.getPointerInfo().getLocation();
-		// Point mousePoint = new Point(mousePos);
-		// SwingUtilities.convertPointFromScreen(mousePoint, this.gridContent);
+	private class VictoryScreen extends JPanel {
+		private JLabel winnerTitle;
+		private JLabel winnerIcon;
+		private JLabel timeInSimLabel;
+		private JLabel antsEatenLabel;
+		private JLabel generationLabel;
 
-		// if (entity instanceof Bug<?>) {
-		// Bug<?> bug = (Bug<?>) entity;
-		// tooltip.setText("<html>" + bug.getTooltipString() + "</html>");
-		// Dimension tooltipSize = tooltip.getPreferredSize();
+		private JLabel secondaryWinnerTitle;
+		private JLabel secondaryWinnerIcon;
+		private JLabel secondaryTimeInSimLabel;
+		private JLabel secondaryAntsEatenLabel;
+		private JLabel secondaryGenerationLabel;
 
-		// int tooltipX = (int) (mousePoint.getX());
-		// int tooltipY = (int) (mousePoint.getY() - tooltipSize.getHeight());
+		public VictoryScreen() {
+			/*
+			 * IMPORTANT:
+			 * 
+			 * BorderLayout will always PUSH FlowLayout (the default layout of components).
+			 * This can be used to auto-size FlowLayout components by placing a BorderLayout
+			 * component above or beneath them.
+			 */
+			this.setBackground(new Color(0, 0, 0, 180));
+			this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+			this.setBorder(new EmptyBorder(20, 10, 10, 20));
+			this.setBounds(0, 0, SCREEN_WIDTH, SCREEN_WIDTH);
+			this.setVisible(false);
 
-		// if (tooltipX + tooltipSize.getWidth() > SCREEN_WIDTH) {
-		// tooltipX -= tooltipSize.getWidth();
-		// }
+			boolean showBackgrounds = false;
 
-		// tooltip.setLocation(tooltipX, tooltipY);
-		// tooltip.setVisible(true);
-		// tooltip.setSize(tooltipSize);
-		// }
+			// HEADER CONTENT
+			JPanel headerContent = new JPanel();
+			headerContent.setOpaque(showBackgrounds);
+
+			JLabel winnerHeader = new JLabel();
+			winnerHeader.setFont(new Font("Showcard Gothic", Font.BOLD, 20));
+			winnerHeader.setText("<html><div style='color:#FF5BB2;'>W I N N E R</div></html>");
+			headerContent.add(winnerHeader);
+
+			// WINNER ICON
+			JLabel winnerIcon = new JLabel();
+			winnerIcon.setIcon(new ImageIcon(loadedImages.get(IMAGE.BASE_DOODLEBUG)));
+			winnerIcon.setAlignmentX(Component.CENTER_ALIGNMENT);
+			this.winnerIcon = winnerIcon;
+
+			// WINNER TITLE CONTENT
+			JPanel centerContent = new JPanel();
+			centerContent.setLayout(new FlowLayout(FlowLayout.CENTER));
+			centerContent.setOpaque(showBackgrounds);
+
+			JLabel mvpLabel = new JLabel();
+			mvpLabel.setForeground(Color.YELLOW);
+			mvpLabel.setFont(new Font("Felix Titling", Font.BOLD, 10));
+			mvpLabel.setText("MVP");
+			mvpLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+			mvpLabel.setOpaque(showBackgrounds);
+
+			JLabel winnerTitle = new JLabel();
+			winnerTitle.setForeground(Color.GREEN);
+			winnerTitle.setFont(new Font("Copperplate Gothic Bold", Font.BOLD, 15));
+			winnerTitle.setText("Default");
+			winnerTitle.setHorizontalAlignment(SwingConstants.CENTER);
+			this.winnerTitle = winnerTitle;
+
+			centerContent.add(winnerTitle);
+
+			// BODY CONTENT
+			JPanel mainContent = new JPanel();
+			mainContent.setLayout(new BorderLayout());
+			mainContent.setBackground(Color.RED);
+			mainContent.setOpaque(showBackgrounds);
+
+			// JPanel innerMainContent = new JPanel();
+			// // innerMainContent.setLayout(new GridLayout(3, 0, 20, 20));
+			// innerMainContent.setOpaque(true);
+			// innerMainContent.setBorder(new EmptyBorder(0, 20, 0, 20));
+			// mainContent.add(innerMainContent, BorderLayout.NORTH);
+
+			JPanel timeInSimFrame = new JPanel();
+			timeInSimFrame.setLayout(new FlowLayout(FlowLayout.CENTER));
+			timeInSimFrame.setOpaque(showBackgrounds);
+
+			JLabel timeInSimLabel = new JLabel();
+			timeInSimLabel.setForeground(Color.WHITE);
+			timeInSimLabel.setFont(new Font("Courier New", Font.PLAIN, 15));
+			timeInSimLabel.setText("Time in Simulation: ");
+			this.timeInSimLabel = timeInSimLabel;
+			timeInSimFrame.add(timeInSimLabel);
+			// innerMainContent.add(timeInSimLabel);
+
+			JPanel antsEatenFrame = new JPanel();
+			antsEatenFrame.setLayout(new FlowLayout(FlowLayout.CENTER));
+			antsEatenFrame.setOpaque(showBackgrounds);
+
+			JLabel antsEatenLabel = new JLabel();
+			antsEatenLabel.setForeground(Color.WHITE);
+			antsEatenLabel.setFont(new Font("Courier New", Font.PLAIN, 15));
+			antsEatenLabel.setText("Ants Eaten: ");
+			this.antsEatenLabel = antsEatenLabel;
+			antsEatenFrame.add(antsEatenLabel);
+			// innerMainContent.add(antsEatenLabel);
+
+			JPanel generationFrame = new JPanel();
+			generationFrame.setLayout(new FlowLayout(FlowLayout.CENTER));
+			generationFrame.setOpaque(showBackgrounds);
+
+			JLabel generationLabel = new JLabel();
+			generationLabel.setForeground(Color.WHITE);
+			generationLabel.setFont(new Font("Courier New", Font.PLAIN, 15));
+			generationLabel.setText("Generation: ");
+			// generationLabel.setHorizontalAlignment(SwingConstants.CENTER);
+			this.generationLabel = generationLabel;
+			generationFrame.add(generationLabel);
+			// innerMainContent.add(generationLabel);
+
+			// SECONDARY HEADER
+			JPanel secondaryHeaderContent = new JPanel();
+			secondaryHeaderContent.setOpaque(showBackgrounds);
+
+			JLabel secondMVP = new JLabel();
+			secondMVP.setFont(new Font("Showcard Gothic", Font.BOLD, 20));
+			secondMVP
+					.setText("<html><div style='color:#FF5BB2;'>S E C O N D&emsp;M V P</div></html>");
+			secondaryHeaderContent.add(secondMVP);
+
+			JLabel secondaryWinnerIcon = new JLabel();
+			secondaryWinnerIcon.setIcon(new ImageIcon(loadedImages.get(IMAGE.BASE_DOODLEBUG)));
+			secondaryWinnerIcon.setAlignmentX(Component.CENTER_ALIGNMENT);
+			this.secondaryWinnerIcon = secondaryWinnerIcon;
+
+			JPanel secondaryCenterContent = new JPanel();
+			secondaryCenterContent.setLayout(new FlowLayout(FlowLayout.CENTER));
+			secondaryCenterContent.setOpaque(showBackgrounds);
+
+			JLabel secondaryMVPLabel = new JLabel();
+			secondaryMVPLabel.setForeground(Color.YELLOW);
+			secondaryMVPLabel.setFont(new Font("Felix Titling", Font.BOLD, 10));
+			secondaryMVPLabel.setText("MVP");
+			secondaryMVPLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+			secondaryMVPLabel.setOpaque(showBackgrounds);
+
+			JLabel secondaryWinnerTitle = new JLabel();
+			secondaryWinnerTitle.setForeground(Color.GREEN);
+			secondaryWinnerTitle.setFont(new Font("Copperplate Gothic Bold", Font.BOLD, 15));
+			secondaryWinnerTitle.setText("Default");
+			secondaryWinnerTitle.setHorizontalAlignment(SwingConstants.CENTER);
+			this.secondaryWinnerTitle = secondaryWinnerTitle;
+
+			secondaryCenterContent.add(secondaryWinnerTitle);
+
+			JPanel secondaryMainContent = new JPanel();
+			mainContent.setLayout(new BorderLayout());
+			mainContent.setBackground(Color.RED);
+			mainContent.setOpaque(showBackgrounds);
+
+			JPanel secondaryTimeInSimFrame = new JPanel();
+			secondaryTimeInSimFrame.setLayout(new FlowLayout(FlowLayout.CENTER));
+			secondaryTimeInSimFrame.setOpaque(showBackgrounds);
+
+			JLabel secondaryTimeInSimLabel = new JLabel();
+			secondaryTimeInSimLabel.setForeground(Color.WHITE);
+			secondaryTimeInSimLabel.setFont(new Font("Courier New", Font.PLAIN, 15));
+			secondaryTimeInSimLabel.setText("Time in Simulation: ");
+			this.secondaryTimeInSimLabel = secondaryTimeInSimLabel;
+			secondaryTimeInSimFrame.add(secondaryTimeInSimLabel);
+			// innerMainContent.add(timeInSimLabel);
+
+			JPanel secondaryAntsEatenFrame = new JPanel();
+			secondaryAntsEatenFrame.setLayout(new FlowLayout(FlowLayout.CENTER));
+			secondaryAntsEatenFrame.setOpaque(showBackgrounds);
+
+			JLabel secondaryAntsEatenLabel = new JLabel();
+			secondaryAntsEatenLabel.setForeground(Color.WHITE);
+			secondaryAntsEatenLabel.setFont(new Font("Courier New", Font.PLAIN, 15));
+			secondaryAntsEatenLabel.setText("Ants Eaten: ");
+			this.secondaryAntsEatenLabel = secondaryAntsEatenLabel;
+			secondaryAntsEatenFrame.add(secondaryAntsEatenLabel);
+			// innerMainContent.add(antsEatenLabel);
+
+			JPanel secondaryGenerationFrame = new JPanel();
+			secondaryGenerationFrame.setLayout(new FlowLayout(FlowLayout.CENTER));
+			secondaryGenerationFrame.setOpaque(showBackgrounds);
+
+			JLabel secondaryGenerationLabel = new JLabel();
+			secondaryGenerationLabel.setForeground(Color.WHITE);
+			secondaryGenerationLabel.setFont(new Font("Courier New", Font.PLAIN, 15));
+			secondaryGenerationLabel.setText("Generation: ");
+			// generationLabel.setHorizontalAlignment(SwingConstants.CENTER);
+			this.secondaryGenerationLabel = secondaryGenerationLabel;
+			secondaryGenerationFrame.add(secondaryGenerationLabel);
+			// innerMainContent.add(generationLabel);
+
+			this.add(headerContent);
+			this.add(Box.createVerticalStrut(15));
+			this.add(winnerIcon);
+			this.add(Box.createVerticalStrut(20));
+			this.add(mvpLabel);
+			this.add(centerContent);
+			this.add(Box.createVerticalStrut(20));
+			this.add(timeInSimFrame);
+			this.add(antsEatenFrame);
+			this.add(generationFrame);
+			this.add(Box.createVerticalStrut(20));
+			this.add(secondaryHeaderContent);
+			this.add(Box.createVerticalStrut(15));
+			this.add(secondaryWinnerIcon);
+			this.add(Box.createVerticalStrut(20));
+			this.add(secondaryMVPLabel);
+			this.add(secondaryCenterContent);
+			this.add(Box.createVerticalStrut(15));
+			this.add(secondaryTimeInSimFrame);
+			this.add(secondaryAntsEatenFrame);
+			this.add(secondaryGenerationFrame);
+			this.add(mainContent);
+		}
+
+		public void display() {
+			this.setVisible(true);
+		}
+
+		public void conceal() {
+			this.setVisible(false);
+		}
+
+		public void update() {
+			MovementFrame movementFrame = game.getMovementFrame();
+			EntityVariant winner = movementFrame.getWinner();
+			Doodlebug dbMVP = movementFrame.getCurrentDoodlebugMVP();
+			Ant antMVP = movementFrame.getCurrentAntMPV();
+
+			Bug<?> bugMVP = null;
+			ImageIcon mvpIcon = null;
+
+			switch (winner) {
+				case DOODLEBUG -> {
+					bugMVP = dbMVP;
+					mvpIcon = new ImageIcon(loadedImages.get(IMAGE.BASE_DOODLEBUG));
+					this.antsEatenLabel
+							.setText("<html>Ants Eaten: <span style='color:#bf00ff;'>"
+									+ dbMVP.getAntsEatenMeter().getValue()
+									+ "</span></html>");
+					this.antsEatenLabel.setVisible(true);
+					this.secondaryAntsEatenLabel.setVisible(false);
+					this.secondaryWinnerIcon.setIcon(new ImageIcon(loadedImages.get(IMAGE.ANT_PROFILE)));
+					this.secondaryWinnerTitle.setText("<html>" + antMVP.getName() + "</html>");
+					this.secondaryGenerationLabel.setText(
+							"<html>Generation: <span style='color:#bf00ff;'>" + antMVP.getGeneration()
+									+ "</span></html>");
+					this.secondaryTimeInSimLabel.setText("<html>Time in Simulation: <span style='color:#bf00ff;'>"
+							+ Time.formatTime(antMVP.getTimeInSimulationInSeconds()) + "</span></html>");
+				}
+				case ANT -> {
+					bugMVP = antMVP;
+					mvpIcon = new ImageIcon(loadedImages.get(IMAGE.ANT_PROFILE));
+					this.secondaryAntsEatenLabel
+							.setText("<html>Ants Eaten: <span style='color:#bf00ff;'>"
+									+ dbMVP.getAntsEatenMeter().getValue()
+									+ "</span></html>");
+					this.antsEatenLabel.setVisible(false);
+					this.secondaryAntsEatenLabel.setVisible(true);
+					this.secondaryWinnerIcon.setIcon(new ImageIcon(loadedImages.get(IMAGE.BASE_DOODLEBUG)));
+					this.secondaryWinnerTitle.setText("<html>" + dbMVP.getName() + "</html>");
+					this.secondaryGenerationLabel.setText(
+							"<html>Generation: <span style='color:#bf00ff;'>" + dbMVP.getGeneration()
+									+ "</span></html>");
+					this.secondaryTimeInSimLabel.setText("<html>Time in Simulation: <span style='color:#bf00ff;'>"
+							+ Time.formatTime(dbMVP.getTimeInSimulationInSeconds()) + "</span></html>");
+				}
+				case TITAN -> bugMVP = null;
+				default -> {
+					bugMVP = antMVP;
+				}
+			}
+
+			this.winnerTitle.setText("<html>" + bugMVP.getName() + "</html>");
+			this.winnerIcon.setIcon(mvpIcon);
+			this.timeInSimLabel
+					.setText("<html>Time in Simulation: <span style='color:#bf00ff;'>"
+							+ Time.formatTime(bugMVP.getTimeInSimulationInSeconds()) + "</span></html>");
+			this.generationLabel.setText(
+					"<html>Generation: <span style='color:#bf00ff;'>" + bugMVP.getGeneration() + "</span></html>");
+		}
 	}
 
 	private JLabel buildTooltip() {
@@ -261,6 +560,9 @@ public class GameScreen {
 		initGridButton.setFocusable(false);
 
 		initGridButton.addActionListener(e -> {
+			if (game.getSimulationState() != SimulationState.INITIAL)
+				return;
+
 			Console.benchmark("Initializing game grid", game::initGameGrid);
 			game.setSimulationState(SimulationState.STARTED);
 		});
@@ -275,7 +577,8 @@ public class GameScreen {
 		game.onSimulationStateChanged.connect(data -> {
 			MovementFrame movementFrame = game.getMovementFrame();
 			SimulationState state = (SimulationState) data[0];
-			if (state == SimulationState.PAUSED || state == SimulationState.INITIAL || state == SimulationState.ENDED
+			if (state == SimulationState.PAUSED || state == SimulationState.INITIAL
+					|| state == SimulationState.ENDED
 					|| state == SimulationState.MANUAL) {
 				toggleSimulationButton.setText("▶");
 				toggleSimulationButton.setBackground(Color.GREEN);
@@ -293,9 +596,14 @@ public class GameScreen {
 			if (simState == SimulationState.PAUSED
 					|| simState == SimulationState.STARTED || simState == SimulationState.MANUAL
 					|| simState == SimulationState.INITIAL) {
+				if (!game.onCurrentSnapshot()) {
+					game.loadMostRecentSnapshot();
+				}
 				game.setSimulationState(SimulationState.RUNNING);
 			} else if (game.getSimulationState() == SimulationState.RUNNING) {
 				game.setSimulationState(SimulationState.PAUSED);
+			} else {
+				Console.println("$text-yellow No play state available");
 			}
 		});
 
@@ -307,6 +615,9 @@ public class GameScreen {
 		stepForwardButton.setFocusable(false);
 
 		stepForwardButton.addActionListener(e -> {
+			if (game.getSimulationState() == SimulationState.ENDED)
+				return;
+
 			game.setSimulationState(SimulationState.MANUAL);
 			game.loadNextSnapshot();
 		});
@@ -445,14 +756,27 @@ public class GameScreen {
 
 	private class GridPanel extends JPanel {
 
+		private JPanel overlay;
+
 		public GridPanel() {
+			JPanel overlay = new JPanel();
+			overlay.setLayout(null);
+			overlay.setSize(SCREEN_WIDTH, SCREEN_WIDTH);
+			overlay.setOpaque(false);
+			this.overlay = overlay;
+			this.add(overlay);
+
 			this.setBackground(settings.getGridBackgroundColor());
 			this.setLayout(null);
+			// this.setBorder(new EmptyBorder(0, 0, 0, 0));
 			JPanel gridPanel = this;
 
 			this.addMouseMotionListener(new MouseMotionAdapter() {
 				@Override
 				public void mouseMoved(MouseEvent e) {
+					if (game.getSimulationState() == SimulationState.ENDED)
+						return;
+
 					Point point = e.getPoint();
 					Point gridLocation = gridPanel.getLocation();
 					Cell hoveredCell = getCellFromScreenPoint(point);
@@ -514,6 +838,10 @@ public class GameScreen {
 			return new Dimension(
 					SCREEN_WIDTH,
 					SCREEN_WIDTH);
+		}
+
+		public JPanel getOverlay() {
+			return this.overlay;
 		}
 	}
 }

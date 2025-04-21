@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import classes.entity.CellGrid.Cell;
 import classes.entity.GameScreen.IMAGE;
 import classes.entity.Null;
+import classes.util.Console;
 import exceptions.CellIsOccupiedException;
 import exceptions.NoCellFoundException;
 import interfaces.Serializable;
@@ -28,6 +29,12 @@ public abstract class Entity<T extends Entity<T>> extends Properties {
 	public abstract IMAGE getAvatar();
 
 	public abstract void setAvatar(IMAGE image);
+
+	public enum EntityVariant {
+		DOODLEBUG,
+		ANT,
+		TITAN,
+	}
 
 	// Unused constructor for now
 	// public Entity() {

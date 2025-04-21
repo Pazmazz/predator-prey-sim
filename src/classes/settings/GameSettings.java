@@ -23,12 +23,12 @@ public class GameSettings {
 		this.gameTitle = "two"; // Title of game window
 
 		// Game grid
-		this.screenWidth = 600;
+		this.screenWidth = 700;
 		// this.screenHeight = 680;
 
 		this.gridSnapshotHistory = 100;
 		this.gridLineThickness = 2;
-		this.gridBorderPadding = 1;
+		this.gridBorderPadding = 1; // we shouldn't actually need this, use EmptyBorder instead
 		this.gridSize = new Unit2(20, 20);
 
 		this.gridBackgroundColor = Color.BLACK;
@@ -158,6 +158,7 @@ public class GameSettings {
 			"Erin",
 			"Titan",
 			"Thor",
+			"Mario",
 			"Odin",
 			"Metallic",
 			"Olaf",
@@ -169,6 +170,8 @@ public class GameSettings {
 			"Scuttlebutt",
 			"The Divine",
 			"The Great",
+			"Eatsalot",
+			"Pattywagon",
 			"Broth",
 			"Ironhand",
 			"Skullsplitter",
@@ -186,7 +189,7 @@ public class GameSettings {
 			"Small",
 			"Horn",
 			"McKnight",
-			"Lancaster",
+			"Lance",
 			"Crick",
 			"Underleaf",
 			"Tunneler",
@@ -314,7 +317,9 @@ public class GameSettings {
 	}
 
 	public double getRenderFPS() {
-		return this.renderFPS;
+		return this.renderFPS <= 0
+				? this.gameHertz
+				: this.renderFPS;
 	}
 
 	public String getRenderProcessName() {
@@ -326,7 +331,9 @@ public class GameSettings {
 	}
 
 	public double getSimulationFPS() {
-		return this.simulationFPS;
+		return this.simulationFPS <= 0
+				? this.gameHertz
+				: this.simulationFPS;
 	}
 
 	public String getSimulationProcessName() {
@@ -365,16 +372,32 @@ public class GameSettings {
 		return this.bugLastNames;
 	}
 
+	public double getManualTimeStepDelta() {
+		double antStep = this.getAntMovementCooldown() == 0
+				? this.getGameHertz()
+				: this.getAntMovementCooldown();
+		double dbStep = this.getDoodlebugMovementCooldown() == 0
+				? this.getGameHertz()
+				: this.getDoodlebugMovementCooldown();
+
+		return (antStep + dbStep) / 2.0;
+	}
+
 	public String getRandomBugFirstName() {
 		StringBuilder name = new StringBuilder();
+		if (Math2.randInt(200) == 0) {
+			name.append("<span style='color:#bf00ff;'>[LEGENDARY] </span>");
+		}
+		if (Math2.randInt(50) == 0) {
+			name.append("<span style='color:red;'>[ELITE] </span>");
+		}
 		if (Math2.randInt(10) == 0) {
 			name.append("<span style='color:yellow;'>");
 			name.append((new String[] { "King ", "Queen ", "Sir " })[Math2.randInt(3)]);
 			name.append("</span>");
 		}
-		return name
-				.append(this.bugFirstNames[Math2.randInt(this.bugFirstNames.length)])
-				.toString();
+		name.append(this.bugFirstNames[Math2.randInt(this.bugFirstNames.length)]);
+		return name.toString();
 	}
 
 	public String getRandomBugLastName() {

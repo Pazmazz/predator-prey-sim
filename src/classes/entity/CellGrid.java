@@ -307,8 +307,8 @@ public class CellGrid {
 
 		int x, y;
 
-		boolean posX = quadrant.getX() > 0;
-		boolean negX = quadrant.getX() < 0;
+		boolean posX = quadrant.getX() >= 0;
+		boolean negX = quadrant.getX() <= 0;
 		boolean posY = quadrant.getY() >= 0;
 		boolean negY = quadrant.getY() <= 0;
 

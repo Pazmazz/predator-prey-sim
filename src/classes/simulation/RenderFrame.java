@@ -6,6 +6,7 @@ package classes.simulation;
 import classes.abstracts.FrameRunner;
 import classes.entity.CellGrid;
 import classes.entity.Game;
+import classes.entity.Game.SimulationState;
 import classes.settings.GameSettings;
 import classes.util.Console;
 

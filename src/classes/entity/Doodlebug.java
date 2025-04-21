@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import classes.abstracts.Bug;
 import classes.util.Console;
 import classes.util.Math2;
+import classes.util.Time;
 import classes.entity.CellGrid.Cell;
 import classes.entity.GameScreen.IMAGE;
 import classes.entity.ValueMeter.RESET_TYPE;
@@ -25,8 +26,8 @@ public class Doodlebug extends Bug<Doodlebug> {
 		this.setProperty(Property.MOVEMENT_COOLDOWN, settings.getDoodlebugMovementCooldown());
 		this.setProperty(Property.ANTS_EATEN, new ValueMeter(0, 0).removeLimit());
 
-		ValueMeter movementMeter = this.getProperty(Property.MOVEMENT_METER, ValueMeter.class);
-		movementMeter.setMax(8);
+		ValueMeter breedingMeter = this.getProperty(Property.MOVEMENT_METER, ValueMeter.class);
+		breedingMeter.setMax(8);
 
 		ValueMeter hungerMeter = new ValueMeter(settings.getDoodlebugHungerLimit(), 0, 0);
 		this.setProperty(Property.HUNGER_METER, hungerMeter);
@@ -34,7 +35,7 @@ public class Doodlebug extends Bug<Doodlebug> {
 		// event listeners
 		hungerMeter.onMaxValueReached.connect(e -> this.removeFromCell());
 		if (settings.getDoodlebugBreedingEnabled())
-			movementMeter.onMaxValueReached.connect(e -> this.breed());
+			breedingMeter.onMaxValueReached.connect(e -> this.breed());
 	}
 
 	public ValueMeter getHungerMeter() {
@@ -46,12 +47,13 @@ public class Doodlebug extends Bug<Doodlebug> {
 	}
 
 	@Override
-	public void move() {
-		this.getMovementMeter().increment();
+	public boolean move() {
+		boolean moved = this.getBreedingMeter().increment() == this.getBreedingMeter().getMax();
 		ArrayList<Cell> adjCells = this.gameGrid.randomizeCells(
 				this.gameGrid.getCellsAdjacentTo(getCell()));
-		Cell fallbackCell = null;
+		Cell movementCell = null;
 
+		// try to eat
 		for (Cell cell : adjCells) {
 			if (cell.hasOccupant()) {
 				if (cell.isOccupantEatable()) {
@@ -59,16 +61,24 @@ public class Doodlebug extends Bug<Doodlebug> {
 					this.assignCell(cell);
 					this.getHungerMeter().empty();
 					this.getAntsEatenMeter().increment();
-					return;
+					return true;
 				}
-			} else if (fallbackCell == null) {
-				fallbackCell = cell;
+			} else if (movementCell == null) {
+				movementCell = cell;
 			}
 		}
 
-		if (fallbackCell != null)
-			this.assignCell(fallbackCell);
-		this.getHungerMeter().increment();
+		// check for starvation
+		if (this.getHungerMeter().increment() == this.getHungerMeter().getMax()) {
+			return true;
+		}
+
+		// try to move
+		if (movementCell != null) {
+			this.assignCell(movementCell);
+			return true;
+		}
+		return moved;
 	}
 
 	@Override
@@ -100,13 +110,21 @@ public class Doodlebug extends Bug<Doodlebug> {
 
 	@Override
 	public String getTooltipString() {
+		Cell cell = this.getCell();
+		Unit2 unit = cell.getUnit2();
 		return new StringBuilder(this.getNameWithId())
 				.append("<span style='font-size:10px;color:white;'>")
 				.append("<br>Time alive: <span style='color:#bf00ff;'>")
-				.append(Math.round((long) this.getTimeAliveInSeconds()))
-				.append(" seconds</span>")
-				.append("<br>Ants eaten: <span style='color:#bf00ff;'>")
+				.append(Time.formatTime(this.getTimeInSimulationInSeconds()))
+				.append("</span><br>Ants eaten: <span style='color:#bf00ff;'>")
 				.append(this.getAntsEatenMeter().getValue())
+				.append("</span><br>Generation: <span style='color:#bf00ff;'>")
+				.append(this.getGeneration())
+				.append("</span><br>Cell: <span style='color:#44D0FF;'>Cell&lt;")
+				.append(unit.getX())
+				.append(", ")
+				.append(unit.getY())
+				.append(">")
 				.append("</span>")
 				.toString();
 	}
