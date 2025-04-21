@@ -287,7 +287,7 @@ public abstract class BaseVector<T extends BaseVector<T>> implements Serializabl
 
 	@Override
 	public String toString() {
-		return Console.withConsoleColors(this.getClass()
+		return Console.filterConsoleColors(this.getClass()
 				.getSimpleName()
 				+ "<" + Formatter.concatArray(componentsArray()) + ">");
 	}

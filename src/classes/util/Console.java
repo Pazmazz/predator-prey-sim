@@ -248,9 +248,9 @@ public class Console {
 	 * @return a cleaned String that either consumes the console color tokens, or
 	 *         removes them, based on {@code Console.consoleColorsEnabled}
 	 * 
-	 * @see #withConsoleColors(Object...)
+	 * @see #filterConsoleColors(Object...)
 	 */
-	public static String withConsoleColors(Object... contents) {
+	public static String filterConsoleColors(Object... contents) {
 		if (consoleColorsEnabled)
 			return substituteColors(Formatter.concatArray(contents));
 		else
@@ -272,7 +272,7 @@ public class Console {
 	 * @see #println(Object...)
 	 */
 	public static void println(Object... contents) {
-		System.out.println(withConsoleColors(contents));
+		System.out.println(filterConsoleColors(contents));
 	}
 
 	/**
@@ -283,7 +283,7 @@ public class Console {
 	 * @see #print(String)
 	 */
 	public static void print(String message) {
-		System.out.print(withConsoleColors(message));
+		System.out.print(filterConsoleColors(message));
 	}
 
 	/**

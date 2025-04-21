@@ -3,8 +3,13 @@
  */
 package classes.abstracts;
 
+import java.io.File;
+import java.util.ArrayList;
+
 import classes.entity.CellGrid.Cell;
+import classes.entity.GameScreen.IMAGE;
 import classes.entity.Null;
+import classes.util.Console;
 import exceptions.CellIsOccupiedException;
 import exceptions.NoCellFoundException;
 import interfaces.Serializable;
@@ -17,11 +22,23 @@ import interfaces.Serializable;
  * Any subclass that extends {@code Entity} is eligible to be set as an
  * occupant in a cell using {@code cell.setOccupant}.
  */
-public abstract class Entity<T> extends Properties {
+public abstract class Entity<T extends Entity<T>> extends Properties {
+
+	// private static ArrayList<Entity<?>> entityList = new ArrayList<>();
+
+	public abstract IMAGE getAvatar();
+
+	public abstract void setAvatar(IMAGE image);
+
+	public enum EntityVariant {
+		DOODLEBUG,
+		ANT,
+		TITAN,
+	}
 
 	// Unused constructor for now
 	// public Entity() {
-
+	// entityList.add(this);
 	// }
 
 	/**
@@ -86,6 +103,7 @@ public abstract class Entity<T> extends Properties {
 			getCell().removeOccupant(false);
 
 		setProperty(Property.ASSIGNED_CELL, new Null());
+		// entityList.remove(this);
 	}
 
 	/**
@@ -100,4 +118,8 @@ public abstract class Entity<T> extends Properties {
 	public void removeFromCell() {
 		removeFromCell(true);
 	}
+
+	// public static ArrayList<Entity<?>> getEntityList() {
+	// return entityList;
+	// }
 }

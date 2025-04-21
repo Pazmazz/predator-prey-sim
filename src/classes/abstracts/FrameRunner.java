@@ -7,9 +7,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 
+import classes.entity.DebugInfo;
 import classes.entity.Game;
-import classes.settings.GameSettings.SimulationSettings;
-import classes.settings.GameSettings.SimulationType;
+import classes.entity.Game.SimulationState;
 import classes.util.Console;
 import classes.util.Console.DebugPriority;
 import classes.util.Time;
@@ -20,8 +20,7 @@ import interfaces.TaskCallback;
  * processes in a tight loop. A {@code step} method must be implemented in the
  * subclass which handles what action should occur on that frame.
  */
-public abstract class RunService {
-
+public abstract class FrameRunner {
 	private Game game = Game.getInstance();
 
 	private long FPS;
@@ -30,25 +29,32 @@ public abstract class RunService {
 	private long timeBeforeStep;
 	private long timeAfterStep;
 
-	private SimulationSettings settings;
 	private FrameState state = FrameState.RUNNING;
 	private ArrayList<Task> preSimulationTasks = new ArrayList<>();
 	private ArrayList<Task> postSimulationTasks = new ArrayList<>();
 
 	public static FrameState masterState = FrameState.RUNNING;
 
+	final private DebugInfo debugInfo;
+	final private String processName;
+
 	public enum FrameState {
 		RUNNING,
 		SUSPENDED,
 	}
 
-	protected RunService(SimulationType simulationType) {
-		this.settings = game.getSettings()
-				.getSimulation()
-				.getSettings(simulationType);
+	protected FrameRunner(String processName, double FPS, DebugInfo debugInfo) {
+		this.FPS = Time.secondsToNano(FPS);
+		this.lastPulseTick = -Time.secondsToNano(FPS);
+		this.debugInfo = debugInfo;
+		this.processName = processName;
 
-		this.FPS = Time.secondsToNano(settings.getFPS());
-		this.lastPulseTick = -Time.secondsToNano(settings.getFPS());
+		game.onSimulationStateChanged.connect(data -> {
+			SimulationState state = (SimulationState) data[0];
+			if (state == SimulationState.RUNNING) {
+				this.voidLastTickPulse();
+			}
+		});
 	}
 
 	/**
@@ -79,8 +85,8 @@ public abstract class RunService {
 
 		Console.debugPrint(String.format(
 				"$text-%s [%s FRAME] $text-reset ",
-				settings.getDebugInfo().getPrimaryColor(),
-				settings.getProcessName().toUpperCase()));
+				this.debugInfo.getPrimaryColor(),
+				this.processName.toUpperCase()));
 
 		this.lastPulseTick = preSimulationTime;
 		this.deltaTime = dt;
@@ -89,7 +95,7 @@ public abstract class RunService {
 		// run the implemented step
 		// pre-simulation task binds go here (executePreSimulationTasks())
 		stepTasks(this.preSimulationTasks);
-		step(Time.nanoToSeconds(deltaTime));
+		step();
 		stepTasks(this.postSimulationTasks);
 		// post-simulation task binds go here (executePostSimulationTasks())
 
@@ -98,13 +104,13 @@ public abstract class RunService {
 
 		Console.debugPrint(String.format(
 				"completed in: $text-%s %s $text-reset seconds",
-				settings.getDebugInfo().getPrimaryColor(),
+				this.debugInfo.getPrimaryColor(),
 				Time.nanoToSeconds(simulationTime)));
 
 		Console.debugPrint(String.format(
 				"last simulation: $text-%s %s $text-reset seconds ago",
-				settings.getDebugInfo().getPrimaryColor(),
-				Time.nanoToSeconds(deltaTime)));
+				this.debugInfo.getPrimaryColor(),
+				Time.nanoToSeconds(this.deltaTime)));
 
 		Console.debugPrint("-".repeat(50));
 		return simulationTime;
@@ -118,6 +124,18 @@ public abstract class RunService {
 	 */
 	public double getDeltaTimeSeconds() {
 		return Time.nanoToSeconds(this.deltaTime);
+	}
+
+	public void setDeltaTimeSeconds(double dt) {
+		this.deltaTime = Time.secondsToNano(dt);
+	}
+
+	public void voidLastTickPulse() {
+		this.lastPulseTick = Time.tick();
+	}
+
+	public long getDeltaTime() {
+		return this.deltaTime;
 	}
 
 	// TODO: Add documentation
@@ -424,5 +442,5 @@ public abstract class RunService {
 		RUNNING,
 	}
 
-	protected abstract void step(double deltaTimeSeconds);
+	protected abstract void step();
 }

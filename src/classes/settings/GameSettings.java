@@ -3,24 +3,17 @@
  */
 package classes.settings;
 
+import classes.entity.DebugInfo;
 import classes.entity.Unit2;
+import classes.util.Console;
+import classes.util.Math2;
+import classes.util.Console.DebugPriority;
+
+import java.awt.Color;
 import java.util.HashMap;
 
+@SuppressWarnings("unused")
 public class GameSettings {
-
-	final private String gameHeaderText;
-	final private String gameTitle;
-
-	private int cellSize;
-	private Unit2 gridSize;
-	private int initialAnts;
-	private int initialDoodlebugs;
-
-	final private int screenWidth;
-	final private int screenHeight;
-	final private SimulationInfo simulationInfo;
-
-	private boolean canSpawnTitan;
 
 	public GameSettings() {
 		//
@@ -29,166 +22,248 @@ public class GameSettings {
 		this.gameHeaderText = "one"; // Text of the main header within the window
 		this.gameTitle = "two"; // Title of game window
 
-		this.cellSize = 36; // Pixels
-		this.gridSize = new Unit2(20, 20); // Cell units
+		// Game grid
+		this.screenWidth = 700;
+		// this.screenHeight = 680;
+
+		this.gridSnapshotHistory = 100;
+		this.gridLineThickness = 2;
+		this.gridBorderPadding = 1; // we shouldn't actually need this, use EmptyBorder instead
+		this.gridSize = new Unit2(20, 20);
+
+		this.gridBackgroundColor = Color.BLACK;
+		this.gridLinesColor = Color.BLUE;
+
 		this.initialAnts = 100;
 		this.initialDoodlebugs = 5;
+		this.doodlebugHungerLimit = 4;
+		this.antMovementCooldown = 1.0 / 10;
+		this.doodlebugMovementCooldown = 1.0 / 10;
 
-		this.canSpawnTitan = false;
+		this.antBreedingEnabled = true;
+		this.doodlebugBreedingEnabled = true;
+
+		// RunService
+		this.gameHertz = 1.0 / 60;
+
+		this.renderFPS = 0;
+		this.renderProcessName = "Render";
+		this.renderDebugInfo = new DebugInfo();
+		this.renderDebugInfo.setPrimaryColor("red");
+
+		this.simulationFPS = 0;
+		this.simulationProcessName = "Simulation";
+		this.simulationDebugInfo = new DebugInfo();
+		this.renderDebugInfo.setPrimaryColor("yellow");
+
+		// Debug
+		Console.setDebugModeEnabled(true);
+		Console.setConsoleColorsEnabled(true);
+		Console.hideDebugPriority(DebugPriority.LOW);
+		Console.hideDebugPriority(DebugPriority.MEDIUM);
 
 		//
 		// Non-Editable
 		//
-		this.screenWidth = gridSize.getX() * this.cellSize;
-		this.screenHeight = gridSize.getY() * this.cellSize;
-		this.simulationInfo = new SimulationInfo();
+		this.screenHeight = this.screenWidth + 120;
+		this.screenAspectRatio = this.screenWidth / this.screenHeight;
 	}
 
-	public enum SimulationType {
-		MOVEMENT,
-		RENDER,
-		SIMULATED_LAG,
-	}
+	final private String gameHeaderText;
+	final private String gameTitle;
 
-	public class DebugInfo {
+	private int cellSize;
+	private Unit2 gridSize;
+	private int initialAnts;
+	private int initialDoodlebugs;
+	private int gridLineThickness;
+	private int gridBorderPadding;
+	private Color gridBackgroundColor;
+	private Color gridLinesColor;
+	private double antMovementCooldown;
+	private double doodlebugMovementCooldown;
+	private int doodlebugHungerLimit;
+	private int gridSnapshotHistory;
 
-		private String primaryColor;
-		private String secondaryColor;
+	private String[] bugFirstNames = new String[] {
+			"Anton",
+			"Andy",
+			"Anya",
+			"Antoinette",
+			"Anthony",
+			"Pip",
+			"Dot",
+			"Tiny",
+			"Bitsy",
+			"Nib",
+			"Flick",
+			"Chip",
+			"Scurry",
+			"Twitch",
+			"Minnie",
+			"Zippy",
+			"Clove",
+			"Buzz",
+			"Pebble",
+			"Midge",
+			"Skitter",
+			"Linty",
+			"Tilly",
+			"Crumb",
+			"Tizzy",
+			"Sarge",
+			"Queenie",
+			"Thorax",
+			"Mandee",
+			"Scout",
+			"Rook",
+			"Hexa",
+			"Bubbles",
+			"Coco",
+			"Luma",
+			"Amber",
+			"Inky",
+			"Soot",
+			"Grain",
+			"Bean",
+			"Noodle",
+			"Speck",
+			"Zula",
+			"Wisp",
+			"Rolo",
+			"Blip",
+			"Elba",
+			"Gnatash",
+			"Antsy",
+			"Scamp",
+			"Jojo",
+			"Gojo",
+			"Trevor",
+			"Cillian",
+			"Atomic",
+			"Ivan",
+			"John",
+			"Billy",
+			"Eugene",
+			"Tanjiro",
+			"Goku",
+			"Henry",
+			"Luffy",
+			"Will",
+			"Jaylen",
+			"Alex",
+			"Grier",
+			"Gandalf",
+			"Bernie",
+			"Erin",
+			"Titan",
+			"Thor",
+			"Mario",
+			"Odin",
+			"Metallic",
+			"Olaf",
+	};
 
-		public DebugInfo() {
-			//
-			// Editable
-			//
-			this.primaryColor = "green";
-			this.secondaryColor = "cyan";
-		}
+	private String[] bugLastNames = new String[] {
+			"Smurf",
+			"Burns",
+			"Scuttlebutt",
+			"The Divine",
+			"The Great",
+			"Eatsalot",
+			"Pattywagon",
+			"Broth",
+			"Ironhand",
+			"Skullsplitter",
+			"Bonebreaker",
+			"The Wise",
+			"The Humble",
+			"Stormrider",
+			"The Destroyer",
+			"Stonefist",
+			"Longaxe",
+			"Silverbeard",
+			"The Dominator",
+			"The Brave",
+			"The Inconspicuous",
+			"Small",
+			"Horn",
+			"McKnight",
+			"Lance",
+			"Crick",
+			"Underleaf",
+			"Tunneler",
+			"Sprocket",
+			"Dirtchaser",
+			"Burrowes",
+			"Mulch",
+			"Leafson",
+			"Grubbe",
+			"Stickley",
+			"Antwhistle",
+			"Skitteridg",
+			"Buggins",
+			"Pollen",
+			"Pebbleston",
+			"Webber",
+			"Groundling",
+			"Scritch",
+			"Sapthorn",
+			"Nestlewick",
+			"Rootwell",
+			"Scuttle",
+			"Chitter",
+			"Mossgrove",
+			"Whiskerfel",
+			"Dapple",
+			"Clickley",
+			"Hivetide",
+			"Dungworth",
+			"Crawleigh",
+			"Barkley",
+			"Thistledew",
+			"Crumbwell",
+			"Swarmson",
+			"Fuzzle",
+			"Scampers",
+			"Holloway",
+			"Beetlewitz",
+			"Twigg",
+			"Latchwing",
+			"Fizzleburr",
+			"Dapplewick",
+			"Antlersnap",
+			"Snickett",
+			"Wriggles",
+			"Dapplethor",
+			"Chirple",
+			"Minibeet",
+			"Creever",
+			"Dustmoor",
+			"Jazzhands",
+			"Pit",
+	};
 
-		public String getPrimaryColor() {
-			return this.primaryColor;
-		}
+	private double gameHertz;
+	private double renderFPS;
+	private double simulationFPS;
 
-		public String getSecondaryColor() {
-			return this.secondaryColor;
-		}
+	private DebugInfo renderDebugInfo;
+	private DebugInfo simulationDebugInfo;
 
-		public DebugInfo setPrimaryColor(String color) {
-			this.primaryColor = color;
-			return this;
-		}
+	private String renderProcessName;
+	private String simulationProcessName;
 
-		public DebugInfo setSecondaryColor(String color) {
-			this.secondaryColor = color;
-			return this;
-		}
-	}
+	private boolean antBreedingEnabled;
+	private boolean doodlebugBreedingEnabled;
 
-	/**
-	 * This class is the main API for accessing simulation settings such as FPS.
-	 * It holds all information about each simulation frame and can be accessed
-	 * with chained getter methods
-	 *
-	 * <p>
-	 * This class aggregates instances of `SimulationSettings`
-	 */
-	public class SimulationInfo {
-
-		private double FPS;
-		final private HashMap<SimulationType, SimulationSettings> settings;
-
-		public SimulationInfo() {
-			//
-			// Editable
-			//
-			FPS = 1.0 / 10;
-			settings = new HashMap<>();
-
-			// (vv) Note: Set FPS to 0 if you want it to match the game FPS (vv) //
-
-			// Render
-			SimulationSettings render = new SimulationSettings()
-					.setFPS(0)
-					.setProcessName("Render");
-
-			// Movement
-			SimulationSettings movement = new SimulationSettings()
-					.setFPS(0)
-					.setProcessName("Movement");
-
-			// SimulatedLag
-			SimulationSettings simulatedLag = new SimulationSettings()
-					.setFPS(0)
-					.setProcessName("SimulatedLag");
-
-			render.getDebugInfo().setPrimaryColor("red");
-			movement.getDebugInfo().setPrimaryColor("yellow");
-			simulatedLag.getDebugInfo().setPrimaryColor("purple");
-
-			//
-			// Non-Editable
-			//
-			settings.put(SimulationType.RENDER, render);
-			settings.put(SimulationType.MOVEMENT, movement);
-			settings.put(SimulationType.SIMULATED_LAG, simulatedLag);
-		}
-
-		public double getFPS() {
-			return FPS;
-		}
-
-		public void setFPS(double FPS) {
-			this.FPS = FPS;
-		}
-
-		public SimulationSettings getSettings(SimulationType simulationType) {
-			return settings.get(simulationType);
-		}
-	}
-
-	/**
-	 * A settings class that holds all relevant information about a given
-	 * simulation process. These instances are aggregated in the Simulation
-	 * class for central organization.
-	 */
-	public class SimulationSettings {
-
-		private double FPS;
-		private String processName;
-		final private DebugInfo debugInfo;
-
-		public SimulationSettings() {
-			this.debugInfo = new DebugInfo();
-		}
-
-		public String getProcessName() {
-			return this.processName;
-		}
-
-		public double getFPS() {
-			return FPS;
-		}
-
-		public DebugInfo getDebugInfo() {
-			return this.debugInfo;
-		}
-
-		public SimulationSettings setFPS(double FPS) {
-			this.FPS = FPS;
-			return this;
-		}
-
-		public SimulationSettings setProcessName(String name) {
-			this.processName = name;
-			return this;
-		}
-	}
+	final private int screenWidth;
+	final private int screenHeight;
+	final private int screenAspectRatio;
 
 	//
 	// Public getters
 	//
-	public SimulationInfo getSimulation() {
-		return this.simulationInfo;
-	}
-
 	public String getTitle() {
 		return this.gameTitle;
 	}
@@ -221,15 +296,134 @@ public class GameSettings {
 		return this.initialDoodlebugs;
 	}
 
-	public boolean canSpawnTitan() {
-		return this.canSpawnTitan;
+	public int getGridLineThickness() {
+		return this.gridLineThickness;
+	}
+
+	public boolean getAntBreedingEnabled() {
+		return this.antBreedingEnabled;
+	}
+
+	public boolean getDoodlebugBreedingEnabled() {
+		return this.doodlebugBreedingEnabled;
+	}
+
+	public int getScreenAspectRatio() {
+		return this.screenAspectRatio;
+	}
+
+	public DebugInfo getRenderDebugInfo() {
+		return this.renderDebugInfo;
+	}
+
+	public double getRenderFPS() {
+		return this.renderFPS <= 0
+				? this.gameHertz
+				: this.renderFPS;
+	}
+
+	public String getRenderProcessName() {
+		return this.renderProcessName;
+	}
+
+	public DebugInfo getSimulationDebugInfo() {
+		return this.simulationDebugInfo;
+	}
+
+	public double getSimulationFPS() {
+		return this.simulationFPS <= 0
+				? this.gameHertz
+				: this.simulationFPS;
+	}
+
+	public String getSimulationProcessName() {
+		return this.simulationProcessName;
+	}
+
+	public double getGameHertz() {
+		return this.gameHertz;
+	}
+
+	public int getGridBorderPadding() {
+		return this.gridBorderPadding;
+	}
+
+	public Color getGridBackgroundColor() {
+		return this.gridBackgroundColor;
+	}
+
+	public Color getGridLinesColor() {
+		return this.gridLinesColor;
+	}
+
+	public double getAntMovementCooldown() {
+		return this.antMovementCooldown;
+	}
+
+	public double getDoodlebugMovementCooldown() {
+		return this.doodlebugMovementCooldown;
+	}
+
+	public String[] getBugFirstNames() {
+		return this.bugFirstNames;
+	}
+
+	public String[] getBugLastNames() {
+		return this.bugLastNames;
+	}
+
+	public double getManualTimeStepDelta() {
+		double antStep = this.getAntMovementCooldown() == 0
+				? this.getGameHertz()
+				: this.getAntMovementCooldown();
+		double dbStep = this.getDoodlebugMovementCooldown() == 0
+				? this.getGameHertz()
+				: this.getDoodlebugMovementCooldown();
+
+		return (antStep + dbStep) / 2.0;
+	}
+
+	public String getRandomBugFirstName() {
+		StringBuilder name = new StringBuilder();
+		if (Math2.randInt(200) == 0) {
+			name.append("<span style='color:#bf00ff;'>[LEGENDARY] </span>");
+		}
+		if (Math2.randInt(50) == 0) {
+			name.append("<span style='color:red;'>[ELITE] </span>");
+		}
+		if (Math2.randInt(10) == 0) {
+			name.append("<span style='color:yellow;'>");
+			name.append((new String[] { "King ", "Queen ", "Sir " })[Math2.randInt(3)]);
+			name.append("</span>");
+		}
+		name.append(this.bugFirstNames[Math2.randInt(this.bugFirstNames.length)]);
+		return name.toString();
+	}
+
+	public String getRandomBugLastName() {
+		return this.bugLastNames[Math2.randInt(this.bugLastNames.length)];
+	}
+
+	public String getRandomBugFirstAndLastName() {
+		return new StringBuilder(this.getRandomBugFirstName())
+				.append(" ")
+				.append(this.getRandomBugLastName())
+				.toString();
+	}
+
+	public int getDoodlebugHungerLimit() {
+		return this.doodlebugHungerLimit;
+	}
+
+	public int getGridSnapshotHistory() {
+		return this.gridSnapshotHistory;
 	}
 
 	//
 	// Public setters
 	//
-	public void setTitanSpawn(boolean enabled) {
-		this.canSpawnTitan = enabled;
+	public void setGridSnapshotHistory(int length) {
+		this.gridSnapshotHistory = length;
 	}
 
 	public void setInitialAnts(int initialAnts) {
@@ -242,5 +436,29 @@ public class GameSettings {
 
 	public void setGridSize(Unit2 gridSize) {
 		this.gridSize = gridSize;
+	}
+
+	public void setGridLineThickness(int gridLineThickness) {
+		this.gridLineThickness = gridLineThickness;
+	}
+
+	public void setAntBreedingEnabled(boolean bool) {
+		this.antBreedingEnabled = bool;
+	}
+
+	public void setDoodlebugBreedingEnabled(boolean bool) {
+		this.doodlebugBreedingEnabled = bool;
+	}
+
+	public void setAntMovementCooldown(double cooldown) {
+		this.antMovementCooldown = cooldown;
+	}
+
+	public void setDoodlebugMovementCooldown(double cooldown) {
+		this.doodlebugMovementCooldown = cooldown;
+	}
+
+	public void setDoodlebugHungerLimit(int limit) {
+		this.doodlebugHungerLimit = limit;
 	}
 }

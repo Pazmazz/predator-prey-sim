@@ -1,5 +1,6 @@
 package classes.entity;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Iterator;
 
@@ -7,13 +8,11 @@ import classes.abstracts.Bug;
 import classes.abstracts.Entity;
 import classes.util.Console;
 import classes.entity.CellGrid.Cell;
+import classes.entity.GameScreen.IMAGE;
 
 public class Titan extends Bug<Titan> {
-	public int healthBar = 2;
-	public static int titanCount = 0;
-    public static int numOfTitanBreeds = 0;
-	public static int killCount = 0;
 
+	public IMAGE avatar = IMAGE.BASE_TITAN;
 
 	private Entity<?> target;
 	private Game game = Game.getInstance();
@@ -24,30 +23,8 @@ public class Titan extends Bug<Titan> {
 	}
 
 	@Override
-	public void move(Turn turn) {
-		ArrayList<Cell> adjCells = game
-				.getGameGrid()
-				.getCellsAdjacentTo(getCell());
-
-		for (Cell adjCell : adjCells) {
-			if (adjCell.getOccupantVariant(getCell()) == "Doodlebug") {
-				adjCell.removeOccupant();
-				assignCell(adjCell);
-                turn.setKillCount();
-                killCount++;
-				break;
-			} else if (adjCell.isInBounds() && adjCell.isEmpty()) {
-				assignCell(adjCell);
-				break;
-			}
-		}
-		
-		movementCounter++;
-
-		if (movementCounter == 8) {
-			movementCounter = 0;
-			this.breed(turn);
-		}
+	public boolean move() {
+		return true;
 	}
 
 	@Override
@@ -56,9 +33,9 @@ public class Titan extends Bug<Titan> {
 
 	@Override
 	public String toString() {
-		return String.format(Console.withConsoleColors(
-				"$text-green Ant$text-reset #%s"),
-				idNum);
+		return String.format(Console.filterConsoleColors(
+				"$text-red Titan$text-reset #%s"),
+				this.getId());
 	}
 
 	@Override
@@ -66,11 +43,18 @@ public class Titan extends Bug<Titan> {
 		return "Titan{}";
 	}
 
-	public void setTarget(Entity<?> target) {
-		this.target = target;
+	@Override
+	public Titan newInstance() {
+		return new Titan();
 	}
 
-	public Entity<?> getTarget() {
-		return this.target;
+	@Override
+	public IMAGE getAvatar() {
+		return this.avatar;
+	}
+
+	@Override
+	public void setAvatar(IMAGE avatar) {
+		this.avatar = avatar;
 	}
 }
