@@ -285,7 +285,7 @@ public class GameScreen {
 
 			JLabel winnerTitle = new JLabel();
 			winnerTitle.setForeground(Color.GREEN);
-			winnerTitle.setFont(new Font("Felix Titling", Font.BOLD, 15));
+			winnerTitle.setFont(new Font("Copperplate Gothic Bold", Font.BOLD, 15));
 			winnerTitle.setText("Default");
 			winnerTitle.setHorizontalAlignment(SwingConstants.CENTER);
 			this.winnerTitle = winnerTitle;
@@ -369,7 +369,7 @@ public class GameScreen {
 
 			JLabel secondaryWinnerTitle = new JLabel();
 			secondaryWinnerTitle.setForeground(Color.GREEN);
-			secondaryWinnerTitle.setFont(new Font("Felix Titling", Font.BOLD, 15));
+			secondaryWinnerTitle.setFont(new Font("Copperplate Gothic Bold", Font.BOLD, 15));
 			secondaryWinnerTitle.setText("Default");
 			secondaryWinnerTitle.setHorizontalAlignment(SwingConstants.CENTER);
 			this.secondaryWinnerTitle = secondaryWinnerTitle;
