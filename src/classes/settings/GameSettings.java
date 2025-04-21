@@ -59,7 +59,7 @@ public class GameSettings {
 		// Debug
 		Console.setDebugModeEnabled(true);
 		Console.setConsoleColorsEnabled(true);
-		// Console.hideDebugPriority(DebugPriority.LOW);
+		Console.hideDebugPriority(DebugPriority.LOW);
 		Console.hideDebugPriority(DebugPriority.MEDIUM);
 
 		//
