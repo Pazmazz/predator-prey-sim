@@ -33,7 +33,7 @@ import classes.entity.CellGrid.Cell;
 import classes.entity.CellGrid.CellType;
 import classes.entity.CellGrid;
 import classes.entity.CellGrid.GridIntercept;
-import classes.entity.ValueMeter.RESET_TYPE;
+import classes.entity.ValueMeter.MeterResetType;
 import classes.entity.Game;
 import classes.entity.GameScreen;
 import classes.entity.Unit2;

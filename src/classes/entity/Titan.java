@@ -8,11 +8,11 @@ import classes.abstracts.Bug;
 import classes.abstracts.Entity;
 import classes.util.Console;
 import classes.entity.CellGrid.Cell;
-import classes.entity.GameScreen.IMAGE;
+import classes.entity.GameScreen.ImageSet;
 
 public class Titan extends Bug<Titan> {
 
-	public IMAGE avatar = IMAGE.BASE_TITAN;
+	public ImageSet avatar = ImageSet.BASE_TITAN;
 
 	private Entity<?> target;
 	private Game game = Game.getInstance();
@@ -49,12 +49,12 @@ public class Titan extends Bug<Titan> {
 	}
 
 	@Override
-	public IMAGE getAvatar() {
+	public ImageSet getAvatar() {
 		return this.avatar;
 	}
 
 	@Override
-	public void setAvatar(IMAGE avatar) {
+	public void setAvatar(ImageSet avatar) {
 		this.avatar = avatar;
 	}
 }

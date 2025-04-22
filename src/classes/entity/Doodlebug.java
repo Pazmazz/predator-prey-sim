@@ -8,13 +8,13 @@ import classes.util.Console;
 import classes.util.Math2;
 import classes.util.Time;
 import classes.entity.CellGrid.Cell;
-import classes.entity.GameScreen.IMAGE;
-import classes.entity.ValueMeter.RESET_TYPE;
+import classes.entity.GameScreen.ImageSet;
+import classes.entity.ValueMeter.MeterResetType;
 import classes.settings.GameSettings;
 
 @SuppressWarnings("unused")
 public class Doodlebug extends Bug<Doodlebug> {
-	public IMAGE avatar = IMAGE.BASE_DOODLEBUG;
+	public ImageSet avatar = ImageSet.BASE_DOODLEBUG;
 
 	final private Game game = Game.getInstance();
 	final private CellGrid gameGrid = game.getGameGrid();
@@ -99,12 +99,12 @@ public class Doodlebug extends Bug<Doodlebug> {
 	}
 
 	@Override
-	public IMAGE getAvatar() {
+	public ImageSet getAvatar() {
 		return this.avatar;
 	}
 
 	@Override
-	public void setAvatar(IMAGE avatar) {
+	public void setAvatar(ImageSet avatar) {
 		this.avatar = avatar;
 	}
 

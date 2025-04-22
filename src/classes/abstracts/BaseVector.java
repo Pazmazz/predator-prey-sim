@@ -29,7 +29,6 @@ public abstract class BaseVector<T extends BaseVector<T>> implements Serializabl
 	protected abstract T newVector(Double[] components);
 
 	protected ArrayList<Double> components = new ArrayList<>();
-	private T inverted;
 
 	// TODO: Add documentation
 	public String serialize() {
@@ -79,13 +78,14 @@ public abstract class BaseVector<T extends BaseVector<T>> implements Serializabl
 			throw new IllegalArgumentException(String.format("BaseVector<T> is null (calling method: %s)", methodName));
 		}
 
-		if (!v.isSize(size())) {
+		int size = this.size();
+		if (!v.isSize(size)) {
 			throw new VectorMismatchException(methodName);
 		}
 
-		Double[] resultComponents = new Double[size()];
-		for (int i = 0; i < size(); i++) {
-			resultComponents[i] = (double) callback.call(get(i), v.get(i));
+		Double[] resultComponents = new Double[size];
+		for (int i = 0; i < size; i++) {
+			resultComponents[i] = (double) callback.call(this.get(i), v.get(i));
 		}
 		return resultComponents;
 	}
@@ -111,7 +111,7 @@ public abstract class BaseVector<T extends BaseVector<T>> implements Serializabl
 	 * @return true if the BaseVector<T> is the given size
 	 */
 	public boolean isSize(int comparedSize) {
-		return size() == comparedSize;
+		return this.size() == comparedSize;
 	}
 
 	/**
@@ -121,7 +121,7 @@ public abstract class BaseVector<T extends BaseVector<T>> implements Serializabl
 	 * @return a Double array of the BaseVector<T> components
 	 */
 	public Double[] componentsArray() {
-		return this.components.toArray(new Double[size()]);
+		return this.components.toArray(new Double[this.size()]);
 	}
 
 	/**
@@ -142,7 +142,7 @@ public abstract class BaseVector<T extends BaseVector<T>> implements Serializabl
 	 * @return the (int) component value at the index
 	 */
 	public Integer getInt(int index) {
-		return get(index).intValue();
+		return this.get(index).intValue();
 	}
 
 	/**
@@ -151,14 +151,8 @@ public abstract class BaseVector<T extends BaseVector<T>> implements Serializabl
 	 * @return BaseVector<T> with inverted (flipped sign) components
 	 */
 	public T invert() {
-		if (inverted != null) {
-			return inverted;
-		}
-
-		inverted = newVector(computeComponents(
+		return this.newVector(computeComponents(
 				(args) -> (double) args[0] * -1));
-
-		return inverted;
 	}
 
 	/**
@@ -169,11 +163,11 @@ public abstract class BaseVector<T extends BaseVector<T>> implements Serializabl
 	 * @return true if both BaseVector<T> objects are equal
 	 */
 	public boolean equals(T v) {
-		if (!v.isSize(size())) {
+		if (!v.isSize(this.size())) {
 			return false;
 		}
 
-		for (int i = 0; i < size(); i++) {
+		for (int i = 0; i < this.size(); i++) {
 			if ((double) get(i) != (double) v.get(i)) {
 				return false;
 			}
@@ -189,7 +183,7 @@ public abstract class BaseVector<T extends BaseVector<T>> implements Serializabl
 	 * @return the resulting BaseVector<T> with summed components
 	 */
 	public T add(T v) {
-		return newVector(computeComponents(
+		return this.newVector(computeComponents(
 				v,
 				"add(BaseVector<T>)",
 				(args) -> (double) args[0] + (double) args[1]));
@@ -204,7 +198,7 @@ public abstract class BaseVector<T extends BaseVector<T>> implements Serializabl
 	 * @return ...
 	 */
 	public T add(int scalar) {
-		return newVector(computeComponents(
+		return this.newVector(computeComponents(
 				(args) -> (double) args[0] + scalar));
 	}
 
@@ -214,7 +208,7 @@ public abstract class BaseVector<T extends BaseVector<T>> implements Serializabl
 	 * @return the resulting BaseVector<T> with absolute valued components
 	 */
 	public T abs() {
-		return newVector(computeComponents(
+		return this.newVector(computeComponents(
 				(args) -> Math.abs((double) args[0])));
 	}
 
@@ -227,7 +221,7 @@ public abstract class BaseVector<T extends BaseVector<T>> implements Serializabl
 	 *         (i.e, (-1, 0))
 	 */
 	public T signedUnit() {
-		return newVector(computeComponents(
+		return this.newVector(computeComponents(
 				(args) -> Math2.toSign((double) args[0])));
 	}
 
@@ -238,7 +232,7 @@ public abstract class BaseVector<T extends BaseVector<T>> implements Serializabl
 	 * @return the resulting BaseVector<T> with subtracted components
 	 */
 	public T subtract(T v) {
-		return newVector(computeComponents(
+		return this.newVector(computeComponents(
 				v,
 				"subtract(BaseVector<T>)",
 				(args) -> (double) args[0] - (double) args[1]));
@@ -254,7 +248,7 @@ public abstract class BaseVector<T extends BaseVector<T>> implements Serializabl
 	 *         {@code scalar}
 	 */
 	public T subtract(int scalar) {
-		return newVector(computeComponents(
+		return this.newVector(computeComponents(
 				(args) -> (double) args[0] - scalar));
 	}
 
@@ -266,7 +260,7 @@ public abstract class BaseVector<T extends BaseVector<T>> implements Serializabl
 	 * @return the resulting product of both BaseVector<T> components
 	 */
 	public T multiply(T v) {
-		return newVector(computeComponents(
+		return this.newVector(computeComponents(
 				v,
 				"multiply(BaseVector<T>)",
 				(args) -> (double) args[0] * (double) args[1]));
@@ -281,14 +275,14 @@ public abstract class BaseVector<T extends BaseVector<T>> implements Serializabl
 	 *         {@code scalar}
 	 */
 	public T multiply(int scalar) {
-		return newVector(computeComponents(
+		return this.newVector(computeComponents(
 				(args) -> (double) args[0] * scalar));
 	}
 
 	@Override
 	public String toString() {
-		return Console.filterConsoleColors(this.getClass()
-				.getSimpleName()
-				+ "<" + Formatter.concatArray(componentsArray()) + ">");
+		return Console.filterConsoleColors(
+				this.getClass().getSimpleName()
+						+ "<" + Formatter.concatArray(this.componentsArray()) + ">");
 	}
 }

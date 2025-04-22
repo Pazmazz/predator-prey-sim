@@ -3,31 +3,27 @@ package classes.abstracts;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import classes.entity.Null;
+import classes.entity.CellGrid.Cell;
+import classes.entity.ValueMeter;
+import classes.entity.Vector2;
+import interfaces.Property;
 import interfaces.Serializable;
+
+/*
+ * absoluteAvatarPosition:
+ * The rendered entity's avatar image position relative to it's parent screen
+ * 
+ * avatarPositionOffset:
+ * The rendered entity's avatar image position relative to it's cell
+ */
 
 public abstract class Properties implements Serializable {
 	private Map<Property, Object> properties = new ConcurrentHashMap<>();
 
-	public Object getProperty(Property property) {
-		return properties.get(property);
-	}
+	// public T getProperty(Property property) {
+	// Object result = properties.get(property);
 
-	@SuppressWarnings("unchecked")
-	public <T> T getProperty(Property property, Class<T> classType) {
-		Object result = properties.get(property);
-
-		if (result instanceof Null)
-			return null;
-
-		if (classType.isInstance(result))
-			return (T) result;
-
-		throw new Error(String.format(
-				"Bad call to getProperty(): Cannot cast %s to %s",
-				result,
-				classType));
-	}
+	// }
 
 	public Properties setProperty(Property key, Object value) {
 		properties.put(key, value);
@@ -38,23 +34,44 @@ public abstract class Properties implements Serializable {
 		return this.properties;
 	}
 
-	public enum Property {
-		POSITION,
-		ROTATION,
-		MOVEMENT_SPEED,
-		IS_EATABLE,
-		ASSIGNED_CELL,
-		MOVEMENT_COOLDOWN,
-		NAME,
-		TYPE,
-		VARIANT,
-		HEALTH,
-		MAX_HEALTH,
-		MAX_HUNGER,
-		HUNGER,
-		HEALTH_METER,
-		HUNGER_METER,
-		MOVEMENT_METER,
-		ANTS_EATEN,
+	// public enum Property {
+	// POSITION_2D(Vector2.class),
+	// ROTATION_RADIANS(Double.class),
+	// MOVEMENT_CELLS_PER_SECOND(Double.class),
+	// IS_EATABLE(Boolean.class),
+	// ASSIGNED_CELL(Cell.class),
+	// NAME(String.class),
+	// // TYPE,
+	// // VARIANT,
+	// // HEALTH,
+	// // MAX_HEALTH,
+	// // MAX_HUNGER,
+	// // HUNGER,
+	// HEALTH_METER(ValueMeter.class),
+	// HUNGER_METER(ValueMeter.class),
+	// MOVEMENT_METER(ValueMeter.class),
+	// ANTS_EATEN(Integer.class);
+
+	// private Class<?> type;
+
+	// private Property(Class<?> type) {
+	// this.type = type;
+	// }
+
+	// public Class<?> getType() {
+	// return this.type;
+	// }
+	// }
+
+	private abstract class Property {
+
+	}
+
+	public class Position2D extends Property {
+
+	}
+
+	public class RotationRadians extends Property {
+
 	}
 }

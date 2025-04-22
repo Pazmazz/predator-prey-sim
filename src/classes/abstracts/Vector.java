@@ -21,7 +21,7 @@ public abstract class Vector<T extends Vector<T>> extends BaseVector<T> {
 	 * @return the Vector<T> quotient
 	 */
 	public T divide(T v) {
-		return newVector(computeComponents(
+		return this.newVector(computeComponents(
 				v,
 				"divide(Vector<T>)",
 				(args) -> (double) args[0] / (double) args[1]));
@@ -37,7 +37,7 @@ public abstract class Vector<T extends Vector<T>> extends BaseVector<T> {
 	 * @return ...
 	 */
 	public T divide(double dec) {
-		return newVector(computeComponents(
+		return this.newVector(computeComponents(
 				(args) -> (double) args[0] / dec));
 	}
 
@@ -49,7 +49,7 @@ public abstract class Vector<T extends Vector<T>> extends BaseVector<T> {
 	 * @return ...
 	 */
 	public T divide(int scalar) {
-		return newVector(computeComponents(
+		return this.newVector(computeComponents(
 				(args) -> (double) args[0] / scalar));
 	}
 
@@ -61,7 +61,7 @@ public abstract class Vector<T extends Vector<T>> extends BaseVector<T> {
 	 * @return ...
 	 */
 	public T multiply(double dec) {
-		return newVector(computeComponents(
+		return this.newVector(computeComponents(
 				(args) -> (double) args[0] * dec));
 	}
 
@@ -72,7 +72,7 @@ public abstract class Vector<T extends Vector<T>> extends BaseVector<T> {
 	 * @return ...
 	 */
 	public T add(double dec) {
-		return newVector(computeComponents(
+		return this.newVector(computeComponents(
 				(args) -> (double) args[0] + dec));
 	}
 
@@ -83,7 +83,7 @@ public abstract class Vector<T extends Vector<T>> extends BaseVector<T> {
 	 * @return ...
 	 */
 	public T subtract(double dec) {
-		return newVector(computeComponents(
+		return this.newVector(computeComponents(
 				(args) -> (double) args[0] - dec));
 	}
 
@@ -93,7 +93,7 @@ public abstract class Vector<T extends Vector<T>> extends BaseVector<T> {
 	 * @return the new Vector<T> with floored components of this Vector<T>
 	 */
 	public T floor() {
-		return newVector(computeComponents(
+		return this.newVector(computeComponents(
 				(args) -> Math.floor((double) args[0])));
 	}
 
@@ -103,7 +103,7 @@ public abstract class Vector<T extends Vector<T>> extends BaseVector<T> {
 	 * @return the new Vector<T> with ceiled components of this Vector<T>
 	 */
 	public T ceil() {
-		return newVector(computeComponents(
+		return this.newVector(computeComponents(
 				(args) -> Math.ceil((double) args[0])));
 	}
 
@@ -131,7 +131,7 @@ public abstract class Vector<T extends Vector<T>> extends BaseVector<T> {
 	 * @return the resulting Vector<T> representing the midpoint
 	 */
 	public T midpoint(T v) {
-		return newVector(computeComponents(
+		return this.newVector(computeComponents(
 				v,
 				"midpoint(Vector<T>)",
 				(args) -> (((double) args[0] + (double) args[1]) / 2)));
@@ -146,7 +146,7 @@ public abstract class Vector<T extends Vector<T>> extends BaseVector<T> {
 		if (this.unit != null) {
 			return this.unit;
 		}
-		this.unit = divide(magnitude());
+		this.unit = this.divide(magnitude());
 		return this.unit;
 	}
 
@@ -163,7 +163,7 @@ public abstract class Vector<T extends Vector<T>> extends BaseVector<T> {
 	 * @see classes.util.Math2#lerp(double, double, double)
 	 */
 	public T lerp(T v, double alpha) {
-		return newVector(computeComponents(
+		return this.newVector(computeComponents(
 				v,
 				"lerp(Vector<T>, double alpha)",
 				(args) -> Math2.lerp((double) args[0], (double) args[1], alpha)));

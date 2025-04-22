@@ -190,7 +190,7 @@ public class Game implements Runnable {
 			this.loadSnapshot(this.currentSnapshot);
 			this.currentSnapshot++;
 		} else {
-			this.movementFrame.setDeltaTimeSeconds(this.getSettings().getManualTimeStepDelta());
+			this.movementFrame.setDeltaTimeInSeconds(this.getSettings().getManualTimeStepDelta());
 			this.movementFrame.step();
 		}
 		Console.println("$text-green Current Snapshot: $text-white " + this.currentSnapshot,

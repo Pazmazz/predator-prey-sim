@@ -51,7 +51,7 @@ public class Math2 {
 		return (int) (Math.random() * upperBound);
 	}
 
-	public static int clamp(int value, int min, int max) {
+	public static double clamp(double value, double min, double max) {
 		return Math.max(min, Math.min(max, value));
 	}
 }

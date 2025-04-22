@@ -19,26 +19,25 @@ public class GameSettings {
 		//
 		// Editable
 		//
-		this.gameHeaderText = "one"; // Text of the main header within the window
-		this.gameTitle = "two"; // Title of game window
+		this.gameHeaderText = "Life Sim"; // Text of the main header within the window
+		this.gameTitle = "Life Simulator"; // Title of game window
 
 		// Game grid
-		this.screenWidth = 700;
-		// this.screenHeight = 680;
+		this.screenWidth = 900;
 
-		this.gridSnapshotHistory = 100;
-		this.gridLineThickness = 2;
-		this.gridBorderPadding = 1; // we shouldn't actually need this, use EmptyBorder instead
-		this.gridSize = new Unit2(20, 20);
+		this.gridSnapshotHistory = 10;
+		this.gridLineThickness = 1;
+		this.gridBorderPadding = 0; // we shouldn't actually need this, use EmptyBorder instead
+		this.gridSize = new Unit2(50, 50);
 
 		this.gridBackgroundColor = Color.BLACK;
 		this.gridLinesColor = Color.BLUE;
 
-		this.initialAnts = 100;
-		this.initialDoodlebugs = 5;
-		this.doodlebugHungerLimit = 4;
-		this.antMovementCooldown = 1.0 / 10;
-		this.doodlebugMovementCooldown = 1.0 / 10;
+		this.initialAnts = 2;
+		this.initialDoodlebugs = 2;
+		this.doodlebugHungerLimit = 5;
+		this.antMovementCooldown = 1.0 / 60;
+		this.doodlebugMovementCooldown = 1.0 / 60;
 
 		this.antBreedingEnabled = true;
 		this.doodlebugBreedingEnabled = true;
@@ -65,8 +64,10 @@ public class GameSettings {
 		//
 		// Non-Editable
 		//
-		this.screenHeight = this.screenWidth + 120;
-		this.screenAspectRatio = this.screenWidth / this.screenHeight;
+		// this.screenHeight = this.screenWidth + 120;
+		// this.screenHeight = 500;
+		// this.screenAspectRatio = this.screenWidth / this.screenHeight;
+		this.gridCellCount = this.gridSize.getX() * this.gridSize.getY();
 	}
 
 	final private String gameHeaderText;
@@ -84,6 +85,7 @@ public class GameSettings {
 	private double doodlebugMovementCooldown;
 	private int doodlebugHungerLimit;
 	private int gridSnapshotHistory;
+	private int gridCellCount;
 
 	private String[] bugFirstNames = new String[] {
 			"Anton",
@@ -257,9 +259,9 @@ public class GameSettings {
 	private boolean antBreedingEnabled;
 	private boolean doodlebugBreedingEnabled;
 
-	final private int screenWidth;
-	final private int screenHeight;
-	final private int screenAspectRatio;
+	private int screenWidth;
+	private int screenHeight;
+	private int screenAspectRatio;
 
 	//
 	// Public getters
@@ -370,6 +372,10 @@ public class GameSettings {
 
 	public String[] getBugLastNames() {
 		return this.bugLastNames;
+	}
+
+	public int getGridCellCount() {
+		return this.gridCellCount;
 	}
 
 	public double getManualTimeStepDelta() {

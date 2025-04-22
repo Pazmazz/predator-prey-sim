@@ -1,5 +1,5 @@
 package classes.entity;
 
-public class Snapshot {
+public class GameState {
 
 }

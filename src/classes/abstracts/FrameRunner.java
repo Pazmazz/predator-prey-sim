@@ -49,6 +49,11 @@ public abstract class FrameRunner {
 		this.debugInfo = debugInfo;
 		this.processName = processName;
 
+		/*
+		 * If game state is changing from a non-running state to a running state, void
+		 * the timestamp recorded from the previous render frame since we don't want to
+		 * count time between running and non-running states as time elapsed.
+		 */
 		game.onSimulationStateChanged.connect(data -> {
 			SimulationState state = (SimulationState) data[0];
 			if (state == SimulationState.RUNNING) {
@@ -120,13 +125,13 @@ public abstract class FrameRunner {
 	 * Gets the most recent delta time between the last simulation interval
 	 * 
 	 * @return the time between the last simulation interval in seconds
-	 * @see #getDeltaTimeSeconds()
+	 * @see #getDeltaTimeInSeconds()
 	 */
-	public double getDeltaTimeSeconds() {
+	public double getDeltaTimeInSeconds() {
 		return Time.nanoToSeconds(this.deltaTime);
 	}
 
-	public void setDeltaTimeSeconds(double dt) {
+	public void setDeltaTimeInSeconds(double dt) {
 		this.deltaTime = Time.secondsToNano(dt);
 	}
 

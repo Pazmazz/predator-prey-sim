@@ -1,14 +1,16 @@
 package classes.abstracts;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
 
 import classes.entity.CellGrid;
 import classes.entity.CellGrid.Cell;
-import classes.entity.ValueMeter.RESET_TYPE;
+import classes.entity.ValueMeter.MeterResetType;
 import classes.entity.Doodlebug;
 import classes.entity.EventSignal;
 import classes.entity.Game;
-import classes.entity.Null;
+import classes.entity.Timestamp;
 import classes.entity.ValueMeter;
 import classes.entity.Vector2;
 import classes.util.Console;
@@ -18,77 +20,84 @@ import interfaces.Callback;
 
 @SuppressWarnings("unused")
 public abstract class Bug<T extends Bug<T>> extends Entity<T> {
+	public abstract boolean move();
+
+	public abstract T newInstance();
+
+	final private static HashMap<Bug<?>, Bug<?>> bugs = new HashMap<>();
 	final private Game game = Game.getInstance();
-	final private CellGrid gameGrid = game.getGameGrid();
 	final private int idNum;
 
-	private long timeLastMoved = 0;
-	private long birthTime = Time.tick();
-	private long timeInSimulation = 0;
-	private int generation = 1;
+	/*
+	 * Metadata
+	 */
+	private Timestamp timeLastMoved = new Timestamp(0);
+	final private ValueMeter timeInSimulationMeter = new ValueMeter(0, Integer.MAX_VALUE, 0);
+	final private ValueMeter generationMeter = new ValueMeter(0, Integer.MAX_VALUE, 0);
+
+	// TODO: this is currently for animating fade-ins, replace with a animation
+	// service later
+	private Timestamp timeCreated = new Timestamp();
+
+	/*
+	 * Properties:
+	 */
+	private double movementSpeed = 1;
+	private boolean isEatable = false;
+	final private ValueMeter breedingMeter = new ValueMeter(0, 3, 0, MeterResetType.ON_MAX);
 
 	protected Bug() {
 		this.idNum = (int) (Math.random() * 1000);
-
-		// properties
-		this.setProperty(Property.POSITION, new Vector2());
-		this.setProperty(Property.ROTATION, 0.0);
-		this.setProperty(Property.MOVEMENT_SPEED, 5);
-		this.setProperty(Property.IS_EATABLE, false);
-		this.setProperty(Property.ASSIGNED_CELL, new Null());
-		this.setProperty(Property.MOVEMENT_COOLDOWN, 1.0);
-		this.setProperty(Property.VARIANT, getClass().getSimpleName());
-		this.setProperty(Property.NAME, game.getSettings().getRandomBugFirstAndLastName());
-		this.setProperty(Property.HEALTH_METER, new ValueMeter(1));
-		this.setProperty(Property.MOVEMENT_METER, new ValueMeter(3, 0, 0, RESET_TYPE.ON_MAX));
 	}
 
-	public ValueMeter getHealthMeter() {
-		return this.getProperty(Property.HEALTH_METER, ValueMeter.class);
+	// Property getters
+	public String getName() {
+		return this.name;
 	}
 
 	public ValueMeter getBreedingMeter() {
-		return this.getProperty(Property.MOVEMENT_METER, ValueMeter.class);
+		return this.breedingMeter;
 	}
 
-	public double getRotation() {
-		return this.getProperty(Property.ROTATION, Double.class);
+	public double getMovementSpeed() {
+		return this.movementSpeed;
 	}
 
-	public double getMovementCooldown() {
-		return this.getProperty(Property.MOVEMENT_COOLDOWN, Double.class);
+	public boolean isEatable() {
+		return this.isEatable;
 	}
 
-	public long getTimeLastMoved() {
-		return this.timeLastMoved;
-	}
-
-	public long getTimeInSimulation() {
-		return this.timeInSimulation;
-	}
-
-	public int getGeneration() {
-		return this.generation;
-	}
-
-	public long getTimeSinceBirth() {
-		return Time.tick() - this.birthTime;
-	}
-
-	public double getTimeInSimulationInSeconds() {
-		return Time.nanoToSeconds(this.timeInSimulation);
-	}
-
-	public void setTimeLastMoved() {
-		this.timeLastMoved = Time.tick();
+	// Metadata getters
+	public ValueMeter getGenerationMeter() {
+		return this.generationMeter;
 	}
 
 	public int getId() {
 		return this.idNum;
 	}
 
-	public String getName() {
-		return this.getProperty(Property.NAME, String.class);
+	public ValueMeter getTimeInSimulationMeter() {
+		return this.timeInSimulationMeter;
+	}
+
+	public double getTimeInSimulationInSeconds() {
+		return Time.nanoToSeconds((long) this.timeInSimulationMeter.getValue());
+	}
+
+	// Metadata setters
+	public String getTooltipString() {
+		return this.getNameWithId();
+	}
+
+	public void breed() {
+		ArrayList<Cell> adjCells = game.getGameGrid().getCellsAdjacentTo(this.assignedCell);
+		Cell randCell = game.getGameGrid().getRandomAvailableCellFrom(adjCells);
+
+		if (randCell != null) {
+			Bug<T> bug = newInstance();
+			bug.assignCell(randCell);
+			bug.getGenerationMeter().increment();
+		}
 	}
 
 	public String getNameWithId() {
@@ -99,46 +108,13 @@ public abstract class Bug<T extends Bug<T>> extends Entity<T> {
 				.toString();
 	}
 
-	public String getTooltipString() {
-		return "Tooltip";
+	@Override
+	public void removeFromCell() {
+		super.removeFromCell();
+		bugs.remove(this);
 	}
 
-	public boolean isEatable() {
-		return this.getProperty(Property.IS_EATABLE, Boolean.class);
+	public Collection<Bug<?>> getBugsReadOnly() {
+		return bugs.values();
 	}
-
-	public boolean isAlive() {
-		return this.getHealthMeter().getValue() > 0;
-	}
-
-	public void setRotation(double rotation) {
-		this.setProperty(Property.ROTATION, rotation);
-	}
-
-	public void setBirthTime(long t) {
-		this.birthTime = t;
-	}
-
-	public void setGeneration(int generation) {
-		this.generation = generation;
-	}
-
-	public void incrementTimeInSimulation(long delta) {
-		this.timeInSimulation += delta;
-	}
-
-	public void breed() {
-		ArrayList<Cell> adjCells = gameGrid.getCellsAdjacentTo(getCell());
-		Cell randCell = gameGrid.getRandomAvailableCellFrom(adjCells);
-
-		if (randCell != null) {
-			Bug<T> bug = newInstance();
-			bug.assignCell(randCell);
-			bug.setGeneration(this.getGeneration() + 1);
-		}
-	}
-
-	public abstract boolean move();
-
-	public abstract T newInstance();
 }

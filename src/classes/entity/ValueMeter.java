@@ -3,53 +3,53 @@ package classes.entity;
 import classes.util.Math2;
 
 public class ValueMeter {
-	private int value;
-	private int max;
-	private int min;
-	private RESET_TYPE meterResetType;
+	private double value;
+	private double max;
+	private double min;
+	private MeterResetType meterResetType;
 
 	public EventSignal onMaxValueReached = new EventSignal();
 	public EventSignal onMinValueReached = new EventSignal();
 	public EventSignal onValueChanged = new EventSignal();
 
-	public enum RESET_TYPE {
+	public enum MeterResetType {
 		ON_MIN,
 		ON_MAX,
 		NONE
 	}
 
-	public ValueMeter(int maxValue, int minValue, int value, RESET_TYPE meterResetType) {
+	public ValueMeter(double minValue, double maxValue, double value, MeterResetType meterResetType) {
 		this.max = maxValue;
 		this.min = minValue;
 		this.meterResetType = meterResetType;
 		this.setValue(value);
 	}
 
-	public ValueMeter(int maxValue, int minValue, int value) {
-		this(maxValue, minValue, value, RESET_TYPE.NONE);
+	public ValueMeter(double minValue, double maxValue, double value) {
+		this(minValue, maxValue, value, MeterResetType.NONE);
 	}
 
-	public ValueMeter(int maxValue, int value) {
-		this(maxValue, 0, value, RESET_TYPE.NONE);
+	public ValueMeter(double maxValue, double value) {
+		this(0, maxValue, value, MeterResetType.NONE);
 	}
 
-	public ValueMeter(int maxValue) {
-		this(maxValue, 0, maxValue, RESET_TYPE.NONE);
+	public ValueMeter(double maxValue) {
+		this(0, maxValue, maxValue, MeterResetType.NONE);
 	}
 
-	public ValueMeter(int maxValue, RESET_TYPE meterResetType) {
-		this(maxValue, 0, maxValue, meterResetType);
+	public ValueMeter(double maxValue, MeterResetType meterResetType) {
+		this(0, maxValue, maxValue, meterResetType);
 	}
 
-	public int getValue() {
+	public double getValue() {
 		return this.value;
 	}
 
-	public int getMax() {
+	public double getMax() {
 		return this.max;
 	}
 
-	public int getMin() {
+	public double getMin() {
 		return this.min;
 	}
 
@@ -57,20 +57,20 @@ public class ValueMeter {
 		return this.value / (double) this.max;
 	}
 
-	public void setValue(int value) {
+	public void setValue(double value) {
 		this.value = Math2.clamp(value, this.min, this.max);
 		this.onValueChanged.fire(this.value);
 
 		if (this.value == this.max) {
 			this.onMaxValueReached.fire();
-			if (this.meterResetType == RESET_TYPE.ON_MAX) {
+			if (this.meterResetType == MeterResetType.ON_MAX) {
 				this.value = this.min;
 				this.onMinValueReached.fire();
 				this.onValueChanged.fire(this.value);
 			}
 		} else if (this.value == this.min) {
 			this.onMinValueReached.fire();
-			if (this.meterResetType == RESET_TYPE.ON_MIN) {
+			if (this.meterResetType == MeterResetType.ON_MIN) {
 				this.value = this.max;
 				this.onMaxValueReached.fire();
 				this.onValueChanged.fire(this.value);
@@ -78,12 +78,12 @@ public class ValueMeter {
 		}
 	}
 
-	public ValueMeter setMax(int value) {
+	public ValueMeter setMax(double value) {
 		this.max = value;
 		return this;
 	}
 
-	public ValueMeter setMin(int value) {
+	public ValueMeter setMin(double value) {
 		this.min = value;
 		return this;
 	}
@@ -96,44 +96,39 @@ public class ValueMeter {
 		this.setValue(this.min);
 	}
 
-	public ValueMeter setMaxAndFill(int value) {
+	public ValueMeter setMaxAndFill(double value) {
 		this.setMax(value);
 		this.setValue(value);
 		return this;
 	}
 
-	public ValueMeter setResetType(RESET_TYPE resetType) {
+	public ValueMeter setResetType(MeterResetType resetType) {
 		this.meterResetType = resetType;
 		return this;
 	}
 
-	public int incrementBy(int value) {
+	public double incrementBy(double value) {
 		if (value < 0)
 			throw new Error("Cannot increment value meter by a negative number");
-		int newValue = this.value + value;
+		double newValue = this.value + value;
 		this.setValue(newValue);
 		return newValue;
 	}
 
-	public int decrementBy(int value) {
+	public double decrementBy(double value) {
 		if (value < 0)
 			throw new Error("Cannot decrement value meter by a negative number");
-		int newValue = this.value + value;
+		double newValue = this.value + value;
 		this.setValue(this.value - value);
 		return newValue;
 	}
 
-	public int increment() {
+	public double increment() {
 		return this.incrementBy(1);
 	}
 
-	public int decrement() {
+	public double decrement() {
 		return this.decrementBy(1);
-	}
-
-	public ValueMeter removeLimit() {
-		this.setMax(Integer.MAX_VALUE);
-		return this;
 	}
 
 	@Override

@@ -46,6 +46,12 @@ public class MovementFrame extends FrameRunner {
 	private Doodlebug doodlebugMVP = new Doodlebug();
 	private Ant antMVP = new Ant();
 
+	private int totalBugs = 0;
+	private int totalAnts = 0;
+	private int totalDoodlebugs = 0;
+	private int totalEntities = 0;
+	private long totalRuntime = 0;
+
 	public MovementFrame() {
 		super(
 				settings.getSimulationProcessName(),
@@ -57,8 +63,42 @@ public class MovementFrame extends FrameRunner {
 			if (state == SimulationState.INITIAL) {
 				this.doodlebugMVP = new Doodlebug();
 				this.antMVP = new Ant();
+				this.totalRuntime = 0;
+				this.totalAnts = 0;
+				this.totalDoodlebugs = 0;
+				this.totalEntities = 0;
+				this.totalBugs = 0;
+				game.getScreen().updateRealtimeStats();
 			}
 		});
+
+		this.onPostSimulation(task -> {
+			game.getScreen().updateRealtimeStats();
+		});
+	}
+
+	public long getTotalRuntime() {
+		return this.totalRuntime;
+	}
+
+	public double getTotalRuntimeInSeconds() {
+		return Math.floor(Time.nanoToSeconds(this.totalRuntime) * 100) / 100;
+	}
+
+	public int getTotalAnts() {
+		return totalAnts;
+	}
+
+	public int getTotalBugs() {
+		return totalBugs;
+	}
+
+	public int getTotalDoodlebugs() {
+		return totalDoodlebugs;
+	}
+
+	public int getTotalEntities() {
+		return totalEntities;
 	}
 
 	public Doodlebug getCurrentDoodlebugMVP() {
@@ -85,10 +125,27 @@ public class MovementFrame extends FrameRunner {
 		this.antMVP = ant;
 	}
 
+	public void setTotalAnts(int totalAnts) {
+		this.totalAnts = totalAnts;
+	}
+
+	public void setTotalBugs(int totalBugs) {
+		this.totalBugs = totalBugs;
+	}
+
+	public void setTotalDoodlebugs(int totalDoodlebugs) {
+		this.totalDoodlebugs = totalDoodlebugs;
+	}
+
+	public void setTotalEntities(int totalEntities) {
+		this.totalEntities = totalEntities;
+	}
+
 	@Override
 	public void step() {
+		this.totalRuntime += getDeltaTime();
 		CellGrid grid = game.getGameGrid();
-		grid.collectCells();
+		// grid.collectCells();
 
 		Collection<Cell> cells = grid.getGrid().values();
 		long currentTime = Time.tick();
@@ -123,6 +180,7 @@ public class MovementFrame extends FrameRunner {
 
 				// update turn stats
 				if (bug instanceof Doodlebug) {
+					doodlebugCount++;
 					Doodlebug db = (Doodlebug) bug;
 					int antsEaten = db.getAntsEatenMeter().getValue();
 
@@ -141,6 +199,11 @@ public class MovementFrame extends FrameRunner {
 			}
 		}
 
+		setTotalAnts(antCount);
+		setTotalDoodlebugs(doodlebugCount);
+		setTotalEntities(entityCount);
+		setTotalBugs(bugCount);
+
 		if (moveOccurred) {
 			game.saveSnapshot();
 		}
@@ -150,15 +213,8 @@ public class MovementFrame extends FrameRunner {
 			this.setWinner(EntityVariant.DOODLEBUG);
 			game.setSimulationState(SimulationState.ENDED);
 			// ants win
-		} else if (antCount == 400) {
+		} else if (antCount == game.getSettings().getGridCellCount()) {
 			this.setWinner(EntityVariant.ANT);
-			int count = 0;
-			for (Cell cell : cells) {
-				if (cell.hasOccupant() && cell.getOccupant() instanceof Ant) {
-					count++;
-				}
-			}
-			Console.println("NOW: ", count);
 			game.setSimulationState(SimulationState.ENDED);
 
 			// titans win

@@ -5,13 +5,15 @@ package classes.abstracts;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
 
 import classes.entity.CellGrid.Cell;
-import classes.entity.GameScreen.IMAGE;
-import classes.entity.Null;
+import classes.entity.GameScreen.ImageSet;
 import classes.util.Console;
 import exceptions.CellIsOccupiedException;
 import exceptions.NoCellFoundException;
+import interfaces.Property;
 import interfaces.Serializable;
 
 /**
@@ -24,11 +26,14 @@ import interfaces.Serializable;
  */
 public abstract class Entity<T extends Entity<T>> extends Properties {
 
-	// private static ArrayList<Entity<?>> entityList = new ArrayList<>();
+	final private static HashMap<Entity<?>, Entity<?>> entities = new HashMap<>();
 
-	public abstract IMAGE getAvatar();
+	public abstract ImageSet getAvatar();
 
-	public abstract void setAvatar(IMAGE image);
+	public abstract void setAvatar(ImageSet image);
+
+	protected Cell assignedCell = null;
+	protected String name = null;
 
 	public enum EntityVariant {
 		DOODLEBUG,
@@ -37,9 +42,9 @@ public abstract class Entity<T extends Entity<T>> extends Properties {
 	}
 
 	// Unused constructor for now
-	// public Entity() {
-	// entityList.add(this);
-	// }
+	public Entity() {
+		entities.put(this, this);
+	}
 
 	/**
 	 * Assigns the current occupant to a given cell. Each occupant can only be
@@ -66,13 +71,13 @@ public abstract class Entity<T extends Entity<T>> extends Properties {
 			throw new NoCellFoundException();
 
 		if (withAggregation) {
-			if (hasCell())
-				removeFromCell();
+			if (this.hasAssignedCell())
+				this.removeFromCell();
 
 			targetCell.setOccupant(this, false);
 		}
 
-		setProperty(Property.ASSIGNED_CELL, targetCell);
+		this.assignedCell = targetCell;
 	}
 
 	/**
@@ -84,26 +89,27 @@ public abstract class Entity<T extends Entity<T>> extends Properties {
 	 * @param targetCell the cell to assign the occupant
 	 */
 	public void assignCell(Cell targetCell) {
-		assignCell(targetCell, true);
+		this.assignCell(targetCell, true);
 	}
 
-	public Cell getCell() {
-		return getProperty(Property.ASSIGNED_CELL, Cell.class);
+	public Cell getAssignedCell() {
+		// return getProperty(Property.ASSIGNED_CELL, Cell.class);
+		return this.assignedCell;
 	}
 
-	public boolean hasCell() {
-		return getCell() != null;
+	public boolean hasAssignedCell() {
+		return this.assignedCell != null;
 	}
 
 	public void removeFromCell(boolean withAggregation) {
-		if (!hasCell())
+		if (!this.hasAssignedCell())
 			throw new NoCellFoundException();
 
 		if (withAggregation)
-			getCell().removeOccupant(false);
+			this.assignedCell.removeOccupant(false);
 
-		setProperty(Property.ASSIGNED_CELL, new Null());
-		// entityList.remove(this);
+		this.assignedCell = null;
+		entities.remove(this);
 	}
 
 	/**
@@ -116,10 +122,10 @@ public abstract class Entity<T extends Entity<T>> extends Properties {
 	 *                              has no cell
 	 */
 	public void removeFromCell() {
-		removeFromCell(true);
+		this.removeFromCell(true);
 	}
 
-	// public static ArrayList<Entity<?>> getEntityList() {
-	// return entityList;
-	// }
+	public static Collection<Entity<?>> getEntitiesReadOnly() {
+		return entities.values();
+	}
 }

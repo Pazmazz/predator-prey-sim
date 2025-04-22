@@ -54,13 +54,14 @@ public class GameScreen {
 	final private static Game game = Game.getInstance();
 	final private static GameSettings settings = game.getSettings();
 	final private static CellGrid gameGrid = game.getGameGrid();
+	final private static HashMap<ImageSet, BufferedImage> loadedImages = new HashMap<>();
 
 	final private JFrame window;
 	final private JPanel victoryScreen;
 	final private JComponent windowOverlay;
 	final private JPanel contentFrame;
 	final private JPanel gridContent;
-	final private JPanel grid;
+	final private GridPanel grid;
 	final private JLabel tooltip;
 
 	final private int GRID_LINE_THICKNESS = settings.getGridLineThickness();
@@ -76,9 +77,7 @@ public class GameScreen {
 	final private int GRID_START = GRID_BORDER_PADDING;
 	final private int GRID_END = SCREEN_WIDTH - GRID_BORDER_PADDING;
 
-	final private HashMap<IMAGE, BufferedImage> loadedImages = new HashMap<>();
-
-	public enum IMAGE {
+	public enum ImageSet {
 		BASE_ANT,
 		BASE_DOODLEBUG,
 		BASE_TITAN,
@@ -92,7 +91,7 @@ public class GameScreen {
 		this.window = window;
 		this.window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.window.setResizable(false);
-		this.window.setTitle("Test");
+		this.window.setTitle(game.getSettings().getTitle());
 
 		this.loadImages();
 
@@ -126,6 +125,7 @@ public class GameScreen {
 		this.victoryScreen = victoryScreen;
 		// windowOverlay.add(victoryScreen);
 		grid.getOverlay().add(victoryScreen);
+		// grid.setComponentZOrder(victoryScreen, 0);
 
 		this.window.pack();
 		this.window.setLocationRelativeTo(null);
@@ -133,23 +133,23 @@ public class GameScreen {
 
 		game.onSimulationStateChanged.connect(data -> {
 			SimulationState state = (SimulationState) data[0];
-			if (state != SimulationState.ENDED) {
-				victoryScreen.conceal();
-			} else {
+			if (state == SimulationState.ENDED) {
 				tooltip.setVisible(false);
 				victoryScreen.update();
 				victoryScreen.display();
+			} else {
+				victoryScreen.conceal();
 			}
 		});
 	}
 
 	public void loadImages() {
 		try {
-			this.loadedImages.put(IMAGE.BASE_ANT, ImageIO.read(new File("src/assets/ant2.jpg")));
-			this.loadedImages.put(IMAGE.BASE_DOODLEBUG, ImageIO.read(new File("src/assets/doodlebug3.jpg")));
-			this.loadedImages.put(IMAGE.BASE_TITAN, ImageIO.read(new File("src/assets/titanant.jpg")));
-			this.loadedImages.put(IMAGE.RED_CELL, ImageIO.read(new File("src/assets/pathcell.jpg")));
-			this.loadedImages.put(IMAGE.ANT_PROFILE, ImageIO.read(new File("src/assets/ant3.jpg")));
+			loadedImages.put(ImageSet.BASE_ANT, ImageIO.read(new File("src/assets/ant2.jpg")));
+			loadedImages.put(ImageSet.BASE_DOODLEBUG, ImageIO.read(new File("src/assets/doodlebug3.jpg")));
+			loadedImages.put(ImageSet.BASE_TITAN, ImageIO.read(new File("src/assets/titanant.jpg")));
+			loadedImages.put(ImageSet.RED_CELL, ImageIO.read(new File("src/assets/pathcell.jpg")));
+			loadedImages.put(ImageSet.ANT_PROFILE, ImageIO.read(new File("src/assets/ant3.jpg")));
 		} catch (Exception e) {
 			throw new Error("Error loading images");
 		}
@@ -212,7 +212,7 @@ public class GameScreen {
 			g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, (float) hungerAlpha));
 		} else if (entity instanceof Bug<?>) {
 			Bug<?> bug = (Bug<?>) entity;
-			double timeAliveAlpha = Math.min(1, Time.nanoToSeconds(bug.getTimeSinceBirth()) / 0.3);
+			double timeAliveAlpha = Math.min(1, Time.nanoToSeconds(bug.getBirthTime()) / 0.3);
 			g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, (float) timeAliveAlpha));
 		}
 
@@ -267,7 +267,7 @@ public class GameScreen {
 
 			// WINNER ICON
 			JLabel winnerIcon = new JLabel();
-			winnerIcon.setIcon(new ImageIcon(loadedImages.get(IMAGE.BASE_DOODLEBUG)));
+			winnerIcon.setIcon(new ImageIcon(loadedImages.get(ImageSet.BASE_DOODLEBUG)));
 			winnerIcon.setAlignmentX(Component.CENTER_ALIGNMENT);
 			this.winnerIcon = winnerIcon;
 
@@ -352,7 +352,7 @@ public class GameScreen {
 			secondaryHeaderContent.add(secondMVP);
 
 			JLabel secondaryWinnerIcon = new JLabel();
-			secondaryWinnerIcon.setIcon(new ImageIcon(loadedImages.get(IMAGE.BASE_DOODLEBUG)));
+			secondaryWinnerIcon.setIcon(new ImageIcon(loadedImages.get(ImageSet.BASE_DOODLEBUG)));
 			secondaryWinnerIcon.setAlignmentX(Component.CENTER_ALIGNMENT);
 			this.secondaryWinnerIcon = secondaryWinnerIcon;
 
@@ -462,14 +462,14 @@ public class GameScreen {
 			switch (winner) {
 				case DOODLEBUG -> {
 					bugMVP = dbMVP;
-					mvpIcon = new ImageIcon(loadedImages.get(IMAGE.BASE_DOODLEBUG));
+					mvpIcon = new ImageIcon(loadedImages.get(ImageSet.BASE_DOODLEBUG));
 					this.antsEatenLabel
 							.setText("<html>Ants Eaten: <span style='color:#bf00ff;'>"
 									+ dbMVP.getAntsEatenMeter().getValue()
 									+ "</span></html>");
 					this.antsEatenLabel.setVisible(true);
 					this.secondaryAntsEatenLabel.setVisible(false);
-					this.secondaryWinnerIcon.setIcon(new ImageIcon(loadedImages.get(IMAGE.ANT_PROFILE)));
+					this.secondaryWinnerIcon.setIcon(new ImageIcon(loadedImages.get(ImageSet.ANT_PROFILE)));
 					this.secondaryWinnerTitle.setText("<html>" + antMVP.getName() + "</html>");
 					this.secondaryGenerationLabel.setText(
 							"<html>Generation: <span style='color:#bf00ff;'>" + antMVP.getGeneration()
@@ -479,14 +479,14 @@ public class GameScreen {
 				}
 				case ANT -> {
 					bugMVP = antMVP;
-					mvpIcon = new ImageIcon(loadedImages.get(IMAGE.ANT_PROFILE));
+					mvpIcon = new ImageIcon(loadedImages.get(ImageSet.ANT_PROFILE));
 					this.secondaryAntsEatenLabel
 							.setText("<html>Ants Eaten: <span style='color:#bf00ff;'>"
 									+ dbMVP.getAntsEatenMeter().getValue()
 									+ "</span></html>");
 					this.antsEatenLabel.setVisible(false);
 					this.secondaryAntsEatenLabel.setVisible(true);
-					this.secondaryWinnerIcon.setIcon(new ImageIcon(loadedImages.get(IMAGE.BASE_DOODLEBUG)));
+					this.secondaryWinnerIcon.setIcon(new ImageIcon(loadedImages.get(ImageSet.BASE_DOODLEBUG)));
 					this.secondaryWinnerTitle.setText("<html>" + dbMVP.getName() + "</html>");
 					this.secondaryGenerationLabel.setText(
 							"<html>Generation: <span style='color:#bf00ff;'>" + dbMVP.getGeneration()
@@ -543,7 +543,7 @@ public class GameScreen {
 
 		JLabel title = new JLabel();
 		// title.setBorder(new EmptyBorder(10, 10, 10, 10));
-		title.setText("Predator Prey Simulation");
+		title.setText(game.getSettings().getHeaderText());
 		title.setFont(new Font("Courier New", Font.BOLD, 30));
 		title.setAlignmentX(JFrame.CENTER_ALIGNMENT);
 		title.setForeground(new Color(25, 255, 0));
@@ -577,7 +577,8 @@ public class GameScreen {
 		game.onSimulationStateChanged.connect(data -> {
 			MovementFrame movementFrame = game.getMovementFrame();
 			SimulationState state = (SimulationState) data[0];
-			if (state == SimulationState.PAUSED || state == SimulationState.INITIAL
+			if (state == SimulationState.PAUSED
+					|| state == SimulationState.INITIAL
 					|| state == SimulationState.ENDED
 					|| state == SimulationState.MANUAL) {
 				toggleSimulationButton.setText("▶");
@@ -594,7 +595,8 @@ public class GameScreen {
 			SimulationState simState = game.getSimulationState();
 
 			if (simState == SimulationState.PAUSED
-					|| simState == SimulationState.STARTED || simState == SimulationState.MANUAL
+					|| simState == SimulationState.STARTED
+					|| simState == SimulationState.MANUAL
 					|| simState == SimulationState.INITIAL) {
 				if (!game.onCurrentSnapshot()) {
 					game.loadMostRecentSnapshot();
@@ -757,8 +759,17 @@ public class GameScreen {
 	private class GridPanel extends JPanel {
 
 		private JPanel overlay;
+		private JLabel totalSimulationRuntimeLabel;
+		private JLabel totalEntitiesLabel;
+		private JLabel totalAntsLabel;
+		private JLabel totalBugsLabel;
+		private JLabel totalDoodlebugsLabel;
 
 		public GridPanel() {
+			JPanel gridPanel = this;
+			this.setBackground(settings.getGridBackgroundColor());
+			this.setLayout(null);
+
 			JPanel overlay = new JPanel();
 			overlay.setLayout(null);
 			overlay.setSize(SCREEN_WIDTH, SCREEN_WIDTH);
@@ -766,10 +777,74 @@ public class GameScreen {
 			this.overlay = overlay;
 			this.add(overlay);
 
-			this.setBackground(settings.getGridBackgroundColor());
-			this.setLayout(null);
+			JPanel realtimeStatsContainer = new JPanel();
+			realtimeStatsContainer.setLayout(null);
+			// realtimeStatsContainer.setOpaque(false);
+			realtimeStatsContainer.setBackground(new Color(0, 0, 0, 128));
+			realtimeStatsContainer.setBounds(0, SCREEN_WIDTH - 70, SCREEN_WIDTH, 72);
+
+			JPanel realtimeStatsInnerContainer = new JPanel();
+			realtimeStatsInnerContainer.setLayout(null);
+			realtimeStatsInnerContainer.setOpaque(false);
+			realtimeStatsInnerContainer.setBounds(
+					5,
+					5,
+					(int) realtimeStatsContainer.getSize().getWidth() - 10,
+					(int) realtimeStatsContainer.getSize().getHeight() - 10);
+			realtimeStatsContainer.add(realtimeStatsInnerContainer);
+
+			JLabel totalSimulationRuntimeLabel = new JLabel();
+			totalSimulationRuntimeLabel.setText("Simulation Runtime: 0");
+			totalSimulationRuntimeLabel.setForeground(Color.WHITE);
+			totalSimulationRuntimeLabel.setOpaque(false);
+			totalSimulationRuntimeLabel.setFont(new Font("Courier New", Font.PLAIN, 12));
+			totalSimulationRuntimeLabel
+					.setSize(new Dimension(SCREEN_WIDTH, totalSimulationRuntimeLabel.getFont().getSize()));
+			this.totalSimulationRuntimeLabel = totalSimulationRuntimeLabel;
+			realtimeStatsInnerContainer.add(totalSimulationRuntimeLabel);
+
+			JLabel totalEntitiesLabel = new JLabel();
+			totalEntitiesLabel.setText("Entities: 0");
+			totalEntitiesLabel.setForeground(Color.WHITE);
+			totalEntitiesLabel.setOpaque(false);
+			totalEntitiesLabel.setSize(new Dimension(SCREEN_WIDTH, totalSimulationRuntimeLabel.getFont().getSize()));
+			totalEntitiesLabel.setLocation(0, 12);
+			totalEntitiesLabel.setFont(new Font("Courier New", Font.PLAIN, 12));
+			this.totalEntitiesLabel = totalEntitiesLabel;
+			realtimeStatsInnerContainer.add(totalEntitiesLabel);
+
+			JLabel totalBugsLabel = new JLabel();
+			totalBugsLabel.setText("Bugs: 0");
+			totalBugsLabel.setForeground(Color.WHITE);
+			totalBugsLabel.setOpaque(false);
+			totalBugsLabel.setSize(new Dimension(SCREEN_WIDTH, totalSimulationRuntimeLabel.getFont().getSize()));
+			totalBugsLabel.setLocation(0, 24);
+			totalBugsLabel.setFont(new Font("Courier New", Font.PLAIN, 12));
+			this.totalBugsLabel = totalBugsLabel;
+			realtimeStatsInnerContainer.add(totalBugsLabel);
+
+			JLabel totalAntsLabel = new JLabel();
+			totalAntsLabel.setText("Ants: 0");
+			totalAntsLabel.setForeground(Color.WHITE);
+			totalAntsLabel.setOpaque(false);
+			totalAntsLabel.setSize(new Dimension(SCREEN_WIDTH, totalSimulationRuntimeLabel.getFont().getSize()));
+			totalAntsLabel.setLocation(0, 36);
+			totalAntsLabel.setFont(new Font("Courier New", Font.PLAIN, 12));
+			this.totalAntsLabel = totalAntsLabel;
+			realtimeStatsInnerContainer.add(totalAntsLabel);
+
+			JLabel totalDoodlebugsLabel = new JLabel();
+			totalDoodlebugsLabel.setText("Doodlebug: 0");
+			totalDoodlebugsLabel.setForeground(Color.WHITE);
+			totalDoodlebugsLabel.setOpaque(false);
+			totalDoodlebugsLabel.setSize(new Dimension(SCREEN_WIDTH, totalSimulationRuntimeLabel.getFont().getSize()));
+			totalDoodlebugsLabel.setLocation(0, 48);
+			totalDoodlebugsLabel.setFont(new Font("Courier New", Font.PLAIN, 12));
+			this.totalDoodlebugsLabel = totalDoodlebugsLabel;
+			realtimeStatsInnerContainer.add(totalDoodlebugsLabel);
+
 			// this.setBorder(new EmptyBorder(0, 0, 0, 0));
-			JPanel gridPanel = this;
+			overlay.add(realtimeStatsContainer);
 
 			this.addMouseMotionListener(new MouseMotionAdapter() {
 				@Override
@@ -843,5 +918,52 @@ public class GameScreen {
 		public JPanel getOverlay() {
 			return this.overlay;
 		}
+
+		public JLabel getTotalSimulationRuntimeLabel() {
+			return this.totalSimulationRuntimeLabel;
+		}
+
+		public JLabel getTotalEntitiesLabel() {
+			return this.totalEntitiesLabel;
+		}
+
+		public JLabel getTotalAntsLabel() {
+			return totalAntsLabel;
+		}
+
+		public JLabel getTotalBugsLabel() {
+			return totalBugsLabel;
+		}
+
+		public JLabel getTotalDoodlebugsLabel() {
+			return totalDoodlebugsLabel;
+		}
+	}
+
+	public void updateRealtimeStats() {
+		this.grid.getTotalSimulationRuntimeLabel()
+				.setText(new StringBuilder("Time in Simulation: ")
+						.append(game.getMovementFrame().getTotalRuntimeInSeconds())
+						.append("s").toString());
+
+		this.grid.getTotalEntitiesLabel()
+				.setText(new StringBuilder("Entities: ")
+						.append(game.getMovementFrame().getTotalEntities())
+						.toString());
+
+		this.grid.getTotalBugsLabel()
+				.setText(new StringBuilder("Bugs: ")
+						.append(game.getMovementFrame().getTotalBugs())
+						.toString());
+
+		this.grid.getTotalAntsLabel()
+				.setText(new StringBuilder("Ants: ")
+						.append(game.getMovementFrame().getTotalAnts())
+						.toString());
+
+		this.grid.getTotalDoodlebugsLabel()
+				.setText(new StringBuilder("Doodlebugs: ")
+						.append(game.getMovementFrame().getTotalDoodlebugs())
+						.toString());
 	}
 }

@@ -10,13 +10,13 @@ import classes.abstracts.Bug;
 import classes.util.Console;
 import classes.util.Time;
 import classes.entity.CellGrid.Cell;
-import classes.entity.GameScreen.IMAGE;
+import classes.entity.GameScreen.ImageSet;
 import classes.settings.GameSettings;
 
 @SuppressWarnings("unused")
 public class Ant extends Bug<Ant> {
 
-	public IMAGE avatar = IMAGE.BASE_ANT;
+	public ImageSet avatar = ImageSet.BASE_ANT;
 
 	final private Game game = Game.getInstance();
 	final private CellGrid gameGrid = game.getGameGrid();
@@ -65,12 +65,12 @@ public class Ant extends Bug<Ant> {
 	}
 
 	@Override
-	public IMAGE getAvatar() {
+	public ImageSet getAvatar() {
 		return this.avatar;
 	}
 
 	@Override
-	public void setAvatar(IMAGE avatar) {
+	public void setAvatar(ImageSet avatar) {
 		this.avatar = avatar;
 	}
 
