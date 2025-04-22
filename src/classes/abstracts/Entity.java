@@ -6,8 +6,10 @@ package classes.abstracts;
 import java.io.File;
 import java.util.ArrayList;
 
+import javax.swing.JPanel;
+
 import classes.entity.CellGrid.Cell;
-import classes.entity.GameScreen.IMAGE;
+import classes.entity.GameScreen.ImageSet;
 import classes.entity.Null;
 import classes.util.Console;
 import exceptions.CellIsOccupiedException;
@@ -26,9 +28,11 @@ public abstract class Entity<T extends Entity<T>> extends Properties {
 
 	// private static ArrayList<Entity<?>> entityList = new ArrayList<>();
 
-	public abstract IMAGE getAvatar();
+	public abstract ImageSet getAvatar();
 
-	public abstract void setAvatar(IMAGE image);
+	public abstract void setAvatar(ImageSet image);
+
+	public boolean tag = false;
 
 	public enum EntityVariant {
 		DOODLEBUG,
@@ -119,6 +123,13 @@ public abstract class Entity<T extends Entity<T>> extends Properties {
 		removeFromCell(true);
 	}
 
+	public boolean hasTag() {
+		return this.tag;
+	}
+
+	public void setTag(boolean tag) {
+		this.tag = tag;
+	}
 	// public static ArrayList<Entity<?>> getEntityList() {
 	// return entityList;
 	// }

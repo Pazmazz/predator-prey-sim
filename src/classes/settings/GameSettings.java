@@ -27,18 +27,18 @@ public class GameSettings {
 		// this.screenHeight = 680;
 
 		this.gridSnapshotHistory = 100;
-		this.gridLineThickness = 2;
+		this.gridLineThickness = 1;
 		this.gridBorderPadding = 1; // we shouldn't actually need this, use EmptyBorder instead
-		this.gridSize = new Unit2(20, 20);
+		this.gridSize = new Unit2(5, 5);
 
 		this.gridBackgroundColor = Color.BLACK;
 		this.gridLinesColor = Color.BLUE;
 
-		this.initialAnts = 100;
+		this.initialAnts = 5;
 		this.initialDoodlebugs = 5;
-		this.doodlebugHungerLimit = 4;
-		this.antMovementCooldown = 1.0 / 10;
-		this.doodlebugMovementCooldown = 1.0 / 10;
+		this.doodlebugHungerLimit = 6;
+		this.antMovementCooldown = 1.0;
+		this.doodlebugMovementCooldown = 1.0;
 
 		this.antBreedingEnabled = true;
 		this.doodlebugBreedingEnabled = true;

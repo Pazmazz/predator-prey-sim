@@ -26,6 +26,10 @@ public class RenderFrame extends FrameRunner {
 				settings.getRenderProcessName(),
 				settings.getRenderFPS(),
 				settings.getRenderDebugInfo());
+
+		this.onPostSimulation(e -> {
+
+		});
 	}
 
 	@Override

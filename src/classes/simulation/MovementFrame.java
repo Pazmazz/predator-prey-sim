@@ -150,7 +150,7 @@ public class MovementFrame extends FrameRunner {
 			this.setWinner(EntityVariant.DOODLEBUG);
 			game.setSimulationState(SimulationState.ENDED);
 			// ants win
-		} else if (antCount == 400) {
+		} else if (antCount == settings.getGridSize().getX() * settings.getGridSize().getX()) {
 			this.setWinner(EntityVariant.ANT);
 			int count = 0;
 			for (Cell cell : cells) {

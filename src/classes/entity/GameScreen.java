@@ -76,14 +76,18 @@ public class GameScreen {
 	final private int GRID_START = GRID_BORDER_PADDING;
 	final private int GRID_END = SCREEN_WIDTH - GRID_BORDER_PADDING;
 
-	final private HashMap<IMAGE, BufferedImage> loadedImages = new HashMap<>();
+	final private HashMap<ImageSet, BufferedImage> loadedImages = new HashMap<>();
 
-	public enum IMAGE {
+	public enum ImageSet {
 		BASE_ANT,
 		BASE_DOODLEBUG,
 		BASE_TITAN,
 		RED_CELL,
 		ANT_PROFILE,
+	}
+
+	public enum InteractivityState {
+
 	}
 
 	public GameScreen() {
@@ -145,11 +149,11 @@ public class GameScreen {
 
 	public void loadImages() {
 		try {
-			this.loadedImages.put(IMAGE.BASE_ANT, ImageIO.read(new File("src/assets/ant2.jpg")));
-			this.loadedImages.put(IMAGE.BASE_DOODLEBUG, ImageIO.read(new File("src/assets/doodlebug3.jpg")));
-			this.loadedImages.put(IMAGE.BASE_TITAN, ImageIO.read(new File("src/assets/titanant.jpg")));
-			this.loadedImages.put(IMAGE.RED_CELL, ImageIO.read(new File("src/assets/pathcell.jpg")));
-			this.loadedImages.put(IMAGE.ANT_PROFILE, ImageIO.read(new File("src/assets/ant3.jpg")));
+			this.loadedImages.put(ImageSet.BASE_ANT, ImageIO.read(new File("src/assets/ant2.jpg")));
+			this.loadedImages.put(ImageSet.BASE_DOODLEBUG, ImageIO.read(new File("src/assets/doodlebug3.jpg")));
+			this.loadedImages.put(ImageSet.BASE_TITAN, ImageIO.read(new File("src/assets/titanant.jpg")));
+			this.loadedImages.put(ImageSet.RED_CELL, ImageIO.read(new File("src/assets/pathcell.jpg")));
+			this.loadedImages.put(ImageSet.ANT_PROFILE, ImageIO.read(new File("src/assets/ant3.jpg")));
 		} catch (Exception e) {
 			throw new Error("Error loading images");
 		}
@@ -216,6 +220,11 @@ public class GameScreen {
 			g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, (float) timeAliveAlpha));
 		}
 
+		if (entity.hasTag()) {
+			g2.setColor(Color.YELLOW);
+			g2.fillRect(posX, posY, 20, 20);
+		}
+
 		// TODO: Very rare error case where "entity" is null here, fix later
 		g2.drawImage(
 				loadedImages.get(entity.getAvatar()),
@@ -267,7 +276,7 @@ public class GameScreen {
 
 			// WINNER ICON
 			JLabel winnerIcon = new JLabel();
-			winnerIcon.setIcon(new ImageIcon(loadedImages.get(IMAGE.BASE_DOODLEBUG)));
+			winnerIcon.setIcon(new ImageIcon(loadedImages.get(ImageSet.BASE_DOODLEBUG)));
 			winnerIcon.setAlignmentX(Component.CENTER_ALIGNMENT);
 			this.winnerIcon = winnerIcon;
 
@@ -352,7 +361,7 @@ public class GameScreen {
 			secondaryHeaderContent.add(secondMVP);
 
 			JLabel secondaryWinnerIcon = new JLabel();
-			secondaryWinnerIcon.setIcon(new ImageIcon(loadedImages.get(IMAGE.BASE_DOODLEBUG)));
+			secondaryWinnerIcon.setIcon(new ImageIcon(loadedImages.get(ImageSet.BASE_DOODLEBUG)));
 			secondaryWinnerIcon.setAlignmentX(Component.CENTER_ALIGNMENT);
 			this.secondaryWinnerIcon = secondaryWinnerIcon;
 
@@ -462,14 +471,14 @@ public class GameScreen {
 			switch (winner) {
 				case DOODLEBUG -> {
 					bugMVP = dbMVP;
-					mvpIcon = new ImageIcon(loadedImages.get(IMAGE.BASE_DOODLEBUG));
+					mvpIcon = new ImageIcon(loadedImages.get(ImageSet.BASE_DOODLEBUG));
 					this.antsEatenLabel
 							.setText("<html>Ants Eaten: <span style='color:#bf00ff;'>"
 									+ dbMVP.getAntsEatenMeter().getValue()
 									+ "</span></html>");
 					this.antsEatenLabel.setVisible(true);
 					this.secondaryAntsEatenLabel.setVisible(false);
-					this.secondaryWinnerIcon.setIcon(new ImageIcon(loadedImages.get(IMAGE.ANT_PROFILE)));
+					this.secondaryWinnerIcon.setIcon(new ImageIcon(loadedImages.get(ImageSet.ANT_PROFILE)));
 					this.secondaryWinnerTitle.setText("<html>" + antMVP.getName() + "</html>");
 					this.secondaryGenerationLabel.setText(
 							"<html>Generation: <span style='color:#bf00ff;'>" + antMVP.getGeneration()
@@ -479,14 +488,14 @@ public class GameScreen {
 				}
 				case ANT -> {
 					bugMVP = antMVP;
-					mvpIcon = new ImageIcon(loadedImages.get(IMAGE.ANT_PROFILE));
+					mvpIcon = new ImageIcon(loadedImages.get(ImageSet.ANT_PROFILE));
 					this.secondaryAntsEatenLabel
 							.setText("<html>Ants Eaten: <span style='color:#bf00ff;'>"
 									+ dbMVP.getAntsEatenMeter().getValue()
 									+ "</span></html>");
 					this.antsEatenLabel.setVisible(false);
 					this.secondaryAntsEatenLabel.setVisible(true);
-					this.secondaryWinnerIcon.setIcon(new ImageIcon(loadedImages.get(IMAGE.BASE_DOODLEBUG)));
+					this.secondaryWinnerIcon.setIcon(new ImageIcon(loadedImages.get(ImageSet.BASE_DOODLEBUG)));
 					this.secondaryWinnerTitle.setText("<html>" + dbMVP.getName() + "</html>");
 					this.secondaryGenerationLabel.setText(
 							"<html>Generation: <span style='color:#bf00ff;'>" + dbMVP.getGeneration()
@@ -543,7 +552,7 @@ public class GameScreen {
 
 		JLabel title = new JLabel();
 		// title.setBorder(new EmptyBorder(10, 10, 10, 10));
-		title.setText("Predator Prey Simulation");
+		title.setText("Life Sim");
 		title.setFont(new Font("Courier New", Font.BOLD, 30));
 		title.setAlignmentX(JFrame.CENTER_ALIGNMENT);
 		title.setForeground(new Color(25, 255, 0));
@@ -811,6 +820,16 @@ public class GameScreen {
 				public void mouseExited(MouseEvent e) {
 					tooltip.setVisible(false);
 				}
+
+				@Override
+				public void mouseClicked(MouseEvent e) {
+					Cell selectedCell = getCellFromScreenPoint(e.getPoint());
+					Entity<?> entity = selectedCell.getOccupant();
+
+					if (entity != null && !entity.hasTag()) {
+						entity.setTag(true);
+					}
+				}
 			});
 		}
 
@@ -842,6 +861,24 @@ public class GameScreen {
 
 		public JPanel getOverlay() {
 			return this.overlay;
+		}
+	}
+
+	// public JPanel createContentRow() {
+
+	// }
+
+	public class EntityTag extends JPanel {
+
+		private JLabel titleText;
+		private JLabel paragraphText;
+
+		public EntityTag() {
+			this.setPreferredSize(new Dimension(50, 100));
+			this.setOpaque(true);
+			this.setBackground(Color.GREEN);
+
+			// JPanel
 		}
 	}
 }
