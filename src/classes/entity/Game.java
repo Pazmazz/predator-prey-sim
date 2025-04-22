@@ -12,9 +12,11 @@ import classes.util.Console;
 import classes.util.Console.DebugPriority;
 import classes.util.Time;
 import classes.entity.CellGrid.Cell;
+import classes.entity.ValueMeter.MeterResetType;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
 
@@ -39,11 +41,12 @@ public class Game implements Runnable {
 	// final private int snapshotInterval = 1;
 
 	private GameScreen screen;
-	private GameState state = GameState.INITIAL;
-	private SimulationState simState = SimulationState.INITIAL;
+	private GameStatus status = GameStatus.INITIAL;
+	private SimulationState simulationState = SimulationState.INITIAL;
 
 	final public EventSignal onSimulationStateChanged = new EventSignal();
 	final public EventSignal onSimulationEnd = new EventSignal();
+	final public EventSignal onGameStatusChanged = new EventSignal();
 
 	private long upTime;
 	private long gameHertz;
@@ -58,7 +61,7 @@ public class Game implements Runnable {
 	//
 	// Internal states
 	//
-	public static enum GameState {
+	public static enum GameStatus {
 		INITIAL,
 		LOADED,
 		RUNNING,
@@ -80,33 +83,51 @@ public class Game implements Runnable {
 		this.sessionId = UUID.randomUUID().toString();
 		this.upTime = Time.tick();
 		this.mainThread = new Thread(this);
-		this.state = GameState.LOADED;
 	}
 
 	// TODO: Add documentation
-	public String initConfig() {
+	private String initConfig() {
 		this.settings = new GameSettings();
 		return "Game config benchmark";
 	}
 
-	public String createGameGrid() {
+	private String createGameGrid() {
 		this.gameGrid = new CellGrid(this.settings.getGridSize());
 		return "Game grid benchmark";
 	}
 
 	// TODO: Optimize
-	public String initGameGrid() {
+	private String initGameGrid() {
 		this.gameGrid.clearCells();
 		this.gameGrid.populate();
 
 		ArrayList<Cell> randomCells = this.gameGrid.getRandomAvailableCells(
 				this.settings.getInitialEntityCount());
 
-		for (Cell cell : antCells)
-			cell.setOccupant(new Ant());
+		ValueMeter bufferedAntCount = new ValueMeter(
+				0,
+				this.settings.getInitialAntCount(),
+				0,
+				MeterResetType.NONE);
+		ValueMeter bufferedDoodlebugCount = new ValueMeter(
+				0,
+				this.settings.getInitialDoodlebugCount(),
+				0,
+				MeterResetType.NONE);
 
-		for (Cell cell : doodlebugCells)
-			cell.setOccupant(new Doodlebug());
+		Iterator<Cell> it = randomCells.iterator();
+		while (it.hasNext()) {
+			Cell cell = it.next();
+			if (!bufferedAntCount.isMaxValue()) {
+				bufferedAntCount.increment();
+				cell.setOccupant(new Ant());
+			} else if (!bufferedDoodlebugCount.isMaxValue()) {
+				bufferedDoodlebugCount.increment();
+				cell.setOccupant(new Doodlebug());
+			} else {
+				break;
+			}
+		}
 
 		this.saveSnapshot();
 		return "Initialize game grid benchmark";
@@ -122,7 +143,7 @@ public class Game implements Runnable {
 				renderFrame,
 		};
 
-		this.movementFrame.suspend();
+		this.setSimulationState(SimulationState.INITIAL);
 		return "RunService benchmark";
 	}
 
@@ -138,8 +159,8 @@ public class Game implements Runnable {
 	 * @throws Error if this method is called more than once
 	 */
 	public String start() {
-		if (isLoaded()) {
-			this.setState(GameState.RUNNING);
+		if (this.isLoaded()) {
+			this.setStatus(GameStatus.RUNNING);
 			mainThread.start();
 			Console.close();
 		} else {
@@ -207,7 +228,7 @@ public class Game implements Runnable {
 	 * Terminates the game loop by setting the game state to {@code TERMINATED}
 	 */
 	public void terminate() {
-		this.setState(GameState.TERMINATED);
+		this.setStatus(GameStatus.TERMINATED);
 		Console.println("TERMINATED APPLICATION");
 		Console.close();
 	}
@@ -266,12 +287,12 @@ public class Game implements Runnable {
 		return this.screen;
 	}
 
-	public GameState getState() {
-		return this.state;
+	public GameStatus getStatus() {
+		return this.status;
 	}
 
 	public SimulationState getSimulationState() {
-		return this.simState;
+		return this.simulationState;
 	}
 
 	public String getSessionId() {
@@ -303,7 +324,7 @@ public class Game implements Runnable {
 	// Public logic checks
 	//
 	public boolean isRunning() {
-		return this.state == GameState.RUNNING;
+		return this.status == GameStatus.RUNNING;
 	}
 
 	public boolean isThreadRunning() {
@@ -311,34 +332,38 @@ public class Game implements Runnable {
 	}
 
 	public boolean isInitial() {
-		return this.state == GameState.INITIAL;
+		return this.status == GameStatus.INITIAL;
 	}
 
 	public boolean isLoaded() {
-		return this.state == GameState.LOADED;
+		return this.status == GameStatus.LOADED;
 	}
 
 	public boolean isPaused() {
-		return this.state == GameState.PAUSED;
+		return this.status == GameStatus.PAUSED;
 	}
 
 	public boolean isTerminated() {
-		return this.state == GameState.TERMINATED;
+		return this.status == GameStatus.TERMINATED;
 	}
 
 	//
 	// Public setters
 	//
-	public void setState(GameState newState) {
-		this.state = newState;
+	public void setStatus(GameStatus status) {
+		this.status = status;
+		this.onGameStatusChanged.fire(status);
 	}
 
 	public void setSimulationState(SimulationState state) {
-		this.simState = state;
+		this.simulationState = state;
 		this.onSimulationStateChanged.fire(state);
 	}
 
 	public void boot() {
+		this.onGameStatusChanged.setDispatchQueueEnabled(true);
+		this.onSimulationStateChanged.setDispatchQueueEnabled(true);
+
 		Console.benchmark("Creating game grid", this::initConfig);
 
 		// Avg: ~0.001s
@@ -355,7 +380,8 @@ public class Game implements Runnable {
 
 		// Avg: ~0.01s
 		// Console.benchmark("Render game grid", this.getGameGrid()::toASCII);
-
+		this.onGameStatusChanged.setDispatchQueueEnabled(false);
+		this.onSimulationStateChanged.setDispatchQueueEnabled(false);
 	}
 
 	@Override

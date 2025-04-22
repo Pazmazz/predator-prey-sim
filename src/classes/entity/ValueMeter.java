@@ -57,6 +57,14 @@ public class ValueMeter {
 		return this.value / (double) this.max;
 	}
 
+	public boolean isMaxValue() {
+		return this.value == this.max;
+	}
+
+	public boolean isMinValue() {
+		return this.value == this.min;
+	}
+
 	public void setValue(double value) {
 		this.value = Math2.clamp(value, this.min, this.max);
 		this.onValueChanged.fire(this.value);

@@ -27,7 +27,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 
 import classes.abstracts.Entity;
-import classes.abstracts.Properties.Property;
 import classes.entity.Ant;
 import classes.entity.CellGrid.Cell;
 import classes.entity.CellGrid.CellType;
@@ -44,6 +43,7 @@ import classes.util.Console.DebugPriority;
 import classes.util.Time;
 import interfaces.Callback;
 import classes.entity.Doodlebug;
+import classes.entity.EventSignal;
 import classes.entity.Vector2;
 import classes.util.ObjectStream;
 import java.util.Scanner;
@@ -58,7 +58,8 @@ public class App {
 	public static Game game = Game.getInstance();
 
 	public static void main(String[] args) {
-		game.boot();
-		game.start();
+
+		// game.boot();
+		// game.start();
 	}
 }

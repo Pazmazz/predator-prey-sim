@@ -162,4 +162,10 @@ public abstract class Entity<T extends Entity<T>> implements Serializable {
 	public void setAvatar(ImageSet avatar) {
 		this.avatar = avatar;
 	}
+
+	@Override
+	public String serialize() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }
