@@ -99,14 +99,11 @@ public class Game implements Runnable {
 		this.gameGrid.clearCells();
 		this.gameGrid.populate();
 
-		ArrayList<Cell> antCells = this.gameGrid
-				.getRandomAvailableCells(this.settings.getInitialAnts());
+		ArrayList<Cell> randomCells = this.gameGrid.getRandomAvailableCells(
+				this.settings.getInitialEntityCount());
 
 		for (Cell cell : antCells)
 			cell.setOccupant(new Ant());
-
-		ArrayList<Cell> doodlebugCells = this.gameGrid
-				.getRandomAvailableCells(this.settings.getInitialDoodlebugs());
 
 		for (Cell cell : doodlebugCells)
 			cell.setOccupant(new Doodlebug());

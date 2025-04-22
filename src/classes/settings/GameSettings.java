@@ -33,11 +33,11 @@ public class GameSettings {
 		this.gridBackgroundColor = Color.BLACK;
 		this.gridLinesColor = Color.BLUE;
 
-		this.initialAnts = 2;
-		this.initialDoodlebugs = 2;
+		this.initialAntCount = 2;
+		this.initialDoodlebugCount = 2;
 		this.doodlebugHungerLimit = 5;
-		this.antMovementCooldown = 1.0 / 60;
-		this.doodlebugMovementCooldown = 1.0 / 60;
+		this.antMovementSpeed = 1.0 / 60;
+		this.doodlebugMovementSpeed = 1.0 / 60;
 
 		this.antBreedingEnabled = true;
 		this.doodlebugBreedingEnabled = true;
@@ -75,14 +75,14 @@ public class GameSettings {
 
 	private int cellSize;
 	private Unit2 gridSize;
-	private int initialAnts;
-	private int initialDoodlebugs;
+	private int initialAntCount;
+	private int initialDoodlebugCount;
 	private int gridLineThickness;
 	private int gridBorderPadding;
 	private Color gridBackgroundColor;
 	private Color gridLinesColor;
-	private double antMovementCooldown;
-	private double doodlebugMovementCooldown;
+	private double antMovementSpeed;
+	private double doodlebugMovementSpeed;
 	private int doodlebugHungerLimit;
 	private int gridSnapshotHistory;
 	private int gridCellCount;
@@ -290,12 +290,12 @@ public class GameSettings {
 		return this.gridSize;
 	}
 
-	public int getInitialAnts() {
-		return this.initialAnts;
+	public int getInitialAntCount() {
+		return this.initialAntCount;
 	}
 
-	public int getInitialDoodlebugs() {
-		return this.initialDoodlebugs;
+	public int getInitialDoodlebugCount() {
+		return this.initialDoodlebugCount;
 	}
 
 	public int getGridLineThickness() {
@@ -358,12 +358,12 @@ public class GameSettings {
 		return this.gridLinesColor;
 	}
 
-	public double getAntMovementCooldown() {
-		return this.antMovementCooldown;
+	public double getAntMovementSpeed() {
+		return this.antMovementSpeed;
 	}
 
-	public double getDoodlebugMovementCooldown() {
-		return this.doodlebugMovementCooldown;
+	public double getDoodlebugMovementSpeed() {
+		return this.doodlebugMovementSpeed;
 	}
 
 	public String[] getBugFirstNames() {
@@ -379,12 +379,12 @@ public class GameSettings {
 	}
 
 	public double getManualTimeStepDelta() {
-		double antStep = this.getAntMovementCooldown() == 0
+		double antStep = this.getAntMovementSpeed() == 0
 				? this.getGameHertz()
-				: this.getAntMovementCooldown();
-		double dbStep = this.getDoodlebugMovementCooldown() == 0
+				: this.getAntMovementSpeed();
+		double dbStep = this.getDoodlebugMovementSpeed() == 0
 				? this.getGameHertz()
-				: this.getDoodlebugMovementCooldown();
+				: this.getDoodlebugMovementSpeed();
 
 		return (antStep + dbStep) / 2.0;
 	}
@@ -425,6 +425,11 @@ public class GameSettings {
 		return this.gridSnapshotHistory;
 	}
 
+	public int getInitialEntityCount() {
+		return this.getInitialAntCount()
+				+ this.getInitialDoodlebugCount();
+	}
+
 	//
 	// Public setters
 	//
@@ -432,12 +437,12 @@ public class GameSettings {
 		this.gridSnapshotHistory = length;
 	}
 
-	public void setInitialAnts(int initialAnts) {
-		this.initialAnts = initialAnts;
+	public void setInitialAntCount(int initialAntCount) {
+		this.initialAntCount = initialAntCount;
 	}
 
-	public void setInitialDoodlebugs(int initialDoodlebugs) {
-		this.initialDoodlebugs = initialDoodlebugs;
+	public void setInitialDoodlebugCount(int initialDoodlebugCount) {
+		this.initialDoodlebugCount = initialDoodlebugCount;
 	}
 
 	public void setGridSize(Unit2 gridSize) {
@@ -456,12 +461,12 @@ public class GameSettings {
 		this.doodlebugBreedingEnabled = bool;
 	}
 
-	public void setAntMovementCooldown(double cooldown) {
-		this.antMovementCooldown = cooldown;
+	public void setAntMovementSpeed(double cooldown) {
+		this.antMovementSpeed = cooldown;
 	}
 
-	public void setDoodlebugMovementCooldown(double cooldown) {
-		this.doodlebugMovementCooldown = cooldown;
+	public void setDoodlebugMovementSpeed(double cooldown) {
+		this.doodlebugMovementSpeed = cooldown;
 	}
 
 	public void setDoodlebugHungerLimit(int limit) {

@@ -144,11 +144,11 @@ public abstract class FrameRunner {
 	}
 
 	// TODO: Add documentation
-	public long timeBeforeStep() {
+	public long getTimeBeforeStep() {
 		return this.timeBeforeStep;
 	}
 
-	public long timeAfterStep() {
+	public long getTimeAfterStep() {
 		return this.timeAfterStep;
 	}
 

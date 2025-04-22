@@ -3,45 +3,44 @@ package classes.entity;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import javax.imageio.ImageIO;
 
 import classes.abstracts.Bug;
 import classes.util.Console;
 import classes.util.Time;
+import interfaces.Property;
 import classes.entity.CellGrid.Cell;
 import classes.entity.GameScreen.ImageSet;
 import classes.settings.GameSettings;
 
 @SuppressWarnings("unused")
 public class Ant extends Bug<Ant> {
-
-	public ImageSet avatar = ImageSet.BASE_ANT;
-
+	final private static HashMap<Ant, Ant> ants = new HashMap<>();
 	final private Game game = Game.getInstance();
-	final private CellGrid gameGrid = game.getGameGrid();
-	final private GameSettings settings = game.getSettings();
 
 	public Ant() {
+		this.setAvatar(ImageSet.BASE_ANT);
+		this.setEatable(true);
+		this.setMovementSpeed(game.getSettings().getAntMovementSpeed());
+		this.getBreedingMeter().setMax(3);
+
 		// properties
-
-		this.setProperty(Property.IS_EATABLE, true);
-		this.setProperty(Property.MOVEMENT_COOLDOWN, settings.getAntMovementCooldown());
-
-		if (settings.getAntBreedingEnabled())
-			this.getBreedingMeter().onMaxValueReached.connect(e -> breed());
+		if (game.getSettings().getAntBreedingEnabled())
+			this.getBreedingMeter().onMaxValueReached.connect(e -> this.breed());
 	}
 
 	@Override
 	public boolean move() {
-		boolean moved = this.getBreedingMeter().increment() == this.getBreedingMeter().getMax();
-		ArrayList<Cell> adjCells = gameGrid.getCellsAdjacentTo(getCell());
-		Cell randCell = gameGrid.getRandomAvailableCellFrom(adjCells);
+		ValueMeter breedingMeter = this.getBreedingMeter();
+		CellGrid grid = game.getGameGrid();
+		ArrayList<Cell> adjCells = grid.getCellsAdjacentTo(this.getAssignedCell());
+		Cell randCell = grid.getRandomAvailableCellFrom(adjCells);
+		boolean moved = breedingMeter.increment() == breedingMeter.getMax();
 
 		if (randCell != null) {
-			double angle = (randCell.getUnit2Center().subtract(getCell().getUnit2Center())).screenAngle();
-			setRotation(angle);
-			assignCell(randCell);
+			this.assignCell(randCell);
 			return true;
 		}
 		return moved;
@@ -65,25 +64,15 @@ public class Ant extends Bug<Ant> {
 	}
 
 	@Override
-	public ImageSet getAvatar() {
-		return this.avatar;
-	}
-
-	@Override
-	public void setAvatar(ImageSet avatar) {
-		this.avatar = avatar;
-	}
-
-	@Override
 	public String getTooltipString() {
-		Cell cell = this.getCell();
+		Cell cell = this.getAssignedCell();
 		Unit2 unit = cell.getUnit2();
 		return new StringBuilder(this.getNameWithId())
 				.append("<span style='font-size:10px;color:white;'>")
 				.append("<br>Time alive: <span style='color:#bf00ff;'>")
 				.append(Time.formatTime(this.getTimeInSimulationInSeconds()))
 				.append("</span><br>Generation: <span style='color:#bf00ff;'>")
-				.append(this.getGeneration())
+				.append(this.getGenerationMeter().getValue())
 				.append("</span><br>Cell: <span style='color:#44D0FF;'>Cell&lt;")
 				.append(unit.getX())
 				.append(", ")
@@ -91,5 +80,11 @@ public class Ant extends Bug<Ant> {
 				.append(">")
 				.append("</span>")
 				.toString();
+	}
+
+	@Override
+	public void removeFromCell() {
+		super.removeFromCell();
+		ants.remove(this);
 	}
 }

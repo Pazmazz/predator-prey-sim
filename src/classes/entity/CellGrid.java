@@ -6,9 +6,10 @@ package classes.entity;
 
 import classes.abstracts.Bug;
 import classes.abstracts.Entity;
-import classes.abstracts.Properties.Property;
+import classes.abstracts.Properties;
 import classes.entity.CellGrid.Cell;
 import classes.entity.CellGrid.CellType;
+import classes.entity.GameScreen.ImageSet;
 import classes.util.Console;
 import classes.util.Console.DebugPriority;
 import exceptions.CellIsOccupiedException;
@@ -20,7 +21,9 @@ import classes.util.Math2;
 import classes.util.ObjectStream;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -48,7 +51,6 @@ public class CellGrid {
 	final private Map<String, Cell> virtualGrid = new ConcurrentHashMap<>();
 	// final private List<Entity<?>> virtualEntities =
 	// Collections.synchronizedList(new ArrayList<>());
-	final private ArrayList<Entity<?>> virtualEntites = new ArrayList<>();
 
 	public enum CellGridAxis {
 		X,
@@ -77,6 +79,10 @@ public class CellGrid {
 	public enum CellVacancy {
 		EMPTY,
 		OCCUPIED,
+	}
+
+	public enum CellHangingEffect {
+		HIGHLIGHTED_RED,
 	}
 
 	public CellGrid(Unit2 size) {
@@ -132,7 +138,7 @@ public class CellGrid {
 	 * @see #isInBounds(Cell)
 	 */
 	public boolean isInBounds(Cell cell) {
-		return isInBounds(cell.getUnit2());
+		return this.isInBounds(cell.getUnit2());
 	}
 
 	/**
@@ -222,6 +228,47 @@ public class CellGrid {
 				.setAxisOfIntersection(axisOfIntersection);
 	}
 
+	// TODO: Make getGridIntercept better
+
+	public GridIntercept getGridIntercept2(Vector2 start, Vector2 end) {
+		if (start.equals(end))
+			return new GridIntercept()
+					.setAxisOfIntersection(CellGridAxis.ENDPOINT);
+
+		Vector2 signedUnit = end.subtract(start).signedUnit();
+		GridIntercept result = new GridIntercept();
+		result.setDirection(signedUnit);
+
+		double startX = start.getX();
+		double startY = start.getY();
+		double endX = end.getX();
+		double endY = end.getY();
+
+		boolean posX = signedUnit.getX() > 0;
+		boolean posY = signedUnit.getY() >= 0;
+
+		double limitX = posX
+				? Math.ceil(startX)
+				: Math.floor(startX);
+		double limitY = posY
+				? Math.ceil(startY)
+				: Math.floor(startY);
+
+		if (startX == limitX)
+			limitX += signedUnit.getX();
+		if (startY == limitY)
+			limitY += signedUnit.getY();
+
+		double dx = endX - startX;
+		double dy = endY - startY;
+		double tx = dx == 0
+				? 0
+				: (limitX - startX) / dx;
+		double ty = (limitY - startY) / dy;
+
+		return result;
+	}
+
 	/**
 	 * The primary root method for retrieving a cell object from the virtual
 	 * grid. All other overloaded methods of {@code getCell} internally call
@@ -273,7 +320,7 @@ public class CellGrid {
 
 	// TODO: Add documentation
 	public Cell getCell(Unit2 unit) {
-		return getCell(unit, true);
+		return this.getCell(unit, true);
 	}
 
 	// TODO: Add documentation
@@ -299,37 +346,45 @@ public class CellGrid {
 	 * @see #getCell(Vector2, Vector2)
 	 */
 	public Cell getCell(Vector2 position) {
-		Vector2 quadrant = position.signedUnit();
-		Vector2 snapPos = position.floor();
+		// For general grid (where x and y can be negative)
 
-		int snapX = (int) snapPos.getX();
-		int snapY = (int) snapPos.getY();
+		// Vector2 quadrant = position.signedUnit();
+		// Vector2 snapPos = position.floor();
 
-		int x, y;
+		// int snapX = (int) snapPos.getX();
+		// int snapY = (int) snapPos.getY();
 
-		boolean posX = quadrant.getX() >= 0;
-		boolean negX = quadrant.getX() <= 0;
-		boolean posY = quadrant.getY() >= 0;
-		boolean negY = quadrant.getY() <= 0;
+		// int x, y;
 
-		if (posX && posY) {
-			y = snapY + 1;
-			x = snapX + 1;
+		// boolean posX = quadrant.getX() >= 0;
+		// boolean negX = quadrant.getX() <= 0;
+		// boolean posY = quadrant.getY() >= 0;
+		// boolean negY = quadrant.getY() <= 0;
 
-		} else if (negX && posY) {
-			y = snapY + 1;
-			x = snapX;
+		// We can ignore these other cases since they don't apply here
+		// if (posX && posY) {
+		// y = snapY + 1;
+		// x = snapX + 1;
+		// }
+		// else if (negX && posY) {
+		// y = snapY + 1;
+		// x = snapX;
 
-		} else if (negX && negY) {
-			y = snapY;
-			x = snapX;
+		// } else if (negX && negY) {
+		// y = snapY;
+		// x = snapX;
 
-		} else {
-			y = snapY;
-			x = snapX + 1;
-		}
+		// } else {
+		// y = snapY;
+		// x = snapX + 1;
+		// }
 
-		return getCell(new Unit2(x, y));
+		// return getCell(new Unit2(x, y));
+
+		// For practical use, where we know x and y are always positive
+		return this.getCell(new Unit2(
+				(int) Math.ceil(position.getX()),
+				(int) Math.ceil(position.getY())));
 	}
 
 	/**
@@ -347,7 +402,7 @@ public class CellGrid {
 	 * @see #getCell(Vector2, Vector2)
 	 */
 	public Cell getCell(Vector2 p0, Vector2 p1) {
-		return getCell(p0.midpoint(p1));
+		return this.getCell(p0.midpoint(p1));
 	}
 
 	/**
@@ -362,7 +417,7 @@ public class CellGrid {
 	 * @see #getCell(Vector2, Vector2)
 	 */
 	public Cell getCell() {
-		return getCell(new Unit2(1, 1));
+		return this.getCell(new Unit2(1, 1));
 	}
 
 	/**
@@ -375,7 +430,7 @@ public class CellGrid {
 	 * @see #outOfBounds(Unit2)
 	 */
 	public boolean outOfBounds(Unit2 unit) {
-		return !isInBounds(unit);
+		return !this.isInBounds(unit);
 	}
 
 	/**
@@ -389,7 +444,7 @@ public class CellGrid {
 	 * @see #outOfBounds(Cell)
 	 */
 	public boolean outOfBounds(Vector2 position) {
-		return !isInBounds(position);
+		return !this.isInBounds(position);
 	}
 
 	/**
@@ -402,7 +457,7 @@ public class CellGrid {
 	 * @see #outOfBounds(Vector2)
 	 */
 	public boolean outOfBounds(Cell cell) {
-		return !isInBounds(cell);
+		return !this.isInBounds(cell);
 	}
 
 	/**
@@ -450,7 +505,7 @@ public class CellGrid {
 	 * @see #collectCell(Cell)
 	 */
 	public Cell collectCell(Cell cell) {
-		return collectCell(cell.getUnit2());
+		return this.collectCell(cell.getUnit2());
 	}
 
 	/**
@@ -493,7 +548,7 @@ public class CellGrid {
 	 * @see #getCellTopOf(Unit2)
 	 */
 	public Cell getCellTopOf(Unit2 unit) {
-		return getCell(unit.add(new Unit2(0, unit.getY() == -1 ? 2 : 1)));
+		return this.getCell(unit.add(new Unit2(0, unit.getY() == -1 ? 2 : 1)));
 	}
 
 	/**
@@ -505,7 +560,7 @@ public class CellGrid {
 	 * @see #getCellBottomOf(Unit2)
 	 */
 	public Cell getCellBottomOf(Unit2 unit) {
-		return getCell(unit.add(new Unit2(0, unit.getY() == 1 ? -2 : -1)));
+		return this.getCell(unit.add(new Unit2(0, unit.getY() == 1 ? -2 : -1)));
 	}
 
 	/**
@@ -517,7 +572,7 @@ public class CellGrid {
 	 * @see #getCellLeftOf(Unit2)
 	 */
 	public Cell getCellLeftOf(Unit2 unit) {
-		return getCell(unit.add(new Unit2(unit.getX() == 1 ? -2 : -1, 0)));
+		return this.getCell(unit.add(new Unit2(unit.getX() == 1 ? -2 : -1, 0)));
 	}
 
 	/**
@@ -529,7 +584,7 @@ public class CellGrid {
 	 * @see #getCellRightOf(Unit2)
 	 */
 	public Cell getCellRightOf(Unit2 unit) {
-		return getCell(unit.add(new Unit2(unit.getX() == -1 ? 2 : 1, 0)));
+		return this.getCell(unit.add(new Unit2(unit.getX() == -1 ? 2 : 1, 0)));
 	}
 
 	/**
@@ -541,7 +596,7 @@ public class CellGrid {
 	 * @see #getCellTopOf(Cell)
 	 */
 	public Cell getCellTopOf(Cell cell) {
-		return getCellTopOf(cell.getUnit2());
+		return this.getCellTopOf(cell.getUnit2());
 	}
 
 	/**
@@ -553,7 +608,7 @@ public class CellGrid {
 	 * @see #getCellBottomOf(Cell)
 	 */
 	public Cell getCellBottomOf(Cell cell) {
-		return getCellBottomOf(cell.getUnit2());
+		return this.getCellBottomOf(cell.getUnit2());
 	}
 
 	/**
@@ -565,7 +620,7 @@ public class CellGrid {
 	 * @see #getCellLeftOf(Cell)
 	 */
 	public Cell getCellLeftOf(Cell cell) {
-		return getCellLeftOf(cell.getUnit2());
+		return this.getCellLeftOf(cell.getUnit2());
 	}
 
 	/**
@@ -577,7 +632,7 @@ public class CellGrid {
 	 * @see #getCellRightOf(Cell)
 	 */
 	public Cell getCellRightOf(Cell cell) {
-		return getCellRightOf(cell.getUnit2());
+		return this.getCellRightOf(cell.getUnit2());
 	}
 
 	/**
@@ -585,7 +640,7 @@ public class CellGrid {
 	 * @see #getCellTopOf(Vector2)
 	 */
 	public Cell getCellTopOf(Vector2 position) {
-		return getCellTopOf(getCell(position));
+		return this.getCellTopOf(this.getCell(position));
 	}
 
 	/**
@@ -593,7 +648,7 @@ public class CellGrid {
 	 * @see #getCellBottomOf(Vector2)
 	 */
 	public Cell getCellBottomOf(Vector2 position) {
-		return getCellBottomOf(getCell(position));
+		return this.getCellBottomOf(this.getCell(position));
 	}
 
 	/**
@@ -601,7 +656,7 @@ public class CellGrid {
 	 * @see #getCellLeftOf(Vector2)
 	 */
 	public Cell getCellLeftOf(Vector2 position) {
-		return getCellLeftOf(getCell(position));
+		return this.getCellLeftOf(this.getCell(position));
 	}
 
 	/**
@@ -609,7 +664,7 @@ public class CellGrid {
 	 * @see #getCellRightOf(Vector2)
 	 */
 	public Cell getCellRightOf(Vector2 position) {
-		return getCellRightOf(getCell(position));
+		return this.getCellRightOf(this.getCell(position));
 	}
 
 	/**
@@ -631,10 +686,10 @@ public class CellGrid {
 	 */
 	public ArrayList<Cell> getCellsAdjacentTo(Unit2 unit) {
 		ArrayList<Cell> cells = new ArrayList<>();
-		cells.add(getCellTopOf(unit));
-		cells.add(getCellBottomOf(unit));
-		cells.add(getCellLeftOf(unit));
-		cells.add(getCellRightOf(unit));
+		cells.add(this.getCellTopOf(unit));
+		cells.add(this.getCellBottomOf(unit));
+		cells.add(this.getCellLeftOf(unit));
+		cells.add(this.getCellRightOf(unit));
 		return cells;
 	}
 
@@ -650,7 +705,11 @@ public class CellGrid {
 	 * @see #getCellsAdjacentTo(Cell)
 	 */
 	public ArrayList<Cell> getCellsAdjacentTo(Cell cell) {
-		return getCellsAdjacentTo(cell.getUnit2());
+		return this.getCellsAdjacentTo(cell.getUnit2());
+	}
+
+	public ArrayList<Cell> getCellsReadOnly() {
+		return (ArrayList<Cell>) this.virtualGrid.values();
 	}
 
 	/**
@@ -661,7 +720,7 @@ public class CellGrid {
 	 * @see #getCells
 	 */
 	public ArrayList<Cell> getCells() {
-		return new ArrayList<>(this.virtualGrid.values());
+		return new ArrayList<>(this.getCellsReadOnly());
 	}
 
 	/*
@@ -733,19 +792,19 @@ public class CellGrid {
 	 * @see #getRandomAvailableCellFrom(ArrayList)
 	 */
 	public Cell getRandomAvailableCellFrom(ArrayList<Cell> cells) {
-		return getRandomCellFrom(getAvailableCellsFrom(cells));
+		return this.getRandomCellFrom(this.getAvailableCellsFrom(cells));
 	}
 
 	public Cell getRandomOccupiedCellFrom(ArrayList<Cell> cells) {
-		return getRandomCellFrom(getOccupiedCellsFrom(cells));
+		return this.getRandomCellFrom(this.getOccupiedCellsFrom(cells));
 	}
 
 	public ArrayList<Cell> getRandomOccupiedCellsFrom(ArrayList<Cell> cells, int amount) {
-		return getRandomCellsFrom(getOccupiedCellsFrom(cells), amount);
+		return this.getRandomCellsFrom(this.getOccupiedCellsFrom(cells), amount);
 	}
 
 	public ArrayList<Cell> getRandomOccupiedCellsFrom(ArrayList<Cell> cells) {
-		return getRandomCellsFrom(getOccupiedCellsFrom(cells));
+		return this.getRandomCellsFrom(this.getOccupiedCellsFrom(cells));
 	}
 
 	/**
@@ -788,7 +847,7 @@ public class CellGrid {
 	 *         {@code cells}
 	 */
 	public ArrayList<Cell> getRandomCellsFrom(ArrayList<Cell> cells) {
-		return getRandomCellsFrom(cells, cells.size());
+		return this.getRandomCellsFrom(cells, cells.size());
 	}
 
 	/**
@@ -811,7 +870,7 @@ public class CellGrid {
 	 * @see #getRandomAvailableCellFrom(ArrayList)
 	 */
 	public ArrayList<Cell> getRandomAvailableCellsFrom(ArrayList<Cell> cells, int amount) {
-		return getRandomCellsFrom(getAvailableCellsFrom(cells), amount);
+		return this.getRandomCellsFrom(this.getAvailableCellsFrom(cells), amount);
 	}
 
 	/**
@@ -827,7 +886,7 @@ public class CellGrid {
 	 * @see #getRandomAvailableCellsFrom(ArrayList)
 	 */
 	public ArrayList<Cell> getRandomAvailableCellsFrom(ArrayList<Cell> cells) {
-		return getRandomCellsFrom(getAvailableCellsFrom(cells));
+		return this.getRandomCellsFrom(this.getAvailableCellsFrom(cells));
 	}
 
 	/**
@@ -841,7 +900,7 @@ public class CellGrid {
 	 * @see #getAvailableCells()
 	 */
 	public ArrayList<Cell> getAvailableCells() {
-		return getAvailableCellsFrom(getCells());
+		return this.getAvailableCellsFrom(this.getCellsReadOnly());
 	}
 
 	/**
@@ -851,7 +910,7 @@ public class CellGrid {
 	 * @see #getRandomCell()
 	 */
 	public Cell getRandomCell() {
-		return getRandomCellFrom(getCells());
+		return this.getRandomCellFrom(this.getCellsReadOnly());
 	}
 
 	/**
@@ -863,7 +922,7 @@ public class CellGrid {
 	 * @see #getRandomAvailableCell()
 	 */
 	public Cell getRandomAvailableCell() {
-		return getRandomCellFrom(getAvailableCells());
+		return this.getRandomCellFrom(this.getAvailableCells());
 	}
 
 	/**
@@ -875,7 +934,7 @@ public class CellGrid {
 	 * @see #getRandomCells()
 	 */
 	public ArrayList<Cell> getRandomCells() {
-		return getRandomCellsFrom(getCells());
+		return this.getRandomCellsFrom(this.getCellsReadOnly());
 	}
 
 	/**
@@ -888,12 +947,12 @@ public class CellGrid {
 	 * @see #getRandomCells(int)
 	 */
 	public ArrayList<Cell> getRandomCells(int amount) {
-		return getRandomCellsFrom(getCells(), amount);
+		return this.getRandomCellsFrom(this.getCellsReadOnly(), amount);
 	}
 
 	// TODO: Add documentation
 	public ArrayList<Cell> getRandomAvailableCells(int amount) {
-		return getRandomCellsFrom(getAvailableCells(), amount);
+		return this.getRandomCellsFrom(this.getAvailableCells(), amount);
 	}
 
 	/**
@@ -903,7 +962,7 @@ public class CellGrid {
 	 * @see #getSize()
 	 */
 	public Unit2 getSize() {
-		return size;
+		return this.size;
 	}
 
 	/**
@@ -913,7 +972,7 @@ public class CellGrid {
 	 * @return the integer number of existing {@code Cell} objects on the grid
 	 */
 	public int getCellCount() {
-		return virtualGrid.size();
+		return this.virtualGrid.size();
 	}
 
 	/*
@@ -931,7 +990,7 @@ public class CellGrid {
 	 * @see #printCellsAdjacentTo(Unit2)
 	 */
 	public void printCellsAdjacentTo(Unit2 unit) {
-		ArrayList<Cell> adjCells = getCellsAdjacentTo(unit);
+		ArrayList<Cell> adjCells = this.getCellsAdjacentTo(unit);
 
 		for (Cell adjCell : adjCells)
 			adjCell.printInfo();
@@ -944,7 +1003,7 @@ public class CellGrid {
 	 * @see #printCellsAdjacentTo(Cell)
 	 */
 	public void printCellsAdjacentTo(Cell cell) {
-		printCellsAdjacentTo(cell.getUnit2());
+		this.printCellsAdjacentTo(cell.getUnit2());
 	}
 
 	// TODO: Add documentation
@@ -954,7 +1013,7 @@ public class CellGrid {
 
 		for (int row = 1; row <= rowLength; row++) {
 			for (int col = 1; col <= colLength; col++) {
-				getCell(new Unit2(col, row));
+				this.getCell(new Unit2(col, row));
 			}
 		}
 		return this;
@@ -978,7 +1037,7 @@ public class CellGrid {
 
 		while (pathIterator.hasNext()) {
 			Cell cell = pathIterator.next();
-			cell.setPathCell();
+			cell.addHangingEffect(CellHangingEffect.HIGHLIGHTED_RED);
 		}
 
 		return path.getCellPath();
@@ -1020,7 +1079,7 @@ public class CellGrid {
 		String emptyCell = "$bg-white $text-black [_]$text-reset ";
 		String antCell = "$bg-black $text-bright_blue [$text-bright_cyan X$text-bright_blue ]$text-reset ";
 		String doodlebugCell = "$bg-black $text-yellow [$text-bright_yellow O$text-yellow ]$text-reset ";
-		String titalCell = "$bg-black $text-red [$text-bright_red T$text-red ]$text-reset ";
+		String titanCell = "$bg-black $text-red [$text-bright_red T$text-red ]$text-reset ";
 		String pathCell = "$bg-red $text-red [$bg-bright_red  $text-red ]$text-reset ";
 
 		int rowLength = getSize().getX();
@@ -1037,7 +1096,7 @@ public class CellGrid {
 			for (int col = 1; col <= colLength; col++) {
 				Cell cell = getCellIfExists(new Unit2(col, row));
 				if (cell == null || cell.isEmpty()) {
-					if (cell != null && cell.isPathCell())
+					if (cell != null && cell.hasHangingEffect(CellHangingEffect.HIGHLIGHTED_RED))
 						out.append(pathCell);
 					else
 						out.append(emptyCell);
@@ -1046,7 +1105,7 @@ public class CellGrid {
 				else if (cell.getOccupant() instanceof Doodlebug)
 					out.append(doodlebugCell);
 				else if (cell.getOccupant() instanceof Titan)
-					out.append(titalCell);
+					out.append(titanCell);
 			}
 			out.append("\n");
 		}
@@ -1057,14 +1116,18 @@ public class CellGrid {
 	// unlike collectCells(), which only clears unused cells, clearCells() clears
 	// all cells
 	public void clearCells() {
-		virtualGrid.clear();
+		// this.virtualGrid.clear();
+		for (Cell cell : this.getCellsReadOnly()) {
+			if (cell.hasOccupant())
+				cell.removeOccupant();
+		}
 	}
 
 	// TODO: Add documentation
 	public String download() {
 		StringBuilder serializedGrid = new StringBuilder();
 
-		for (Cell cell : this.virtualGrid.values())
+		for (Cell cell : this.getCellsReadOnly())
 			if (cell.hasOccupant())
 				serializedGrid.append(cell.serialize()).append(",");
 
@@ -1072,45 +1135,18 @@ public class CellGrid {
 	}
 
 	public void upload(String serializedString) {
-		clearCells();
+		this.clearCells();
 		ArrayList<Object> data = ObjectStream.deserialize(serializedString);
 		for (Object cellData : data) {
 			Cell cell = (Cell) cellData;
 			this.virtualGrid.put(cell.getUnit2().serialize(), cell);
 			if (cell.hasOccupant() && cell.getOccupant() instanceof Bug<?>) {
 				Bug<?> bug = (Bug<?>) cell.getOccupant();
-				bug.setBirthTime(-1);
+				// TODO: ideally this data should be saved and reloaded on serialization, so
+				// this is temporary
+				bug.getTimeCreated().setCurrentTime(-1);
 			}
 		}
-	}
-
-	// TODO: HEAVILY rework later - this method should not exist the way that it
-	// does
-	public Cell getCellWithNearestOccupant(Cell fromCell) {
-		Entity<?> nearestOccupant = null;
-		double nearestDist = Double.POSITIVE_INFINITY;
-
-		for (Entity<?> entity : virtualEntites) {
-			if (entity == fromCell.getOccupant() || entity.getProperty(Property.VARIANT, String.class)
-					.equals(fromCell.getOccupant().getProperty(Property.VARIANT, String.class)))
-				continue;
-			if (nearestOccupant == null)
-				nearestOccupant = entity;
-
-			double dist = entity.getProperty(Property.POSITION, Vector2.class)
-					.subtract(fromCell.getUnit2Center())
-					.magnitude();
-
-			if (dist < nearestDist) {
-				nearestDist = dist;
-				nearestOccupant = entity;
-			}
-		}
-
-		return nearestOccupant.getCell();
-		// synchronized (virtualEntities) {
-
-		// }
 	}
 
 	/**
@@ -1140,7 +1176,7 @@ public class CellGrid {
 		}
 
 		public ArrayList<Cell> getCellPath() {
-			return cellPath;
+			return this.cellPath;
 		}
 
 		private class CellPathIterator implements Iterator<Cell> {
@@ -1150,16 +1186,16 @@ public class CellGrid {
 
 			@Override
 			public boolean hasNext() {
-				return cellQueue.size() > 0 || this.nextGridIntercept.exists();
+				return this.cellQueue.size() > 0 || this.nextGridIntercept.exists();
 			}
 
 			@Override
 			public Cell next() {
-				if (!hasNext())
+				if (!this.hasNext())
 					throw new NoSuchElementException("Dead Cell path");
 
-				if (cellQueue.size() > 0)
-					return cellQueue.remove(0);
+				if (this.cellQueue.size() > 0)
+					return this.cellQueue.remove(0);
 
 				GridIntercept thisIntercept = this.nextGridIntercept;
 				GridIntercept nextIntercept = getGridIntercept(thisIntercept.getPointOfIntersection(), to);
@@ -1172,7 +1208,7 @@ public class CellGrid {
 							? getCellLeftOf(thisIntercept.getCell())
 							: getCellRightOf(thisIntercept.getCell());
 
-					cellQueue.add(sideCell);
+					this.cellQueue.add(sideCell);
 				} else {
 					this.nextGridIntercept = nextIntercept;
 				}
@@ -1272,13 +1308,15 @@ public class CellGrid {
 	 */
 	public class Cell implements Serializable {
 
+		public HashMap<CellHangingEffect, CellHangingEffect> hangingEffects = new HashMap<>();
+
 		final private Unit2 unit;
 		final private Vector2 unit2Center;
+
 		private CellType cellType;
 		private CellVacancy cellVacancy;
 		private Entity<?> cellOccupant;
-		private boolean isPathCell;
-		private JLabel imgRef;
+		private ImageSet texture;
 
 		/**
 		 * Creates a new {@code Cell} object. A cell object by itself does not belong to
@@ -1308,8 +1346,13 @@ public class CellGrid {
 		public Cell(Unit2 unit) {
 			this.unit = unit;
 			this.unit2Center = new Vector2(
-					unit.getX() - unit.signedUnit().getX() * 0.5,
-					unit.getY() - unit.signedUnit().getY() * 0.5);
+					unit.getX() - 0.5,
+					unit.getY() - 0.5);
+
+			// In general:
+			// this.unit2Center = new Vector2(
+			// unit.getX() - unit.signedUnit().getX() * 0.5,
+			// unit.getY() - unit.signedUnit().getY() * 0.5);
 
 			this.cellType = CellType.NORMAL;
 			this.cellVacancy = CellVacancy.EMPTY;
@@ -1336,87 +1379,16 @@ public class CellGrid {
 			this(new Unit2());
 		}
 
-		public boolean isPathCell() {
-			return this.isPathCell;
+		public ImageSet getTexture() {
+			return this.texture;
 		}
 
-		public void setPathCell() {
-			this.isPathCell = true;
+		public HashMap<CellHangingEffect, CellHangingEffect> getHangingEffects() {
+			return this.hangingEffects;
 		}
 
-		public void setImgRef(JLabel img) {
-			this.imgRef = img;
-		}
-
-		public JLabel getImgRef() {
-			return this.imgRef;
-		}
-
-		// TODO; 'withAggregation' parameter is no longer necessary now that Cell is an
-		// inner class
-		/**
-		 * <h4>This method should not be used outside of the {@code Entity}
-		 * class.</h4>
-		 * Use {@link #setOccupant(Entity)} instead.
-		 * <p>
-		 * 
-		 * Aggregates {@code cellOccupant} to this cell as long as the current
-		 * cell
-		 * does not already have an occupant.
-		 * 
-		 * <p>
-		 * An optional argument {@code withAggregation} is provided which
-		 * dictates whether or not the occupant should incorporate the cell
-		 * object
-		 * into itself. Used for preventing a callback loop between the cell's
-		 * {@code setOccupant} method and the occupant's {@code setCell} method,
-		 * since they both call each other.
-		 *
-		 * @param cellOccupant    the aggregated occupant to nest within the cell
-		 * @param withAggregation whether the occupant should aggregate the cell
-		 *                        object
-		 *
-		 * @throws CellIsOccupiedException  if the current cell already has an
-		 *                                  occupant
-		 * @throws OccupantHasCellException if the cellOccupant already belongs to
-		 *                                  another cell
-		 * @throws NoOccupantFoundException if {@code cellOccupant} is null
-		 */
-		public void setOccupant(Entity<?> cellOccupant, boolean withAggregation) {
-			if (cellOccupant == null)
-				throw new NoOccupantFoundException();
-
-			if (hasOccupant() && this.cellOccupant != cellOccupant)
-				throw new CellIsOccupiedException(this, cellOccupant);
-
-			Cell occupantCell = cellOccupant.getProperty(
-					Property.ASSIGNED_CELL,
-					Cell.class);
-
-			if (withAggregation) {
-				if (cellOccupant.hasCell() && occupantCell != this)
-					throw new OccupantHasCellException();
-
-				cellOccupant.assignCell(this, false);
-			}
-
-			this.cellOccupant = cellOccupant;
-			setVacancy(CellVacancy.OCCUPIED);
-			// TODO: may need to change later for thread-safe reasons
-			virtualEntites.add(cellOccupant);
-			cellOccupant.setProperty(Property.POSITION, this.getUnit2Center());
-		}
-
-		/**
-		 * Sets a {@code Entity} to this cell, and the {@code Entity}
-		 * aggregates this cell into itself so they are both mutually connected to each
-		 * other.
-		 * 
-		 * @param cellOccupant the occupant to assign to the cell
-		 * @see #setOccupant(Entity, boolean)
-		 */
-		public void setOccupant(Entity<?> cellOccupant) {
-			setOccupant(cellOccupant, true);
+		public boolean hasHangingEffect(CellHangingEffect effect) {
+			return this.hangingEffects.containsKey(effect);
 		}
 
 		/**
@@ -1427,37 +1399,19 @@ public class CellGrid {
 		 * @param cell
 		 * @return true if the occupant is eatable
 		 */
-		public boolean isOccupantEatable() {
-			Entity<?> _cellOccupant = getOccupant();
-			return _cellOccupant.getProperty(Property.IS_EATABLE, Boolean.class);
-		}
-
-		/**
-		 * Moves the occupant from the current cell, to a new target cell. Does not
-		 * account for target cell being occupied.
+		/*
+		 * TODO:
 		 * 
-		 * <p>
-		 * This was deprecated because it doesn't make much sense to reference a cell
-		 * object in order to move it's occupant. Instead, the occupant should be the
-		 * one in charge of moving. As of now, the {@code Cell} class can exist
-		 * independently of the {@code CellGrid} class. Therefore, it should make no
-		 * reference to the cell grid because it is not a composition.
-		 * <p>
-		 * <b>Note:</b>
-		 * This may change in the future, because there is no real reason for the
-		 * {@code Cell} class to exist independently when it is only used in tandem
-		 * with {@code CellGrid}. As development continues, I think it makes more sense
-		 * for the {@code Cell} class to exist as a private inner-class of the
-		 * {@code CellGrid}. More on this later.
-		 * 
-		 * @param the target {@code Cell} object to move this cell's occupant to
-		 *
-		 * @deprecated use {@link classes.abstracts.Entity#assignCell(Cell)} now
-		 *             instead.
+		 * Create a "Consumable" interface so that we can modularize the behavior of
+		 * entities being consumable more broadly.
 		 */
-		@Deprecated
-		public void moveOccupantTo(Cell targetCell) {
-			targetCell.setOccupant(removeOccupant());
+		public boolean isOccupantEatable() {
+			Entity<?> cellOccupant = getOccupant();
+			if (cellOccupant instanceof Bug) {
+				Bug<?> bug = (Bug<?>) cellOccupant;
+				return bug.isEatable();
+			}
+			return false;
 		}
 
 		/**
@@ -1467,35 +1421,6 @@ public class CellGrid {
 		 */
 		public Entity<?> getOccupant() {
 			return this.cellOccupant;
-		}
-
-		// TODO; 'withAggregation' parameter is no longer necessary now that Cell is an
-		// inner class
-		/**
-		 * Removes the current occupant in the cell. Does not check if the cell
-		 * already has an occupant; this must be done manually with
-		 * {@code hasOccupant}
-		 *
-		 * @return the removed occupant
-		 * @throws NoOccupantFoundException if calling this method when the cell has
-		 *                                  no occupant
-		 */
-		public Entity<?> removeOccupant(boolean withAggregation) {
-			if (!hasOccupant())
-				throw new NoOccupantFoundException();
-
-			Entity<?> occupant = this.cellOccupant;
-			this.cellOccupant = null;
-			setVacancy(CellVacancy.EMPTY);
-
-			if (withAggregation)
-				occupant.removeFromCell(false);
-
-			return occupant;
-		}
-
-		public Entity<?> removeOccupant() {
-			return removeOccupant(true);
 		}
 
 		/**
@@ -1528,14 +1453,6 @@ public class CellGrid {
 		 */
 		public Unit2 getUnit2() {
 			return this.unit;
-		}
-
-		/*
-		 * TODO: Implement toScreenPosition() method
-		 */
-		public Vector2 toScreenPosition() {
-
-			return new Vector2(); // placeholder
 		}
 
 		/**
@@ -1653,6 +1570,129 @@ public class CellGrid {
 		 */
 		public boolean isCollectable() {
 			return isEmpty();
+		}
+
+		// TODO; 'withAggregation' parameter is no longer necessary now that Cell is an
+		// inner class
+		/**
+		 * <h4>This method should not be used outside of the {@code Entity}
+		 * class.</h4>
+		 * Use {@link #setOccupant(Entity)} instead.
+		 * <p>
+		 * 
+		 * Aggregates {@code cellOccupant} to this cell as long as the current
+		 * cell
+		 * does not already have an occupant.
+		 * 
+		 * <p>
+		 * An optional argument {@code withAggregation} is provided which
+		 * dictates whether or not the occupant should incorporate the cell
+		 * object
+		 * into itself. Used for preventing a callback loop between the cell's
+		 * {@code setOccupant} method and the occupant's {@code setCell} method,
+		 * since they both call each other.
+		 *
+		 * @param cellOccupant    the aggregated occupant to nest within the cell
+		 * @param withAggregation whether the occupant should aggregate the cell
+		 *                        object
+		 *
+		 * @throws CellIsOccupiedException  if the current cell already has an
+		 *                                  occupant
+		 * @throws OccupantHasCellException if the cellOccupant already belongs to
+		 *                                  another cell
+		 * @throws NoOccupantFoundException if {@code cellOccupant} is null
+		 */
+		public void setOccupant(Entity<?> cellOccupant, boolean withAggregation) {
+			if (cellOccupant == null)
+				throw new NoOccupantFoundException();
+
+			if (this.hasOccupant() && this.cellOccupant != cellOccupant)
+				throw new CellIsOccupiedException(this, cellOccupant);
+
+			Cell occupantCell = cellOccupant.getAssignedCell();
+
+			if (withAggregation) {
+				if (cellOccupant.hasAssignedCell() && occupantCell != this)
+					throw new OccupantHasCellException();
+
+				cellOccupant.assignCell(this, false);
+			}
+
+			this.cellOccupant = cellOccupant;
+			this.setVacancy(CellVacancy.OCCUPIED);
+		}
+
+		/**
+		 * Sets a {@code Entity} to this cell, and the {@code Entity}
+		 * aggregates this cell into itself so they are both mutually connected to each
+		 * other.
+		 * 
+		 * @param cellOccupant the occupant to assign to the cell
+		 * @see #setOccupant(Entity, boolean)
+		 */
+		public void setOccupant(Entity<?> cellOccupant) {
+			this.setOccupant(cellOccupant, true);
+		}
+
+		public void addHangingEffect(CellHangingEffect effect) {
+			this.hangingEffects.put(effect, effect);
+		}
+
+		/**
+		 * Moves the occupant from the current cell, to a new target cell. Does not
+		 * account for target cell being occupied.
+		 * 
+		 * <p>
+		 * This was deprecated because it doesn't make much sense to reference a cell
+		 * object in order to move it's occupant. Instead, the occupant should be the
+		 * one in charge of moving. As of now, the {@code Cell} class can exist
+		 * independently of the {@code CellGrid} class. Therefore, it should make no
+		 * reference to the cell grid because it is not a composition.
+		 * <p>
+		 * <b>Note:</b>
+		 * This may change in the future, because there is no real reason for the
+		 * {@code Cell} class to exist independently when it is only used in tandem
+		 * with {@code CellGrid}. As development continues, I think it makes more sense
+		 * for the {@code Cell} class to exist as a private inner-class of the
+		 * {@code CellGrid}. More on this later.
+		 * 
+		 * @param the target {@code Cell} object to move this cell's occupant to
+		 *
+		 * @deprecated use {@link classes.abstracts.Entity#assignCell(Cell)} now
+		 *             instead.
+		 */
+		@Deprecated
+		public void moveOccupantTo(Cell targetCell) {
+			targetCell.setOccupant(this.removeOccupant());
+		}
+
+		// TODO; 'withAggregation' parameter is no longer necessary now that Cell is an
+		// inner class
+		/**
+		 * Removes the current occupant in the cell. Does not check if the cell
+		 * already has an occupant; this must be done manually with
+		 * {@code hasOccupant}
+		 *
+		 * @return the removed occupant
+		 * @throws NoOccupantFoundException if calling this method when the cell has
+		 *                                  no occupant
+		 */
+		public Entity<?> removeOccupant(boolean withAggregation) {
+			if (!this.hasOccupant())
+				throw new NoOccupantFoundException();
+
+			Entity<?> occupant = this.cellOccupant;
+			this.cellOccupant = null;
+			setVacancy(CellVacancy.EMPTY);
+
+			if (withAggregation)
+				occupant.removeFromCell(false);
+
+			return occupant;
+		}
+
+		public Entity<?> removeOccupant() {
+			return this.removeOccupant(true);
 		}
 
 		/**

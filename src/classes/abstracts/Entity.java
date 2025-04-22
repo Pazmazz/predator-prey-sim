@@ -10,7 +10,10 @@ import java.util.HashMap;
 
 import classes.entity.CellGrid.Cell;
 import classes.entity.GameScreen.ImageSet;
+import classes.entity.Timestamp;
+import classes.entity.ValueMeter;
 import classes.util.Console;
+import classes.util.Time;
 import exceptions.CellIsOccupiedException;
 import exceptions.NoCellFoundException;
 import interfaces.Property;
@@ -24,16 +27,19 @@ import interfaces.Serializable;
  * Any subclass that extends {@code Entity} is eligible to be set as an
  * occupant in a cell using {@code cell.setOccupant}.
  */
-public abstract class Entity<T extends Entity<T>> extends Properties {
+@SuppressWarnings("unused")
+public abstract class Entity<T extends Entity<T>> implements Serializable {
 
 	final private static HashMap<Entity<?>, Entity<?>> entities = new HashMap<>();
 
-	public abstract ImageSet getAvatar();
-
-	public abstract void setAvatar(ImageSet image);
-
+	public ImageSet avatar;
 	protected Cell assignedCell = null;
 	protected String name = null;
+	protected ValueMeter timeInSimulationMeter = new ValueMeter(0, Double.POSITIVE_INFINITY, 0);
+
+	// TODO: this is currently for animating fade-ins, replace with a animation
+	// service later
+	private Timestamp timeCreated = new Timestamp();
 
 	public enum EntityVariant {
 		DOODLEBUG,
@@ -44,6 +50,39 @@ public abstract class Entity<T extends Entity<T>> extends Properties {
 	// Unused constructor for now
 	public Entity() {
 		entities.put(this, this);
+	}
+
+	public Cell getAssignedCell() {
+		// return getProperty(Property.ASSIGNED_CELL, Cell.class);
+		return this.assignedCell;
+	}
+
+	public boolean hasAssignedCell() {
+		return this.assignedCell != null;
+	}
+
+	public String getName() {
+		return this.name;
+	}
+
+	public ValueMeter getTimeInSimulationMeter() {
+		return this.timeInSimulationMeter;
+	}
+
+	public double getTimeInSimulationInSeconds() {
+		return Time.nanoToSeconds((long) this.timeInSimulationMeter.getValue());
+	}
+
+	public Timestamp getTimeCreated() {
+		return this.timeCreated;
+	}
+
+	public static Collection<Entity<?>> getEntitiesReadOnly() {
+		return entities.values();
+	}
+
+	public ImageSet getAvatar() {
+		return this.avatar;
 	}
 
 	/**
@@ -92,15 +131,6 @@ public abstract class Entity<T extends Entity<T>> extends Properties {
 		this.assignCell(targetCell, true);
 	}
 
-	public Cell getAssignedCell() {
-		// return getProperty(Property.ASSIGNED_CELL, Cell.class);
-		return this.assignedCell;
-	}
-
-	public boolean hasAssignedCell() {
-		return this.assignedCell != null;
-	}
-
 	public void removeFromCell(boolean withAggregation) {
 		if (!this.hasAssignedCell())
 			throw new NoCellFoundException();
@@ -125,7 +155,11 @@ public abstract class Entity<T extends Entity<T>> extends Properties {
 		this.removeFromCell(true);
 	}
 
-	public static Collection<Entity<?>> getEntitiesReadOnly() {
-		return entities.values();
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public void setAvatar(ImageSet avatar) {
+		this.avatar = avatar;
 	}
 }

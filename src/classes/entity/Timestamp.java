@@ -13,6 +13,7 @@ public class Timestamp {
 		this.currentTime = Time.tick();
 	}
 
+	// Getters
 	public long getValue() {
 		return this.currentTime;
 	}
@@ -39,5 +40,10 @@ public class Timestamp {
 
 	public boolean hasTimeElapsed(double seconds) {
 		return this.getElapsedTimeInSeconds() >= seconds;
+	}
+
+	// Setters
+	public void setCurrentTime(long currentTime) {
+		this.currentTime = currentTime;
 	}
 }

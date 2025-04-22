@@ -83,6 +83,7 @@ public class GameScreen {
 		BASE_TITAN,
 		RED_CELL,
 		ANT_PROFILE,
+		BASE_CELL_TEXTURE,
 	}
 
 	public GameScreen() {
@@ -667,16 +668,16 @@ public class GameScreen {
 		fasterButton.setFocusable(false);
 
 		fasterButton.addActionListener(e -> {
-			settings.setAntMovementCooldown(Math.max(0.001, settings.getAntMovementCooldown() / 1.2));
-			settings.setDoodlebugMovementCooldown(Math.max(0.001, settings.getDoodlebugMovementCooldown() / 1.2));
+			settings.setAntMovementSpeed(Math.max(0.001, settings.getAntMovementSpeed() / 1.2));
+			settings.setDoodlebugMovementSpeed(Math.max(0.001, settings.getDoodlebugMovementSpeed() / 1.2));
 			for (Cell cell : gameGrid.getGrid().values()) {
 				if (cell.hasOccupant()) {
 					if (cell.getOccupant() instanceof Ant) {
 						cell.getOccupant().setProperty(Property.MOVEMENT_COOLDOWN,
-								settings.getAntMovementCooldown());
+								settings.getAntMovementSpeed());
 					} else if (cell.getOccupant() instanceof Doodlebug) {
 						cell.getOccupant().setProperty(Property.MOVEMENT_COOLDOWN,
-								settings.getDoodlebugMovementCooldown());
+								settings.getDoodlebugMovementSpeed());
 					}
 				}
 			}
@@ -690,16 +691,16 @@ public class GameScreen {
 		slowerButton.setFocusable(false);
 
 		slowerButton.addActionListener(e -> {
-			settings.setAntMovementCooldown(Math.min(1.0, settings.getAntMovementCooldown() * 1.2));
-			settings.setDoodlebugMovementCooldown(Math.min(1.0, settings.getDoodlebugMovementCooldown() * 1.2));
+			settings.setAntMovementSpeed(Math.min(1.0, settings.getAntMovementSpeed() * 1.2));
+			settings.setDoodlebugMovementSpeed(Math.min(1.0, settings.getDoodlebugMovementSpeed() * 1.2));
 			for (Cell cell : gameGrid.getGrid().values()) {
 				if (cell.hasOccupant()) {
 					if (cell.getOccupant() instanceof Ant) {
 						cell.getOccupant().setProperty(Property.MOVEMENT_COOLDOWN,
-								settings.getAntMovementCooldown());
+								settings.getAntMovementSpeed());
 					} else if (cell.getOccupant() instanceof Doodlebug) {
 						cell.getOccupant().setProperty(Property.MOVEMENT_COOLDOWN,
-								settings.getDoodlebugMovementCooldown());
+								settings.getDoodlebugMovementSpeed());
 					}
 				}
 			}

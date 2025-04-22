@@ -2,11 +2,13 @@ package classes.entity;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import classes.abstracts.Bug;
 import classes.util.Console;
 import classes.util.Math2;
 import classes.util.Time;
+import interfaces.Property;
 import classes.entity.CellGrid.Cell;
 import classes.entity.GameScreen.ImageSet;
 import classes.entity.ValueMeter.MeterResetType;
@@ -14,43 +16,47 @@ import classes.settings.GameSettings;
 
 @SuppressWarnings("unused")
 public class Doodlebug extends Bug<Doodlebug> {
-	public ImageSet avatar = ImageSet.BASE_DOODLEBUG;
-
+	final private static HashMap<Doodlebug, Doodlebug> doodlebugs = new HashMap<>();
 	final private Game game = Game.getInstance();
-	final private CellGrid gameGrid = game.getGameGrid();
-	final private GameSettings settings = game.getSettings();
+
+	private ValueMeter antsEatenMeter = new ValueMeter(
+			0,
+			Double.POSITIVE_INFINITY,
+			0,
+			MeterResetType.NONE);
+	private ValueMeter hungerMeter = new ValueMeter(
+			0,
+			game.getSettings().getDoodlebugHungerLimit(),
+			0,
+			MeterResetType.ON_MAX);
 
 	public Doodlebug() {
-		// properties
-		this.setProperty(Property.IS_EATABLE, false);
-		this.setProperty(Property.MOVEMENT_COOLDOWN, settings.getDoodlebugMovementCooldown());
-		this.setProperty(Property.ANTS_EATEN, new ValueMeter(0, 0).removeLimit());
-
-		ValueMeter breedingMeter = this.getProperty(Property.MOVEMENT_METER, ValueMeter.class);
-		breedingMeter.setMax(8);
-
-		ValueMeter hungerMeter = new ValueMeter(settings.getDoodlebugHungerLimit(), 0, 0);
-		this.setProperty(Property.HUNGER_METER, hungerMeter);
+		this.setAvatar(ImageSet.BASE_DOODLEBUG);
+		this.setMovementSpeed(game.getSettings().getDoodlebugMovementSpeed());
+		this.getBreedingMeter().setMax(8);
 
 		// event listeners
 		hungerMeter.onMaxValueReached.connect(e -> this.removeFromCell());
-		if (settings.getDoodlebugBreedingEnabled())
-			breedingMeter.onMaxValueReached.connect(e -> this.breed());
+		if (game.getSettings().getDoodlebugBreedingEnabled())
+			this.getBreedingMeter().onMaxValueReached.connect(e -> this.breed());
 	}
 
 	public ValueMeter getHungerMeter() {
-		return this.getProperty(Property.HUNGER_METER, ValueMeter.class);
+		return this.hungerMeter;
 	}
 
 	public ValueMeter getAntsEatenMeter() {
-		return this.getProperty(Property.ANTS_EATEN, ValueMeter.class);
+		return this.antsEatenMeter;
 	}
 
 	@Override
 	public boolean move() {
-		boolean moved = this.getBreedingMeter().increment() == this.getBreedingMeter().getMax();
-		ArrayList<Cell> adjCells = this.gameGrid.randomizeCells(
-				this.gameGrid.getCellsAdjacentTo(getCell()));
+		ValueMeter breedingMeter = this.getBreedingMeter();
+		ValueMeter hungerMeter = this.getHungerMeter();
+
+		boolean moved = breedingMeter.increment() == breedingMeter.getMax();
+		ArrayList<Cell> adjCells = game.getGameGrid().randomizeCells(
+				game.getGameGrid().getCellsAdjacentTo(this.getAssignedCell()));
 		Cell movementCell = null;
 
 		// try to eat
@@ -59,7 +65,7 @@ public class Doodlebug extends Bug<Doodlebug> {
 				if (cell.isOccupantEatable()) {
 					cell.removeOccupant();
 					this.assignCell(cell);
-					this.getHungerMeter().empty();
+					hungerMeter.empty();
 					this.getAntsEatenMeter().increment();
 					return true;
 				}
@@ -69,7 +75,8 @@ public class Doodlebug extends Bug<Doodlebug> {
 		}
 
 		// check for starvation
-		if (this.getHungerMeter().increment() == this.getHungerMeter().getMax()) {
+		if (hungerMeter.increment() == hungerMeter.getMax()) {
+			this.removeFromCell();
 			return true;
 		}
 
@@ -99,18 +106,8 @@ public class Doodlebug extends Bug<Doodlebug> {
 	}
 
 	@Override
-	public ImageSet getAvatar() {
-		return this.avatar;
-	}
-
-	@Override
-	public void setAvatar(ImageSet avatar) {
-		this.avatar = avatar;
-	}
-
-	@Override
 	public String getTooltipString() {
-		Cell cell = this.getCell();
+		Cell cell = this.getAssignedCell();
 		Unit2 unit = cell.getUnit2();
 		return new StringBuilder(this.getNameWithId())
 				.append("<span style='font-size:10px;color:white;'>")
@@ -119,7 +116,7 @@ public class Doodlebug extends Bug<Doodlebug> {
 				.append("</span><br>Ants eaten: <span style='color:#bf00ff;'>")
 				.append(this.getAntsEatenMeter().getValue())
 				.append("</span><br>Generation: <span style='color:#bf00ff;'>")
-				.append(this.getGeneration())
+				.append(this.getGenerationMeter().getValue())
 				.append("</span><br>Cell: <span style='color:#44D0FF;'>Cell&lt;")
 				.append(unit.getX())
 				.append(", ")

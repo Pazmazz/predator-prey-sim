@@ -163,7 +163,7 @@ public class MovementFrame extends FrameRunner {
 			if (entity instanceof Bug) {
 				bugCount++;
 				Bug<?> bug = (Bug<?>) entity;
-				double movementCooldown = bug.getMovementCooldown();
+				double movementCooldown = bug.getMovementSpeed();
 				long lastMoved = bug.getTimeLastMoved();
 
 				// movement cooldown checks

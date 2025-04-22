@@ -32,29 +32,20 @@ public abstract class Bug<T extends Bug<T>> extends Entity<T> {
 	 * Metadata
 	 */
 	private Timestamp timeLastMoved = new Timestamp(0);
-	final private ValueMeter timeInSimulationMeter = new ValueMeter(0, Integer.MAX_VALUE, 0);
-	final private ValueMeter generationMeter = new ValueMeter(0, Integer.MAX_VALUE, 0);
-
-	// TODO: this is currently for animating fade-ins, replace with a animation
-	// service later
-	private Timestamp timeCreated = new Timestamp();
+	final private ValueMeter generationMeter = new ValueMeter(0, Double.POSITIVE_INFINITY, 0);
 
 	/*
 	 * Properties:
 	 */
 	private double movementSpeed = 1;
 	private boolean isEatable = false;
-	final private ValueMeter breedingMeter = new ValueMeter(0, 3, 0, MeterResetType.ON_MAX);
+	final private ValueMeter breedingMeter = new ValueMeter(0, Double.POSITIVE_INFINITY, 0, MeterResetType.ON_MAX);
 
 	protected Bug() {
 		this.idNum = (int) (Math.random() * 1000);
 	}
 
 	// Property getters
-	public String getName() {
-		return this.name;
-	}
-
 	public ValueMeter getBreedingMeter() {
 		return this.breedingMeter;
 	}
@@ -76,14 +67,6 @@ public abstract class Bug<T extends Bug<T>> extends Entity<T> {
 		return this.idNum;
 	}
 
-	public ValueMeter getTimeInSimulationMeter() {
-		return this.timeInSimulationMeter;
-	}
-
-	public double getTimeInSimulationInSeconds() {
-		return Time.nanoToSeconds((long) this.timeInSimulationMeter.getValue());
-	}
-
 	// Metadata setters
 	public String getTooltipString() {
 		return this.getNameWithId();
@@ -98,6 +81,14 @@ public abstract class Bug<T extends Bug<T>> extends Entity<T> {
 			bug.assignCell(randCell);
 			bug.getGenerationMeter().increment();
 		}
+	}
+
+	public void setEatable(boolean eatable) {
+		this.isEatable = eatable;
+	}
+
+	public void setMovementSpeed(double movementSpeed) {
+		this.movementSpeed = movementSpeed;
 	}
 
 	public String getNameWithId() {
