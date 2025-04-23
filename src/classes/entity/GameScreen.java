@@ -580,7 +580,7 @@ public class GameScreen {
 
 		JLabel title = new JLabel();
 		// title.setBorder(new EmptyBorder(10, 10, 10, 10));
-		title.setText("Life Sim");
+		title.setText("Predator-Prey Simulation");
 		title.setFont(new Font("Courier New", Font.BOLD, 30));
 		title.setAlignmentX(JFrame.CENTER_ALIGNMENT);
 		title.setForeground(new Color(25, 255, 0));

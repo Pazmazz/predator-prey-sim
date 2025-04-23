@@ -24,6 +24,7 @@ import interfaces.Serializable;
  * Any subclass that extends {@code Entity} is eligible to be set as an
  * occupant in a cell using {@code cell.setOccupant}.
  */
+@SuppressWarnings("unused")
 public abstract class Entity<T extends Entity<T>> extends Properties {
 
 	// private static ArrayList<Entity<?>> entityList = new ArrayList<>();

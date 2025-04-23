@@ -61,7 +61,7 @@ public class App {
 		game.initConfig();
 
 		int resolutionChoice = Console.promptMenu(
-				"Select Resolution",
+				"Select Window Resolution",
 				"Select: ",
 				1, new String[] {
 						"700px",
@@ -76,12 +76,24 @@ public class App {
 		}
 
 		Console.br();
+		String cellCount = Console.promptMessage("Enter grid resolution: ", "20");
+		int parsedCellCount = Integer.parseInt(cellCount);
+		game.getSettings().setGridSize(new Unit2(parsedCellCount, parsedCellCount));
+
+		Console.br();
 		String initialAntCount = Console.promptMessage("Enter initial Ant count: ", "100");
 		game.getSettings().setInitialAnts(Integer.parseInt(initialAntCount));
 
 		Console.br();
 		String initialDBCount = Console.promptMessage("Enter initial Doodlebug count: ", "5");
 		game.getSettings().setInitialDoodlebugs(Integer.parseInt(initialDBCount));
+
+		Console.br();
+		boolean renderASCII = Console.promptBoolean("Render ASCII?", false);
+
+		if (renderASCII) {
+			game.getSettings().setRenderASCII(true);
+		}
 
 		game.boot();
 		game.start();
