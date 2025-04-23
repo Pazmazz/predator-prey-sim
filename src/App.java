@@ -58,6 +58,31 @@ public class App {
 	public static Game game = Game.getInstance();
 
 	public static void main(String[] args) {
+		game.initConfig();
+
+		int resolutionChoice = Console.promptMenu(
+				"Select Resolution",
+				"Select: ",
+				1, new String[] {
+						"700px",
+						"800px",
+						"900px",
+				});
+
+		switch (resolutionChoice) {
+			case 1 -> game.getSettings().setScreenWidth(700);
+			case 2 -> game.getSettings().setScreenWidth(800);
+			case 3 -> game.getSettings().setScreenWidth(900);
+		}
+
+		Console.br();
+		String initialAntCount = Console.promptMessage("Enter initial Ant count: ", "100");
+		game.getSettings().setInitialAnts(Integer.parseInt(initialAntCount));
+
+		Console.br();
+		String initialDBCount = Console.promptMessage("Enter initial Doodlebug count: ", "5");
+		game.getSettings().setInitialDoodlebugs(Integer.parseInt(initialDBCount));
+
 		game.boot();
 		game.start();
 	}

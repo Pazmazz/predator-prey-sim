@@ -27,19 +27,20 @@ public class GameSettings {
 		// this.screenHeight = 680;
 
 		this.gridSnapshotHistory = 100;
-		this.gridLineThickness = 1;
+		this.gridLineThickness = 2;
 		this.gridBorderPadding = 1; // we shouldn't actually need this, use EmptyBorder instead
-		this.gridSize = new Unit2(5, 5);
+		this.gridSize = new Unit2(20, 20);
 
 		this.gridBackgroundColor = Color.BLACK;
 		this.gridLinesColor = Color.BLUE;
 
-		this.initialAnts = 5;
+		this.initialAnts = 100;
 		this.initialDoodlebugs = 5;
-		this.doodlebugHungerLimit = 6;
-		this.antMovementCooldown = 1.0;
-		this.doodlebugMovementCooldown = 1.0;
+		this.doodlebugHungerLimit = 4;
+		this.antMovementCooldown = 1.0 / 10;
+		this.doodlebugMovementCooldown = 1.0 / 10;
 
+		this.renderASCII = false;
 		this.antBreedingEnabled = true;
 		this.doodlebugBreedingEnabled = true;
 
@@ -84,6 +85,7 @@ public class GameSettings {
 	private double doodlebugMovementCooldown;
 	private int doodlebugHungerLimit;
 	private int gridSnapshotHistory;
+	private boolean renderASCII;
 
 	private String[] bugFirstNames = new String[] {
 			"Anton",
@@ -257,8 +259,8 @@ public class GameSettings {
 	private boolean antBreedingEnabled;
 	private boolean doodlebugBreedingEnabled;
 
-	final private int screenWidth;
-	final private int screenHeight;
+	private int screenWidth;
+	private int screenHeight;
 	final private int screenAspectRatio;
 
 	//
@@ -320,6 +322,10 @@ public class GameSettings {
 		return this.renderFPS <= 0
 				? this.gameHertz
 				: this.renderFPS;
+	}
+
+	public boolean getRenderASCII() {
+		return this.renderASCII;
 	}
 
 	public String getRenderProcessName() {
@@ -422,6 +428,14 @@ public class GameSettings {
 	//
 	// Public setters
 	//
+	public void setRenderASCII(boolean renderASCII) {
+		this.renderASCII = renderASCII;
+	}
+
+	public void setScreenWidth(int width) {
+		this.screenWidth = width;
+	}
+
 	public void setGridSnapshotHistory(int length) {
 		this.gridSnapshotHistory = length;
 	}

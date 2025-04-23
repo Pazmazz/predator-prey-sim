@@ -14,6 +14,8 @@ import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.MouseInfo;
 import java.awt.Point;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -60,7 +62,7 @@ public class GameScreen {
 	final private JComponent windowOverlay;
 	final private JPanel contentFrame;
 	final private JPanel gridContent;
-	final private JPanel grid;
+	final private GridPanel grid;
 	final private JLabel tooltip;
 
 	final private int GRID_LINE_THICKNESS = settings.getGridLineThickness();
@@ -84,6 +86,7 @@ public class GameScreen {
 		BASE_TITAN,
 		RED_CELL,
 		ANT_PROFILE,
+		STAR,
 	}
 
 	public enum InteractivityState {
@@ -97,6 +100,22 @@ public class GameScreen {
 		this.window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.window.setResizable(false);
 		this.window.setTitle("Test");
+
+		this.window.addKeyListener(new KeyListener() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				if (e.getKeyCode() == (int) 'Q')
+					grid.getRealtimeStatsContainer().setVisible(!grid.getRealtimeStatsContainer().isVisible());
+			}
+
+			@Override
+			public void keyTyped(KeyEvent e) {
+			}
+
+			@Override
+			public void keyReleased(KeyEvent e) {
+			}
+		});
 
 		this.loadImages();
 
@@ -132,7 +151,8 @@ public class GameScreen {
 		grid.getOverlay().add(victoryScreen);
 
 		this.window.pack();
-		this.window.setLocationRelativeTo(null);
+		// this.window.setLocationRelativeTo(null);
+		this.window.setLocation(0, 0);
 		this.window.setVisible(true);
 
 		game.onSimulationStateChanged.connect(data -> {
@@ -154,6 +174,7 @@ public class GameScreen {
 			this.loadedImages.put(ImageSet.BASE_TITAN, ImageIO.read(new File("src/assets/titanant.jpg")));
 			this.loadedImages.put(ImageSet.RED_CELL, ImageIO.read(new File("src/assets/pathcell.jpg")));
 			this.loadedImages.put(ImageSet.ANT_PROFILE, ImageIO.read(new File("src/assets/ant3.jpg")));
+			this.loadedImages.put(ImageSet.STAR, ImageIO.read(new File("src/assets/star1.png")));
 		} catch (Exception e) {
 			throw new Error("Error loading images");
 		}
@@ -220,11 +241,6 @@ public class GameScreen {
 			g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, (float) timeAliveAlpha));
 		}
 
-		if (entity.hasTag()) {
-			g2.setColor(Color.YELLOW);
-			g2.fillRect(posX, posY, 20, 20);
-		}
-
 		// TODO: Very rare error case where "entity" is null here, fix later
 		g2.drawImage(
 				loadedImages.get(entity.getAvatar()),
@@ -234,6 +250,18 @@ public class GameScreen {
 				sizeY,
 				grid);
 		g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1));
+
+		if (entity.hasTag()) {
+			int offsetX = (int) (sizeX * 0.5);
+			int offsetY = (int) (sizeY * 0.5);
+			g2.drawImage(
+					loadedImages.get(ImageSet.STAR),
+					posX - offsetX / 2,
+					posY - offsetY / 2,
+					sizeX + offsetX,
+					sizeY + offsetY,
+					grid);
+		}
 	}
 
 	private class VictoryScreen extends JPanel {
@@ -629,6 +657,7 @@ public class GameScreen {
 
 			game.setSimulationState(SimulationState.MANUAL);
 			game.loadNextSnapshot();
+			this.updateRealtimeStats();
 		});
 
 		JButton stepBackButton = new JButton();
@@ -766,6 +795,13 @@ public class GameScreen {
 	private class GridPanel extends JPanel {
 
 		private JPanel overlay;
+		private JLabel totalSimulationRuntimeLabel;
+		private JLabel totalEntitiesLabel;
+		private JLabel totalAntsLabel;
+		private JLabel totalBugsLabel;
+		private JLabel totalDoodlebugsLabel;
+		private JLabel currentDoodlebugMVPLabel;
+		private JPanel realtimeStatsContainer;
 
 		public GridPanel() {
 			JPanel overlay = new JPanel();
@@ -779,6 +815,88 @@ public class GameScreen {
 			this.setLayout(null);
 			// this.setBorder(new EmptyBorder(0, 0, 0, 0));
 			JPanel gridPanel = this;
+
+			JPanel realtimeStatsContainer = new JPanel();
+			realtimeStatsContainer.setLayout(null);
+			// realtimeStatsContainer.setOpaque(false);
+			realtimeStatsContainer.setBackground(new Color(0, 0, 0, 128));
+			realtimeStatsContainer.setBounds(0, SCREEN_WIDTH - 84, SCREEN_WIDTH, 84);
+			realtimeStatsContainer.setVisible(false);
+			this.realtimeStatsContainer = realtimeStatsContainer;
+
+			JPanel realtimeStatsInnerContainer = new JPanel();
+			realtimeStatsInnerContainer.setLayout(null);
+			realtimeStatsInnerContainer.setOpaque(false);
+			realtimeStatsInnerContainer.setBounds(
+					5,
+					5,
+					(int) realtimeStatsContainer.getSize().getWidth() - 10,
+					(int) realtimeStatsContainer.getSize().getHeight() - 10);
+			realtimeStatsContainer.add(realtimeStatsInnerContainer);
+
+			JLabel totalSimulationRuntimeLabel = new JLabel();
+			totalSimulationRuntimeLabel.setText("Simulation Runtime: 0");
+			totalSimulationRuntimeLabel.setForeground(Color.WHITE);
+			totalSimulationRuntimeLabel.setOpaque(false);
+			totalSimulationRuntimeLabel.setFont(new Font("Courier New", Font.PLAIN, 12));
+			totalSimulationRuntimeLabel
+					.setSize(new Dimension(SCREEN_WIDTH, totalSimulationRuntimeLabel.getFont().getSize()));
+			this.totalSimulationRuntimeLabel = totalSimulationRuntimeLabel;
+			realtimeStatsInnerContainer.add(totalSimulationRuntimeLabel);
+
+			JLabel totalEntitiesLabel = new JLabel();
+			totalEntitiesLabel.setText("Entities: 0");
+			totalEntitiesLabel.setForeground(Color.WHITE);
+			totalEntitiesLabel.setOpaque(false);
+			totalEntitiesLabel.setSize(new Dimension(SCREEN_WIDTH, totalSimulationRuntimeLabel.getFont().getSize()));
+			totalEntitiesLabel.setLocation(0, 12);
+			totalEntitiesLabel.setFont(new Font("Courier New", Font.PLAIN, 12));
+			this.totalEntitiesLabel = totalEntitiesLabel;
+			realtimeStatsInnerContainer.add(totalEntitiesLabel);
+
+			JLabel totalBugsLabel = new JLabel();
+			totalBugsLabel.setText("Bugs: 0");
+			totalBugsLabel.setForeground(Color.WHITE);
+			totalBugsLabel.setOpaque(false);
+			totalBugsLabel.setSize(new Dimension(SCREEN_WIDTH, totalSimulationRuntimeLabel.getFont().getSize()));
+			totalBugsLabel.setLocation(0, 24);
+			totalBugsLabel.setFont(new Font("Courier New", Font.PLAIN, 12));
+			this.totalBugsLabel = totalBugsLabel;
+			realtimeStatsInnerContainer.add(totalBugsLabel);
+
+			JLabel totalAntsLabel = new JLabel();
+			totalAntsLabel.setText("Ants: 0");
+			totalAntsLabel.setForeground(Color.WHITE);
+			totalAntsLabel.setOpaque(false);
+			totalAntsLabel.setSize(new Dimension(SCREEN_WIDTH, totalSimulationRuntimeLabel.getFont().getSize()));
+			totalAntsLabel.setLocation(0, 36);
+			totalAntsLabel.setFont(new Font("Courier New", Font.PLAIN, 12));
+			this.totalAntsLabel = totalAntsLabel;
+			realtimeStatsInnerContainer.add(totalAntsLabel);
+
+			JLabel totalDoodlebugsLabel = new JLabel();
+			totalDoodlebugsLabel.setText("Doodlebug: 0");
+			totalDoodlebugsLabel.setForeground(Color.WHITE);
+			totalDoodlebugsLabel.setOpaque(false);
+			totalDoodlebugsLabel.setSize(new Dimension(SCREEN_WIDTH, totalSimulationRuntimeLabel.getFont().getSize()));
+			totalDoodlebugsLabel.setLocation(0, 48);
+			totalDoodlebugsLabel.setFont(new Font("Courier New", Font.PLAIN, 12));
+			this.totalDoodlebugsLabel = totalDoodlebugsLabel;
+			realtimeStatsInnerContainer.add(totalDoodlebugsLabel);
+
+			JLabel currentDoodlebugMVPLabel = new JLabel();
+			currentDoodlebugMVPLabel.setText("Current Doodlebug MVP:");
+			currentDoodlebugMVPLabel.setForeground(Color.WHITE);
+			currentDoodlebugMVPLabel.setOpaque(false);
+			currentDoodlebugMVPLabel
+					.setSize(new Dimension(SCREEN_WIDTH, totalSimulationRuntimeLabel.getFont().getSize()));
+			currentDoodlebugMVPLabel.setLocation(0, 60);
+			currentDoodlebugMVPLabel.setFont(new Font("Courier New", Font.PLAIN, 12));
+			this.currentDoodlebugMVPLabel = currentDoodlebugMVPLabel;
+			realtimeStatsInnerContainer.add(currentDoodlebugMVPLabel);
+
+			// this.setBorder(new EmptyBorder(0, 0, 0, 0));
+			overlay.add(realtimeStatsContainer);
 
 			this.addMouseMotionListener(new MouseMotionAdapter() {
 				@Override
@@ -862,11 +980,72 @@ public class GameScreen {
 		public JPanel getOverlay() {
 			return this.overlay;
 		}
+
+		public JLabel getTotalSimulationRuntimeLabel() {
+			return this.totalSimulationRuntimeLabel;
+		}
+
+		public JLabel getTotalEntitiesLabel() {
+			return this.totalEntitiesLabel;
+		}
+
+		public JLabel getTotalAntsLabel() {
+			return totalAntsLabel;
+		}
+
+		public JLabel getTotalBugsLabel() {
+			return totalBugsLabel;
+		}
+
+		public JLabel getTotalDoodlebugsLabel() {
+			return totalDoodlebugsLabel;
+		}
+
+		public JLabel getCurrentDoodlebugMVPLabel() {
+			return currentDoodlebugMVPLabel;
+		}
+
+		public JPanel getRealtimeStatsContainer() {
+			return realtimeStatsContainer;
+		}
 	}
 
-	// public JPanel createContentRow() {
+	public void updateRealtimeStats() {
+		MovementFrame movementFrame = game.getMovementFrame();
+		this.grid.getTotalSimulationRuntimeLabel()
+				.setText(new StringBuilder("Time in Simulation: ")
+						.append(movementFrame.getTotalRuntimeInSeconds())
+						.append("s").toString());
 
-	// }
+		this.grid.getTotalEntitiesLabel()
+				.setText(new StringBuilder("Entities: ")
+						.append(movementFrame.getTotalEntities())
+						.toString());
+
+		this.grid.getTotalBugsLabel()
+				.setText(new StringBuilder("Bugs: ")
+						.append(movementFrame.getTotalBugs())
+						.toString());
+
+		this.grid.getTotalAntsLabel()
+				.setText(new StringBuilder("Ants: ")
+						.append(movementFrame.getTotalAnts())
+						.toString());
+
+		this.grid.getTotalDoodlebugsLabel()
+				.setText(new StringBuilder("Doodlebugs: ")
+						.append(movementFrame.getTotalDoodlebugs())
+						.toString());
+
+		this.grid.getCurrentDoodlebugMVPLabel()
+				.setText(new StringBuilder("<html>Current Doodlebug MVP: <span style='color:#78FF35;'>")
+						.append(movementFrame.getCurrentDoodlebugMVP().getName())
+						.append("</span> with <span style='color:FFF835;'>")
+						.append(movementFrame.getCurrentDoodlebugMVP().getAntsEatenMeter().getValue())
+						.append("</span> ants eaten")
+						.append("</html>")
+						.toString());
+	}
 
 	public class EntityTag extends JPanel {
 

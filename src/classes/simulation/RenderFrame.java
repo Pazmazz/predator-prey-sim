@@ -35,7 +35,9 @@ public class RenderFrame extends FrameRunner {
 	@Override
 	public void step() {
 		CellGrid grid = game.getGameGrid();
-		// Console.println(grid.toASCII());
+		if (game.getSettings().getRenderASCII()) {
+			Console.println(grid.toASCII());
+		}
 		game.getScreen().renderGrid();
 	}
 }

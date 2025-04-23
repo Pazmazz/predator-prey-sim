@@ -85,6 +85,8 @@ public class Game implements Runnable {
 
 	// TODO: Add documentation
 	public String initConfig() {
+		if (this.settings != null)
+			return "Settings already configured";
 		this.settings = new GameSettings();
 		return "Game config benchmark";
 	}
@@ -357,7 +359,8 @@ public class Game implements Runnable {
 		// Console.benchmark("Initializing game grid", this::initGameGrid);
 
 		// Avg: ~0.01s
-		// Console.benchmark("Render game grid", this.getGameGrid()::toASCII);
+		if (settings.getRenderASCII())
+			Console.benchmark("Render game grid", this.getGameGrid()::toASCII);
 
 	}
 
