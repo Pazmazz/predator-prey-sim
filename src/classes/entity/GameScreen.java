@@ -40,8 +40,8 @@ import javax.swing.border.EmptyBorder;
 import classes.abstracts.Bug;
 import classes.abstracts.Entity;
 import classes.abstracts.Entity.EntityVariant;
-import classes.abstracts.Properties.Property;
 import classes.entity.CellGrid.Cell;
+import classes.entity.Game.GameState;
 import classes.entity.Game.SimulationState;
 import classes.settings.GameSettings;
 import classes.simulation.MovementFrame;
@@ -53,7 +53,7 @@ import classes.util.Time;
 public class GameScreen {
 	final private static Game game = Game.getInstance();
 	final private static GameSettings settings = game.getSettings();
-	final private static CellGrid gameGrid = game.getGameGrid();
+	final private static CellGrid gameGrid = game.getState().getGameGrid();
 	final private static HashMap<ImageSet, BufferedImage> loadedImages = new HashMap<>();
 
 	final private JFrame window;
@@ -184,7 +184,7 @@ public class GameScreen {
 		double relX = point.getX() / SCREEN_WIDTH * COLS;
 		double relY = point.getY() / SCREEN_WIDTH * ROWS;
 		Vector2 gridPoint = new Vector2(relX, relY);
-		return game.getGameGrid().getCell(gridPoint);
+		return game.getState().getGameGrid().getCell(gridPoint);
 	}
 
 	private void renderCell(JPanel grid, Graphics2D g2, Cell cell) {
@@ -213,7 +213,7 @@ public class GameScreen {
 			g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, (float) hungerAlpha));
 		} else if (entity instanceof Bug<?>) {
 			Bug<?> bug = (Bug<?>) entity;
-			double timeAliveAlpha = Math.min(1, Time.nanoToSeconds(bug.getBirthTime()) / 0.3);
+			double timeAliveAlpha = Math.min(1, bug.getTimeInSimulationInSeconds() / 0.3);
 			g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, (float) timeAliveAlpha));
 		}
 
@@ -452,10 +452,10 @@ public class GameScreen {
 		}
 
 		public void update() {
-			MovementFrame movementFrame = game.getMovementFrame();
-			EntityVariant winner = movementFrame.getWinner();
-			Doodlebug dbMVP = movementFrame.getCurrentDoodlebugMVP();
-			Ant antMVP = movementFrame.getCurrentAntMPV();
+			GameState gameState = game.getState();
+			EntityVariant winner = gameState.getRoundWinner();
+			Doodlebug dbMVP = gameState.getCurrentDoodlebugMVP();
+			Ant antMVP = gameState.getCurrentAntMVP();
 
 			Bug<?> bugMVP = null;
 			ImageIcon mvpIcon = null;
@@ -473,7 +473,7 @@ public class GameScreen {
 					this.secondaryWinnerIcon.setIcon(new ImageIcon(loadedImages.get(ImageSet.ANT_PROFILE)));
 					this.secondaryWinnerTitle.setText("<html>" + antMVP.getName() + "</html>");
 					this.secondaryGenerationLabel.setText(
-							"<html>Generation: <span style='color:#bf00ff;'>" + antMVP.getGeneration()
+							"<html>Generation: <span style='color:#bf00ff;'>" + antMVP.getGenerationMeter().getValue()
 									+ "</span></html>");
 					this.secondaryTimeInSimLabel.setText("<html>Time in Simulation: <span style='color:#bf00ff;'>"
 							+ Time.formatTime(antMVP.getTimeInSimulationInSeconds()) + "</span></html>");
@@ -490,7 +490,7 @@ public class GameScreen {
 					this.secondaryWinnerIcon.setIcon(new ImageIcon(loadedImages.get(ImageSet.BASE_DOODLEBUG)));
 					this.secondaryWinnerTitle.setText("<html>" + dbMVP.getName() + "</html>");
 					this.secondaryGenerationLabel.setText(
-							"<html>Generation: <span style='color:#bf00ff;'>" + dbMVP.getGeneration()
+							"<html>Generation: <span style='color:#bf00ff;'>" + dbMVP.getGenerationMeter().getValue()
 									+ "</span></html>");
 					this.secondaryTimeInSimLabel.setText("<html>Time in Simulation: <span style='color:#bf00ff;'>"
 							+ Time.formatTime(dbMVP.getTimeInSimulationInSeconds()) + "</span></html>");
@@ -507,7 +507,8 @@ public class GameScreen {
 					.setText("<html>Time in Simulation: <span style='color:#bf00ff;'>"
 							+ Time.formatTime(bugMVP.getTimeInSimulationInSeconds()) + "</span></html>");
 			this.generationLabel.setText(
-					"<html>Generation: <span style='color:#bf00ff;'>" + bugMVP.getGeneration() + "</span></html>");
+					"<html>Generation: <span style='color:#bf00ff;'>" + bugMVP.getGenerationMeter().getValue()
+							+ "</span></html>");
 		}
 	}
 
@@ -645,7 +646,7 @@ public class GameScreen {
 		clearButton.setFocusable(false);
 
 		clearButton.addActionListener(e -> {
-			game.getGameGrid().clearCells();
+			game.getState().getGameGrid().clearCells();
 			game.setSimulationState(SimulationState.INITIAL);
 		});
 
@@ -657,7 +658,7 @@ public class GameScreen {
 		downloadButton.setFocusable(false);
 
 		downloadButton.addActionListener(e -> {
-			System.out.println(game.getGameGrid().download());
+			System.out.println(game.getState().getGameGrid().download());
 		});
 
 		JButton fasterButton = new JButton();
@@ -673,11 +674,11 @@ public class GameScreen {
 			for (Cell cell : gameGrid.getGrid().values()) {
 				if (cell.hasOccupant()) {
 					if (cell.getOccupant() instanceof Ant) {
-						cell.getOccupant().setProperty(Property.MOVEMENT_COOLDOWN,
-								settings.getAntMovementSpeed());
+						Ant ant = (Ant) cell.getOccupant();
+						ant.setMovementSpeed(settings.getAntMovementSpeed());
 					} else if (cell.getOccupant() instanceof Doodlebug) {
-						cell.getOccupant().setProperty(Property.MOVEMENT_COOLDOWN,
-								settings.getDoodlebugMovementSpeed());
+						Doodlebug db = (Doodlebug) cell.getOccupant();
+						db.setMovementSpeed(settings.getDoodlebugMovementSpeed());
 					}
 				}
 			}
@@ -696,11 +697,11 @@ public class GameScreen {
 			for (Cell cell : gameGrid.getGrid().values()) {
 				if (cell.hasOccupant()) {
 					if (cell.getOccupant() instanceof Ant) {
-						cell.getOccupant().setProperty(Property.MOVEMENT_COOLDOWN,
-								settings.getAntMovementSpeed());
+						Ant ant = (Ant) cell.getOccupant();
+						ant.setMovementSpeed(settings.getAntMovementSpeed());
 					} else if (cell.getOccupant() instanceof Doodlebug) {
-						cell.getOccupant().setProperty(Property.MOVEMENT_COOLDOWN,
-								settings.getDoodlebugMovementSpeed());
+						Doodlebug db = (Doodlebug) cell.getOccupant();
+						db.setMovementSpeed(settings.getDoodlebugMovementSpeed());
 					}
 				}
 			}
@@ -944,27 +945,27 @@ public class GameScreen {
 	public void updateRealtimeStats() {
 		this.grid.getTotalSimulationRuntimeLabel()
 				.setText(new StringBuilder("Time in Simulation: ")
-						.append(game.getMovementFrame().getTotalRuntimeInSeconds())
+						.append(game.getState().getTotalRuntimeInSeconds())
 						.append("s").toString());
 
 		this.grid.getTotalEntitiesLabel()
 				.setText(new StringBuilder("Entities: ")
-						.append(game.getMovementFrame().getTotalEntities())
+						.append(game.getState().getTotalEntities())
 						.toString());
 
 		this.grid.getTotalBugsLabel()
 				.setText(new StringBuilder("Bugs: ")
-						.append(game.getMovementFrame().getTotalBugs())
+						.append(game.getState().getTotalBugs())
 						.toString());
 
 		this.grid.getTotalAntsLabel()
 				.setText(new StringBuilder("Ants: ")
-						.append(game.getMovementFrame().getTotalAnts())
+						.append(game.getState().getTotalAnts())
 						.toString());
 
 		this.grid.getTotalDoodlebugsLabel()
 				.setText(new StringBuilder("Doodlebugs: ")
-						.append(game.getMovementFrame().getTotalDoodlebugs())
+						.append(game.getState().getTotalDoodlebugs())
 						.toString());
 	}
 }

@@ -349,12 +349,12 @@ public class CellGrid {
 		// For general grid (where x and y can be negative)
 
 		// Vector2 quadrant = position.signedUnit();
-		// Vector2 snapPos = position.floor();
+		Vector2 snapPos = position.floor();
 
-		// int snapX = (int) snapPos.getX();
-		// int snapY = (int) snapPos.getY();
+		int snapX = (int) snapPos.getX();
+		int snapY = (int) snapPos.getY();
 
-		// int x, y;
+		int x, y;
 
 		// boolean posX = quadrant.getX() >= 0;
 		// boolean negX = quadrant.getX() <= 0;
@@ -363,8 +363,8 @@ public class CellGrid {
 
 		// We can ignore these other cases since they don't apply here
 		// if (posX && posY) {
-		// y = snapY + 1;
-		// x = snapX + 1;
+		y = snapY + 1;
+		x = snapX + 1;
 		// }
 		// else if (negX && posY) {
 		// y = snapY + 1;
@@ -379,12 +379,12 @@ public class CellGrid {
 		// x = snapX + 1;
 		// }
 
-		// return getCell(new Unit2(x, y));
+		return getCell(new Unit2(x, y));
 
 		// For practical use, where we know x and y are always positive
-		return this.getCell(new Unit2(
-				(int) Math.ceil(position.getX()),
-				(int) Math.ceil(position.getY())));
+		// return this.getCell(new Unit2(
+		// (int) Math.ceil(position.getX()),
+		// (int) Math.ceil(position.getY())));
 	}
 
 	/**
@@ -708,8 +708,8 @@ public class CellGrid {
 		return this.getCellsAdjacentTo(cell.getUnit2());
 	}
 
-	public ArrayList<Cell> getCellsReadOnly() {
-		return (ArrayList<Cell>) this.virtualGrid.values();
+	public Collection<Cell> getCellsReadOnly() {
+		return this.virtualGrid.values();
 	}
 
 	/**
@@ -900,7 +900,7 @@ public class CellGrid {
 	 * @see #getAvailableCells()
 	 */
 	public ArrayList<Cell> getAvailableCells() {
-		return this.getAvailableCellsFrom(this.getCellsReadOnly());
+		return this.getAvailableCellsFrom(this.getCells());
 	}
 
 	/**
@@ -910,7 +910,7 @@ public class CellGrid {
 	 * @see #getRandomCell()
 	 */
 	public Cell getRandomCell() {
-		return this.getRandomCellFrom(this.getCellsReadOnly());
+		return this.getRandomCellFrom(this.getCells());
 	}
 
 	/**
@@ -934,7 +934,7 @@ public class CellGrid {
 	 * @see #getRandomCells()
 	 */
 	public ArrayList<Cell> getRandomCells() {
-		return this.getRandomCellsFrom(this.getCellsReadOnly());
+		return this.getRandomCellsFrom(this.getCells());
 	}
 
 	/**
@@ -947,7 +947,7 @@ public class CellGrid {
 	 * @see #getRandomCells(int)
 	 */
 	public ArrayList<Cell> getRandomCells(int amount) {
-		return this.getRandomCellsFrom(this.getCellsReadOnly(), amount);
+		return this.getRandomCellsFrom(this.getCells(), amount);
 	}
 
 	// TODO: Add documentation
@@ -1742,7 +1742,6 @@ public class CellGrid {
 		public String serialize() {
 			StringBuilder out = new StringBuilder(
 					getClass().getSimpleName());
-
 			out.append("{");
 			out.append(getUnit2().serialize());
 			out.append(", ");

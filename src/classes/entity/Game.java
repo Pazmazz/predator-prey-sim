@@ -5,10 +5,12 @@ package classes.entity;
 
 import classes.abstracts.Entity;
 import classes.abstracts.FrameRunner;
+import classes.abstracts.Entity.EntityVariant;
 import classes.settings.GameSettings;
 import classes.simulation.MovementFrame;
 import classes.simulation.RenderFrame;
 import classes.util.Console;
+import classes.util.ObjectStream;
 import classes.util.Console.DebugPriority;
 import classes.util.Time;
 import classes.entity.CellGrid.Cell;
@@ -29,16 +31,14 @@ import java.util.UUID;
 public class Game implements Runnable {
 
 	final private static Game game = new Game();
+	private GameState state;
 	private GameSettings settings;
-	private CellGrid gameGrid;
 
 	final private Thread mainThread;
 	final private String sessionId;
 
-	// TODO: Implement game history snapshots
-	final private ArrayList<String> snapshots = new ArrayList<>();
+	final private ArrayList<GameSnapshot> snapshots = new ArrayList<>();
 	private int currentSnapshot = 0;
-	// final private int snapshotInterval = 1;
 
 	private GameScreen screen;
 	private GameStatus status = GameStatus.INITIAL;
@@ -83,6 +83,7 @@ public class Game implements Runnable {
 		this.sessionId = UUID.randomUUID().toString();
 		this.upTime = Time.tick();
 		this.mainThread = new Thread(this);
+		this.state = new GameState();
 	}
 
 	// TODO: Add documentation
@@ -92,16 +93,17 @@ public class Game implements Runnable {
 	}
 
 	private String createGameGrid() {
-		this.gameGrid = new CellGrid(this.settings.getGridSize());
+		this.getState().setGameGrid(new CellGrid(this.settings.getGridSize()));
 		return "Game grid benchmark";
 	}
 
 	// TODO: Optimize
-	private String initGameGrid() {
-		this.gameGrid.clearCells();
-		this.gameGrid.populate();
+	public String initGameGrid() {
+		CellGrid grid = this.getState().getGameGrid();
+		grid.clearCells();
+		grid.populate();
 
-		ArrayList<Cell> randomCells = this.gameGrid.getRandomAvailableCells(
+		ArrayList<Cell> randomCells = grid.getRandomAvailableCells(
 				this.settings.getInitialEntityCount());
 
 		ValueMeter bufferedAntCount = new ValueMeter(
@@ -174,8 +176,7 @@ public class Game implements Runnable {
 		if (this.snapshots.size() >= this.getSettings().getGridSnapshotHistory()) {
 			this.snapshots.remove(0);
 		}
-		String serializedGrid = gameGrid.download();
-		this.snapshots.add(serializedGrid);
+		this.snapshots.add(new GameSnapshot());
 		this.setMostRecentSnapshot();
 	}
 
@@ -196,7 +197,7 @@ public class Game implements Runnable {
 	}
 
 	public void loadSnapshot(int index) {
-		this.getGameGrid().upload(this.snapshots.get(index));
+		this.snapshots.get(index).load();
 	}
 
 	public void loadMostRecentSnapshot() {
@@ -303,10 +304,6 @@ public class Game implements Runnable {
 		return this.settings;
 	}
 
-	public CellGrid getGameGrid() {
-		return this.gameGrid;
-	}
-
 	public long getUpTime() {
 		return this.upTime;
 	}
@@ -317,6 +314,10 @@ public class Game implements Runnable {
 
 	public RenderFrame getRenderFrame() {
 		return this.renderFrame;
+	}
+
+	public GameState getState() {
+		return this.state;
 	}
 
 	// TODO: Add documentation
@@ -379,7 +380,8 @@ public class Game implements Runnable {
 		// Console.benchmark("Initializing game grid", this::initGameGrid);
 
 		// Avg: ~0.01s
-		// Console.benchmark("Render game grid", this.getGameGrid()::toASCII);
+		// Console.benchmark("Render game grid",
+		// this.getState().getGameGrid()::toASCII);
 		this.onGameStatusChanged.setDispatchQueueEnabled(false);
 		this.onSimulationStateChanged.setDispatchQueueEnabled(false);
 	}
@@ -387,5 +389,160 @@ public class Game implements Runnable {
 	@Override
 	public String toString() {
 		return "Game#" + this.sessionId;
+	}
+
+	public class GameSnapshot {
+		private String serializedGameGrid;
+		private String serializedCurrentAntMVP;
+		private String serializedCurrentDoodlebugMVP;
+		private GameState gameStateCopy;
+
+		public GameSnapshot() {
+			GameState state = getState();
+			this.serializedGameGrid = state.getGameGrid().download();
+			if (state.getCurrentAntMVP() != null)
+				this.serializedCurrentAntMVP = state.getCurrentAntMVP().serialize();
+			if (state.getCurrentDoodlebugMVP() != null)
+				this.serializedCurrentDoodlebugMVP = state.getCurrentDoodlebugMVP().serialize();
+			this.gameStateCopy = state.clone();
+		}
+
+		public String getSerializedGameGrid() {
+			return this.serializedGameGrid;
+		}
+
+		public void load() {
+			GameState state = getState();
+			state.getGameGrid().upload(this.serializedGameGrid);
+			state.setCurrentAntMVP((Ant) ObjectStream.deserialize(this.serializedCurrentAntMVP).get(0));
+			state.setCurrentDoodlebugMVP(
+					(Doodlebug) ObjectStream.deserialize(this.serializedCurrentDoodlebugMVP).get(0));
+			state.setTotalAnts(this.gameStateCopy.getTotalAnts());
+			state.setTotalBugs(this.gameStateCopy.getTotalBugs());
+			state.setTotalEntities(this.gameStateCopy.getTotalEntities());
+			state.setTotalDoodlebugs(this.gameStateCopy.getTotalDoodlebugs());
+			state.setTotalRuntime(this.gameStateCopy.getTotalRuntime());
+		}
+	}
+
+	public class GameState implements Cloneable {
+		private CellGrid gameGrid;
+
+		private long totalRuntime = 0;
+		private int totalEntities = 0;
+		private int totalBugs = 0;
+		private int totalAnts = 0;
+		private int totalDoodlebugs = 0;
+		private EntityVariant roundWinner;
+		private Ant currentAntMVP;
+		private Doodlebug currentDoodlebugMVP;
+
+		public EventSignal onChanged = new EventSignal();
+		public EventSignal onEntityCountChanged = new EventSignal();
+
+		public void setCurrentAntMVP(Ant currentAntMVP) {
+			this.onChanged.fire(this);
+			this.currentAntMVP = currentAntMVP;
+		}
+
+		public void setCurrentDoodlebugMVP(Doodlebug currentDoodlebugMVP) {
+			this.onChanged.fire(this);
+			this.currentDoodlebugMVP = currentDoodlebugMVP;
+		}
+
+		public void setRoundWinner(EntityVariant roundWinner) {
+			this.onChanged.fire(this);
+			this.roundWinner = roundWinner;
+		}
+
+		public void setTotalAnts(int totalAnts) {
+			this.onChanged.fire(this);
+			this.onEntityCountChanged.fire(this);
+			this.totalAnts = totalAnts;
+		}
+
+		public void setTotalBugs(int totalBugs) {
+			this.onChanged.fire(this);
+			this.onEntityCountChanged.fire(this);
+			this.totalBugs = totalBugs;
+		}
+
+		public void setTotalDoodlebugs(int totalDoodlebugs) {
+			this.onChanged.fire(this);
+			this.onEntityCountChanged.fire(this);
+			this.totalDoodlebugs = totalDoodlebugs;
+		}
+
+		public void setTotalEntities(int totalEntities) {
+			this.onChanged.fire(this);
+			this.onEntityCountChanged.fire(this);
+			this.totalEntities = totalEntities;
+		}
+
+		public void setTotalRuntime(long totalRuntime) {
+			this.onChanged.fire(this);
+			this.totalRuntime = totalRuntime;
+		}
+
+		public void setGameGrid(CellGrid gameGrid) {
+			this.gameGrid = gameGrid;
+		}
+
+		public Ant getCurrentAntMVP() {
+			return this.currentAntMVP;
+		}
+
+		public Doodlebug getCurrentDoodlebugMVP() {
+			return this.currentDoodlebugMVP;
+		}
+
+		public CellGrid getGameGrid() {
+			return this.gameGrid;
+		}
+
+		public EventSignal getOnChanged() {
+			return this.onChanged;
+		}
+
+		public EventSignal getOnEntityCountChanged() {
+			return this.onEntityCountChanged;
+		}
+
+		public EntityVariant getRoundWinner() {
+			return this.roundWinner;
+		}
+
+		public int getTotalAnts() {
+			return this.totalAnts;
+		}
+
+		public int getTotalBugs() {
+			return this.totalBugs;
+		}
+
+		public int getTotalDoodlebugs() {
+			return this.totalDoodlebugs;
+		}
+
+		public int getTotalEntities() {
+			return this.totalEntities;
+		}
+
+		public long getTotalRuntime() {
+			return this.totalRuntime;
+		}
+
+		public double getTotalRuntimeInSeconds() {
+			return Math.floor(Time.nanoToSeconds(this.totalRuntime) * 100) / 100;
+		}
+
+		@Override
+		protected GameState clone() {
+			try {
+				return (GameState) super.clone();
+			} catch (CloneNotSupportedException e) {
+				throw new Error(e);
+			}
+		}
 	}
 }

@@ -30,7 +30,7 @@ public class RenderFrame extends FrameRunner {
 
 	@Override
 	public void step() {
-		CellGrid grid = game.getGameGrid();
+		CellGrid grid = game.getState().getGameGrid();
 		// Console.println(grid.toASCII());
 		game.getScreen().renderGrid();
 	}

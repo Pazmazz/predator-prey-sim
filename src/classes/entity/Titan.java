@@ -18,8 +18,8 @@ public class Titan extends Bug<Titan> {
 	private Game game = Game.getInstance();
 
 	public Titan() {
-		setProperty(Property.IS_EATABLE, false);
-		setProperty(Property.VARIANT, "Titan");
+		// setProperty(Property.IS_EATABLE, false);
+		// setProperty(Property.VARIANT, "Titan");
 	}
 
 	@Override

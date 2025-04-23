@@ -58,6 +58,10 @@ public abstract class Bug<T extends Bug<T>> extends Entity<T> {
 		return this.isEatable;
 	}
 
+	public Timestamp getTimeLastMoved() {
+		return this.timeLastMoved;
+	}
+
 	// Metadata getters
 	public ValueMeter getGenerationMeter() {
 		return this.generationMeter;
@@ -73,8 +77,9 @@ public abstract class Bug<T extends Bug<T>> extends Entity<T> {
 	}
 
 	public void breed() {
-		ArrayList<Cell> adjCells = game.getGameGrid().getCellsAdjacentTo(this.assignedCell);
-		Cell randCell = game.getGameGrid().getRandomAvailableCellFrom(adjCells);
+		CellGrid grid = game.getState().getGameGrid();
+		ArrayList<Cell> adjCells = grid.getCellsAdjacentTo(this.assignedCell);
+		Cell randCell = grid.getRandomAvailableCellFrom(adjCells);
 
 		if (randCell != null) {
 			Bug<T> bug = newInstance();

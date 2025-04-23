@@ -39,7 +39,7 @@ public class ObjectStream {
 			case "Cell" -> {
 				Unit2 unit2 = (Unit2) data.get(0);
 				Object _entity = data.get(1);
-				Cell cell = (Cell) game.getGameGrid().getCell(unit2, false);
+				Cell cell = (Cell) game.getState().getGameGrid().getCell(unit2, false);
 
 				if (_entity instanceof Entity<?>) {
 					Entity<?> entity = (Entity<?>) _entity;

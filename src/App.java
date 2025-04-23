@@ -59,7 +59,7 @@ public class App {
 
 	public static void main(String[] args) {
 
-		// game.boot();
-		// game.start();
+		game.boot();
+		game.start();
 	}
 }

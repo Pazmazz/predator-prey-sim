@@ -53,10 +53,11 @@ public class Doodlebug extends Bug<Doodlebug> {
 	public boolean move() {
 		ValueMeter breedingMeter = this.getBreedingMeter();
 		ValueMeter hungerMeter = this.getHungerMeter();
+		CellGrid grid = game.getState().getGameGrid();
 
 		boolean moved = breedingMeter.increment() == breedingMeter.getMax();
-		ArrayList<Cell> adjCells = game.getGameGrid().randomizeCells(
-				game.getGameGrid().getCellsAdjacentTo(this.getAssignedCell()));
+		ArrayList<Cell> adjCells = grid.randomizeCells(
+				grid.getCellsAdjacentTo(this.getAssignedCell()));
 		Cell movementCell = null;
 
 		// try to eat
@@ -124,5 +125,11 @@ public class Doodlebug extends Bug<Doodlebug> {
 				.append(">")
 				.append("</span>")
 				.toString();
+	}
+
+	@Override
+	public void removeFromCell() {
+		super.removeFromCell();
+		doodlebugs.remove(this);
 	}
 }

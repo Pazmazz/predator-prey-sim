@@ -34,7 +34,7 @@ public class Ant extends Bug<Ant> {
 	@Override
 	public boolean move() {
 		ValueMeter breedingMeter = this.getBreedingMeter();
-		CellGrid grid = game.getGameGrid();
+		CellGrid grid = game.getState().getGameGrid();
 		ArrayList<Cell> adjCells = grid.getCellsAdjacentTo(this.getAssignedCell());
 		Cell randCell = grid.getRandomAvailableCellFrom(adjCells);
 		boolean moved = breedingMeter.increment() == breedingMeter.getMax();
